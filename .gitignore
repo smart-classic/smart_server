@@ -1,0 +1,6 @@
+*.cfg
+*.log
+*.pyc
+*.tmproj
+*~
+settings.py
