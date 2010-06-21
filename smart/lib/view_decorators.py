@@ -19,8 +19,6 @@ EMAIL = 'email'
 QPARAM_RELS = { 
   'account_email'   : ( 'account',  models.Account,  EMAIL ),
   'account_id'      : ( 'account',  models.Account,  EMAIL ),
-  'carenet_id'      : ( 'carenet',  models.Carenet,  ID    ),
-  'document_id'     : ( 'document', models.Document, ID    ), 
   'pha_email'       : ( 'pha',      models.PHA,      EMAIL ),
   'record_id'       : ( 'record',   models.Record,   ID    )
 }

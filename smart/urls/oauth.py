@@ -3,7 +3,7 @@ from django.conf.urls.defaults import *
 #from oauth.djangoutils import request_token, exchange_token, PARAMS
 #PARAMS['OAUTH_SERVER'] = OAUTH_SERVER
 
-from smart.views import user_authorization, request_token, exchange_token, session_create, request_token_claim, request_token_info, request_token_approve, get_long_lived_token, surl_verify
+from smart.views import user_authorization, request_token, exchange_token, session_create, request_token_claim, request_token_info, request_token_approve, get_long_lived_token
 
 urlpatterns = patterns('',
   url(r'^request_token$',    request_token,      name='oauth_request_token'),
@@ -24,6 +24,6 @@ urlpatterns = patterns('',
           get_long_lived_token, name='oauth_internal_get_long_lived_token'),
            
   ## signing URLS (SURL)
-  url(r'^internal/surl-verify$', surl_verify),
+  #url(r'^internal/surl-verify$', surl_verify),
 )
 

@@ -3,7 +3,7 @@ from django import template
 from django.http import HttpResponse
 from django.template import Context, loader
 from django.template.defaultfilters import stringfilter
-from smart.models import Document
+# from smart.models import Document
 from smart.lib import iso8601
 
 register = template.Library()

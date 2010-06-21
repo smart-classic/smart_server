@@ -11,92 +11,61 @@ class PermissionSet(object):
     self.view_args    = ()
     self.view_kwargs  = {}
 
-  def grant(self, view_func, parameter_callbacks):
+  def grant(self, view_func, parameter_callbacks=None):
     self.grants[view_func] = parameter_callbacks
 
+  def evaluate(self, request, view_func, view_args, view_kwargs):
+    """
+    a permission set is checked against a particular call.
+    some information in the parameters here is duplicated, i.e. view_func depends on request,
+    but it's provided here as convenience.
+    """
+    if not self.grants.has_key(view_func):
+      return False
 
-## WORK HERE on SMART
+    callbacks = self.grants[view_func]
+
+    # if callbacks is None, we're done, it's all good
+    if callbacks == None:
+      return True
+
+    # otherwise, more constraints to check
+
+    # the callbacks are checked, they must all be true to succeed
+    # this is not as powerful as the Indivo full-fledged system, but
+    # I'm waiting for that to be revamped before using it here in SMArt
+    for callback in callbacks:
+      if not callback(request, view_func, view_args, view_kwargs):
+        return False
+
+    return True
+
 
 def get_accessrule(view_func):
-  pass
+  return None
 
-class PermissionSetAux:
+def nouser_permset():
+  permset = PermissionSet(None)
+  grant_baseline(permset)
+  return permset
 
-  def _grant_baseline(self, permset):
-    """Grant a common set of base grants"""
+def grant_baseline(permset):
+  """Grant a common set of base grants"""
+  
+  # home
+  permset.grant(views.home, None)
 
-    # list the phas
-    permset.grant(views.all_phas, None)
+  # list the phas
+  permset.grant(views.all_phas, None)
 
-    # static files
-    # for development purposes
-    import django.views.static
-    permset.grant(django.views.static.serve, None)
-    return permset
-
-  def get_permset(self, type_obj, grants=None, grant_baseline=True):
-    """Get grants for a paricular principle"""
-
-    permset = PermissionSet(type_obj)
-    if grant_baseline:
-      permset = self._grant_baseline(permset)
-    return self.add_grants(permset, grants)
-
-  def add_grants(self, permset, grants):
-    """Add specific grants to the permset"""
-
-    isiterable = lambda obj: isinstance(obj, basestring) or \
-                              getattr(obj, '__iter__', False)
-
-    if grants:
-      for view, access_rule in grants.items():
-
-        # access rules should always be of type list
-        if not isinstance(access_rule, list):
-          access_rule = [access_rule]
-
-        if isiterable(access_rule):
-          permset.grant(view, access_rule)
-        else:
-          return False
-    return permset
-
-  def transform_expr(self, expr):
-    if not isinstance(expr, Operator):
-      return expr
-    expr[:] = map(self.transform_expr, expr)
-    return expr
+  # version
+  permset.grant(views.get_version, None)
+  
+  # static files
+  # for development purposes
+  import django.views.static
+  permset.grant(django.views.static.serve, None)
 
 
-class Operator(list):
-  """Generic Operator class"""
 
-  def __init__(self, *args):
-    super(Operator, self).__init__(args)
 
-class Not(Operator):
-  """Prop Cal Not"""
-
-  def op(self, arg1):
-    return not arg1
-
-  def __str__(self):
-    return '!(%s)' % tuple(self)
-
-class And(Operator):
-  """Prop Cal And"""
-
-  def op(self, arg1, arg2):
-    return arg1 and arg2
-
-  def __str__(self):
-    return '(%s & %s)' % tuple(self)
-
-class Or(Operator):
-  """Prop Cal Or"""
-
-  def op(self, arg1, arg2):
-    return arg1 or arg2
-
-  def __str__(self):
-    return '(%s | %s)' % tuple(self)

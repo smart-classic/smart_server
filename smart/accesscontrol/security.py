@@ -1,5 +1,5 @@
 """
-A number of security utilities for Indivo (SMArt now)
+A number of security utilities for Indivo (used in SMArt)
 
 based on django constructs
 and Indivo data models
@@ -45,15 +45,6 @@ def get_admin_app_info(request):
     return admin_app, null_token, parameters, oauth_request
   except:
     return None, None, None, None
-
-def get_record_by_id(id):
-  try:
-    return models.Record.objects.get(id=id)
-  except models.Record.DoesNotExist:
-    return None
-
-def get_pha_by_email(email):
-  return models.PHA.objects.get(email = email)
 
 def get_principal(request):
   """Figure out the principal making the request.

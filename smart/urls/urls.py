@@ -6,15 +6,25 @@ from smart.lib.utils import MethodDispatcher
 urlpatterns = patterns(
     '',
     # Homepage
-    #(r'^$', home),
+    (r'^$', home),
     
     # OAuth
     (r'^oauth/', include('smart.urls.oauth')),
     
     (r'^version$', get_version),
-    # Current identity
-    (r'^id$', get_id),
 
+    (r'^accounts/$', account_create),
+    (r'^accounts/search$', account_search),
+    (r'^accounts/(?P<account_email>[^/]+)$', account_info),
+    (r'^accounts/(?P<account_email>[^/]+)/', include('smart.urls.account')),
+
+    # Record
+    (r'^records/(?P<record_id>[^/]+)$', record_info),
+    (r'^records/(?P<record_id>[^/]+)/apps/$', record_apps),
+    (r'^records/(?P<record_id>[^/]+)/apps/(?P<app_email>[^/]+)$', MethodDispatcher({
+                'PUT': record_add_app,
+                'DELETE': record_remove_app})),
+    
     # PHAs
     (r'^apps/$', all_phas),
     

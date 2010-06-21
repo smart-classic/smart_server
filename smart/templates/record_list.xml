@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Records>
+{% for record in records %}
+  <Record id="{{ record.id }}" label="{{ record.full_name }}" />
+{% endfor %}
+</Records>

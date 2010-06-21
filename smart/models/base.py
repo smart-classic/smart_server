@@ -76,10 +76,22 @@ class Principal(Object):
       self.type = self.__class__.__name__
     super(Principal,self).save(*args, **kwargs)
 
+  def grant_permissions(self, permset):
+    """
+    grant the permissions that this principal has to this permset.
+    """
+    from smart import accesscontrol
+    from smart.accesscontrol import rules
+
+    accesscontrol.grant_baseline(permset)
+    rules.grant_by_principal(self, permset)
+
   @property
   def permset(self):
     from smart import accesscontrol
-    return accesscontrol.get_permset('principal', self)
+    permset = accesscontrol.PermissionSet(self)
+    self.grant_permissions(permset)
+    return permset
   
   @property
   def effective_principal(self):

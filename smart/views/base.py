@@ -22,3 +22,6 @@ from smart.lib import utils
 from smart.lib.utils import render_template, render_template_raw
 
 DONE = render_template('ok', {}, type="xml")
+
+def home(request):
+    return HttpResponse("home")

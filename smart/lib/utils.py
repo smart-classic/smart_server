@@ -109,17 +109,3 @@ def django_json(func):
   functools.update_wrapper(func_with_json_conversion, func)
   return func_with_json_conversion
 
-def carenet_filter(carenet, report_list):
-  # SZ: Fix!
-  # A report may contain documents of different types
-  from smart import models
-  carenet_report = []
-  if carenet:
-    for report_obj in report_list:
-      if models.CarenetDocument.objects.select_related().filter(
-          carenet=carenet, document=report_obj.document) or \
-         models.CarenetAutoshare.objects.select_related().filter(
-          carenet=carenet, type=report_obj.document.type): 
-        carenet_report.append(report_obj)
-    return carenet_report
-  return report_list

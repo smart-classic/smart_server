@@ -10,7 +10,6 @@ Steve Zabak
 from django.db import models
 from django.conf import settings
 
-from records_and_documents import Record, DocumentSchema
 from base import Object, Principal, BaseModel, BaseMeta
 
 import urllib, datetime
@@ -72,20 +71,12 @@ class PHA(OAuthApp):
   # does the application fit in an iframe?
   frameable = models.BooleanField(default=False)
 
-  # does the application have a document schema that it knows how to display well?
-  schema = models.ForeignKey('DocumentSchema', null = True)
-
   # short description of the app
   description = models.CharField(max_length=2000, null=True)
 
   # privacy terms of use (XML)
   # FIXME: probably change this field type to XMLField()
   privacy_tou = models.TextField(null=True)
-
-  @property
-  def permset(self):
-    from smart import accesscontrol
-    return accesscontrol.get_permset('userapp', self)
 
 ##
 ## App Tokens are implemented separately, since they require access to record and docs
@@ -116,11 +107,6 @@ class MachineApp(OAuthApp):
   # which are repeated, as if it were an access token.
   #token = models.CharField(max_length=16)
   #secret = models.CharField(max_length=16)
-
-  @property
-  def permset(self):
-    from smart import accesscontrol
-    return accesscontrol.get_permset('machineapp', self)
 
   @classmethod
   def from_consumer(cls, consumer):
