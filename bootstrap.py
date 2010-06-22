@@ -31,3 +31,15 @@ r_jane = Record.objects.create(full_name = 'Jane Doe')
 # map these to the account I have
 AccountRecord.objects.create(record = r_john, account = a)
 AccountRecord.objects.create(record = r_jane, account = a)
+
+a2 = Account.objects.create(email = 'joshmandel@smart.org', full_name='Josh Mandel', contact_email = 'jmandel@gmail.com')
+a2.set_username_and_password(username='joshmandel', password='test')
+
+# create a couple of records
+r_john = Record.objects.create(full_name = 'John Smith')
+r_jane = Record.objects.create(full_name = 'Jane Smith')
+
+# map these to the account I have
+AccountRecord.objects.create(record = r_john, account = a2)
+AccountRecord.objects.create(record = r_jane, account = a2)
+
