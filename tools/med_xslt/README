@@ -1,0 +1,36 @@
+> java -jar saxon9he.jar  med.ccr ccr_to_rdf.xslt
+
+... yields:
+
+@prefix med: <http://smartplatforms.org/med#> .
+@prefix rxn_cui: <http://link.informatics.stonybrook.edu/rxnorm#> .
+@prefix dc: <http://purl.org/dc/elements/1.1/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+
+ 
+   [
+  	    rdf:type med:medication ;
+	    med:drug rxn_cui:198405 ;
+	    med:dose "1" ;
+	    med:doseUnits med:tablet ;
+	    med:route med:oral ;
+	    med:frequency "1 time per day" ] .
+  rxn_cui:198405	   
+  	    dc:title "Ibuprofen" ;
+	    med:strength "100" ;
+	    med:strengthUnits med:mg ;
+	    med:form med:tablet .
+
+   <http://j.xvm.mit.edu/records/23523525/medications/8305903>
+  	    rdf:type med:medication ;
+	    med:drug rxn_cui:646459 ;
+	    med:dose "1" ;
+	    med:doseUnits med:tablet ;
+	    med:route med:oral ;
+	    med:frequency "1 time per day"  .
+  rxn_cui:646459	   
+  	    dc:title "Tylenol" ;
+	    med:strength "650" ;
+	    med:strengthUnits med:mg ;
+	    med:form med:tablet .
+

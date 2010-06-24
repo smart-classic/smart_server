@@ -1,0 +1,106 @@
+<Medications> 
+   <Medication >
+    <Status><Text>Active</Text></Status>
+    <DateTime>
+      <Type><Text>Prescription Date</Text></Type>
+      <ExactDateTime>2007-04-01T05:00:00Z</ExactDateTime>
+    </DateTime>
+    <Source>
+       <Actor>
+          <ActorID>Cecil Baker</ActorID>
+       </Actor>
+       <ActorRole>Prescribing clinician</ActorRole>
+    </Source> 
+      <Product> 
+         <ProductName> 
+            <Text>Ibuprofen</Text> 
+            <Code> 
+               <Value>198405</Value> 
+               <CodingSystem>RxNorm</CodingSystem> 
+            </Code> 
+         </ProductName> 
+         <Strength>
+            <Value>100</Value>
+            <Units>
+               <Unit>mg</Unit>
+            </Units>
+         </Strength> 
+         <Form>
+            <Text>Tablet</Text>
+         </Form> 
+      </Product> 
+      <Directions>
+         <Direction>
+            <Dose>
+               <Value>1</Value>
+               <Units>
+                  <Unit>tablet</Unit>
+               </Units>
+            </Dose>
+            <Route><Text>Oral</Text></Route>
+            <Frequency><Value>1 time per day</Value></Frequency>
+         </Direction> 
+      </Directions>
+      <FulfillmentHistory>
+         <Fulfillment>
+            <Quantity>30</Quantity>
+            <DateTime>
+               <Type><Text>Dispense date</Text></Type>
+               <ExactDateTime>2007-06-01T06:00:00Z</ExactDateTime>
+            </DateTime>
+         </Fulfillment>
+      </FulfillmentHistory> 
+   </Medication>
+   <Medication id="http://j.xvm.mit.edu/records/23523525/medications/8305903">
+    <Status><Text>Active</Text></Status>
+    <DateTime>
+      <Type><Text>Prescription Date</Text></Type>
+      <ExactDateTime>2007-04-01T05:00:00Z</ExactDateTime>
+    </DateTime>
+    <Source>
+       <Actor>
+          <ActorID>Cecil Baker</ActorID>
+       </Actor>
+       <ActorRole>Prescribing clinician</ActorRole>
+    </Source> 
+      <Product> 
+         <ProductName> 
+            <Text>Tylenol</Text> 
+            <Code> 
+               <Value>646459</Value> 
+               <CodingSystem>RxNorm</CodingSystem> 
+            </Code> 
+         </ProductName> 
+         <Strength>
+            <Value>650</Value>
+            <Units>
+               <Unit>mg</Unit>
+            </Units>
+         </Strength> 
+         <Form>
+            <Text>Tablet</Text>
+         </Form> 
+      </Product> 
+      <Directions>
+         <Direction>
+            <Dose>
+               <Value>1</Value>
+               <Units>
+                  <Unit>tablet</Unit>
+               </Units>
+            </Dose>
+            <Route><Text>Oral</Text></Route>
+            <Frequency><Value>1 time per day</Value></Frequency>
+         </Direction> 
+      </Directions>
+      <FulfillmentHistory>
+         <Fulfillment>
+            <Quantity>30</Quantity>
+            <DateTime>
+               <Type><Text>Dispense date</Text></Type>
+               <ExactDateTime>2007-06-01T06:00:00Z</ExactDateTime>
+            </DateTime>
+         </Fulfillment>
+      </FulfillmentHistory> 
+   </Medication>
+</Medications> 
