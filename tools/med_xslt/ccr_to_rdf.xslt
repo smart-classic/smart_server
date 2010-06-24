@@ -11,7 +11,7 @@ version="2.0">
 <![CDATA[
 @prefix med: <http://smartplatforms.org/med#> .
 @prefix rxn_cui: <http://link.informatics.stonybrook.edu/rxnorm#> .
-@prefix dc: <http://purl.org/dc/elements/1.1/> .
+@prefix dcterms:  <http://purl.org/dc/terms/> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 ]]>
 </xsl:text>
@@ -36,7 +36,7 @@ version="2.0">
   <xsl:otherwise>] .</xsl:otherwise>
   </xsl:choose>
   rxn_cui:<xsl:value-of select="$cui"/>	   
-  	    dc:title "<xsl:value-of select='normalize-space(.//ProductName/Text)'/>" ;
+  	    dcterms:title "<xsl:value-of select='normalize-space(.//ProductName/Text)'/>" ;
 	    med:strength "<xsl:value-of select='normalize-space(.//Strength/Value)'/>" ;
 	    med:strengthUnits med:<xsl:value-of select='str:to-enum(.//Strength/Units)'/> ;
 	    med:form med:<xsl:value-of select='str:to-enum(.//Product/Form/Text)'/> .
