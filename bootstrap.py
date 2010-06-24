@@ -11,7 +11,7 @@ MachineApp.objects.create(name='chrome',
                           app_type='chrome',
                           email='chrome@apps.smart-project.org')
 
-PHA.objects.create(start_url_template= 'http://localhost:8001/smart_sample_app/?record_id={record_id}',
+PHA.objects.create(start_url_template= 'http://localhost:8001/index.html?record_id={record_id}',
                    callback_url = 'http://localhost:8001/auth/after',
                    has_ui = True,
                    frameable = True,

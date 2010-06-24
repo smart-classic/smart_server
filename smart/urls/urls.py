@@ -27,8 +27,9 @@ urlpatterns = patterns(
     
     # PHAs
     (r'^apps/$', all_phas),
-    
     # static
     (r'^static/(?P<path>.*)$', 'django.views.static.serve', {'document_root': 'static'}),
-    
+
+    # SMArt API
+    (r'^meds(?P<medcall>[^/]*)/records/(?P<record_id>[^/]+)/apps/(?P<app_email>[^/]+)$', meds),
     )

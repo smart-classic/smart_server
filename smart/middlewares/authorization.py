@@ -19,7 +19,6 @@ class Authorization(object):
 
   def process_view(self, request, view_func, view_args, view_kwargs):
     """ The process_view() hook allows us to examine the request before view_func is called"""
-
     # Url exception(s)
     exc_pattern= settings.SMART_ACCESS_CONTROL_EXCEPTION
     if exc_pattern and re.match(exc_pattern, request.path):
@@ -30,13 +29,17 @@ class Authorization(object):
 
     try:
       if view_func:
+
         permission_set = self.get_permset(request)
 
         # given a set of permissions, and a rule for access checking
         # apply the rules to the permission set with the current request parameters
         if permission_set:
+          print "Permission set exists for", view_func
           if permission_set.evaluate(request, view_func, view_args, view_kwargs):
+            print "And permittred."
             return None
+
 
         # otherwise, this will fail
     except:

@@ -30,4 +30,3 @@ class RecordApp(Object):
   class Meta:
     app_label = APP_LABEL
     unique_together = (('record', 'app'),)
-    
