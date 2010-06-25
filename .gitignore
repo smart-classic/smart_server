@@ -4,3 +4,5 @@
 *.tmproj
 *~
 settings.py
+.project
+.pydevproject

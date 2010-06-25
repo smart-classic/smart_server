@@ -12,6 +12,7 @@ from django import http
 from django.utils import simplejson
 
 from xml.dom import minidom
+import libxml2, libxslt
 
 from django.forms.fields import email_re
 import django.core.mail as mail
@@ -109,3 +110,12 @@ def django_json(func):
   functools.update_wrapper(func_with_json_conversion, func)
   return func_with_json_conversion
 
+def apply_xslt(sourceDOM, stylesheetDOM):
+    style = libxslt.parseStylesheetDoc(stylesheetDOM)
+    return style.applyStylesheet(sourceDOM, None).serialize()
+
+def xslt_ccr_to_rdf(source):
+    sourceDOM = libxml2.parseDoc(source)
+    ss = "%s%s"%(settings.XSLT_STYLESHEET_LOC, "ccr_to_rdf.xslt")
+    ssDOM = libxml2.parseFile(ss)
+    return apply_xslt(sourceDOM, ssDOM)

@@ -7,6 +7,7 @@ Ben Adida
 from base import *
 from smart.lib import utils
 from django.http import HttpResponseBadRequest
+from django.conf import settings
 
 SAMPLE_NOTIFICATION = {
     'id' : 'foonotification',
@@ -56,9 +57,11 @@ def record_remove_app(request, record, app):
 
 @paramloader()
 def meds(request, medcall, record, app):
-    print "meds_%s"%record.id
-    return render_template('meds_%s'%record.id, {}, type="json")
-
+    fixture = "meds_%s.ccr"%("")
+    raw_xml = render_template_raw("fixtures/%s"%fixture, {})
+    transformed = utils.xslt_ccr_to_rdf(raw_xml)
+    mimetype = 'application/rdf+xml'
+    return HttpResponse(transformed, mimetype=mimetype)
 
 def app_in_account(request, view_func, view_args, view_kwargs):    
     # Quick hack to take advantage of view_decorators machinery...
