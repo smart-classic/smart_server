@@ -56,23 +56,9 @@ def record_remove_app(request, record, app):
     return DONE
 
 @paramloader()
-def meds(request, medcall, record, app):
+def meds(request, medcall, record):
     fixture = "meds_%s.ccr"%("")
     raw_xml = render_template_raw("fixtures/%s"%fixture, {})
     transformed = utils.xslt_ccr_to_rdf(raw_xml)
     mimetype = 'application/rdf+xml'
     return HttpResponse(transformed, mimetype=mimetype)
-
-def app_in_account(request, view_func, view_args, view_kwargs):    
-    # Quick hack to take advantage of view_decorators machinery...
-
-    @paramloader()
-    def harness(request, record, app):
-        return  record, app    
-
-    record, app = harness(request,
-                          record_id=view_kwargs["record_id"],
-                          app_email  = view_kwargs["app_email"])
-    
-    allowed = app in [r.app for r in  record.recordapp_set.all()]
-    return allowed

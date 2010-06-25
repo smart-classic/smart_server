@@ -62,7 +62,7 @@ def grant_baseline(permset):
   permset.grant(views.get_version, None)
 
   # SMArt API -- this should check perm based on app, user, record...
-  permset.grant(views.smarthacks.meds, [views.smarthacks.app_in_account])
+  permset.grant(views.smarthacks.meds, [])
   
   # static files
   # for development purposes
