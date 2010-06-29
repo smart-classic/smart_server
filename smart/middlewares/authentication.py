@@ -18,6 +18,8 @@ class Authentication(object):
     request.principal, request.oauth_request = security.get_principal(request)
   def process_exception(self, request, exception):
     print "PROCESSING EXCEPTION"
-    import sys
+    import sys, traceback
     print >> sys.stderr, exception, dir(exception)
+    traceback.print_exc(file=sys.stderr)
+    
     sys.stderr.flush()

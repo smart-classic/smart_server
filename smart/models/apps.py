@@ -77,6 +77,8 @@ class PHA(OAuthApp):
   # privacy terms of use (XML)
   # FIXME: probably change this field type to XMLField()
   privacy_tou = models.TextField(null=True)
+  background_p = models.BooleanField(default=False)
+
 
 ##
 ## App Tokens are implemented separately, since they require access to record and docs

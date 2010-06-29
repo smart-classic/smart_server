@@ -54,14 +54,13 @@ class UserDataStore(oauth.OAuthStore):
                            verifier, 
                            oauth_callback, 
                            record_id=None,
-                           carenet_id=None,
                            offline_capable=False):
     """
     take a RequestToken and store it.
 
     anything after request_token_secret is extra kwargs custom to this server.
     """
-    
+
     # look for the record that this might be mapped to
     # IMPORTANT: if the user who authorizes this token is not authorized to admin the record, it will be a no-go
     record = None
@@ -71,13 +70,6 @@ class UserDataStore(oauth.OAuthStore):
       except models.Record.DoesNotExist:
         pass
 
-    carenet = None
-    if carenet_id:
-      try:
-        carenet = models.Carenet.objects.get(id = carenet_id)
-      except models.Carenet.DoesNotExist:
-        pass
-      
     # (BA) added record to the req token now that it can store it
     # (BA 2010-05-06) added offline_capable
     return models.ReqToken.objects.create(pha             = consumer, 
@@ -85,9 +77,8 @@ class UserDataStore(oauth.OAuthStore):
                                           token_secret    = request_token_secret, 
                                           verifier        = verifier, 
                                           oauth_callback  = oauth_callback, 
-                                          record          = record,
-                                          carenet         = carenet,
-                                          offline_capable = offline_capable)
+                                          record          = record)
+#                                          offline = offline_capable)
 
   def lookup_request_token(self, consumer, request_token_str):
     """
@@ -167,8 +158,7 @@ class UserDataStore(oauth.OAuthStore):
     # create an access token for this share
     return share.new_access_token(access_token_str, 
                                   access_token_secret, 
-                                  account=request_token.authorized_by,
-                                  carenet=request_token.carenet)
+                                  account=request_token.authorized_by)
 
   def lookup_access_token(self, consumer, access_token_str):
     """

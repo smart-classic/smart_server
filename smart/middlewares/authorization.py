@@ -29,27 +29,29 @@ class Authorization(object):
 
     try:
       if view_func:
-
         permission_set = self.get_permset(request)
 
         # given a set of permissions, and a rule for access checking
         # apply the rules to the permission set with the current request parameters
         if permission_set:
-          print "Permission set exists for", view_func
           if permission_set.evaluate(request, view_func, view_args, view_kwargs):
-            print "And permittred."
+            print "And permitted for ", view_func.__name__, request.principal
             return None
-
+          print "Permission denied for ", view_func.__name__, request.principal
 
         # otherwise, this will fail
     except:
+      print "Exception: Permission denied for ", view_func.__name__, request.principal
+
       raise PermissionDenied
     raise PermissionDenied
 
   def get_permset(self, request):
     if request.principal:
+      "The permset is for", request.principal
       return request.principal.permset
     else:
+      "The permiset is for nouser"
       return smart.accesscontrol.nouser_permset()
 
 

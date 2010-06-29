@@ -9,3 +9,4 @@ from base import *
 from apps import *
 from accounts import *
 from records import *
+from shares import *

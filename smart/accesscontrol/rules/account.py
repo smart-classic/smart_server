@@ -51,3 +51,8 @@ def grant(account, permset):
     # add and remove apps
     permset.grant(record_add_app, [check_record_account])
     permset.grant(record_remove_app, [check_record_account])
+    
+    # Claiming a request token is free
+    permset.grant(request_token_claim, None)
+    permset.grant(request_token_approve, None) # need to verify record ID?
+    permset.grant(request_token_info, None) # need to verify exists?

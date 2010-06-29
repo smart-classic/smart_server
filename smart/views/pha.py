@@ -37,11 +37,11 @@ def request_token(request):
     the request-token request URL
     """
     # ask the oauth server to generate a request token given the HTTP request
+
     try:
       # we already have the oauth_request in context, so we don't get it again
       request_token = OAUTH_SERVER.generate_request_token(request.oauth_request, 
                                                           record_id = request.POST.get('indivo_record_id', None),
-                                                          carenet_id = request.POST.get('indivo_carenet_id', None),
                                                           offline_capable = request.POST.get('offline', False))
       return HttpResponse(request_token.to_string(), mimetype='text/plain')
     except oauth.OAuthError, e:
@@ -153,13 +153,6 @@ def request_token_info(request, request_token):
   try:
     if rt.record:
       share = Share.objects.get(record = rt.record, with_pha = rt.pha)
-    elif rt.carenet:
-      # if there is a carenet, then we look up the corresponding record
-      # and see if this app is already granted access to it.
-      #
-      # note that the user will still need to be in this carenet to approve
-      # the request token
-      share = Share.objects.get(record = rt.carenet.record, with_pha = rt.pha)
   except Share.DoesNotExist:
     pass
 
@@ -170,7 +163,6 @@ def request_token_approve(request, request_token):
   rt = ReqToken.objects.get(token = request_token)
 
   record_id = request.POST.get('record_id', None)
-  carenet_id = request.POST.get('carenet_id', None)
   offline = request.POST.get('offline', False)
 
   # requesting offline but request token doesn't allow it? Bust!
@@ -181,23 +173,15 @@ def request_token_approve(request, request_token):
   if record_id:
     record = Record.objects.get(id = record_id)
 
-  carenet = None
-  if carenet_id:
-    carenet = Carenet.objects.get(id = carenet_id)
-
   # if the request token was bound to a record, then it must match
   if rt.record != None and rt.record != record:
     raise PermissionDenied()
 
-  # if the request token was bound to a carenet
-  if rt.carenet != None and rt.carenet != carenet:
-    raise PermissionDenied()
 
   # the permission check that the current user is authorized to connect to this record
-  # or to this carenet is already done in accesscontrol
   
   # authorize the request token
-  request_token = OAUTH_SERVER.authorize_request_token(rt.token, record = record, carenet = carenet, account = request.principal, offline = offline)
+  request_token = OAUTH_SERVER.authorize_request_token(rt.token, record = record,  account = request.principal, offline = offline)
 
   # where to redirect to + parameters
   redirect_url = request_token.oauth_callback or request_token.pha.callback_url
