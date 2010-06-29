@@ -12,6 +12,7 @@ import psycopg2
 import psycopg2.extras
 from rdflib import ConjunctiveGraph, Namespace, Literal
 from StringIO import StringIO
+import smart.models
 
 
 SAMPLE_NOTIFICATION = {
@@ -133,3 +134,45 @@ def rxn_related(rxcui_id, graph):
        graph.add((rxcui[rxcui_id], rxrel[row['rela']], Literal(row['str']) ))
 
    return
+
+
+
+def rdf_store (request):
+    print "welcome to the store."
+    
+    ct = utils.get_content_type(request).lower()
+    if (ct != "application/rdf+xml"):
+        raise "RDF Store only knows how to store RDF+XML content."
+    
+    if not (isinstance(request.principal, smart.models.PHA)):
+        raise "RDF Store only stores data for PHAs."
+    
+    try:
+        rs = smart.models.PHA_RDFStore.objects.get(PHA=request.principal)
+    except:
+        rs = smart.models.PHA_RDFStore.objects.create(PHA=request.principal)
+
+    g = ConjunctiveGraph()
+    if (rs.triples != ""):
+        g.parse(StringIO(rs.triples)) 
+    
+    g.parse(StringIO(request.raw_post_data)) 
+    rs.triples = g.serialize()
+    rs.save() 
+    return HttpResponse(rs.triples, mimetype="application/rdf+xml")
+
+     
+def rdf_dump (request):
+    if not (isinstance(request.principal, smart.models.PHA)):
+        raise "RDF Store only stores data for PHAs."
+
+    try:
+        rs = smart.models.PHA_RDFStore.objects.get(PHA=request.principal)
+        return HttpResponse(rs.triples, mimetype="application/rdf+xml")
+    
+    except:
+        return HttpResponse("", mimetype="application/rdf+xml")
+
+def rdf_query(request):
+     raise "RDF query Not implemented."
+ 

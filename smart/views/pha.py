@@ -206,4 +206,3 @@ def get_long_lived_token(request):
   long_lived_token = principal.share.new_access_token(new_token, new_secret, account = None)
   
   return HttpResponse(long_lived_token.to_string(), mimetype='text/plain')  
-

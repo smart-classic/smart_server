@@ -32,4 +32,9 @@ urlpatterns = patterns(
 
     # SMArt API
     (r'^meds(?P<medcall>[^/]*)/records/(?P<record_id>[^/]+).*$', meds),
+    (r'^rdf_store$', rdf_store),
+    (r'^rdf_query$', rdf_query),
+    (r'^rdf_dump$', rdf_dump),
+    
+    
     )
