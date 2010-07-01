@@ -3,7 +3,6 @@ Rules for PHAs, AccessTokens, ReqTokens
 """
 
 from smart.views import *
-from smart.views.smarthacks import *
 
 def grant(principal, permset):
     """
@@ -12,7 +11,8 @@ def grant(principal, permset):
 
     permset.grant(request_token, None)
     permset.grant(session_create, None)
-    permset.grant(rdf_store, None)
-    permset.grant(rdf_query, None)
-    permset.grant(rdf_dump, None)
+    permset.grant(get_rdf_store, None)
+    permset.grant(post_rdf_store, None)
+    permset.grant(put_rdf_store, None)
+    permset.grant(delete_rdf_store, None)
     

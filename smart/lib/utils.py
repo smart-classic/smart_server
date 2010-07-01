@@ -20,6 +20,11 @@ import logging
 import string, random
 import functools
 
+from rdflib import ConjunctiveGraph, Namespace, Literal
+from StringIO import StringIO
+import psycopg2
+import psycopg2.extras
+
 # taken from pointy-stick.com with some modifications
 class MethodDispatcher(object):
   def __init__(self, method_map):
@@ -119,3 +124,79 @@ def xslt_ccr_to_rdf(source):
     ss = "%s%s"%(settings.XSLT_STYLESHEET_LOC, "ccr_to_rdf.xslt")
     ssDOM = libxml2.parseFile(ss)
     return apply_xslt(sourceDOM, ssDOM)
+
+
+def meds_as_rdf(raw_xml):
+    transformed = xslt_ccr_to_rdf(raw_xml)
+   
+    g = ConjunctiveGraph()
+    g.parse(StringIO(transformed))
+    
+    rxcui_ids = [r[0].decode().split('/')[-1] 
+                 for r in 
+                    g.query("""SELECT ?cui_id  
+                               WHERE {
+                               ?med rdf:type med:medication .
+                               ?med med:drug ?cui_id .
+                               }""", 
+                               initNs=dict(g.namespaces()))]
+    for rxcui_id in rxcui_ids:
+        try:
+            print "ADDING", rxcui_id
+            rxn_related(rxcui_id=int(rxcui_id), graph=g)
+        except ValueError:
+            pass
+    return g.serialize()
+
+def rxn_related(rxcui_id, graph):
+   rxcui_id = str(rxcui_id)
+   dcterms = Namespace('http://purl.org/rss/1.0/modules/dcterms/', "dctems")
+   med = Namespace('http://smartplatforms.org/med#')
+   rdf = Namespace('http://www.w3.org/1999/02/22-rdf-syntax-ns#')
+   rxn=Namespace("http://link.informatics.stonybrook.edu/rxnorm/")
+   rxcui=Namespace( "http://link.informatics.stonybrook.edu/rxnorm/RXCUI/")
+   rxaui=Namespace("http://link.informatics.stonybrook.edu/rxnorm/RXAUI/")
+   rxatn=Namespace("http://link.informatics.stonybrook.edu/rxnorm/RXATN#")
+   rxrel=Namespace("http://link.informatics.stonybrook.edu/rxnorm/REL#")
+
+   graph.bind("rxn", rxn)
+   graph.bind("rxaui", rxaui)
+   graph.bind("rxrel", rxrel)
+   graph.bind("rxatn", rxatn)
+   graph.bind("rxcui", rxcui)
+   
+   conn=psycopg2.connect("dbname='%s' user='%s' password='%s'"%
+                             (settings.DATABASE_RXN, 
+                              settings.DATABASE_USER, 
+                              settings.DATABASE_PASSWORD))
+   
+   cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+   
+   q = """select distinct rxcui, rxaui, atn, atv from 
+       rxnsat where rxcui=%s and suppress='N' and 
+       atn != 'NDC' order by rxaui, atn;"""
+  
+   print q%rxcui_id
+  
+   cur.execute(q, (rxcui_id,))
+   
+   rows = cur.fetchall()
+   
+   graph.add((rxcui[rxcui_id], rdf['type'], rxcui))
+   for row in rows:
+       atn = row['atn'].replace(" ", "_")
+       graph.add((rxcui['%s'%row['rxcui']], rxn['has_RXAUI'], rxaui[row['rxaui']] ))
+       graph.add((rxaui[row['rxaui']], rxatn[atn], Literal(row['atv']) ))
+
+   q = """select min(rela) as rela, min(str) as str from 
+           rxnrel r join rxnconso c on r.rxcui1=c.rxcui 
+           where rxcui2=%s group by rela;"""
+   print q%rxcui_id
+   
+   cur.execute(q, (rxcui_id,))
+   
+   rows = cur.fetchall()
+   for row in rows:
+       graph.add((rxcui[rxcui_id], rxrel[row['rela']], Literal(row['str']) ))
+
+   return

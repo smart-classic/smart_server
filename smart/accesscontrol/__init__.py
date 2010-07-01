@@ -60,10 +60,10 @@ def grant_baseline(permset):
 
   # version
   permset.grant(views.get_version, None)
-
-  # SMArt API -- this should check perm based on app, user, record...
-  permset.grant(views.smarthacks.meds, [])
-  
+#
+#  # SMArt API -- this should check perm based on app, user, record...
+#  permset.grant(views.smarthacks.meds, [])
+#  
   # static files
   # for development purposes
   import django.views.static

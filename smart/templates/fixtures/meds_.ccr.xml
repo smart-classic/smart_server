@@ -1,3 +1,4 @@
+<ContinuityOfCareRecord xmlns='urn:astm-org:CCR'>
 <Medications> 
    <Medication >
     <Status><Text>Active</Text></Status>
@@ -104,3 +105,4 @@
       </FulfillmentHistory> 
    </Medication>
 </Medications> 
+</ContinuityOfCareRecord>

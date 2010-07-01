@@ -33,6 +33,8 @@ class Authorization(object):
 
         # given a set of permissions, and a rule for access checking
         # apply the rules to the permission set with the current request parameters
+#        import rpdb2
+#        rpdb2.start_embedded_debugger("a")
         if permission_set:
           if permission_set.evaluate(request, view_func, view_args, view_kwargs):
             print "And permitted for ", view_func.__name__, request.principal
@@ -42,7 +44,8 @@ class Authorization(object):
         # otherwise, this will fail
     except:
       print "Exception: Permission denied for ", view_func.__name__, request.principal
-
+      import sys, traceback
+      traceback.print_exc(file=sys.stderr)
       raise PermissionDenied
     raise PermissionDenied
 

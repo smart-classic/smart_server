@@ -11,7 +11,7 @@ RULES[models.Principal] = principal
 RULES[models.MachineApp] = machineapp
 RULES[models.PHA] = pha
 RULES[models.ReqToken] = requesttoken
-# access token FIXME
+RULES[models.AccessToken] = accesstoken
 
 def get_module_by_principal(principal):
     return RULES[principal.__class__]
