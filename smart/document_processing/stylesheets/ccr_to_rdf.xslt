@@ -73,6 +73,17 @@ version="1.0">
   </xsl:when>
   </xsl:choose>
 
+  <xsl:variable name="end_date" select=".//ccr:ExactDateTime[../ccr:Type/ccr:Text='Stop date']" />
+  <xsl:choose>
+  <xsl:when test="$end_date">
+	<med:endDate>
+		<rdf:Description>
+			<dc:date><xsl:value-of select="$end_date" /></dc:date>
+		</rdf:Description>
+	</med:endDate>
+  </xsl:when>
+  </xsl:choose>
+
 
   <xsl:choose><xsl:when test="$name">
   	    <dcterms:title><xsl:value-of select="$name"/></dcterms:title>
