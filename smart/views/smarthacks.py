@@ -41,7 +41,7 @@ def record_info(request, record):
     return render_template('record', {'record': record})
 @paramloader()
 def record_apps(request, record):
-    return render_template('phas', {'phas': [ra.app for ra in record.recordapp_set.all()]})
+    return render_template('phas', {'phas': [ra.app for ra in record.recordapp_set.order_by("app__name")]})
 
 
 @paramloader()

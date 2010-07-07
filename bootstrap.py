@@ -22,6 +22,17 @@ PHA.objects.create(start_url_template= 'http://localhost:8001/index.html?record_
                    email='medlist@apps.smart.org')
 
 
+PHA.objects.create(start_url_template= 'http://localhost:8001/statin.html?record_id={record_id}',
+                   callback_url = 'http://localhost:8001/auth/after',
+                   has_ui = True,
+                   frameable = True,
+                   description = 'States whether patient is taking a statin.',
+                   consumer_key = 'smart-statin-app',
+                   secret = 'smartapp-secret',
+                   name ='Am-I-on-a-Statin?',
+                   email='am-i-on-a-statin@apps.smart.org')
+
+
 PHA.objects.create(start_url_template= 'http://localhost:8002/smart/start_auth?record_id={record_id}',
                    callback_url = 'http://localhost:8002/smart/after_auth',
                    has_ui = True,
