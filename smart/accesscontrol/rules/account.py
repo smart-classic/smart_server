@@ -11,25 +11,12 @@ def check_my_account_wrapper(account):
 
     return check_my_account
 
-def check_record_account_wrapper(account):
-    def check_record_account(request, view_func, view_args, view_kwargs):
-        try:
-            record = Record.objects.get(id = view_kwargs['record_id'])
-            AccountRecord.objects.get(account = account, record = record)
-        except Record.DoesNotExist, AccountRecordDoesNotExist:
-            return False
-
-        return True
-
-    return check_record_account
-
 def grant(account, permset):
     """
     grant the permissions of an account to this permset
     """
 
     check_my_account = check_my_account_wrapper(account)
-    check_record_account = check_record_account_wrapper(account)
 
     permset.grant(home)
 
@@ -43,17 +30,19 @@ def grant(account, permset):
     permset.grant(account_notifications, [check_my_account])
 
     # see the records
-    permset.grant(record_info, [check_record_account])
+    permset.grant(record_info, [])
 
     # see the apps in records
-    permset.grant(record_apps, [check_record_account])
+    permset.grant(record_apps, [])
 
     # add and remove apps
-    permset.grant(record_add_app, [check_record_account])
-    permset.grant(record_remove_app, [check_record_account])
+    permset.grant(account_add_app, [])
+    permset.grant(account_remove_app, [])
     
     # Claiming a request token is free
     permset.grant(request_token_claim, None)
     permset.grant(request_token_approve, None) # need to verify record ID?
     permset.grant(request_token_info, None) # need to verify exists?
     permset.grant(get_rdf_meds, None)
+    permset.grant(account_recent_records, [check_my_account])
+    permset.grant(record_search, [])

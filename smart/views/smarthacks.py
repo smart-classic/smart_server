@@ -13,6 +13,7 @@ import psycopg2.extras
 from rdflib import ConjunctiveGraph, Namespace, Literal
 from StringIO import StringIO
 import smart.models
+from pha import immediate_tokens_for_browser_auth
 
 
 
@@ -45,27 +46,47 @@ def record_apps(request, record):
 
 
 @paramloader()
-def record_add_app(request, record, app):
+def account_recent_records(request, account):
+    return render_template('record_list', {'records': [r for r in Record.objects.all()]}, type='xml')
+
+@paramloader()
+def account_add_app(request, account, app):
     """
     expecting
     PUT /records/{record_id}/apps/{app_email}
     """
     try:
-        RecordApp.objects.create(record = record, app = app)
+        AccountApp.objects.create(account = account, app = app)
     except:
         # we assume htis is a duplicate, no problem
         pass
 
+#    newaccess = immediate_tokens_for_browser_auth(record, app)
+#    print "***************** GENERATED NEWACCESS", newaccess
+
+
     return DONE
 
 @paramloader()
-def record_remove_app(request, record, app):
+def account_remove_app(request, account, app):
     """
     expecting
     DELETE /records/{record_id}/apps/{app_email}
     """
-    RecordApp.objects.get(record = record, app = app).delete()
+    AccountApp.objects.get(account = account, app = app).delete()
     return DONE
+
+def record_search(request):
+    fname = request.GET.get('fname', None)
+    lname = request.GET.get('lname', None)
+    dob = request.GET.get('dob', None)
+    zip = request.GET.get('zip', None)
+    sex = request.GET.get('sex', None)
+    
+    print "Searching for ", fname, lname, dob ,zip, sex
+    print render_template('record_list', {'records': [r for r in Record.objects.all()]}, type='xml')
+
+    return render_template('record_list', {'records': [r for r in Record.objects.all()]}, type='xml')
 
 #@paramloader()
 #

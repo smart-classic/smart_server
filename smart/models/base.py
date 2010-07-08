@@ -102,14 +102,6 @@ class Principal(Object):
     return self
 
   @property
-  def proxied_by(self):
-    """
-    Principals are sometimes proxied by other principals, e.g. a PHA
-    By default, principals are not proxied.
-    """
-    return None
-
-  @property
   def effective_email(self):
     return self.effective_principal
 

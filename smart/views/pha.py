@@ -11,6 +11,7 @@ from oauth.djangoutils import extract_request
 from oauth import oauth
 
 from smart.accesscontrol import auth
+from smart.accesscontrol.oauth_servers import UserDataStore
 from smart.lib import iso8601
 import base64, hmac, datetime
 
@@ -27,6 +28,23 @@ def pha(request, pha_email):
   except:
     raise Http404
 
+def immediate_tokens_for_browser_auth(record, app):
+    store = UserDataStore()
+    print "Got store", record, app
+    share, create_p = models.Share.objects.get_or_create( record        = record, 
+                                                            with_pha      = app, 
+                                                            with_account  = None, 
+                                                            defaults = {  'offline':False, 
+                                                                          'authorized_at': datetime.datetime.utcnow(), 
+                                                                          'authorized_by': None})
+    print "got share"
+    # generate a new token
+    token, secret = store.generate_token_and_secret()
+    print "Got tokens", token, secret
+    return share.new_access_token(access_token_str, 
+                                  access_token_secret, 
+                                  account=request_token.authorized_by)
+
   
 ##
 ## OAuth Process
@@ -39,12 +57,18 @@ def request_token(request):
     # ask the oauth server to generate a request token given the HTTP request
 
     try:
+      print "(********************) Account ID for req is: ", request.POST.get('smart_account_id', None)
       # we already have the oauth_request in context, so we don't get it again
       request_token = OAUTH_SERVER.generate_request_token(request.oauth_request, 
-                                                          record_id = request.POST.get('indivo_record_id', None),
+                                                          account_email = request.POST.get('smart_account_email', None),
                                                           offline_capable = request.POST.get('offline', False))
+      
       return HttpResponse(request_token.to_string(), mimetype='text/plain')
     except oauth.OAuthError, e:
+      
+      import sys, traceback
+      traceback.print_exc(file=sys.stderr)
+    
       # an exception can be raised if there is a bad signature (or no signature) in the request
       raise PermissionDenied()
 
@@ -62,9 +86,7 @@ def exchange_token(request):
     return HttpResponse(access_token.to_string(), mimetype='text/plain')
 
 def user_authorization(request):
-  """Authorize a request token, binding it to a single record.
-
-  A request token *must* be bound to a record before it is approved.
+  """Authorize a request token, binding it to an account (user) -- e.g. for EHR use, not PCHR use. .
   """
 
   try:
@@ -75,18 +97,8 @@ def user_authorization(request):
   # are we processing the form
   # OR, is this app already authorized
   if request.method == "POST" or (token.record and token.record.has_pha(token.pha)):
-    # get the record from the token
-    record = token.record
 
-    # are we dealing with a record already
-    if not (record and record.has_pha(token.pha)):
-      record = Record.objects.get(id = request.POST['record_id'])
-    
-      # allowed to administer the record? Needed if the record doesn't have the PHA yet
-      if not record.can_admin(request.principal):
-        raise Exception("cannot administer this record")
-
-    request_token = OAUTH_SERVER.authorize_request_token(token.token, record = record, account = request.principal, offline=request.POST.get('offline', False))
+    request_token = OAUTH_SERVER.authorize_request_token(token.token, account = request.principal, offline=request.POST.get('offline', False))
 
     # where to redirect to + parameters
     redirect_url = request_token.oauth_callback or request_token.pha.callback_url
@@ -94,10 +106,6 @@ def user_authorization(request):
 
     # redirect to the request token's callback, or if null the PHA's default callback
     return HttpResponseRedirect(redirect_url)
-  else:
-    records = request.principal.records_administered.all()
-    return render_template('authorize', {'token' : token, 'records': records})
-
 ##
 ## OAuth internal calls
 ##
@@ -151,8 +159,8 @@ def request_token_info(request, request_token):
   share = None
 
   try:
-    if rt.record:
-      share = Share.objects.get(record = rt.record, with_pha = rt.pha)
+    if rt.account:
+      share = Share.objects.get(account = rt.account, with_pha = rt.pha)
   except Share.DoesNotExist:
     pass
 
@@ -162,26 +170,14 @@ def request_token_info(request, request_token):
 def request_token_approve(request, request_token):
   rt = ReqToken.objects.get(token = request_token)
 
-  record_id = request.POST.get('record_id', None)
   offline = request.POST.get('offline', False)
 
   # requesting offline but request token doesn't allow it? Bust!
   if offline and not rt.offline_capable:
     raise PermissionDenied
-
-  record = None
-  if record_id:
-    record = Record.objects.get(id = record_id)
-
-  # if the request token was bound to a record, then it must match
-  if rt.record != None and rt.record != record:
-    raise PermissionDenied()
-
-
-  # the permission check that the current user is authorized to connect to this record
   
   # authorize the request token
-  request_token = OAUTH_SERVER.authorize_request_token(rt.token, record = record,  account = request.principal, offline = offline)
+  request_token = OAUTH_SERVER.authorize_request_token(rt.token, account = request.principal, offline = offline)
 
   # where to redirect to + parameters
   redirect_url = request_token.oauth_callback or request_token.pha.callback_url

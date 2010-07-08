@@ -16,15 +16,16 @@ urlpatterns = patterns(
     (r'^accounts/$', account_create),
     (r'^accounts/search$', account_search),
     (r'^accounts/(?P<account_email>[^/]+)$', account_info),
+    (r'^accounts/(?P<account_email>[^/]+)/recent_records/$', account_recent_records),
     (r'^accounts/(?P<account_email>[^/]+)/', include('smart.urls.account')),
 
     # Record
     (r'^record_by_token/$', record_by_token),
+    (r'^records/search/$', record_search),
     (r'^records/(?P<record_id>[^/]+)$', record_info),
-    (r'^records/(?P<record_id>[^/]+)/apps/$', record_apps),
-    (r'^records/(?P<record_id>[^/]+)/apps/(?P<app_email>[^/]+)$', MethodDispatcher({
-                'PUT': record_add_app,
-                'DELETE': record_remove_app})),
+    (r'^accounts/(?P<account_id>[^/]+)/apps/(?P<app_email>[^/]+)$', MethodDispatcher({
+                'PUT': account_add_app,
+                'DELETE': account_remove_app})),
     
     # PHAs
     (r'^apps/$', all_phas),
@@ -32,7 +33,6 @@ urlpatterns = patterns(
     (r'^static/(?P<path>.*)$', 'django.views.static.serve', {'document_root': 'static'}),
 
     # SMArt API
-#    (r'^meds(?P<medcall>[^/]*)/records/(?P<record_id>[^/]+).*$', meds),
     (r'^rdf_store/$', MethodDispatcher({
                                        'GET': get_rdf_store,
                                        'PUT': put_rdf_store,

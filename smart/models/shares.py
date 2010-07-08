@@ -15,16 +15,11 @@ from base import Object, Principal, APP_LABEL
 # SZ: We are no longer using for people
 class Share(Object):
   """
-  Sharing a record with a principal
+  Sharing an account with a PHA
   """
 
-  # the record that's being shared
-  record = models.ForeignKey('Record', related_name = 'shares')
-  
-  # we could be smart here and have just a reference to a Principal
-  # however, this would make querying for all PHAs and individuals difficult.
-  # so there doesn't seem to be a need for this "smarts"
-  with_account = models.ForeignKey('Account', related_name='shares_to', null=True)
+  # the account that's being shared
+  account = models.ForeignKey('Account', related_name = 'shares')
   with_pha = models.ForeignKey('PHA', related_name='shares_to', null=True)
 
   # authorized
@@ -40,11 +35,10 @@ class Share(Object):
 
   class Meta:
     app_label = APP_LABEL
-    unique_together = (('record', 'with_account'),
-                       ('record', 'with_pha'),)
+    unique_together = (('account', 'with_pha'),)
     
 
-  def new_access_token(self, token_str, token_secret, account=None):
+  def new_access_token(self, token_str, token_secret):
     """
     create a new access token based on this share
 
@@ -52,7 +46,7 @@ class Share(Object):
     if not, it's a long-term token
 
     """
-    return AccessToken.objects.create(token=token_str, token_secret=token_secret, share=self, account=account)
+    return AccessToken.objects.create(token=token_str, token_secret=token_secret, share=self)
 
 class Token(object):
   """
@@ -61,8 +55,6 @@ class Token(object):
 
   def __str__(self):
     vars = {'oauth_token' : self.token, 'oauth_token_secret' : self.token_secret}
-    if self.share:
-      vars['xoauth_indivo_record_id'] = self.share.record.id
     return urllib.urlencode(vars)
 
   @property
@@ -80,11 +72,6 @@ class AccessToken(Principal, Token):
   # derived from a share
   share = models.ForeignKey('Share')
 
-  # who is this token on behalf of? Might be nulls here.
-  # when this is carenet-limited, the account scopes permissions
-  # appropriately. 
-  account = models.ForeignKey('Account', null = True)
-
   # make sure email is set 
   def save(self, *args, **kwargs):
     self.email = "%s@accesstokens.smart-platforms.org" % self.token
@@ -92,18 +79,8 @@ class AccessToken(Principal, Token):
   
   @property
   def effective_principal(self):
-    # is it a session for the account?
-    if self.account:
-      return self.account
-    else:
       return self.share.with_pha
 
-  @property
-  def proxied_by(self):
-    if self.account:
-      return self.share.with_pha
-    else:
-      return None
 
 
 class ReqToken(Principal, Token):
@@ -114,14 +91,14 @@ class ReqToken(Principal, Token):
 
   pha = models.ForeignKey('PHA')
 
-  # record or carenet
-  record = models.ForeignKey('Record', null=True)
+  # account or carenet
+  account = models.ForeignKey('Account', null=True)
 
   # when authorized
   authorized_at = models.DateTimeField(null=True)
 
   # authorized by can be used to bind the request token first, before the authorized_at is set.
-  authorized_by = models.ForeignKey('Account', null = True)
+  authorized_by = models.ForeignKey('Account', null = True, related_name="authorized_reqtokens")
 
   # the share that this results in
   share = models.ForeignKey('Share', null=True)
