@@ -71,6 +71,7 @@ class AccessToken(Principal, Token):
 
   # derived from a share
   share = models.ForeignKey('Share')
+  smart_connect_p = models.BooleanField(default=False)
 
   # make sure email is set 
   def save(self, *args, **kwargs):

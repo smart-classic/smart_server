@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+
+<rdf:RDF
+xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+xmlns:sp="http://smartplatforms.org/"
+xmlns:foaf="http://xmlns.com/foaf/0.1/"
+xmlns:dc="http://purl.org/dc/elements/1.1/"
+xmlns:dcterms="http://purl.org/dc/terms/"
+xmlns:bio="http://purl.org/vocab/bio/0.1/"
+>
+
+<rdf:Description rdf:about="http://smartplatforms.org/records/446871a0-224b-4b66-bf72-d5f2b3d73894">
+  <rdf:type rdf:resource="http://xmlns.com/foaf/0.1/Person"/>
+  <foaf:familyName>Smith</foaf:familyName>
+  <foaf:givenName>John</foaf:givenName>
+  <foaf:title>Mr.</foaf:title>
+  <foaf:gender>male</foaf:gender>
+  <sp:zipcode>02149</sp:zipcode>
+  <bio:Birth> <rdf:Description><dc:date>1970-10-01</dc:date></rdf:Description></bio:Birth>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://smartplatforms.org/records/a0dd74b6-542a-46e1-8b79-abf579f7a04">
+  <rdf:type rdf:resource="http://xmlns.com/foaf/0.1/Person"/>
+  <foaf:familyName>Doe</foaf:familyName>
+  <foaf:givenName>John</foaf:givenName>
+  <foaf:title>Mr.</foaf:title>
+  <foaf:gender>male</foaf:gender>
+  <sp:zipcode>02249</sp:zipcode>
+  <bio:Birth> <rdf:Description><dc:date>1950-03-20</dc:date></rdf:Description></bio:Birth>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://smartplatforms.org/records/76e3471c-dfc7-447d-b3a2-9a2b0d4d27af">
+  <rdf:type rdf:resource="http://xmlns.com/foaf/0.1/Person"/>
+  <foaf:familyName>Doe</foaf:familyName>
+  <foaf:givenName>Jane</foaf:givenName>
+  <foaf:title>Miss</foaf:title>
+  <foaf:gender>female</foaf:gender>
+  <sp:zipcode>06039</sp:zipcode>
+  <bio:Birth> <rdf:Description><dc:date>1996-04-30</dc:date></rdf:Description></bio:Birth>
+</rdf:Description>
+<rdf:Description rdf:about="http://smartplatforms.org/records/576f0023-449c-4d19-bc01-657a6d7874c2">
+  <rdf:type rdf:resource="http://xmlns.com/foaf/0.1/Person"/>
+  <foaf:familyName>Doe</foaf:familyName>
+  <foaf:givenName>Jane</foaf:givenName>
+  <foaf:title>Mrs</foaf:title>
+  <foaf:gender>female</foaf:gender>
+  <sp:zipcode>90201</sp:zipcode>
+  <bio:Birth> <rdf:Description><dc:date>1980-08-12</dc:date></rdf:Description></bio:Birth>
+</rdf:Description>
+
+</rdf:RDF>
+
+

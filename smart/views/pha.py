@@ -28,23 +28,36 @@ def pha(request, pha_email):
   except:
     raise Http404
 
-def immediate_tokens_for_browser_auth(record, app):
+def immediate_tokens_for_browser_auth(account, app):
     store = UserDataStore()
-    print "Got store", record, app
-    share, create_p = models.Share.objects.get_or_create( record        = record, 
+
+    
+    share, create_p = models.Share.objects.get_or_create( account        = account, 
                                                             with_pha      = app, 
-                                                            with_account  = None, 
                                                             defaults = {  'offline':False, 
                                                                           'authorized_at': datetime.datetime.utcnow(), 
                                                                           'authorized_by': None})
-    print "got share"
-    # generate a new token
-    token, secret = store.generate_token_and_secret()
-    print "Got tokens", token, secret
-    return share.new_access_token(access_token_str, 
-                                  access_token_secret, 
-                                  account=request_token.authorized_by)
 
+    # There should only be one SMArt-Connect token per share existing at a time.  
+    # note: this is oversimplified  -- consider multiple SMArt windows!    
+    
+    redundant_shares = AccessToken.objects.filter(share=share)
+
+    for t in redundant_shares:
+        if (t.smart_connect_p):
+            t.delete()
+        else:
+            print "Not a smartconnect token", t
+    
+    token, secret = oauth.generate_token_and_secret()
+    ret =  share.new_access_token(token, 
+                                  secret)  
+    ret.smart_connect_p = True
+    ret.save()
+    print "\n\n\n\n\n\n\n********** Share", share, len(redundant_shares), ret
+
+    
+    return ret
   
 ##
 ## OAuth Process

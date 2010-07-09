@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<AccessToken>
+  <App id="{{app_email}}" />
+  <Account id="{{account_email}}" />
+  <Token>{{token.token}}</Secret>
+  <Secret>{{token.secret}}</Secret>
+</AccessToken>
+

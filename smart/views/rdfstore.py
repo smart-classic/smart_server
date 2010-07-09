@@ -15,8 +15,6 @@ import RDF
 from StringIO import StringIO
 import smart.models
 
-
-
 SPARQL = 'SPARQL'
 
 def parse_rdf(string, model,context="none"):
@@ -162,22 +160,26 @@ def delete_rdf_store(request):
     c = PHAStoreConnector(request)
     return delete_rdf(request, c)
 
-def post_rdf_meds (request):
+@paramloader()
+def post_rdf_meds (request, record):
     rdf = utils.meds_as_rdf(request.raw_post_data) 
-    c = MedStoreConnector(request)
+    c = MedStoreConnector(request, record)
     c.set(rdf)
     return HttpResponse(rdf, mimetype="application/rdf+xml")
 
-def get_rdf_meds (request, record_id=None):    
-    c = MedStoreConnector(request, record_id)
+@paramloader()
+def get_rdf_meds (request, record):    
+    c = MedStoreConnector(request, record)
     return get_rdf(request, c)
 
-def put_rdf_meds(request):
-    c = MedStoreConnector(request)
+@paramloader()
+def put_rdf_meds(request, record):
+    c = MedStoreConnector(request, record)
     return put_rdf(request, c)
 
-def delete_rdf_meds(request):
-    c = MedStoreConnector(request)
+@paramloader()
+def delete_rdf_meds(request, record):
+    c = MedStoreConnector(request, record)
     return delete_rdf(request, c)
 
 class PHAStoreConnector():
@@ -198,16 +200,9 @@ class PHAStoreConnector():
         self.object.save()
         
 class MedStoreConnector():
-    def __init__(self, request, record_id=None):
-        at = request.principal
-        
-        if (record_id == None):       
-            if not (isinstance(at, smart.models.AccessToken)):
-                raise Exception("Med Store request must be signed with an access token.")    
-            self.record = at.share.record
-        else:
-            self.record = Record.objects.get(id=record_id)
-
+    def __init__(self, request, record):
+        self.record = record 
+        #todo: replace with get_or_create
         try:
             self.object = smart.models.Medication.objects.get(record=self.record)
         except:

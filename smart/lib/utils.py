@@ -200,3 +200,6 @@ def rxn_related(rxcui_id, graph):
        graph.add((rxcui[rxcui_id], rxrel[row['rela']], Literal(row['str']) ))
 
    return
+
+def strip_ns(target, ns):
+    return str(target.uri).split(ns)[1]

@@ -23,9 +23,9 @@ urlpatterns = patterns(
     (r'^record_by_token/$', record_by_token),
     (r'^records/search/$', record_search),
     (r'^records/(?P<record_id>[^/]+)$', record_info),
-    (r'^accounts/(?P<account_id>[^/]+)/apps/(?P<app_email>[^/]+)$', MethodDispatcher({
-                'PUT': account_add_app,
-                'DELETE': account_remove_app})),
+    (r'^accounts/(?P<account_id>[^/]+)/records/(?P<record_id>[^/]+)/apps/(?P<app_email>[^/]+)$', MethodDispatcher({
+                'PUT': add_app,
+                'DELETE': remove_app})),
     
     # PHAs
     (r'^apps/$', all_phas),
@@ -39,10 +39,8 @@ urlpatterns = patterns(
                                        'POST': post_rdf_store,
                                        'DELETE': delete_rdf_store})),
 
-    (r'^med_store/$', MethodDispatcher({
+    (r'^med_store/records/(?P<record_id>[^/]*)/$', MethodDispatcher({
                                        'GET': get_rdf_meds,
                                        'PUT': put_rdf_meds,
                                        'POST': post_rdf_meds,
-                                       'DELETE': delete_rdf_meds})),
-
-    (r'^med_store/records/(?P<record_id>[^/]*)/$', get_rdf_meds))
+                                       'DELETE': delete_rdf_meds})))

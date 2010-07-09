@@ -14,7 +14,7 @@ from rdflib import ConjunctiveGraph, Namespace, Literal
 from StringIO import StringIO
 import smart.models
 from pha import immediate_tokens_for_browser_auth
-
+import RDF
 
 
 SAMPLE_NOTIFICATION = {
@@ -50,25 +50,27 @@ def account_recent_records(request, account):
     return render_template('record_list', {'records': [r for r in Record.objects.all()]}, type='xml')
 
 @paramloader()
-def account_add_app(request, account, app):
+def add_app(request, record, account, app):
     """
     expecting
-    PUT /records/{record_id}/apps/{app_email}
+    PUT /accounts/{account_id}/apps/{app_email}
     """
     try:
         AccountApp.objects.create(account = account, app = app)
     except:
-        # we assume htis is a duplicate, no problem
         pass
 
-#    newaccess = immediate_tokens_for_browser_auth(record, app)
-#    print "***************** GENERATED NEWACCESS", newaccess
+    t = immediate_tokens_for_browser_auth(account, app)
 
+    return render_template('token', 
+                             {'token':          t, 
+                              'app_email':      app.email, 
+                              'account_email':  account.email}, 
+                            type='xml')
 
-    return DONE
 
 @paramloader()
-def account_remove_app(request, account, app):
+def remove_app(request, record, account, app):
     """
     expecting
     DELETE /records/{record_id}/apps/{app_email}
@@ -77,16 +79,30 @@ def account_remove_app(request, account, app):
     return DONE
 
 def record_search(request):
-    fname = request.GET.get('fname', None)
-    lname = request.GET.get('lname', None)
-    dob = request.GET.get('dob', None)
-    zip = request.GET.get('zip', None)
-    sex = request.GET.get('sex', None)
     
-    print "Searching for ", fname, lname, dob ,zip, sex
-    print render_template('record_list', {'records': [r for r in Record.objects.all()]}, type='xml')
+    db = settings.DATABASE_REDLAND                                                                                                                                                              
+    u = settings.DATABASE_USER                                                                                           
+    p =settings.DATABASE_PASSWORD
+    rs = RDF.Storage(storage_name="postgresql", name=db,
+                    options_string="new='no',database='%s',host='localhost',user='%s',password='%s',contexts='yes'"%
+                    (db, u, p))      
+    
+    model = RDF.Model(storage=rs)
 
-    return render_template('record_list', {'records': [r for r in Record.objects.all()]}, type='xml')
+    # todo: sanitize these before passing them in to librdf -JM
+
+    sparql = request.GET.get('sparql', None)     
+    print "Searching for ", sparql
+
+
+    record_list = []    
+    for r in RDF.SPARQLQuery(sparql.encode()).execute(model):
+        print "matching", r
+        record_id = utils.strip_ns(r['person'], "http://smartplatforms.org/records/")        
+        print "matching", record_id
+        record_list.append(Record.objects.get(id=record_id))
+    
+    return render_template('record_list', {'records': record_list}, type='xml')
 
 #@paramloader()
 #

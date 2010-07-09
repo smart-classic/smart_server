@@ -36,8 +36,8 @@ def grant(account, permset):
     permset.grant(record_apps, [])
 
     # add and remove apps
-    permset.grant(account_add_app, [])
-    permset.grant(account_remove_app, [])
+    permset.grant(add_app, [])
+    permset.grant(remove_app, [])
     
     # Claiming a request token is free
     permset.grant(request_token_claim, None)
