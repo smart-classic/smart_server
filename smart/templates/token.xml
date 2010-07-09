@@ -2,7 +2,7 @@
 <AccessToken>
   <App id="{{app_email}}" />
   <Account id="{{account_email}}" />
-  <Token>{{token.token}}</Secret>
+  <Token>{{token.token}}</Token>
   <Secret>{{token.secret}}</Secret>
 </AccessToken>
 
