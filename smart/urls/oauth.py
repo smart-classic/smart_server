@@ -3,11 +3,13 @@ from django.conf.urls.defaults import *
 #from oauth.djangoutils import request_token, exchange_token, PARAMS
 #PARAMS['OAUTH_SERVER'] = OAUTH_SERVER
 
-from smart.views import user_authorization, request_token, exchange_token, session_create, request_token_claim, request_token_info, request_token_approve, get_long_lived_token
+from smart.views import request_token, exchange_token, session_create, request_token_claim, request_token_info, request_token_approve, get_long_lived_token
 
 urlpatterns = patterns('',
   url(r'^request_token$',    request_token,      name='oauth_request_token'),
-  url(r'^authorize$',        user_authorization, name='oauth_user_authorization'),
+
+# Is this ever used? -JM  url(r'^authorize$',        user_authorization, name='oauth_user_authorization'),
+
   url(r'^access_token$',     exchange_token,     name='oauth_access_token'),
                        
   ## INTERNAL oAuth operations that are not part of the standard public API

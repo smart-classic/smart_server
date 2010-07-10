@@ -53,7 +53,7 @@ class UserDataStore(oauth.OAuthStore):
                            request_token_secret, 
                            verifier, 
                            oauth_callback, 
-                           account_email=None,
+                           record_id=None,
                            offline_capable=False):
     """
     take a RequestToken and store it.
@@ -63,11 +63,11 @@ class UserDataStore(oauth.OAuthStore):
 
     # look for the record that this might be mapped to
     # IMPORTANT: if the user who authorizes this token is not authorized to admin the record, it will be a no-go
-    account = None
-    if account_email:
+    record = None
+    if record_id:
       try:
-        account = models.Account.objects.get(email = account_email) 
-      except models.Account.DoesNotExist:
+        record = models.Record.objects.get(id = record_id) 
+      except models.Record.DoesNotExist:
         pass
 
     # (BA) added record to the req token now that it can store it
@@ -77,7 +77,7 @@ class UserDataStore(oauth.OAuthStore):
                                           token_secret    = request_token_secret, 
                                           verifier        = verifier, 
                                           oauth_callback  = oauth_callback, 
-                                          account          = account)
+                                          record          = record)
 #                                          offline = offline_capable)
 
   def lookup_request_token(self, consumer, request_token_str):
@@ -96,7 +96,7 @@ class UserDataStore(oauth.OAuthStore):
     except models.ReqToken.DoesNotExist:
       return None
 
-  def authorize_request_token(self, request_token, account=None, offline=False):
+  def authorize_request_token(self, request_token,record=None, account=None, offline=False):
     """
     Mark a request token as authorized by the given user,
     with the given additional parameters.
@@ -106,20 +106,21 @@ class UserDataStore(oauth.OAuthStore):
 
     The account is whatever data structure was received by the OAuthServer.
     """
-
-    if account == None:
-      raise Exception("account must be set to authorize a PHA.")
+    
+    if record == None:
+      raise Exception("need a record to authorize a share")
 
     request_token.authorized_at = datetime.datetime.utcnow()
     request_token.authorized_by = account
 
     # store the share in the request token
     # added use of defaults to reduce code size if creating an object
-    share, create_p = models.Share.objects.get_or_create( account        = account, 
+    share, create_p = models.Share.objects.get_or_create( record        = record, 
                                                             with_pha      = request_token.pha,
+                                                            authorized_by = account,
                                                             defaults = {  'offline':offline, 
                                                                           'authorized_at': request_token.authorized_at, 
-                                                                          'authorized_by': request_token.authorized_by})
+                                                                       })
       
     request_token.share = share
     request_token.save()

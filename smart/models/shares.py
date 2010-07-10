@@ -15,11 +15,11 @@ from base import Object, Principal, APP_LABEL
 # SZ: We are no longer using for people
 class Share(Object):
   """
-  Sharing an account with a PHA
+  Sharing a record with a PHA
   """
 
-  # the account that's being shared
-  account = models.ForeignKey('Account', related_name = 'shares')
+  # the record that's being shared
+  record = models.ForeignKey('Record', related_name = 'shares')
   with_pha = models.ForeignKey('PHA', related_name='shares_to', null=True)
 
   # authorized
@@ -35,16 +35,12 @@ class Share(Object):
 
   class Meta:
     app_label = APP_LABEL
-    unique_together = (('account', 'with_pha'),)
+    unique_together = (('record', 'with_pha', 'authorized_by'),)
     
 
   def new_access_token(self, token_str, token_secret):
     """
     create a new access token based on this share
-
-    if an account is specified, it's a short-term session access token.
-    if not, it's a long-term token
-
     """
     return AccessToken.objects.create(token=token_str, token_secret=token_secret, share=self)
 
@@ -82,8 +78,6 @@ class AccessToken(Principal, Token):
   def effective_principal(self):
       return self.share.with_pha
 
-
-
 class ReqToken(Principal, Token):
   token = models.CharField(max_length=40)
   token_secret = models.CharField(max_length=60)
@@ -92,8 +86,7 @@ class ReqToken(Principal, Token):
 
   pha = models.ForeignKey('PHA')
 
-  # account or carenet
-  account = models.ForeignKey('Account', null=True)
+  record = models.ForeignKey('Record', null=True)
 
   # when authorized
   authorized_at = models.DateTimeField(null=True)

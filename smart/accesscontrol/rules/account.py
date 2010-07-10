@@ -11,6 +11,7 @@ def check_my_account_wrapper(account):
 
     return check_my_account
 
+
 def grant(account, permset):
     """
     grant the permissions of an account to this permset
@@ -33,7 +34,6 @@ def grant(account, permset):
     permset.grant(record_info, [])
 
     # see the apps in records
-    permset.grant(record_apps, [])
 
     # add and remove apps
     permset.grant(add_app, [])

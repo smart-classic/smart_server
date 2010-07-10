@@ -11,7 +11,7 @@ MachineApp.objects.create(name='chrome',
                           app_type='chrome',
                           email='chrome@apps.smart-project.org')
 
-PHA.objects.create(start_url_template= 'http://localhost:8001/index.html?record_id={record_id}&account_id={account_id}',
+PHA.objects.create(start_url_template= 'http://localhost:8001/index.html?record_id={record_id}',
                    callback_url = 'http://localhost:8001/auth/after',
                    has_ui = True,
                    frameable = True,
@@ -22,7 +22,7 @@ PHA.objects.create(start_url_template= 'http://localhost:8001/index.html?record_
                    email='medlist@apps.smart.org')
 
 
-PHA.objects.create(start_url_template= 'http://localhost:8001/statin.html?record_id={record_id}&account_id={account_id}',
+PHA.objects.create(start_url_template= 'http://localhost:8001/statin.html?record_id={record_id}',
                    callback_url = 'http://localhost:8001/auth/after',
                    has_ui = True,
                    frameable = True,
@@ -33,7 +33,7 @@ PHA.objects.create(start_url_template= 'http://localhost:8001/statin.html?record
                    email='am-i-on-a-statin@apps.smart.org')
 
 
-PHA.objects.create(start_url_template= 'http://localhost:8002/smart/start_auth?record_id={record_id}&account_id={account_id}',
+PHA.objects.create(start_url_template= 'http://localhost:8002/smart/start_auth?record_id={record_id}',
                    callback_url = 'http://localhost:8002/smart/after_auth',
                    has_ui = True,
                    frameable = True,
@@ -51,9 +51,6 @@ a.set_username_and_password(username='benadida', password='test')
 r1_john = Record.objects.create(full_name = 'John Doe')
 r1_jane = Record.objects.create(full_name = 'Jane Doe')
 
-# map these to the account I have
-#AccountRecord.objects.create(record = r1_john, account = a)
-#AccountRecord.objects.create(record = r1_jane, account = a)
 
 a2 = Account.objects.create(email = 'joshmandel@smart.org', full_name='Josh Mandel', contact_email = 'jmandel@gmail.com')
 a2.set_username_and_password(username='joshmandel', password='test')
@@ -61,10 +58,6 @@ a2.set_username_and_password(username='joshmandel', password='test')
 # create a couple of records
 r2_john = Record.objects.create(full_name = 'John Smith')
 r2_jane = Record.objects.create(full_name = 'Jane Smith')
-
-# map these to the account I have
-#AccountRecord.objects.create(record = r2_john, account = a2)
-#AccountRecord.objects.create(record = r2_jane, account = a2)
 
 import RDF
 

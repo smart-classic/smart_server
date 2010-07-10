@@ -6,6 +6,7 @@ Ben Adida
 
 from base import *
 from smart.lib import utils
+from django.db import models, transaction, IntegrityError
 from django.http import HttpResponseBadRequest
 from django.conf import settings
 import psycopg2
@@ -55,12 +56,14 @@ def add_app(request, record, account, app):
     expecting
     PUT /accounts/{account_id}/apps/{app_email}
     """
+    sid = transaction.savepoint()
     try:
         AccountApp.objects.create(account = account, app = app)
-    except:
-        pass
+    except Exception,e:
+        if isinstance(e, IntegrityError):
+            transaction.savepoint_rollback(sid)
 
-    t = immediate_tokens_for_browser_auth(account, app)
+    t = immediate_tokens_for_browser_auth(record, account, app)
 
     return render_template('token', 
                              {'token':          t, 
@@ -70,12 +73,20 @@ def add_app(request, record, account, app):
 
 
 @paramloader()
-def remove_app(request, record, account, app):
+def remove_app(request, account, app):
     """
     expecting
     DELETE /records/{record_id}/apps/{app_email}
     """
     AccountApp.objects.get(account = account, app = app).delete()
+
+    #TODO:  This would be a good hook for removing shares and tokens for this app/account.
+    # pseudocode like;
+    # foreach share(account, app):
+    #    foreach token(share):
+    #         delete token
+    #    delete share
+
     return DONE
 
 def record_search(request):

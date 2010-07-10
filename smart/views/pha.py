@@ -28,35 +28,26 @@ def pha(request, pha_email):
   except:
     raise Http404
 
-def immediate_tokens_for_browser_auth(account, app):
-    store = UserDataStore()
+def immediate_tokens_for_browser_auth(record, account, app):
+    try:
+      AccountApp.objects.get(account=account, app=app)
+    except AccountApp.DoesNotExist:
+      raise Exception("Can't launch an app %s that hasn't been added to this account %s" % (app, account))
 
-    
-    share, create_p = models.Share.objects.get_or_create( account        = account, 
-                                                            with_pha      = app, 
-                                                            defaults = {  'offline':False, 
+    store = UserDataStore()    
+    share, create_p = models.Share.objects.get_or_create( record        = record, 
+                                                          with_pha      = app, 
+                                                          authorized_by = account,
+                                                          defaults = {  'offline':False, 
                                                                           'authorized_at': datetime.datetime.utcnow(), 
-                                                                          'authorized_by': None})
+                                                                     })
 
-    # There should only be one SMArt-Connect token per share existing at a time.  
-    # note: this is oversimplified  -- consider multiple SMArt windows!    
-    
-    redundant_shares = AccessToken.objects.filter(share=share)
-
-    for t in redundant_shares:
-        if (t.smart_connect_p):
-            t.delete()
-        else:
-            print "Not a smartconnect token", t
-    
     token, secret = oauth.generate_token_and_secret()
     ret =  share.new_access_token(token, 
                                   secret)  
+
     ret.smart_connect_p = True
     ret.save()
-    print "\n\n\n\n\n\n\n********** Share", share, len(redundant_shares), ret
-
-    
     return ret
   
 ##
@@ -70,10 +61,9 @@ def request_token(request):
     # ask the oauth server to generate a request token given the HTTP request
 
     try:
-      print "(********************) Account ID for req is: ", request.POST.get('smart_account_id', None)
       # we already have the oauth_request in context, so we don't get it again
       request_token = OAUTH_SERVER.generate_request_token(request.oauth_request, 
-                                                          account_email = request.POST.get('smart_account_email', None),
+                                                          record_id = request.POST.get('record_id', None),
                                                           offline_capable = request.POST.get('offline', False))
       
       return HttpResponse(request_token.to_string(), mimetype='text/plain')
@@ -98,27 +88,7 @@ def exchange_token(request):
 
     return HttpResponse(access_token.to_string(), mimetype='text/plain')
 
-def user_authorization(request):
-  """Authorize a request token, binding it to an account (user) -- e.g. for EHR use, not PCHR use. .
-  """
 
-  try:
-    token = ReqToken.objects.get(token = request.REQUEST['oauth_token'])
-  except ReqToken.DoesNotExist:
-    raise Http404
-
-  # are we processing the form
-  # OR, is this app already authorized
-  if request.method == "POST" or (token.record and token.record.has_pha(token.pha)):
-
-    request_token = OAUTH_SERVER.authorize_request_token(token.token, account = request.principal, offline=request.POST.get('offline', False))
-
-    # where to redirect to + parameters
-    redirect_url = request_token.oauth_callback or request_token.pha.callback_url
-    redirect_url += "?oauth_token=%s&oauth_verifier=%s" % (request_token.token, request_token.verifier)
-
-    # redirect to the request token's callback, or if null the PHA's default callback
-    return HttpResponseRedirect(redirect_url)
 ##
 ## OAuth internal calls
 ##
@@ -172,8 +142,8 @@ def request_token_info(request, request_token):
   share = None
 
   try:
-    if rt.account:
-      share = Share.objects.get(account = rt.account, with_pha = rt.pha)
+    if rt.record:
+      share = Share.objects.get(record= rt.record, with_pha = rt.pha,authorized_by=request.principal)
   except Share.DoesNotExist:
     pass
 
@@ -183,14 +153,26 @@ def request_token_info(request, request_token):
 def request_token_approve(request, request_token):
   rt = ReqToken.objects.get(token = request_token)
 
+  record_id=request.POST.get('record_id', None)
   offline = request.POST.get('offline', False)
 
   # requesting offline but request token doesn't allow it? Bust!
   if offline and not rt.offline_capable:
     raise PermissionDenied
-  
+
+  record = rt.record
+
+  if (record_id and rt.record and record_id != rt.record.record_id):
+    raise PermissionDenied("Request token pre-bound record %s != post variable %s"%(record.record_id, record_id))
+
+  if (not (rt.record or record_id)):
+    raise Exception("Must have a record bound to token or a record_id passed in to authorize.")
+
+  if not record: 
+    record = Record.objects.get(id=record_id)
+
   # authorize the request token
-  request_token = OAUTH_SERVER.authorize_request_token(rt.token, account = request.principal, offline = offline)
+  request_token = OAUTH_SERVER.authorize_request_token(rt.token, record=record, account = request.principal, offline = offline)
 
   # where to redirect to + parameters
   redirect_url = request_token.oauth_callback or request_token.pha.callback_url
