@@ -1,9 +1,8 @@
 
 from smart.models import *
 from django.conf import settings
-##
-## Set up some basic stuff
-##
+
+# Some basic apps and a couple of accounts to get things going.
 
 MachineApp.objects.create(name='chrome',
                           consumer_key='chrome',

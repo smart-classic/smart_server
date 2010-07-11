@@ -23,12 +23,16 @@ urlpatterns = patterns(
     (r'^record_by_token/$', record_by_token),
     (r'^records/search/$', record_search),
     (r'^records/(?P<record_id>[^/]+)$', record_info),
-    (r'^accounts/(?P<account_id>[^/]+)/records/(?P<record_id>[^/]+)/apps/(?P<app_email>[^/]+)$', MethodDispatcher({
+    (r'^accounts/(?P<account_id>[^/]+)/apps/(?P<app_email>[^/]+)$', MethodDispatcher({
                 'PUT': add_app,
                 'DELETE': remove_app})),
+                
+    (r'^accounts/(?P<account_id>[^/]+)/apps/(?P<app_email>[^/]+)/records/(?P<record_id>[^/]+)/launch$', launch_app),
     
     # PHAs
     (r'^apps/$', all_phas),
+    (r'^apps/accounts/(?P<account_id>[^/]+)/$', apps_for_account),
+    
     # static
     (r'^static/(?P<path>.*)$', 'django.views.static.serve', {'document_root': 'static'}),
 

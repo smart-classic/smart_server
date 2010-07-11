@@ -37,6 +37,7 @@ def grant(account, permset):
 
     # add and remove apps
     permset.grant(add_app, [])
+    permset.grant(launch_app, [])
     permset.grant(remove_app, [])
     
     # Claiming a request token is free
@@ -46,3 +47,4 @@ def grant(account, permset):
     permset.grant(get_rdf_meds, None)
     permset.grant(account_recent_records, [check_my_account])
     permset.grant(record_search, [])
+    permset.grant(apps_for_account, [])

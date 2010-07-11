@@ -42,16 +42,24 @@ def record_by_token(request):
 def record_info(request, record):
     return render_template('record', {'record': record})
 @paramloader()
-def record_apps(request, record):
-    return render_template('phas', {'phas': [ra.app for ra in record.recordapp_set.order_by("app__name")]})
-
+def apps_for_account(request, account):
+    return render_template('phas', {'phas': [aa.app for aa in account.accountapp_set.order_by("app__name")]})
 
 @paramloader()
 def account_recent_records(request, account):
     return render_template('record_list', {'records': [r for r in Record.objects.all()]}, type='xml')
 
 @paramloader()
-def add_app(request, record, account, app):
+def add_app(request, account, app):
+    """
+    expecting
+    PUT /accounts/{account_id}/apps/{app_email}
+    """
+    AccountApp.objects.create(account = account, app = app)
+    return DONE
+
+@paramloader()
+def launch_app(request, record, account, app):
     """
     expecting
     PUT /accounts/{account_id}/apps/{app_email}
@@ -70,6 +78,7 @@ def add_app(request, record, account, app):
                               'app_email':      app.email, 
                               'account_email':  account.email}, 
                             type='xml')
+
 
 
 @paramloader()

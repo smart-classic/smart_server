@@ -78,7 +78,7 @@ class UserDataStore(oauth.OAuthStore):
                                           verifier        = verifier, 
                                           oauth_callback  = oauth_callback, 
                                           record          = record)
-#                                          offline = offline_capable)
+#                                         offline         = offline_capable)
 
   def lookup_request_token(self, consumer, request_token_str):
     """
@@ -150,10 +150,11 @@ class UserDataStore(oauth.OAuthStore):
     """
 
     share = request_token.share
-
+    
     # create an access token for this share
-    return share.new_access_token(access_token_str, 
+    t =  share.new_access_token(access_token_str, 
                                   access_token_secret)
+    return t
 
   def lookup_access_token(self, consumer, access_token_str):
     """

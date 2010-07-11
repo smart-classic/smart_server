@@ -20,6 +20,7 @@ def all_phas(request):
 
   phas = PHA.objects.all()
   return render_template('phas', {'phas': phas}, type="xml")
+
   
 def pha(request, pha_email):
   try:
@@ -62,6 +63,8 @@ def request_token(request):
 
     try:
       # we already have the oauth_request in context, so we don't get it again
+
+      app = request.principal
       request_token = OAUTH_SERVER.generate_request_token(request.oauth_request, 
                                                           record_id = request.POST.get('record_id', None),
                                                           offline_capable = request.POST.get('offline', False))
