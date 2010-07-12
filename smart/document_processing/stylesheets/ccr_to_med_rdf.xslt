@@ -30,16 +30,29 @@ version="1.0">
   <xsl:variable name="pharmacy" select="//ccr:Actor/ccr:IDs/ccr:ID[../ccr:Type/ccr:Text='NCPDP'][../..//ccr:LinkID=$med_id] " />
   <xsl:variable name="clinician" select="//ccr:Actor/ccr:IDs/ccr:ID[../ccr:Type/ccr:Text='DEA'][../..//ccr:LinkID=$med_id] " />
   <xsl:variable name="quantity" select=".//ccr:Fulfillment/ccr:Quantity/ccr:Value"/>
-  <xsl:variable name="quantityu" select=".//ccr:Fulfillment/ccr:Quantity/ccr:Units"/>
+  <xsl:variable name="quantityu" select="normalize-space(.//ccr:Fulfillment/ccr:Quantity/ccr:Units)"/>
   <xsl:variable name="fulfillments" select="count(.//Fulfillment)" />
   <sp:fulfillment>  
     <rdf:Description>
+      <xsl:choose><xsl:when test="$dispense_date">
       <dc:date><xsl:value-of select='$dispense_date'/></dc:date>
+      </xsl:when>
+      </xsl:choose>
+      <xsl:choose><xsl:when test="$pbm">
       <sp:PBM><xsl:value-of select='$pbm'/></sp:PBM>
+      </xsl:when></xsl:choose>
+      <xsl:choose><xsl:when test="$pharmacy">
       <sp:pharmacy><xsl:value-of select='$pharmacy'/></sp:pharmacy>
+      </xsl:when></xsl:choose>
+      <xsl:choose><xsl:when test="$clinician">
       <sp:prescriber><xsl:value-of select='$clinician'/></sp:prescriber>
-      <sp:dispenseQuantity><xsl:value-of select='quantity'/></sp:dispenseQuantity>
-      <sp:dispenseUnits><xsl:value-of select='quantityu'/></sp:dispenseUnits>
+      </xsl:when></xsl:choose>
+      <xsl:choose><xsl:when test="$quantity">
+      <sp:dispenseQuantity><xsl:value-of select='$quantity'/></sp:dispenseQuantity>
+      </xsl:when></xsl:choose>
+      <xsl:choose><xsl:when test="$quantityu and $quantityu != 'Not Specified'">
+      <sp:dispenseUnits><xsl:value-of select='$quantityu'/></sp:dispenseUnits>
+      </xsl:when></xsl:choose>
     </rdf:Description>
   </sp:fulfillment>  
 </xsl:template>
@@ -53,6 +66,7 @@ version="1.0">
   <xsl:variable name="freq" select='normalize-space(.//ccr:Frequency/ccr:Value)'/>
   <xsl:variable name="name" select='normalize-space(.//ccr:ProductName/ccr:Text)'/>
   <xsl:variable name="strength" select='normalize-space(.//ccr:Strength/ccr:Value)'/>
+  <xsl:variable name="instructions" select='normalize-space(.//ccr:Directions//ccr:Text)'/>
   <xsl:variable name="strengthu" select='translate(normalize-space(.//ccr:Strength/ccr:Units), $uppercase, $smallcase)'/>
   <xsl:variable name="form" select='translate(normalize-space(.//ccr:Product/ccr:Form/ccr:Text), $uppercase, $smallcase)'/>
   <xsl:variable name="cui" select="normalize-space(.//ccr:ProductName/ccr:Code/ccr:Value[../ccr:CodingSystem='RxNorm'])"/>
@@ -121,6 +135,14 @@ version="1.0">
   <xsl:choose><xsl:when test="form">
   	    <med:form><xsl:attribute name="rdf:resource">http://smartplatforms.org/med#<xsl:value-of select="$form"/></xsl:attribute></med:form>
   </xsl:when></xsl:choose>
+
+<xsl:choose><xsl:when test="$instructions">
+<med:notes>
+<xsl:value-of select="$instructions"/>
+</med:notes>
+</xsl:when>
+</xsl:choose>
+
 
   <xsl:choose>
     <xsl:when test="$fulfillments=1">
