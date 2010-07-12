@@ -55,8 +55,13 @@ a2 = Account.objects.create(email = 'joshmandel@smart.org', full_name='Josh Mand
 a2.set_username_and_password(username='joshmandel', password='test')
 
 # create a couple of records
+
 r2_john = Record.objects.create(full_name = 'John Smith')
 r2_jane = Record.objects.create(full_name = 'Jane Smith')
+
+ss_1 = Record.objects.create(full_name = 'Hiram Bach')
+ss_2 = Record.objects.create(full_name = 'Mary Paltrow')
+ss_3 = Record.objects.create(full_name = 'Tad Dockendorf')
 
 import RDF
 
@@ -107,6 +112,7 @@ xmlns:bio="http://purl.org/vocab/bio/0.1/"
   <sp:zipcode>06039</sp:zipcode>
   <bio:Birth> <rdf:Description><dc:date>1996-04-30</dc:date></rdf:Description></bio:Birth>
 </rdf:Description>
+
 <rdf:Description rdf:about="http://smartplatforms.org/records/%s">
   <rdf:type rdf:resource="http://xmlns.com/foaf/0.1/Person"/>
   <foaf:familyName>Smith</foaf:familyName>
@@ -117,7 +123,30 @@ xmlns:bio="http://purl.org/vocab/bio/0.1/"
   <bio:Birth> <rdf:Description><dc:date>1980-08-12</dc:date></rdf:Description></bio:Birth>
 </rdf:Description>
 
-</rdf:RDF>""" % (r2_john.id, r1_john.id, r1_jane.id, r2_jane.id)
+<rdf:Description rdf:about="http://smartplatforms.org/records/%s">
+  <rdf:type rdf:resource="http://xmlns.com/foaf/0.1/Person"/>
+  <foaf:familyName>Bach</foaf:familyName>
+  <foaf:givenName>Hiram</foaf:givenName>
+  <foaf:gender>male</foaf:gender>
+  <sp:zipcode>02543</sp:zipcode>
+</rdf:Description>
+<rdf:Description rdf:about="http://smartplatforms.org/records/%s">
+  <rdf:type rdf:resource="http://xmlns.com/foaf/0.1/Person"/>
+  <foaf:familyName>Paltrow</foaf:familyName>
+  <foaf:givenName>Mary</foaf:givenName>
+  <foaf:gender>female</foaf:gender>
+  <sp:zipcode>54360</sp:zipcode>
+</rdf:Description>
+<rdf:Description rdf:about="http://smartplatforms.org/records/%s">
+  <rdf:type rdf:resource="http://xmlns.com/foaf/0.1/Person"/>
+  <foaf:familyName>Dockendorf</foaf:familyName>
+  <foaf:givenName>Tad</foaf:givenName>
+  <foaf:gender>male</foaf:gender>
+  <sp:zipcode>82001</sp:zipcode>
+</rdf:Description>
+
+</rdf:RDF>""" % (r2_john.id.encode(), r1_john.id.encode(), r1_jane.id.encode(), r2_jane.id.encode(), ss_1.id.encode(), ss_2.id.encode(), ss_3.id.encode())
+
 model = RDF.Model(storage=rs)
 parser = RDF.Parser()
-parser.parse_string_into_model(model, bios,"bootstrap_context")
+parser.parse_string_into_model(model, bios.encode(),"bootstrap_context")

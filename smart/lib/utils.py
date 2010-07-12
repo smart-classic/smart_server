@@ -10,7 +10,6 @@ from django.template import Context, loader
 from django.conf import settings
 from django import http
 from django.utils import simplejson
-
 from xml.dom import minidom
 import libxml2, libxslt
 
@@ -24,6 +23,7 @@ from rdflib import ConjunctiveGraph, Namespace, Literal
 from StringIO import StringIO
 import psycopg2
 import psycopg2.extras
+import RDF
 
 # taken from pointy-stick.com with some modifications
 class MethodDispatcher(object):
@@ -119,18 +119,83 @@ def apply_xslt(sourceDOM, stylesheetDOM):
     style = libxslt.parseStylesheetDoc(stylesheetDOM)
     return style.applyStylesheet(sourceDOM, None).serialize()
 
-def xslt_ccr_to_rdf(source):
+def bound_graph():
+    return RDF.Model()
+
+def bound_serializer():
+    s = RDF.RDFXMLSerializer()
+    bind_ns(s)
+    return s 
+
+def default_ns():
+   d = {}
+   d['dc'] = RDF.NS('http://purl.org/dc/elements/1.1/')
+   d['dcterms'] = RDF.NS('http://purl.org/rss/1.0/modules/dcterms/')
+   d['med'] = RDF.NS('http://smartplatforms.org/med#')
+   d['sp'] = RDF.NS('http://smartplatforms.org/')
+   d['foaf']=RDF.NS('http://xmlns.com/foaf/0.1/')
+   d['rdf'] = RDF.NS('http://www.w3.org/1999/02/22-rdf-syntax-ns#')
+   d['rxn'] = RDF.NS('http://link.informatics.stonybrook.edu/rxnorm/')
+   d['rxcui'] = RDF.NS('http://link.informatics.stonybrook.edu/rxnorm/RXCUI/')
+   d['rxaui'] = RDF.NS('http://link.informatics.stonybrook.edu/rxnorm/RXAUI/')
+   d['rxatn'] = RDF.NS('http://link.informatics.stonybrook.edu/rxnorm/RXATN#')
+   d['rxrel'] = RDF.NS('http://link.informatics.stonybrook.edu/rxnorm/REL#')
+   d['ccr'] = RDF.NS('urn:astm-org:CCR')
+   return d
+
+def get_backed_model():
+    db = settings.DATABASE_REDLAND                                                                                                                                                              
+    u = settings.DATABASE_USER                                                                                           
+    p =settings.DATABASE_PASSWORD
+    rs = RDF.Storage(storage_name="postgresql", name=db,options_string="new='no',database='%s',host='localhost',user='%s',password='%s',contexts='yes'"%(db, u, p))      
+    
+    model = RDF.Model(storage=rs)
+    return model
+
+
+def bind_ns(serializer, ns=default_ns()):
+    for k in ns.keys():
+        v = ns[k]
+        serializer.set_namespace(k, RDF.Uri(v._prefix))
+
+def parse_rdf(string, model,context="none"):
+#    print "PSIM: STRING=", string
+#    print "PSIM: MODEL = ", model 
+    parser = RDF.Parser()
+#    print "Parsing into model: ", string.encode()
+    try:
+        parser.parse_string_into_model(model, string.encode(), context)
+        
+    except  RDF.RedlandError: pass
+        
+"""Serializes a Redland model or CONSTRUCT query result with namespaces pre-set"""
+def serialize_rdf(model):
+    serializer = bound_serializer()
+
+    try: return serializer.serialize_model_to_string(model)
+    except AttributeError:
+      try:
+          tmpmodel = RDF.Model()
+          tmpmodel.add_statements(model.as_stream())
+          return serializer.serialize_model_to_string(tmpmodel)
+      except AttributeError:
+          return '<?xml version="1.0" encoding="UTF-8"?>'
+
+
+def xslt_ccr_to_rdf(source, stylesheet="ccr_to_med_rdf"):
     sourceDOM = libxml2.parseDoc(source)
-    ss = "%s%s"%(settings.XSLT_STYLESHEET_LOC, "ccr_to_rdf.xslt")
+    ss = "%s%s"%(settings.XSLT_STYLESHEET_LOC, "%s.xslt"%stylesheet)
     ssDOM = libxml2.parseFile(ss)
     return apply_xslt(sourceDOM, ssDOM)
 
-
 def meds_as_rdf(raw_xml):
-    transformed = xslt_ccr_to_rdf(raw_xml)
-   
+    demographic_rdf_str = xslt_ccr_to_rdf(raw_xml, "ccr_to_demographic_rdf")
+    m = RDF.Model()
+    demographic_rdf = parse_rdf(demographic_rdf_str, m)
+    med_rdf_str = xslt_ccr_to_rdf(raw_xml, "ccr_to_med_rdf")
+    
     g = ConjunctiveGraph()
-    g.parse(StringIO(transformed))
+    g.parse(StringIO(med_rdf_str))
     
     rxcui_ids = [r[0].decode().split('/')[-1] 
                  for r in 
@@ -202,4 +267,5 @@ def rxn_related(rxcui_id, graph):
    return
 
 def strip_ns(target, ns):
+    print target, ns
     return str(target.uri).split(ns)[1]

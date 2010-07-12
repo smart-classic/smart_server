@@ -1,0 +1,58 @@
+from smart.objects import *
+from smart.models import *
+r = Record.create()
+r = Record.objects.create()
+r
+r.id()
+r.id
+import smart.lib.utils
+import RDF
+ds = """<?xml version="1.0" encoding="utf-8"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:med="http://smartplatforms.org/med#" xmlns:sp="http://smartplatforms.org/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:foaf="http://xmlns.com/foaf/0.1/" xmlns:rxcui="http://link.informatics.stonybrook.edu/rxnorm/RXCUI/" xmlns:ccr="urn:astm-org:CCR">
+   <rdf:Description>
+      <rdf:type rdf:resource="http://xmlns.com/foaf/0.1/Person"/>
+      <foaf:givenName>Tad</foaf:givenName>
+      <foaf:familyName>Dockendorf</foaf:familyName>
+      <foaf:gender>male</foaf:gender>
+      <sp:zipcode>82001</sp:zipcode>
+   </rdf:Description>
+</rdf:RDF>"""
+m = RDF.model()
+m = RDF.Model()
+d = utils.parse_rdf(ds, m)
+d
+m
+for s in m:
+  print s
+Records.create_or_bind_record
+Record.create_or_bind_record
+from smart.models import Record
+Record.create_or_bind_record
+Record.create_or_bind_from_rdf
+Record.create_or_bind_from_rdf(m)
+reload(smart.models.Record)
+reload(smart.models)
+Record.create_or_bind_from_rdf(m)
+reload(smart.models.records)
+Record.create_or_bind_from_rdf(m)
+reload(smart.models.records)
+Record.create_or_bind_from_rdf(m)
+reload(smart.models.records)
+Record.create_or_bind_from_rdf(m)
+reload(smart.models.records)
+Record.create_or_bind_from_rdf(m)
+m
+for s in m:
+  print s
+reload(smart.models.records)
+Record.create_or_bind_from_rdf(m)
+reload(smart.models.records.Record)
+from smart.models.records import Record
+reload(smart.models)
+reload(smart.models.records)
+Record.create_or_bind_from_rdf(m)
+smart.models.records.reload()
+import readline
+readline.write_history()
+readline.write_history_file9)
+readline.write_history_file("bindrdf")

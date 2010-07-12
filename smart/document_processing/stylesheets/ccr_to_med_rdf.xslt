@@ -3,8 +3,10 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 xmlns:xs="http://www.w3.org/2001/XMLSchema"
 xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
 xmlns:med="http://smartplatforms.org/med#" 
+xmlns:sp="http://smartplatforms.org/" 
 xmlns:dcterms="http://purl.org/dc/terms/"
 xmlns:dc="http://purl.org/dc/elements/1.1/"
+xmlns:foaf="http://xmlns.com/foaf/0.1/Person/"
 xmlns:rxcui="http://link.informatics.stonybrook.edu/rxnorm/RXCUI/"
 xmlns:ccr='urn:astm-org:CCR'
 exclude-result-prefixes="xs"
@@ -13,6 +15,7 @@ version="1.0">
 
 <xsl:variable name="smallcase" select="'abcdefghijklmnopqrstuvwxyz '" />
 <xsl:variable name="uppercase" select="'ABCDEFGHIJKLMNOPQRSTUVWXYZ_'" />
+<xsl:template match="//text()" />
 
 <xsl:template match="/">
 <rdf:RDF>
@@ -20,19 +23,40 @@ version="1.0">
 </rdf:RDF>
 </xsl:template>
 
+<xsl:template name="fulfillment">
+  <xsl:variable name="med_id" select="./ccr:CCRDataObjectID"/> 
+  <xsl:variable name="dispense_date" select=".//ccr:ExactDateTime[../ccr:Type/ccr:Text='Dispense date']"/>
+  <xsl:variable name="pbm" select="//ccr:Actor/ccr:IDs/ccr:ID[../ccr:Type/ccr:Text='PBMID'][../..//ccr:LinkID=$med_id] " />
+  <xsl:variable name="pharmacy" select="//ccr:Actor/ccr:IDs/ccr:ID[../ccr:Type/ccr:Text='NCPDP'][../..//ccr:LinkID=$med_id] " />
+  <xsl:variable name="clinician" select="//ccr:Actor/ccr:IDs/ccr:ID[../ccr:Type/ccr:Text='DEA'][../..//ccr:LinkID=$med_id] " />
+  <xsl:variable name="quantity" select=".//ccr:Fulfillment/ccr:Quantity/ccr:Value"/>
+  <xsl:variable name="quantityu" select=".//ccr:Fulfillment/ccr:Quantity/ccr:Units"/>
+  <xsl:variable name="fulfillments" select="count(.//Fulfillment)" />
+  <sp:fulfillment>  
+    <rdf:Description>
+      <dc:date><xsl:value-of select='$dispense_date'/></dc:date>
+      <sp:PBM><xsl:value-of select='$pbm'/></sp:PBM>
+      <sp:pharmacy><xsl:value-of select='$pharmacy'/></sp:pharmacy>
+      <sp:prescriber><xsl:value-of select='$clinician'/></sp:prescriber>
+      <sp:dispenseQuantity><xsl:value-of select='quantity'/></sp:dispenseQuantity>
+      <sp:dispenseUnits><xsl:value-of select='quantityu'/></sp:dispenseUnits>
+    </rdf:Description>
+  </sp:fulfillment>  
+</xsl:template>
+
 <xsl:template match="ccr:Medication">
 <rdf:Description>
   <xsl:variable name="medid" select="@id" />
-<xsl:variable name="dose" select='normalize-space(.//ccr:Dose/ccr:Value)'/>
-<xsl:variable name="doseu" select='translate(normalize-space(.//ccr:Dose/ccr:Units), $uppercase, $smallcase)'/>
-<xsl:variable name="route" select='translate(normalize-space(.//ccr:Route/ccr:Text), $uppercase, $smallcase)'/>
-<xsl:variable name="freq" select='normalize-space(.//ccr:Frequency/ccr:Value)'/>
-<xsl:variable name="name" select='normalize-space(.//ccr:ProductName/ccr:Text)'/>
-<xsl:variable name="strength" select='normalize-space(.//ccr:Strength/ccr:Value)'/>
-<xsl:variable name="strengthu" select='translate(normalize-space(.//ccr:Strength/ccr:Units), $uppercase, $smallcase)'/>
-<xsl:variable name="form" select='translate(normalize-space(.//ccr:Product/ccr:Form/ccr:Text), $uppercase, $smallcase)'/>
-<xsl:variable name="cui" select="normalize-space(.//ccr:ProductName/ccr:Code/ccr:Value[../ccr:CodingSystem='RxNorm'])"/>
-
+  <xsl:variable name="dose" select='normalize-space(.//ccr:Dose/ccr:Value)'/>
+  <xsl:variable name="doseu" select='translate(normalize-space(.//ccr:Dose/ccr:Units), $uppercase, $smallcase)'/>
+  <xsl:variable name="route" select='translate(normalize-space(.//ccr:Route/ccr:Text), $uppercase, $smallcase)'/>
+  <xsl:variable name="freq" select='normalize-space(.//ccr:Frequency/ccr:Value)'/>
+  <xsl:variable name="name" select='normalize-space(.//ccr:ProductName/ccr:Text)'/>
+  <xsl:variable name="strength" select='normalize-space(.//ccr:Strength/ccr:Value)'/>
+  <xsl:variable name="strengthu" select='translate(normalize-space(.//ccr:Strength/ccr:Units), $uppercase, $smallcase)'/>
+  <xsl:variable name="form" select='translate(normalize-space(.//ccr:Product/ccr:Form/ccr:Text), $uppercase, $smallcase)'/>
+  <xsl:variable name="cui" select="normalize-space(.//ccr:ProductName/ccr:Code/ccr:Value[../ccr:CodingSystem='RxNorm'])"/>
+  <xsl:variable name="fulfillments" select="count(.//ccr:Fulfillment)" />
 
   <xsl:choose>
   <xsl:when test="$medid">
@@ -97,6 +121,14 @@ version="1.0">
   <xsl:choose><xsl:when test="form">
   	    <med:form><xsl:attribute name="rdf:resource">http://smartplatforms.org/med#<xsl:value-of select="$form"/></xsl:attribute></med:form>
   </xsl:when></xsl:choose>
+
+  <xsl:choose>
+    <xsl:when test="$fulfillments=1">
+      <xsl:call-template name="fulfillment" />
+    </xsl:when>
+  </xsl:choose>
+
+
 
 </rdf:Description>
 

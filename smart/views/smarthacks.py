@@ -36,7 +36,8 @@ def account_notifications(request, account):
 def record_by_token(request):
     print "token", request.oauth_request.token
     t = request.oauth_request.token
-    return render_template('record', {'record': t.share.record})
+    r = t.share.record
+    return HttpResponse(r.get_demographic_rdf(), mimetype="application/rdf+xml")
 
 @paramloader()
 def record_info(request, record):
@@ -100,26 +101,16 @@ def remove_app(request, account, app):
 
 def record_search(request):
     
-    db = settings.DATABASE_REDLAND                                                                                                                                                              
-    u = settings.DATABASE_USER                                                                                           
-    p =settings.DATABASE_PASSWORD
-    rs = RDF.Storage(storage_name="postgresql", name=db,
-                    options_string="new='no',database='%s',host='localhost',user='%s',password='%s',contexts='yes'"%
-                    (db, u, p))      
-    
-    model = RDF.Model(storage=rs)
+    model = utils.get_backed_model()
 
     # todo: sanitize these before passing them in to librdf -JM
-
     sparql = request.GET.get('sparql', None)     
     print "Searching for ", sparql
 
 
     record_list = []    
     for r in RDF.SPARQLQuery(sparql.encode()).execute(model):
-        print "matching", r
         record_id = utils.strip_ns(r['person'], "http://smartplatforms.org/records/")        
-        print "matching", record_id
         record_list.append(Record.objects.get(id=record_id))
     
     return render_template('record_list', {'records': record_list}, type='xml')
