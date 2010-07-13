@@ -130,7 +130,7 @@ def bound_serializer():
 def default_ns():
    d = {}
    d['dc'] = RDF.NS('http://purl.org/dc/elements/1.1/')
-   d['dcterms'] = RDF.NS('http://purl.org/rss/1.0/modules/dcterms/')
+   d['dcterms'] = RDF.NS('http://purl.org/dc/terms/')
    d['med'] = RDF.NS('http://smartplatforms.org/med#')
    d['sp'] = RDF.NS('http://smartplatforms.org/')
    d['foaf']=RDF.NS('http://xmlns.com/foaf/0.1/')
@@ -189,47 +189,10 @@ def xslt_ccr_to_rdf(source, stylesheet="ccr_to_med_rdf"):
     ssDOM = libxml2.parseFile(ss)
     return apply_xslt(sourceDOM, ssDOM)
 
-def meds_as_rdf(raw_xml):
-    demographic_rdf_str = xslt_ccr_to_rdf(raw_xml, "ccr_to_demographic_rdf")
-    m = RDF.Model()
-    demographic_rdf = parse_rdf(demographic_rdf_str, m)
-    med_rdf_str = xslt_ccr_to_rdf(raw_xml, "ccr_to_med_rdf")
-    
-    g = ConjunctiveGraph()
-    g.parse(StringIO(med_rdf_str))
-    
-    rxcui_ids = [r[0].decode().split('/')[-1] 
-                 for r in 
-                    g.query("""SELECT ?cui_id  
-                               WHERE {
-                               ?med rdf:type med:medication .
-                               ?med med:drug ?cui_id .
-                               }""", 
-                               initNs=dict(g.namespaces()))]
-    for rxcui_id in rxcui_ids:
-        try:
-            print "ADDING", rxcui_id
-            rxn_related(rxcui_id=int(rxcui_id), graph=g)
-        except ValueError:
-            pass
-    return g.serialize()
-
 def rxn_related(rxcui_id, graph):
    rxcui_id = str(rxcui_id)
-   dcterms = Namespace('http://purl.org/rss/1.0/modules/dcterms/', "dctems")
-   med = Namespace('http://smartplatforms.org/med#')
-   rdf = Namespace('http://www.w3.org/1999/02/22-rdf-syntax-ns#')
-   rxn=Namespace("http://link.informatics.stonybrook.edu/rxnorm/")
-   rxcui=Namespace( "http://link.informatics.stonybrook.edu/rxnorm/RXCUI/")
-   rxaui=Namespace("http://link.informatics.stonybrook.edu/rxnorm/RXAUI/")
-   rxatn=Namespace("http://link.informatics.stonybrook.edu/rxnorm/RXATN#")
-   rxrel=Namespace("http://link.informatics.stonybrook.edu/rxnorm/REL#")
-
-   graph.bind("rxn", rxn)
-   graph.bind("rxaui", rxaui)
-   graph.bind("rxrel", rxrel)
-   graph.bind("rxatn", rxatn)
-   graph.bind("rxcui", rxcui)
+   ns = default_ns()
+   literal = RDF.Node
    
    conn=psycopg2.connect("dbname='%s' user='%s' password='%s'"%
                              (settings.DATABASE_RXN, 
@@ -242,31 +205,48 @@ def rxn_related(rxcui_id, graph):
        rxnsat where rxcui=%s and suppress='N' and 
        atn != 'NDC' order by rxaui, atn;"""
   
-   print q%rxcui_id
-  
    cur.execute(q, (rxcui_id,))
-   
    rows = cur.fetchall()
    
-   graph.add((rxcui[rxcui_id], rdf['type'], rxcui))
-   for row in rows:
-       atn = row['atn'].replace(" ", "_")
-       graph.add((rxcui['%s'%row['rxcui']], rxn['has_RXAUI'], rxaui[row['rxaui']] ))
-       graph.add((rxaui[row['rxaui']], rxatn[atn], Literal(row['atv']) ))
+   graph.append(RDF.Statement(
+                    ns['rxcui'][rxcui_id], 
+                    ns['rdf']['type'], 
+                    ns['rxcui']['']))
+   
+#   for row in rows:
+#       atn = row['atn'].replace(" ", "_").encode()
+#       
+#       graph.append(RDF.Statement(
+#                    ns['rxcui']['%s'%row['rxcui'].encode()], 
+#                    ns['rxn']['has_RXAUI'], 
+#                    ns['rxaui'][row['rxaui'].encode()] ))
+#       
+#       graph.append(RDF.Statement(
+#                    ns['rxaui'][row['rxaui'].encode()], 
+#                    ns['rxatn'][atn], 
+#                    literal(row['atv'].encode()) ))
 
    q = """select min(rela) as rela, min(str) as str from 
            rxnrel r join rxnconso c on r.rxcui1=c.rxcui 
            where rxcui2=%s group by rela;"""
-   print q%rxcui_id
    
    cur.execute(q, (rxcui_id,))
    
    rows = cur.fetchall()
    for row in rows:
-       graph.add((rxcui[rxcui_id], rxrel[row['rela']], Literal(row['str']) ))
+       graph.append(RDF.Statement(
+                        ns['rxcui'][rxcui_id], 
+                        ns['rxrel'][row['rela'].encode()], 
+                        literal(row['str'].encode()) ))
 
    return
 
 def strip_ns(target, ns):
     print target, ns
     return str(target.uri).split(ns)[1]
+
+def update_store(permanent_store, new_data):
+    for s in new_data:
+        print s
+        if not permanent_store.contains_statement(s):
+            permanent_store.append(s)

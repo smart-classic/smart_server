@@ -14,7 +14,7 @@ import psycopg2.extras
 import RDF
 from StringIO import StringIO
 import smart.models
-from smart.lib.utils import parse_rdf, serialize_rdf, bound_graph
+from smart.lib.utils import parse_rdf, serialize_rdf, bound_graph, strip_ns
 
 SPARQL = 'SPARQL'
 
@@ -112,10 +112,20 @@ def delete_rdf_store(request):
 
 @paramloader()
 def post_rdf_meds (request, record):
-    rdf = utils.meds_as_rdf(request.raw_post_data) 
     c = MedStoreConnector(request, record)
-    c.set(rdf)
-    return HttpResponse(rdf, mimetype="application/rdf+xml")
+
+    # Reconcile blank nodes based on previously-processed data
+    new_rdf = meds_as_rdf(request.raw_post_data)
+    HashedMedication.conditional_create(model=new_rdf, context=record.id)
+    
+    # Add any new statements (incremental diff, additions only)
+    old_rdf = utils.parse_rdf(c.get())
+    utils.update_store(old_rdf, new_rdf) # copy new triples from new --> old
+    old_rdf = utils.serialize_rdf(old_rdf)
+    
+    # Overwrite the store and send a copy of results to caller.
+    c.set(old_rdf)
+    return HttpResponse(old_rdf, mimetype="application/rdf+xml")
 
 @paramloader()
 def get_rdf_meds (request, record):    
@@ -164,3 +174,29 @@ class MedStoreConnector():
     def set(self, triples):
         self.object.triples = triples
         self.object.save()
+
+
+def meds_as_rdf(raw_xml):
+#    demographic_rdf_str = xslt_ccr_to_rdf(raw_xml, "ccr_to_demographic_rdf")
+#    m = RDF.Model()
+#    demographic_rdf = parse_rdf(demographic_rdf_str, m)
+    med_rdf_str = utils.xslt_ccr_to_rdf(raw_xml, "ccr_to_med_rdf")
+    g = parse_rdf(med_rdf_str)
+
+    rxcui_ids = RDF.SPARQLQuery("""
+                    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+                    PREFIX med: <http://smartplatforms.org/med#>
+                    SELECT ?cui_id  
+                    WHERE {
+                    ?med rdf:type med:medication .
+                    ?med med:drug ?cui_id .
+                    }""").execute(g)
+
+    for r in rxcui_ids: 
+        try:
+            rxcui_id = strip_ns(r['cui_id'], "http://link.informatics.stonybrook.edu/rxnorm/RXCUI/")          
+            print "ADDING", rxcui_id
+            utils.rxn_related(rxcui_id=rxcui_id, graph=g)
+        except ValueError:
+            pass
+    return g

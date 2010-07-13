@@ -1,7 +1,31 @@
 """
-Records for SMArt bootstrap
+Hashing-based RDF update
+Josh Mandel
 
-Ben Adida
+This class helps merge new RDF updates with an existing RDF store.
+In particular, it takes an RDF graph and maps every "important" blank node
+(i.e. every blank node that has an rdf:type property) and maps it to a Uri 
+node. To accomplish this, each subclass of HashedRDFUpdate take responsibility
+for objects of a single rdf:type.  The subclass determines which (if any)
+existing object a blank node maps to, via the identifying_hash function -- 
+and if no suitable object exists, one is created on-the-fly.  The subclass
+then passes control recursively to its child_classes, and in this fashion
+ever blank node is properly mapped, yielding a "fully labeled" graph.
+
+To use HashedRDFUpdate on an RDF graph, you must know ahead of time what
+type of object the graph represents at the root level of the hierarchy.
+For example if I have an RDF graph 'g' of med:medications (each of which
+contains several sp:fulfillments) for a patient with record 'r',
+I would call:
+
+    HashedMedication.conditional_create(model=g,context=r.record_id)
+    
+At this point g contains no more important blank nodes.  I can then insert
+statements from g into a permanent triple store 'pstore' by:
+
+   for s in g:
+     if not pstore.contains_statement(s):
+        pstore.append(s)
 """
 
 from base import *
@@ -23,14 +47,10 @@ class HashedRDFUpdate(Object):
     
     
     def __unicode__(self):
-      return 'HashedRDFUpdate:   id=%s, identifying_hash=%s, complete_hash=%s' % (
+      return 'HashedRDFUpdate:   id=%s, identifying_hash=%s' % (
               self.id, 
-              self.identifying_hash, 
-              self.complete_hash)
+              self.identifying_hash)
     
-    """
-    Element is a node in the RDF modeled by data.
-    """
     @classmethod
     def conditional_create(cls, model=RDF.Model(),context=None):
 #        print "Conditionally creating ", cls.type, " with context ", context
@@ -44,16 +64,19 @@ class HashedRDFUpdate(Object):
                 fully_inserted = cls(identifying_hash=id_hash,
                                      data=utils.serialize_rdf(model),
                                      uri_string="%s/%s"%(cls.type, id_hash))
+                fully_inserted.save()
     
             inserted = partially_inserted or fully_inserted
-            cls.remap_blank_node(model, blank_node.blank_identifier, inserted.uri_string)
+            cls.remap_blank_node(model, blank_node.blank_identifier, inserted.uri_string.encode())
 
             for child_class in cls.child_classes:
-                child_class.conditional_create(context=RDF.Node(uri_string=inserted.uri_string), 
+                child_class.conditional_create(context=RDF.Node(uri_string=inserted.uri_string.encode()), 
                                                model=model)
 
     @classmethod 
     def remap_blank_node(cls, model, blank_string, uri_string):
+        print blank_string
+        print uri_string
         uri_node = RDF.Node(uri_string=uri_string)
         blank_node = RDF.Node(blank=blank_string)
         for s in model:
@@ -103,9 +126,6 @@ class HashedRDFUpdate(Object):
     
         return ret
     
-    
-        
-    
         
 class HashedMedicationFulfillment(HashedRDFUpdate):
     class Meta:
@@ -147,7 +167,7 @@ class HashedMedication(HashedRDFUpdate):
         proxy = True
 
     type = "http://smartplatforms.org/med#medication"
-    child_classes= [HashedMedicationFulfillment ]
+    child_classes= [HashedMedicationFulfillment]
 
     @classmethod
     def get_identifying_hash(cls, element, parent, model):
@@ -166,3 +186,4 @@ class HashedMedication(HashedRDFUpdate):
         h = hashlib.sha224(hash_base).hexdigest()
         
         return h
+

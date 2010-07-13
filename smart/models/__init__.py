@@ -12,3 +12,4 @@ from records import *
 from shares import *
 from rdf_store import *
 from medication import *
+from hashed_updates import *

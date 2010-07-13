@@ -46,22 +46,24 @@ PHA.objects.create(start_url_template= 'http://localhost:8002/smart/start_auth?r
 a = Account.objects.create(email = 'benadida@smart.org', full_name='Ben Adida', contact_email = 'ben@adida.net')
 a.set_username_and_password(username='benadida', password='test')
 
-# create a couple of records
-r1_john = Record.objects.create(full_name = 'John Doe')
-r1_jane = Record.objects.create(full_name = 'Jane Doe')
-
-
 a2 = Account.objects.create(email = 'joshmandel@smart.org', full_name='Josh Mandel', contact_email = 'jmandel@gmail.com')
 a2.set_username_and_password(username='joshmandel', password='test')
 
+a2 = Account.objects.create(email = 'test@smart.org', full_name='Test User', contact_email = 'jmandel@gmail.com')
+a2.set_username_and_password(username='test', password='test')
+
 # create a couple of records
 
-r2_john = Record.objects.create(full_name = 'John Smith')
-r2_jane = Record.objects.create(full_name = 'Jane Smith')
-
 ss_1 = Record.objects.create(full_name = 'Hiram Bach')
-ss_2 = Record.objects.create(full_name = 'Mary Paltrow')
-ss_3 = Record.objects.create(full_name = 'Tad Dockendorf')
+ss_2 = Record.objects.create(full_name = 'Bert Schnur')
+ss_4 = Record.objects.create(full_name = 'Bruce Paltrow')
+ss_5 = Record.objects.create(full_name = 'David Cross')
+ss_6 = Record.objects.create(full_name = 'Hans Bergermeister')
+ss_7 = Record.objects.create(full_name = 'Mary Paltrow')
+ss_8 = Record.objects.create(full_name = 'Tad Dockendorf')
+ss_9 = Record.objects.create(full_name = 'Nora Bergermeister')
+ss_10 = Record.objects.create(full_name = 'Bob Odenkirk')
+ss_11 = Record.objects.create(full_name = 'Douglas Richardson')
 
 import RDF
 
@@ -83,45 +85,7 @@ xmlns:dcterms="http://purl.org/dc/terms/"
 xmlns:bio="http://purl.org/vocab/bio/0.1/"
 >
 
-<rdf:Description rdf:about="http://smartplatforms.org/records/%s">
-  <rdf:type rdf:resource="http://xmlns.com/foaf/0.1/Person"/>
-  <foaf:familyName>Smith</foaf:familyName>
-  <foaf:givenName>John</foaf:givenName>
-  <foaf:title>Mr.</foaf:title>
-  <foaf:gender>male</foaf:gender>
-  <sp:zipcode>02149</sp:zipcode>
-  <bio:Birth> <rdf:Description><dc:date>1970-10-01</dc:date></rdf:Description></bio:Birth>
-</rdf:Description>
 
-<rdf:Description rdf:about="http://smartplatforms.org/records/%s">
-  <rdf:type rdf:resource="http://xmlns.com/foaf/0.1/Person"/>
-  <foaf:familyName>Doe</foaf:familyName>
-  <foaf:givenName>John</foaf:givenName>
-  <foaf:title>Mr.</foaf:title>
-  <foaf:gender>male</foaf:gender>
-  <sp:zipcode>02249</sp:zipcode>
-  <bio:Birth> <rdf:Description><dc:date>1950-03-20</dc:date></rdf:Description></bio:Birth>
-</rdf:Description>
-
-<rdf:Description rdf:about="http://smartplatforms.org/records/%s">
-  <rdf:type rdf:resource="http://xmlns.com/foaf/0.1/Person"/>
-  <foaf:familyName>Doe</foaf:familyName>
-  <foaf:givenName>Jane</foaf:givenName>
-  <foaf:title>Miss</foaf:title>
-  <foaf:gender>female</foaf:gender>
-  <sp:zipcode>06039</sp:zipcode>
-  <bio:Birth> <rdf:Description><dc:date>1996-04-30</dc:date></rdf:Description></bio:Birth>
-</rdf:Description>
-
-<rdf:Description rdf:about="http://smartplatforms.org/records/%s">
-  <rdf:type rdf:resource="http://xmlns.com/foaf/0.1/Person"/>
-  <foaf:familyName>Smith</foaf:familyName>
-  <foaf:givenName>Jane</foaf:givenName>
-  <foaf:title>Mrs</foaf:title>
-  <foaf:gender>female</foaf:gender>
-  <sp:zipcode>90201</sp:zipcode>
-  <bio:Birth> <rdf:Description><dc:date>1980-08-12</dc:date></rdf:Description></bio:Birth>
-</rdf:Description>
 
 <rdf:Description rdf:about="http://smartplatforms.org/records/%s">
   <rdf:type rdf:resource="http://xmlns.com/foaf/0.1/Person"/>
@@ -130,6 +94,39 @@ xmlns:bio="http://purl.org/vocab/bio/0.1/"
   <foaf:gender>male</foaf:gender>
   <sp:zipcode>02543</sp:zipcode>
 </rdf:Description>
+
+<rdf:Description rdf:about="http://smartplatforms.org/records/%s">
+  <rdf:type rdf:resource="http://xmlns.com/foaf/0.1/Person"/>
+  <foaf:familyName>Schnur</foaf:familyName>
+  <foaf:givenName>Bert</foaf:givenName>
+  <foaf:gender>M</foaf:gender>
+  <sp:zipcode>63050</sp:zipcode>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://smartplatforms.org/records/%s">
+  <rdf:type rdf:resource="http://xmlns.com/foaf/0.1/Person"/>
+  <foaf:familyName>Paltrow</foaf:familyName>
+  <foaf:givenName>Bruce</foaf:givenName>
+  <foaf:gender>M</foaf:gender>
+  <sp:zipcode>54360</sp:zipcode>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://smartplatforms.org/records/%s">
+  <rdf:type rdf:resource="http://xmlns.com/foaf/0.1/Person"/>
+  <foaf:familyName>Cross</foaf:familyName>
+  <foaf:givenName>David</foaf:givenName>
+  <foaf:gender>M</foaf:gender>
+  <sp:zipcode>08608</sp:zipcode>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://smartplatforms.org/records/%s">
+  <rdf:type rdf:resource="http://xmlns.com/foaf/0.1/Person"/>
+  <foaf:familyName>Bergermeister</foaf:familyName>
+  <foaf:givenName>Hans</foaf:givenName>
+  <foaf:gender>M</foaf:gender>
+  <sp:zipcode>19013</sp:zipcode>
+</rdf:Description>
+
 <rdf:Description rdf:about="http://smartplatforms.org/records/%s">
   <rdf:type rdf:resource="http://xmlns.com/foaf/0.1/Person"/>
   <foaf:familyName>Paltrow</foaf:familyName>
@@ -137,6 +134,7 @@ xmlns:bio="http://purl.org/vocab/bio/0.1/"
   <foaf:gender>female</foaf:gender>
   <sp:zipcode>54360</sp:zipcode>
 </rdf:Description>
+
 <rdf:Description rdf:about="http://smartplatforms.org/records/%s">
   <rdf:type rdf:resource="http://xmlns.com/foaf/0.1/Person"/>
   <foaf:familyName>Dockendorf</foaf:familyName>
@@ -145,7 +143,41 @@ xmlns:bio="http://purl.org/vocab/bio/0.1/"
   <sp:zipcode>82001</sp:zipcode>
 </rdf:Description>
 
-</rdf:RDF>""" % (r2_john.id.encode(), r1_john.id.encode(), r1_jane.id.encode(), r2_jane.id.encode(), ss_1.id.encode(), ss_2.id.encode(), ss_3.id.encode())
+<rdf:Description rdf:about="http://smartplatforms.org/records/%s">
+  <rdf:type rdf:resource="http://xmlns.com/foaf/0.1/Person"/>
+  <foaf:familyName>Bergermeister</foaf:familyName>
+  <foaf:givenName>Nora</foaf:givenName>
+  <foaf:gender>F</foaf:gender>
+  <sp:zipcode>19013</sp:zipcode>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://smartplatforms.org/records/%s">
+  <rdf:type rdf:resource="http://xmlns.com/foaf/0.1/Person"/>
+  <foaf:familyName>Odenkirk</foaf:familyName>
+  <foaf:givenName>Bob</foaf:givenName>
+  <foaf:gender>M</foaf:gender>
+  <sp:zipcode>90001</sp:zipcode>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://smartplatforms.org/records/%s">
+  <rdf:type rdf:resource="http://xmlns.com/foaf/0.1/Person"/>
+  <foaf:familyName>Richardson</foaf:familyName>
+  <foaf:givenName>Douglas</foaf:givenName>
+  <foaf:gender>M</foaf:gender>
+  <sp:zipcode>01040</sp:zipcode>
+</rdf:Description>
+
+</rdf:RDF>""" % ( 
+ ss_1.id,
+ ss_2.id,
+ ss_4.id, # for some reasont the SS Test set has no element 3(?) -JM
+ ss_5.id,
+ ss_6.id,
+ ss_7.id,
+ ss_8.id,
+ ss_9.id,
+ ss_10.id,
+ ss_11.id)
 
 model = RDF.Model(storage=rs)
 parser = RDF.Parser()
