@@ -158,7 +158,7 @@ def bind_ns(serializer, ns=default_ns()):
         v = ns[k]
         serializer.set_namespace(k, RDF.Uri(v._prefix))
 
-def parse_rdf(string, model,context="none"):
+def parse_rdf(string, model=RDF.Model(),context="none"):
 #    print "PSIM: STRING=", string
 #    print "PSIM: MODEL = ", model 
     parser = RDF.Parser()
@@ -167,6 +167,7 @@ def parse_rdf(string, model,context="none"):
         parser.parse_string_into_model(model, string.encode(), context)
         
     except  RDF.RedlandError: pass
+    return model
         
 """Serializes a Redland model or CONSTRUCT query result with namespaces pre-set"""
 def serialize_rdf(model):

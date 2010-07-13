@@ -34,6 +34,7 @@ version="1.0">
   <xsl:variable name="fulfillments" select="count(.//Fulfillment)" />
   <sp:fulfillment>  
     <rdf:Description>
+      <rdf:type><xsl:attribute name="rdf:resource">http://smartplatforms.org/med#fulfillment</xsl:attribute></rdf:type>
       <xsl:choose><xsl:when test="$dispense_date">
       <dc:date><xsl:value-of select='$dispense_date'/></dc:date>
       </xsl:when>
@@ -69,7 +70,7 @@ version="1.0">
   <xsl:variable name="instructions" select='normalize-space(.//ccr:Directions//ccr:Text)'/>
   <xsl:variable name="strengthu" select='translate(normalize-space(.//ccr:Strength/ccr:Units), $uppercase, $smallcase)'/>
   <xsl:variable name="form" select='translate(normalize-space(.//ccr:Product/ccr:Form/ccr:Text), $uppercase, $smallcase)'/>
-  <xsl:variable name="cui" select="normalize-space(.//ccr:ProductName/ccr:Code/ccr:Value[../ccr:CodingSystem='RxNorm'])"/>
+  <xsl:variable name="cui" select="normalize-space(.//ccr:ProductName/ccr:Code/ccr:Value[translate(../ccr:CodingSystem, $uppercase, $smallcase)='rxnorm'])"/>
   <xsl:variable name="fulfillments" select="count(.//ccr:Fulfillment)" />
 
   <xsl:choose>
