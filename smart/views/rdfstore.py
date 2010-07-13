@@ -182,7 +182,6 @@ def meds_as_rdf(raw_xml):
 #    demographic_rdf = parse_rdf(demographic_rdf_str, m)
     med_rdf_str = utils.xslt_ccr_to_rdf(raw_xml, "ccr_to_med_rdf")
     g = parse_rdf(med_rdf_str)
-
     rxcui_ids = RDF.SPARQLQuery("""
                     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
                     PREFIX med: <http://smartplatforms.org/med#>
@@ -191,11 +190,9 @@ def meds_as_rdf(raw_xml):
                     ?med rdf:type med:medication .
                     ?med med:drug ?cui_id .
                     }""").execute(g)
-
     for r in rxcui_ids: 
         try:
             rxcui_id = strip_ns(r['cui_id'], "http://link.informatics.stonybrook.edu/rxnorm/RXCUI/")          
-            print "ADDING", rxcui_id
             utils.rxn_related(rxcui_id=rxcui_id, graph=g)
         except ValueError:
             pass

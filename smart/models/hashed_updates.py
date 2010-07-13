@@ -59,10 +59,12 @@ class HashedRDFUpdate(Object):
             partially_inserted=None
             fully_inserted = None
             try:
-                partially_inserted = cls.objects.get(identifying_hash=id_hash)  
+                partially_inserted = cls.objects.get(identifying_hash=id_hash)
+                print "partially inserted", cls.type, id_hash  
             except:
+                print "Fully inserted", cls.type, id_hash
                 fully_inserted = cls(identifying_hash=id_hash,
-                                     data=utils.serialize_rdf(model),
+                                     data="<skipped>",
                                      uri_string="%s/%s"%(cls.type, id_hash))
                 fully_inserted.save()
     
@@ -75,8 +77,6 @@ class HashedRDFUpdate(Object):
 
     @classmethod 
     def remap_blank_node(cls, model, blank_string, uri_string):
-        print blank_string
-        print uri_string
         uri_node = RDF.Node(uri_string=uri_string)
         blank_node = RDF.Node(blank=blank_string)
         for s in model:
@@ -108,7 +108,8 @@ class HashedRDFUpdate(Object):
             SELECT ?child
             WHERE {
                 ?child rdf:type <$type>
-            }""").substitute(type=cls.type)
+            }
+            """).substitute(type=cls.type)
 
         else:
             id_query = Template("""
@@ -117,7 +118,8 @@ class HashedRDFUpdate(Object):
             WHERE {
                 <$parent> ?predicate ?child.
                 ?child rdf:type <$type>
-            }""").substitute(type=cls.type, parent=parent.uri.__str__())
+            }
+            """).substitute(type=cls.type, parent=parent.uri.__str__())
 
         ret = []
         for r in RDF.SPARQLQuery(id_query).execute(model):
@@ -174,10 +176,12 @@ class HashedMedication(HashedRDFUpdate):
         id_query = Template("""
         PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
         PREFIX med: <http://smartplatforms.org/med#>
-        SELECT ?drug, ?notes, ?strength
+        PREFIX dcterms: <http://purl.org/dc/terms/>
+        SELECT ?drug, ?notes, ?strength, ?title
         WHERE {
             <_:$element> med:drug ?drug.
             OPTIONAL {<_:$element> med:notes ?notes.}
+            OPTIONAL {<_:$element> dcterms:title ?title.}
             OPTIONAL {<_:$element> med:strength ?strength.}
         }
         
@@ -187,9 +191,10 @@ class HashedMedication(HashedRDFUpdate):
         result = RDF.SPARQLQuery(id_query).execute(model).next()
         drug = result['drug'].uri.__str__()
         notes = result['notes'] and result['notes'].literal_value['string']
+        title = result['title'] and result['title'].literal_value['string']
         strength = result['strength'] and result['strength'].literal_value['string']
         
-        hash_base = "%s/%s/%s/%s"%(parent, drug, notes, strength)
+        hash_base = "%s/%s/%s/%s/%s"%(parent, drug, notes, title,strength)
         h = hashlib.sha224(hash_base).hexdigest()
         
         return h
