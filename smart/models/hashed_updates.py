@@ -174,15 +174,22 @@ class HashedMedication(HashedRDFUpdate):
         id_query = Template("""
         PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
         PREFIX med: <http://smartplatforms.org/med#>
-        SELECT ?drug
+        SELECT ?drug, ?notes, ?strength
         WHERE {
-            <_:$element> med:drug ?drug
+            <_:$element> med:drug ?drug.
+            OPTIONAL {<_:$element> med:notes ?notes.}
+            OPTIONAL {<_:$element> med:strength ?strength.}
         }
+        
         LIMIT 1
         """).substitute(element=element.blank_identifier)
         
-        drug = RDF.SPARQLQuery(id_query).execute(model).next()['drug'].uri.__str__()
-        hash_base = "%s/%s"%(parent, drug)       
+        result = RDF.SPARQLQuery(id_query).execute(model).next()
+        drug = result['drug'].uri.__str__()
+        notes = result['notes'] and result['notes'].literal_value['string']
+        strength = result['strength'] and result['strength'].literal_value['string']
+        
+        hash_base = "%s/%s/%s/%s"%(parent, drug, notes, strength)
         h = hashlib.sha224(hash_base).hexdigest()
         
         return h
