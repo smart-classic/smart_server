@@ -99,7 +99,7 @@ xmlns:bio="http://purl.org/vocab/bio/0.1/"
   <rdf:type rdf:resource="http://xmlns.com/foaf/0.1/Person"/>
   <foaf:familyName>Schnur</foaf:familyName>
   <foaf:givenName>Bert</foaf:givenName>
-  <foaf:gender>M</foaf:gender>
+  <foaf:gender>male</foaf:gender>
   <sp:zipcode>63050</sp:zipcode>
 </rdf:Description>
 
@@ -107,7 +107,7 @@ xmlns:bio="http://purl.org/vocab/bio/0.1/"
   <rdf:type rdf:resource="http://xmlns.com/foaf/0.1/Person"/>
   <foaf:familyName>Paltrow</foaf:familyName>
   <foaf:givenName>Bruce</foaf:givenName>
-  <foaf:gender>M</foaf:gender>
+  <foaf:gender>male</foaf:gender>
   <sp:zipcode>54360</sp:zipcode>
 </rdf:Description>
 
@@ -115,7 +115,7 @@ xmlns:bio="http://purl.org/vocab/bio/0.1/"
   <rdf:type rdf:resource="http://xmlns.com/foaf/0.1/Person"/>
   <foaf:familyName>Cross</foaf:familyName>
   <foaf:givenName>David</foaf:givenName>
-  <foaf:gender>M</foaf:gender>
+  <foaf:gender>male</foaf:gender>
   <sp:zipcode>08608</sp:zipcode>
 </rdf:Description>
 
@@ -123,7 +123,7 @@ xmlns:bio="http://purl.org/vocab/bio/0.1/"
   <rdf:type rdf:resource="http://xmlns.com/foaf/0.1/Person"/>
   <foaf:familyName>Bergermeister</foaf:familyName>
   <foaf:givenName>Hans</foaf:givenName>
-  <foaf:gender>M</foaf:gender>
+  <foaf:gender>male</foaf:gender>
   <sp:zipcode>19013</sp:zipcode>
 </rdf:Description>
 
@@ -147,7 +147,7 @@ xmlns:bio="http://purl.org/vocab/bio/0.1/"
   <rdf:type rdf:resource="http://xmlns.com/foaf/0.1/Person"/>
   <foaf:familyName>Bergermeister</foaf:familyName>
   <foaf:givenName>Nora</foaf:givenName>
-  <foaf:gender>F</foaf:gender>
+  <foaf:gender>female</foaf:gender>
   <sp:zipcode>19013</sp:zipcode>
 </rdf:Description>
 
@@ -155,7 +155,7 @@ xmlns:bio="http://purl.org/vocab/bio/0.1/"
   <rdf:type rdf:resource="http://xmlns.com/foaf/0.1/Person"/>
   <foaf:familyName>Odenkirk</foaf:familyName>
   <foaf:givenName>Bob</foaf:givenName>
-  <foaf:gender>M</foaf:gender>
+  <foaf:gender>male</foaf:gender>
   <sp:zipcode>90001</sp:zipcode>
 </rdf:Description>
 
@@ -163,7 +163,7 @@ xmlns:bio="http://purl.org/vocab/bio/0.1/"
   <rdf:type rdf:resource="http://xmlns.com/foaf/0.1/Person"/>
   <foaf:familyName>Richardson</foaf:familyName>
   <foaf:givenName>Douglas</foaf:givenName>
-  <foaf:gender>M</foaf:gender>
+  <foaf:gender>female</foaf:gender>
   <sp:zipcode>01040</sp:zipcode>
 </rdf:Description>
 
