@@ -163,9 +163,6 @@ class HashedMedication(HashedRDFUpdate):
         SELECT ?drug, ?notes, ?strength, ?title
         WHERE {
             <_:$element> med:drug ?drug.
-            OPTIONAL {<_:$element> med:notes ?notes.}
-            OPTIONAL {<_:$element> dcterms:title ?title.}
-            OPTIONAL {<_:$element> med:strength ?strength.}
         }
         
         LIMIT 1
