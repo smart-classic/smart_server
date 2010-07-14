@@ -52,7 +52,7 @@ class HashedRDFUpdate(Object):
               self.identifying_hash)
     
     @classmethod
-    def conditional_create(cls, model=RDF.Model(),context=None):
+    def conditional_create(cls, model=RDF.Model(storage=RDF.HashStorage("", options="hash-type='memory'")),context=None):
 #        print "Conditionally creating ", cls.type, " with context ", context
         for blank_node in cls.get_unmapped_elements(parent=context, model=model):      
             id_hash = cls.get_identifying_hash(element=blank_node, parent=context, model=model)
@@ -160,6 +160,7 @@ class HashedMedicationFulfillment(HashedRDFUpdate):
         date = RDF.SPARQLQuery(id_query).execute(model).next()['dispense_date'].__str__()
         
         hash_base = "%s/%s"%(parent, date)       
+        print "HashFulfillment: ", hash_base
         h = hashlib.sha224(hash_base).hexdigest()
         return h
     
@@ -195,6 +196,7 @@ class HashedMedication(HashedRDFUpdate):
         strength = result['strength'] and result['strength'].literal_value['string']
         
         hash_base = "%s/%s/%s/%s/%s"%(parent, drug, notes, title,strength)
+        print "HashMEd: ", hash_base
         h = hashlib.sha224(hash_base).hexdigest()
         
         return h

@@ -120,7 +120,7 @@ def apply_xslt(sourceDOM, stylesheetDOM):
     return style.applyStylesheet(sourceDOM, None).serialize()
 
 def bound_graph():
-    return RDF.Model()
+    return RDF.Model(storage=RDF.HashStorage("", options="hash-type='memory'"))
 
 def bound_serializer():
     s = RDF.RDFXMLSerializer()
@@ -158,9 +158,11 @@ def bind_ns(serializer, ns=default_ns()):
         v = ns[k]
         serializer.set_namespace(k, RDF.Uri(v._prefix))
 
-def parse_rdf(string, model=RDF.Model(),context="none"):
+def parse_rdf(string, model=None, context="none"):
 #    print "PSIM: STRING=", string
-#    print "PSIM: MODEL = ", model 
+#    print "PSIM: MODEL = ", model
+    if model == None:
+        model = RDF.Model() 
     parser = RDF.Parser()
 #    print "Parsing into model: ", string.encode()
     try:
@@ -176,7 +178,7 @@ def serialize_rdf(model):
     try: return serializer.serialize_model_to_string(model)
     except AttributeError:
       try:
-          tmpmodel = RDF.Model()
+          tmpmodel = RDF.Model(storage=RDF.HashStorage("", options="hash-type='memory'"))
           tmpmodel.add_statements(model.as_stream())
           return serializer.serialize_model_to_string(tmpmodel)
       except AttributeError:
