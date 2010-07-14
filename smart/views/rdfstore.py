@@ -48,16 +48,13 @@ def get_rdf (request, connector):
        parse_rdf(triples, g)
    
    if (SPARQL not in request.GET.keys()):
-       print "no sparql, so here's everything: ", triples
        return HttpResponse(triples, mimetype="application/rdf+xml")
    
    sq = request.GET[SPARQL].encode()
-   print "Executing ", sq, " on ", triples, "-->", g
    q = RDF.SPARQLQuery(sq)
    res = q.execute(g)
    res_string = serialize_rdf(res)
    
-   print "Sparkley ",sq, res_string
    return HttpResponse(res_string, mimetype="application/rdf+xml")
 
 def put_rdf(request, connector):
@@ -83,14 +80,12 @@ def delete_rdf(request, connector):
    q = RDF.SPARQLQuery(sparql)
    res = q.execute(g)
    
-   print "****\n\n\n\nmodl das", len(g)
    for r in res.as_stream():
        deleted.append(r)
        g.remove_statement(r)
 
    triples = serialize_rdf(g)
    connector.set( triples )
-   print "deleted", serialize_rdf(deleted)    
    return HttpResponse(serialize_rdf(deleted), mimetype="application/rdf+xml")
 
 
@@ -112,7 +107,6 @@ def delete_rdf_store(request):
 
 @paramloader()
 def post_rdf_meds (request, record):
-    print "************\n\n\n\n\n\n\n\n MEDS POST", record.id
     c = MedStoreConnector(request, record)
 
     # Reconcile blank nodes based on previously-processed data
@@ -127,7 +121,6 @@ def post_rdf_meds (request, record):
     # Overwrite the store and send a copy of results to caller.
     c.set(old_rdf)
     
-    print "*************\n\n\n\n\n\n Final med RDF: ", old_rdf
     return HttpResponse(old_rdf, mimetype="application/rdf+xml")
 
 @paramloader()

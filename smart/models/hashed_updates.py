@@ -52,46 +52,28 @@ class HashedRDFUpdate(Object):
               self.identifying_hash)
     
     @classmethod
-    def conditional_create(cls, model=RDF.Model(storage=RDF.HashStorage("", options="hash-type='memory'")),context=None):
+    def conditional_create(cls, model,context=None):
 #        print "Conditionally creating ", cls.type, " with context ", context
         for blank_node in cls.get_unmapped_elements(parent=context, model=model):      
+            
             id_hash = cls.get_identifying_hash(element=blank_node, parent=context, model=model)
-            partially_inserted=None
-            fully_inserted = None
-            try:
-                partially_inserted = cls.objects.get(identifying_hash=id_hash)
-                print "partially inserted", cls.type, id_hash  
-            except:
-                print "Fully inserted", cls.type, id_hash
-                fully_inserted = cls(identifying_hash=id_hash,
-                                     data="<skipped>",
-                                     uri_string="%s/%s"%(cls.type, id_hash))
-                fully_inserted.save()
-    
-            inserted = partially_inserted or fully_inserted
-            cls.remap_blank_node(model, blank_node.blank_identifier, inserted.uri_string.encode())
+            uri_string = "%s/%s"%(cls.type, id_hash)
+            cls.remap_blank_node(model, blank_node.blank_identifier, uri_string)
 
             for child_class in cls.child_classes:
-                child_class.conditional_create(context=RDF.Node(uri_string=inserted.uri_string.encode()), 
+                child_class.conditional_create(context=RDF.Node(uri_string=uri_string), 
                                                model=model)
 
     @classmethod 
     def remap_blank_node(cls, model, blank_string, uri_string):
         uri_node = RDF.Node(uri_string=uri_string)
         blank_node = RDF.Node(blank=blank_string)
-        for s in model:
-            new_s = s.subject
-            new_o = s.object
-            remapped = False
-            if (s.subject == blank_node):
-                remapped = True
-                new_s = uri_node
-            if (s.object == blank_node):
-                remapped = True
-                new_o = uri_node
-            if (remapped):
-                del model[s]
-                model.append(RDF.Statement(new_s, s.predicate, new_o))
+        for s in model.find_statements(RDF.Statement(blank_node, None, None)):
+            del model[s]
+            model.append(RDF.Statement(uri_node, s.predicate, s.object))
+        for s in model.find_statements(RDF.Statement(None, None, blank_node)):
+            del model[s]
+            model.append(RDF.Statement(s.subject, s.predicate, uri_node))            
         return
     
     
