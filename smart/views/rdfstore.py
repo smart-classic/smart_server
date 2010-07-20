@@ -14,7 +14,7 @@ import psycopg2.extras
 import RDF
 from StringIO import StringIO
 import smart.models
-from smart.lib.utils import parse_rdf, serialize_rdf, bound_graph, strip_ns
+from smart.lib.utils import parse_rdf, serialize_rdf, bound_graph, strip_ns, x_domain
 
 SPARQL = 'SPARQL'
 
@@ -40,7 +40,7 @@ def post_rdf (request, connector, maintain_existing_store=False):
 
 # Fetch the entire store and pass back rdf/xml -- or pass back partial graph 
 # if a SPARQl CONSTRUCT query string is provided.
-def get_rdf (request, connector):
+def get_rdf(request, connector):
    triples = connector.get()
    g = bound_graph()        
 
@@ -48,14 +48,13 @@ def get_rdf (request, connector):
        parse_rdf(triples, g)
    
    if (SPARQL not in request.GET.keys()):
-       return HttpResponse(triples, mimetype="application/rdf+xml")
-   
+       return x_domain(HttpResponse(triples, mimetype="application/rdf+xml"))
+
    sq = request.GET[SPARQL].encode()
    q = RDF.SPARQLQuery(sq)
    res = q.execute(g)
    res_string = serialize_rdf(res)
-   
-   return HttpResponse(res_string, mimetype="application/rdf+xml")
+   return x_domain(HttpResponse(res_string, mimetype="application/rdf+xml"))
 
 def put_rdf(request, connector):
     return post_rdf(request, connector, maintain_existing_store=True)

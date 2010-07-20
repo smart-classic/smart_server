@@ -115,6 +115,15 @@ def record_search(request):
     
     return render_template('record_list', {'records': record_list}, type='xml')
 
+def allow_options(request, **kwargs):
+    r =  utils.x_domain(HttpResponse())
+    scheme = request.is_secure() and "https" or "http"
+    ui = settings.SMART_UI_SERVER_LOCATION
+    r['Access-Control-Allow-Methods'] = "POST, GET, PUT, DELETE"
+    r['Access-Control-Allow-Headers'] = "authorization,x-requested-with"
+    r['Access-Control-Max-Age'] = 60
+    return r
+
 #@paramloader()
 #
 #def meds(request, medcall, record):

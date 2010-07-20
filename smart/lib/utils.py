@@ -252,3 +252,9 @@ def update_store(permanent_store, new_data):
         print s
         if not permanent_store.contains_statement(s):
             permanent_store.append(s)
+
+def x_domain(r):
+  ui = settings.SMART_UI_SERVER_LOCATION
+  r['Access-Control-Allow-Origin'] = "%s://%s:%s"%(ui['scheme'], ui['host'], ui['port'])
+  return r
+

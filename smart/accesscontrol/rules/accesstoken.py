@@ -12,3 +12,4 @@ def grant(accesstoken, permset):
     permset.grant(home)
     permset.grant(record_by_token)
     permset.grant(post_rdf_meds)
+    permset.grant(get_rdf_meds)

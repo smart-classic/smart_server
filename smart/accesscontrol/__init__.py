@@ -68,3 +68,6 @@ def grant_baseline(permset):
   # for development purposes
   import django.views.static
   permset.grant(django.views.static.serve, None)
+
+  # Anyone can make an OPTIONS request on a page
+  permset.grant(views.allow_options, None)
