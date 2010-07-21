@@ -36,7 +36,7 @@ def post_rdf (request, connector, maintain_existing_store=False):
     triples = serialize_rdf(g)
     connector.set( triples )
     
-    return HttpResponse(triples, mimetype="application/rdf+xml")
+    return x_domain(HttpResponse(triples, mimetype="application/rdf+xml"))
 
 # Fetch the entire store and pass back rdf/xml -- or pass back partial graph 
 # if a SPARQl CONSTRUCT query string is provided.
@@ -66,7 +66,7 @@ def delete_rdf(request, connector):
 
    if (not sparql.startswith(SPARQL)):
        connector.set("")
-       return HttpResponse(triples, mimetype="application/rdf+xml")
+       return x_domain(HttpResponse(triples, mimetype="application/rdf+xml"))
 
    sparql = urllib.unquote_plus(sparql)[7:].encode()
    print "and, ", sparql
@@ -85,7 +85,7 @@ def delete_rdf(request, connector):
 
    triples = serialize_rdf(g)
    connector.set( triples )
-   return HttpResponse(serialize_rdf(deleted), mimetype="application/rdf+xml")
+   return x_domain(HttpResponse(serialize_rdf(deleted), mimetype="application/rdf+xml"))
 
 
 def post_rdf_store (request):
@@ -108,6 +108,8 @@ def delete_rdf_store(request):
 def post_rdf_meds (request, record):
     c = MedStoreConnector(request, record)
 
+    print "Med CCR Received:  ",request.raw_post_data
+
     # Reconcile blank nodes based on previously-processed data
     new_rdf = meds_as_rdf(request.raw_post_data)
     HashedMedication.conditional_create(model=new_rdf, context=record.id)
@@ -120,7 +122,7 @@ def post_rdf_meds (request, record):
     # Overwrite the store and send a copy of results to caller.
     c.set(old_rdf)
     
-    return HttpResponse(old_rdf, mimetype="application/rdf+xml")
+    return x_domain(HttpResponse(old_rdf, mimetype="application/rdf+xml"))
 
 @paramloader()
 def get_rdf_meds (request, record):    
