@@ -13,3 +13,5 @@ def grant(accesstoken, permset):
     permset.grant(record_by_token)
     permset.grant(post_rdf_meds)
     permset.grant(get_rdf_meds)
+    permset.grant(put_rdf_meds)
+    permset.grant(delete_rdf_meds)

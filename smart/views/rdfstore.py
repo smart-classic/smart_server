@@ -121,8 +121,8 @@ def post_rdf_meds (request, record):
     
     # Overwrite the store and send a copy of results to caller.
     c.set(old_rdf)
-    
     return x_domain(HttpResponse(old_rdf, mimetype="application/rdf+xml"))
+    
 
 @paramloader()
 def get_rdf_meds (request, record):    
