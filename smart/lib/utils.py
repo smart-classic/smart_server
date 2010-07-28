@@ -111,7 +111,7 @@ def get_content_type(request):
 def django_json(func):
   def func_with_json_conversion(*args, **kwargs):
     return_value = func(*args, **kwargs)
-    return HttpResponse(simplejson.dumps(return_value), mimetype='text/plain')
+    return x_domain(HttpResponse(simplejson.dumps(return_value), mimetype='text/plain'))
   functools.update_wrapper(func_with_json_conversion, func)
   return func_with_json_conversion
 
@@ -132,6 +132,7 @@ def default_ns():
    d['dc'] = RDF.NS('http://purl.org/dc/elements/1.1/')
    d['dcterms'] = RDF.NS('http://purl.org/dc/terms/')
    d['med'] = RDF.NS('http://smartplatforms.org/med#')
+   d['med'] = RDF.NS('http://www.nlm.nih.gov/research/umls/')
    d['sp'] = RDF.NS('http://smartplatforms.org/')
    d['foaf']=RDF.NS('http://xmlns.com/foaf/0.1/')
    d['rdf'] = RDF.NS('http://www.w3.org/1999/02/22-rdf-syntax-ns#')
@@ -255,6 +256,6 @@ def update_store(permanent_store, new_data):
 
 def x_domain(r):
   ui = settings.SMART_UI_SERVER_LOCATION
-  r['Access-Control-Allow-Origin'] = "%s://%s:%s"%(ui['scheme'], ui['host'], ui['port'])
+  r['Access-Control-Allow-Origin'] = "*"# "%s://%s:%s"%(ui['scheme'], ui['host'], ui['port'])
   return r
 

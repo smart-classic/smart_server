@@ -5,6 +5,9 @@ from django.conf.urls.defaults import *
 #admin.autodiscover()
 
 urlpatterns = patterns('',
+    # Coding Systems
+    (r'^codes/', include('smart_server.codingsystems.urls')),
+
      # Everything to indivo
     (r'^', include('smart_server.smart.urls.urls')),
 )

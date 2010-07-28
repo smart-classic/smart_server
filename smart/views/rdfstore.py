@@ -22,8 +22,10 @@ SPARQL = 'SPARQL'
 def post_rdf (request, connector, maintain_existing_store=False):
     ct = utils.get_content_type(request).lower()
     
-    if (ct != "application/rdf+xml"):
-        raise Exception("RDF Store only knows how to store RDF+XML content.")
+    if (ct.find("application/rdf+xml") == -1):
+        raise Exception("RDF Store only knows how to store RDF+XML content, not %s." %ct)
+    
+    print "Content-type of req: ", ct
     
     g = bound_graph()
     triples = connector.get()
@@ -64,11 +66,11 @@ def delete_rdf(request, connector):
    sparql = request.raw_post_data  
    triples = connector.get()
 
-   if (not sparql.startswith(SPARQL)):
+   if (sparql.strip() == ""):
        connector.set("")
        return x_domain(HttpResponse(triples, mimetype="application/rdf+xml"))
 
-   sparql = urllib.unquote_plus(sparql)[7:].encode()
+   sparql = sparql.encode()
    print "and, ", sparql
    g = bound_graph()        
    deleted = bound_graph()
@@ -171,6 +173,43 @@ class MedStoreConnector():
     def set(self, triples):
         self.object.triples = triples
         self.object.save()
+
+
+class ProblemStoreConnector():
+    def __init__(self, request, record):
+        self.record = record 
+        #todo: replace with get_or_create
+        try:
+            self.object = smart.models.Problem.objects.get(record=self.record)
+        except:
+            self.object = smart.models.Problem.objects.create(record=self.record)
+        
+    def get(self):    
+        return self.object.triples
+    
+    def set(self, triples):
+        self.object.triples = triples
+        self.object.save()
+
+@paramloader()
+def get_rdf_problems (request, record):    
+    c = ProblemStoreConnector(request, record)
+    return get_rdf(request, c)
+
+@paramloader()
+def put_rdf_problems(request, record):
+    c = ProblemStoreConnector(request, record)
+    return put_rdf(request, c)
+
+@paramloader()
+def delete_rdf_problems(request, record):
+    c = ProblemStoreConnector(request, record)
+    return delete_rdf(request, c)
+
+@paramloader()
+def post_rdf_problems(request, record):
+    c = ProblemStoreConnector(request, record)
+    return post_rdf(request, c)
 
 
 def meds_as_rdf(raw_xml):

@@ -10,7 +10,7 @@ MachineApp.objects.create(name='chrome',
                           app_type='chrome',
                           email='chrome@apps.smart-project.org')
 
-PHA.objects.create(start_url_template= 'http://localhost:8001/index.html?record_id={record_id}',
+PHA.objects.create(start_url_template= 'http://localhost:8001/meds.html?record_id={record_id}',
                    callback_url = 'http://localhost:8001/auth/after',
                    has_ui = True,
                    frameable = True,
@@ -19,6 +19,17 @@ PHA.objects.create(start_url_template= 'http://localhost:8001/index.html?record_
                    secret = 'smartapp-secret',
                    name ='MedList',
                    email='medlist@apps.smart.org')
+
+PHA.objects.create(start_url_template= 'http://localhost:8001/problems.html?record_id={record_id}',
+                   callback_url = 'http://localhost:8001/auth/after',
+                   has_ui = True,
+                   frameable = True,
+                   description = 'Interactive Problem List Editor',
+                   consumer_key = 'smart-problems-app',
+                   secret = 'smartapp-secret',
+                   name ='Problems',
+                   email='smart-problems@apps.smart.org')
+
 
 
 PHA.objects.create(start_url_template= 'http://localhost:8001/statin.html?record_id={record_id}',
@@ -178,6 +189,20 @@ xmlns:bio="http://purl.org/vocab/bio/0.1/"
  ss_9.id,
  ss_10.id,
  ss_11.id)
+
+p = Problem(record=ss_1, triples = """<?xml version="1.0" encoding="utf-8"?>
+<rdf:RDF  xmlns:foaf="http://xmlns.com/foaf/0.1/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:sp="http://smartplatforms.org/" xmlns:umls="http://www.nlm.nih.gov/research/umls/" xmlns:dcterms="http://purl.org/dc/terms/">
+         <rdf:Description>
+            <rdf:type rdf:resource="http://smartplatforms.org/problem"/>
+            <umls:cui>C0027424</umls:cui>
+            <dcterms:title>Nasal congestion (Finding)</dcterms:title>
+            <sp:onset>2008-12-14</sp:onset>
+            <sp:resolution>2009-02-01</sp:resolution>
+            <sp:notes>Congestion worst on first waking up.</sp:notes>
+         </rdf:Description>
+</rdf:RDF>
+""")
+p.save()
 
 model = RDF.Model(storage=rs)
 parser = RDF.Parser()

@@ -122,6 +122,7 @@ def allow_options(request, **kwargs):
     r['Access-Control-Allow-Methods'] = "POST, GET, PUT, DELETE"
     r['Access-Control-Allow-Headers'] = "authorization,x-requested-with"
     r['Access-Control-Max-Age'] = 60
+    print r._headers
     return r
 
 #@paramloader()
