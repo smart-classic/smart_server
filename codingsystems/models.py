@@ -25,7 +25,7 @@ class CodingSystem(models.Model):
     description = models.CharField(max_length = 2000, null = True)
 
     def search_codes(self, query_string, limit = 100):
-        return [c for c in CodedValueVariant.objects.filter(coded_value__system = self, variant__icontains= query_string)[:limit]] + [c for c in CodedValue.objects.filter(system = self, full_value__icontains = query_string)[:limit]]
+        return [c for c in CodedValueVariant.objects.filter(coded_value__system = self, variant__icontains= query_string)[:limit]] + [c for c in CodedValue.objects.filter(system = self, full_value__icontains = query_string).order_by("full_value")[:limit]]
 
 class CodedValue(models.Model, JSONObject):
     system = models.ForeignKey(CodingSystem)
