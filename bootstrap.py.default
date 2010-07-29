@@ -1,6 +1,7 @@
-
 from smart.models import *
+from bootstrap_utils import interpolated_postgres_load
 from django.conf import settings
+import os
 
 # Some basic apps and a couple of accounts to get things going.
 
@@ -204,6 +205,18 @@ p = Problem(record=ss_1, triples = """<?xml version="1.0" encoding="utf-8"?>
 """)
 p.save()
 
+interpolated_postgres_load(
+    os.path.join(settings.APP_HOME, "codingsystems/data/load-snomedctcore.sql"),
+    {"snomed_core_data": 
+     os.path.join(settings.APP_HOME, 
+                  "codingsystems/data/complete/SNOMEDCT_CORE_SUBSET_201005.utf8.txt")},
+    settings.DATABASE_NAME,
+    settings.DATABASE_USER
+)
+
+
 model = RDF.Model(storage=rs)
 parser = RDF.Parser()
 parser.parse_string_into_model(model, bios.encode(),"bootstrap_context")
+
+
