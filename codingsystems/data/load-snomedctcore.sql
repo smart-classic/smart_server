@@ -13,7 +13,7 @@ create temp table snomedct_core_complete (
 );
 
 -- copy into the temp table
-copy snomedct_core_complete from '/home/jmandel/Desktop/smart/smart_server/codingsystems/data/complete/SNOMEDCT_CORE_SUBSET_201005.utf8.txt' with delimiter '|';
+copy snomedct_core_complete from '{{snomed_core_data}}' with delimiter '|';
 
 
 -- insert the coding system
