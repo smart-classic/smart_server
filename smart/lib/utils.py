@@ -131,7 +131,7 @@ def default_ns():
    d = {}
    d['dc'] = RDF.NS('http://purl.org/dc/elements/1.1/')
    d['dcterms'] = RDF.NS('http://purl.org/dc/terms/')
-   d['med'] = RDF.NS('http://smartplatforms.org/med#')
+   d['med'] = RDF.NS('http://smartplatforms.org/medication#')
    d['med'] = RDF.NS('http://www.nlm.nih.gov/research/umls/')
    d['sp'] = RDF.NS('http://smartplatforms.org/')
    d['foaf']=RDF.NS('http://xmlns.com/foaf/0.1/')
@@ -259,3 +259,6 @@ def x_domain(r):
   r['Access-Control-Allow-Origin'] = "*"# "%s://%s:%s"%(ui['scheme'], ui['host'], ui['port'])
   return r
 
+
+def trim(p, n):
+    return '/'.join(p.split('/')[:-n])

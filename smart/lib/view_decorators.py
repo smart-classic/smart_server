@@ -45,37 +45,16 @@ def paramloader(*params):
         new_args[EXTID] = new_args[PHA_EMAIL] + DELIMITER + new_args[EXTID]
       return new_args
 
-    def _remove_non_appspecific_pha(request, req_path, new_args):
-      """ Remove non-app-specific pha from arg list"""
-
-      # SZ: Hack, re-organize
-      PHA = 'pha'
-      if PHA in new_args and 'apps' not in req_path:
-        del new_args[PHA]
-      return new_args
-
-    def _init_docbox(params):
-      docbox_obj = None
-      insert_docbox = 'docbox' in params
-      if insert_docbox:
-        docbox_obj = Docbox()
-      return docbox_obj, insert_docbox
-
     def paramloaded_func(request, **kwargs):
       """ A decorator for automatically loading URL-based parameters 
           that are in standard form.
       """
-
-      DOCBOX      = 'docbox'
-      # SZ: Add pha
-      docbox_list = ('carenet', 'record')
 
       # Init
       check_safety()
       new_args                  = _complete_extid(copy.copy(kwargs))
       req_path                  = request.path_info.split('/')
       params_intersect          = _get_params_intersection(new_args)
-      docbox_obj, insert_docbox = _init_docbox(params)
 
       for qparam, qparam_rel in params_intersect.items():
         # If the argument given is None then keep it as None
@@ -86,17 +65,10 @@ def paramloader(*params):
           try:
             query_kwargs = {qparam_rel[2] : new_args[qparam]}
             res_obj = qparam_rel[1].objects.get(**query_kwargs)
-            if qparam_rel[0] in docbox_list and insert_docbox:
-              new_args[DOCBOX] = docbox_obj.set(res_obj)
-            else:
-              new_args[qparam_rel[0]] = res_obj
+            new_args[qparam_rel[0]] = res_obj
             del new_args[qparam]
           except Exception, e:
-            raise Http404
-      new_args = _remove_non_appspecific_pha(request, req_path, new_args)
-      # Hack, remove
-      if insert_docbox and not DOCBOX in new_args:
-        new_args[DOCBOX] = Docbox()
+            pass
       return func(request, **new_args)
     return functools.update_wrapper(paramloaded_func, func)
   return paramloader_decorator

@@ -15,9 +15,319 @@ import RDF
 from StringIO import StringIO
 import smart.models
 from smart.lib.utils import parse_rdf, serialize_rdf, bound_graph, strip_ns, x_domain
+from string import Template
+import re
+import uuid
 
 SPARQL = 'SPARQL'
+smart_base = "http://smartplatforms.org"
 
+def record_fetch_graph(record):
+    c = RecordStoreConnector(record)
+    g = parse_rdf(c.get())
+    return g
+
+
+def record_save_graph(record, g):
+    c = RecordStoreConnector(record)
+    triples = serialize_rdf(g)
+    c.set( triples )
+
+def query_graph(queries, graph, serialize=True):
+
+    g = bound_graph()
+    
+    for query in queries:
+        query = query.encode()
+        print "QUERYING ", query
+        q = RDF.SPARQLQuery(query)
+        res = q.execute(graph)
+        try:
+            for s in res.as_stream():
+                if not g.contains_statement(s):
+                    g.append(s)
+        except TypeError: pass
+
+    if (not serialize):
+        return g    
+    return serialize_rdf(g)
+
+def rdf_response(s):
+    return x_domain(HttpResponse(s, mimetype="application/rdf+xml"))
+
+@paramloader()
+def record_sparql(request, record):
+    g = record_fetch_graph(record)  
+    res_string = ""
+    if ('q' not in request.GET.keys()):
+        res_string = triples
+    else:
+        res_string = query_graph(request.GET['q'].encode(), g)
+
+    return rdf_response(res_string)
+
+from string import Template
+def recursive_query(root_subject, root_predicate, root_object, child_levels):
+
+    base_query = """
+    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    CONSTRUCT {?s ?p ?o.}
+    WHERE {
+      $insertion_point 
+    }
+    """
+    
+    level_query = """
+      {
+           ${level_0_subject} %s %s.
+           $insertion_point 
+           ?s ?p ?o.
+      }
+    """ % (root_predicate, root_object)
+    
+    one_level = """
+           ${l} ${l_pred} ?${l_next}."""
+
+    
+    level_queries = []
+    for i in child_levels:
+        if not child_levels[i]:
+            child_levels[i] = ['any_type']            
+        for level in child_levels[i]:
+            this_level_insertion = ""
+            for j in xrange(i):
+                print "i,j",i,",", j
+                this_level_insertion += Template(one_level).substitute(
+                            l= (j==0 and root_subject) or ("?level_%s_subject"%str(j)),
+                            l_pred= "?level_%s_predicate"%str(j     ),
+                            l_next=(j == i-1 and "s" or "level_%s_subject"%str(j+1)))
+            if level != 'any_type':
+                this_level_insertion += "\n ?s rdf:type %s."%level
+            if (i == 0 and root_subject):
+                this_level_insertion = "\n   FILTER (?s=%s) \n"%(root_subject)
+            level_queries.append(Template(level_query).substitute(level_0_subject= root_subject or (i==0 and  "?s" or "?level_0_subject"), insertion_point = this_level_insertion))
+            
+    return [Template(base_query).substitute(insertion_point=level_query) for level_query in level_queries]
+
+def remap_node(model, old_node, new_node):
+    for s in model.find_statements(RDF.Statement(old_node, None, None)):
+        del model[s]
+        model.append(RDF.Statement(new_node, s.predicate, s.object))
+    for s in model.find_statements(RDF.Statement(None, None, old_node)):
+        del model[s]
+        model.append(RDF.Statement(s.subject, s.predicate, new_node))            
+    return
+
+
+def generate_uris(g, type, uri_template):
+    type = re.search("<(.*)>", type).group(1)
+    
+    qs = RDF.Statement(subject=None, 
+                       predicate=RDF.Node(uri_string='http://www.w3.org/1999/02/22-rdf-syntax-ns#type'), 
+                       object=RDF.Node(uri_string=type))
+    
+    def find_parent(child):
+        pqs = RDF.Statement(subject=None, 
+                            predicate=None, 
+                            object=child)
+        
+        found=False
+        for s in g.find_statements(pqs):
+            if (found): raise Exception("Found >1 parent for ", child)
+            found = s.subject.uri
+            
+        return found
+
+    
+    node_map = {}
+    for s in g.find_statements(qs):
+        if s.subject not in node_map:
+            potential_parent = find_parent(s.subject)
+            uri_string = Template(uri_template).substitute(
+                                          parent_id=potential_parent,
+                                          new_id=str(uuid.uuid4())
+                                          ).encode()
+            print "made up URI: ", uri_string
+            node_map[s.subject] = RDF.Node(uri_string=uri_string)
+    
+    for (old_node, new_node) in node_map.iteritems():
+        remap_node(g, old_node, new_node)
+
+
+
+def rdf_get(record, query):
+    g = record_fetch_graph(record)  
+    res_string = query_graph(query, g)
+    print "RESULT ", res_string
+    return rdf_response(res_string)
+
+def rdf_delete(record, query):      
+    g = record_fetch_graph(record)  
+    deleted = bound_graph()
+
+    for r in query_graph(query, g, serialize=False):
+       deleted.append(r)
+       g.remove_statement(r)
+    
+    record_save_graph(record, g)
+    return rdf_response(serialize_rdf(deleted))
+
+def rdf_post(record, new_g):
+    g = record_fetch_graph(record)  
+
+    for s in new_g:
+        if not g.contains_statement(s):
+            g.append(s)
+    
+    record_save_graph(record, g)
+    return rdf_response(serialize_rdf(new_g))
+    
+"""
+MEDS 
+"""
+def record_meds_query(root_subject=None):
+    q = recursive_query(root_subject=root_subject,
+                                root_predicate="rdf:type",
+                                root_object="<http://smartplatforms.org/medication>",
+                                child_levels= {0: ['any_type'],
+                                               1: ["<http://smartplatforms.org/fulfillment>",
+                                                   "<http://smartplatforms.org/prescription>"]
+                                               })
+    return q
+
+@paramloader()
+def record_meds_get(request, record):
+    return rdf_get(record, record_meds_query())
+
+@paramloader()
+def record_meds_delete(request, record):
+    return rdf_delete(record, record_meds_query())
+
+@paramloader()
+def record_meds_post(request, record):
+    g = parse_rdf(request.raw_post_data)
+    generate_uris(g, 
+                  "<http://smartplatforms.org/medication>", 
+                  "%s/records/%s/medications/${new_id}" % (smart_base, record.id))
+    
+    generate_uris(g,
+                  "<http://smartplatforms.org/fulfillment>", 
+                  "${parent_id}/fulfillments/${new_id}")
+    
+    generate_uris(g,
+                  "<http://smartplatforms.org/prescription>", 
+                  "${parent_id}/prescriptions/${new_id}")
+    
+    return rdf_post(record, g)
+
+
+"""
+ONE MED 
+"""
+def record_med_query(root_subject):
+    return record_meds_query(root_subject)
+
+@paramloader()
+def record_med_get(request, record, med_id):
+    return rdf_get(record, record_med_query("<%s%s>"%(smart_base, request.path)))
+
+@paramloader()
+def record_med_delete(request, record, med_id):
+    return rdf_delete(record, record_med_query("<%s%s>"%(smart_base,request.path)))
+
+
+"""
+FULFILLMENTS 
+"""
+def record_med_fulfillments_query(root_subject):
+    q = recursive_query(root_subject=root_subject,
+                                root_predicate="rdf:type",
+                                root_object="<http://smartplatforms.org/medication>",
+                                child_levels= {
+                                               1: ["<http://smartplatforms.org/fulfillment>"]
+                                               })
+    return q
+
+@paramloader()
+def record_med_fulfillments_get(request, record, med_id):    
+    return rdf_get(record, record_med_fulfillments_query("<%s%s>"%(smart_base, utils.trim(request.path, 1))))
+
+@paramloader()
+def record_med_fulfillments_delete(request, record, med_id):    
+    return rdf_delete(record, record_med_fulfillments_query("<%s%s>"%(smart_base,utils.trim(request.path, 1))))
+
+@paramloader()
+def record_med_fulfillments_post(request, record, med_id):
+    g = parse_rdf(request.raw_post_data)
+    generate_uris(g,
+                  "<http://smartplatforms.org/fulfillment>", 
+                  "${parent_id}/${new_id}" % record.id)    
+    return rdf_post(record, g)
+
+
+"""
+ONE FULFILLMENT 
+"""
+def record_med_fulfillment_query(root_subject):
+    q = recursive_query(root_subject=root_subject,
+                                root_predicate="rdf:type",
+                                root_object="<http://smartplatforms.org/fulfillment>",
+                                child_levels= {0: ["any_type"]})
+    return q
+
+@paramloader()
+def record_med_fulfillment_get(request, record, med_id, fill_id):
+    return rdf_get(record, record_med_fulfillment_query("<%s%s>"%(smart_base, request.path)))
+
+@paramloader()
+def record_med_fulfillment_delete(request, record, med_id, fill_id):
+    return rdf_delete(record, record_med_fulfillment_query("<%s%s>"%(smart_base,request.path)))
+
+
+"""
+PROBLEMS 
+"""
+def record_problems_query(root_subject=None):
+    q = recursive_query(root_subject=root_subject,
+                                root_predicate="rdf:type",
+                                root_object="<http://smartplatforms.org/problem>",
+                                child_levels= {0: ['any_type']})
+    return q
+
+@paramloader()
+def record_problems_get(request, record):
+    return rdf_get(record, record_problems_query())
+
+@paramloader()
+def record_problems_delete(request, record):
+    return rdf_delete(record, record_problems_query())
+
+
+@paramloader()
+def record_problems_post(request, record):
+    g = parse_rdf(request.raw_post_data)
+    generate_uris(g, 
+                  "<http://smartplatforms.org/problem>", 
+                  "%s/records/%s/problems/${new_id}" % (smart_base,record.id))
+    
+    return rdf_post(record, g)
+
+
+"""
+ONE PROBLEM 
+"""
+def record_problem_query(root_subject):
+    return record_problems_query(root_subject)
+
+@paramloader()
+def record_problem_get(request, record, problem_id):
+    return rdf_get(record, record_problems_query("<%s%s>"%(smart_base,request.path)))
+
+@paramloader()
+def record_problem_delete(request, record, problem_id):
+    return rdf_delete(record, record_problems_query("<%s%s>"%(smart_base,request.path)))
+
+ 
 # Replace the entire store with data passed in
 def post_rdf (request, connector, maintain_existing_store=False):
     ct = utils.get_content_type(request).lower()
@@ -158,14 +468,14 @@ class PHAStoreConnector():
         self.object.triples = triples
         self.object.save()
         
-class MedStoreConnector():
-    def __init__(self, request, record):
+class RecordStoreConnector():
+    def __init__(self, record):
         self.record = record 
         #todo: replace with get_or_create
         try:
-            self.object = smart.models.Medication.objects.get(record=self.record)
+            self.object = smart.models.RecordRDF.objects.get(record=self.record)
         except:
-            self.object = smart.models.Medication.objects.create(record=self.record)
+            self.object = smart.models.RecordRDF.objects.create(record=self.record)
         
     def get(self):    
         return self.object.triples

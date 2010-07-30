@@ -2,7 +2,7 @@
 xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
 xmlns:xs="http://www.w3.org/2001/XMLSchema"
 xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-xmlns:med="http://smartplatforms.org/med#" 
+xmlns:med="http://smartplatforms.org/medication#"
 xmlns:sp="http://smartplatforms.org/" 
 xmlns:dcterms="http://purl.org/dc/terms/"
 xmlns:dc="http://purl.org/dc/elements/1.1/"
@@ -34,7 +34,7 @@ version="1.0">
   <xsl:variable name="fulfillments" select="count(.//Fulfillment)" />
   <sp:fulfillment>  
     <rdf:Description>
-      <rdf:type><xsl:attribute name="rdf:resource">http://smartplatforms.org/med#fulfillment</xsl:attribute></rdf:type>
+      <rdf:type><xsl:attribute name="rdf:resource">http://smartplatforms.org/fulfillment</xsl:attribute></rdf:type>
       <xsl:choose><xsl:when test="$dispense_date">
       <dc:date><xsl:value-of select='$dispense_date'/></dc:date>
       </xsl:when>
@@ -80,7 +80,7 @@ version="1.0">
   </xsl:choose>
 
 
-  <rdf:type><xsl:attribute name="rdf:resource">http://smartplatforms.org/med#medication</xsl:attribute></rdf:type>
+  <rdf:type><xsl:attribute name="rdf:resource">http://smartplatforms.org/medication</xsl:attribute></rdf:type>
 
   <xsl:choose><xsl:when test="$cui">
   	    <med:drug><xsl:attribute name="rdf:resource">http://link.informatics.stonybrook.edu/rxnorm/RXCUI/<xsl:value-of select="$cui"/></xsl:attribute></med:drug>
@@ -92,10 +92,10 @@ version="1.0">
   	    <med:dose><xsl:value-of select="$dose"/></med:dose>
   </xsl:when></xsl:choose>
   <xsl:choose><xsl:when test="$doseu">
-  	    <med:doseUnits><xsl:attribute name="rdf:resource">http://smartplatforms.org/med#<xsl:value-of select="$doseu"/></xsl:attribute></med:doseUnits>
+  	    <med:doseUnits><xsl:value-of select="$doseu"/></med:doseUnits>
   </xsl:when></xsl:choose>
   <xsl:choose><xsl:when test="$route">
-  	    <med:route><xsl:attribute name="rdf:resource">http://smartplatforms.org/med#<xsl:value-of select="$route"/></xsl:attribute></med:route>
+  	    <med:route><xsl:value-of select="$route"/></med:route>
   </xsl:when></xsl:choose>
   <xsl:choose><xsl:when test="$freq">
   	    <med:frequency><xsl:value-of select="$freq"/></med:frequency>
@@ -105,9 +105,7 @@ version="1.0">
   <xsl:choose>
   <xsl:when test="$start_date">
 	<med:startDate>
-		<rdf:Description>
-			<dc:date><xsl:value-of select="$start_date" /></dc:date>
-		</rdf:Description>
+	<xsl:value-of select="$start_date" />
 	</med:startDate>
   </xsl:when>
   </xsl:choose>
@@ -116,9 +114,7 @@ version="1.0">
   <xsl:choose>
   <xsl:when test="$end_date">
 	<med:endDate>
-		<rdf:Description>
-			<dc:date><xsl:value-of select="$end_date" /></dc:date>
-		</rdf:Description>
+	<xsl:value-of select="$end_date" />
 	</med:endDate>
   </xsl:when>
   </xsl:choose>
@@ -131,10 +127,10 @@ version="1.0">
   	    <med:strength><xsl:value-of select="$strength"/></med:strength>
   </xsl:when></xsl:choose>
   <xsl:choose><xsl:when test="$strengthu">
-  	    <med:strengthUnits><xsl:attribute name="rdf:resource">http://smartplatforms.org/med#<xsl:value-of select="$strengthu"/></xsl:attribute></med:strengthUnits>
+  	    <med:strengthUnits><xsl:value-of select="$strengthu"/></med:strengthUnits>
   </xsl:when></xsl:choose>
   <xsl:choose><xsl:when test="form">
-  	    <med:form><xsl:attribute name="rdf:resource">http://smartplatforms.org/med#<xsl:value-of select="$form"/></xsl:attribute></med:form>
+  	    <med:form><xsl:value-of select="$form"/></med:form>
   </xsl:when></xsl:choose>
 
 <xsl:choose><xsl:when test="$instructions">
