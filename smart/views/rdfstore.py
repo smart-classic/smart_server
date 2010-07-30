@@ -39,7 +39,7 @@ def query_graph(queries, graph, serialize=True):
     
     for query in queries:
         query = query.encode()
-        print "QUERYING ", query
+#        print "QUERYING ", query
         q = RDF.SPARQLQuery(query)
         res = q.execute(graph)
         try:
@@ -96,7 +96,6 @@ def recursive_query(root_subject, root_predicate, root_object, child_levels):
         for level in child_levels[i]:
             this_level_insertion = ""
             for j in xrange(i):
-                print "i,j",i,",", j
                 this_level_insertion += Template(one_level).substitute(
                             l= (j==0 and root_subject) or ("?level_%s_subject"%str(j)),
                             l_pred= "?level_%s_predicate"%str(j     ),
@@ -119,7 +118,7 @@ def remap_node(model, old_node, new_node):
     return
 
 
-def generate_uris(g, type, uri_template):
+def generate_uris(g, type, uri_template, external_id=None):
     type = re.search("<(.*)>", type).group(1)
     
     qs = RDF.Statement(subject=None, 
@@ -147,18 +146,29 @@ def generate_uris(g, type, uri_template):
                                           parent_id=potential_parent,
                                           new_id=str(uuid.uuid4())
                                           ).encode()
-            print "made up URI: ", uri_string
+#            print "made up URI: ", uri_string
             node_map[s.subject] = RDF.Node(uri_string=uri_string)
     
+    mapped_external = False
     for (old_node, new_node) in node_map.iteritems():
         remap_node(g, old_node, new_node)
+        
+        if (external_id):
+            if mapped_external:
+                raise Exception("You can only PUT one resource by external_id at a time.")
+            mapped_external = True
+        
+            g.append(RDF.Statement(
+                    subject=new_node, 
+                    predicate=RDF.Node(uri_string='http://smartplatforms.org/external_id'), 
+                    object=RDF.Node(literal=external_id)))
 
 
 
 def rdf_get(record, query):
     g = record_fetch_graph(record)  
     res_string = query_graph(query, g)
-    print "RESULT ", res_string
+#    print "RESULT ", res_string
     return rdf_response(res_string)
 
 def rdf_delete(record, query):      
@@ -235,6 +245,27 @@ def record_med_get(request, record, med_id):
 def record_med_delete(request, record, med_id):
     return rdf_delete(record, record_med_query("<%s%s>"%(smart_base,request.path)))
 
+@paramloader()
+def record_med_put(request, record, external_id):
+    g = parse_rdf(request.raw_post_data)
+
+    q = recursive_query(root_subject=None,
+                                root_predicate="<http://smartplatforms.org/external_id>",
+                                root_object='"%s"'%external_id,
+                                child_levels= {0: ["<http://smartplatforms.org/medication>"],
+                                               1: ["<http://smartplatforms.org/fulfillment>",
+                                                   "<http://smartplatforms.org/prescription>"]
+                                               })
+
+    rdf_delete(record, q)
+
+    generate_uris(g, 
+                  "<http://smartplatforms.org/medication>", 
+                  "%s/records/%s/medications/${new_id}" % (smart_base, record.id),
+                  external_id=external_id)
+        
+    return rdf_post(record, g)
+
 
 """
 FULFILLMENTS 
@@ -263,6 +294,27 @@ def record_med_fulfillments_post(request, record, med_id):
                   "<http://smartplatforms.org/fulfillment>", 
                   "${parent_id}/${new_id}" % record.id)    
     return rdf_post(record, g)
+
+@paramloader()
+def record_med_fulfillment_put(request, record, external_id):
+    g = parse_rdf(request.raw_post_data)
+
+    q = recursive_query(root_subject=None,
+                                root_predicate="<http://smartplatforms.org/external_id>",
+                                root_object='"%s"'%external_id,
+                                child_levels= {
+                                               0: ["<http://smartplatforms.org/fulfillment>"],
+                                               })
+
+    rdf_delete(record, q)
+
+    generate_uris(g, 
+                  "<http://smartplatforms.org/fulfillment>", 
+                  "${parent_id}/${new_id}",
+                  external_id=external_id)
+        
+    return rdf_post(record, g)
+
 
 
 """
@@ -326,6 +378,28 @@ def record_problem_get(request, record, problem_id):
 @paramloader()
 def record_problem_delete(request, record, problem_id):
     return rdf_delete(record, record_problems_query("<%s%s>"%(smart_base,request.path)))
+
+
+@paramloader()
+def record_problem_put(request, record, external_id):
+    g = parse_rdf(request.raw_post_data)
+
+    q = recursive_query(root_subject=None,
+                                root_predicate="<http://smartplatforms.org/external_id>",
+                                root_object='"%s"'%external_id,
+                                child_levels= {
+                                               0: ["<http://smartplatforms.org/problem>"]
+                                               })
+
+    rdf_delete(record, q)
+
+    generate_uris(g, 
+                  "<http://smartplatforms.org/problem>", 
+                  "%s/records/%s/problems/${new_id}" % (smart_base, record.id),
+                  external_id=external_id)
+        
+    return rdf_post(record, g)
+
 
  
 # Replace the entire store with data passed in

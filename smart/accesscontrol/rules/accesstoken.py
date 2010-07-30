@@ -25,12 +25,12 @@ def grant(accesstoken, permset):
 
     permset.grant(record_sparql)
     
-    
 
     permset.grant(record_problems_get)
     permset.grant(record_problems_post)
     
     permset.grant(record_problem_get)
+    permset.grant(record_problem_put)
     permset.grant(record_problem_delete)
     
     
@@ -40,6 +40,7 @@ def grant(accesstoken, permset):
     permset.grant(record_meds_delete)
     
     permset.grant(record_med_get)
+    permset.grant(record_med_put)
     permset.grant(record_med_delete)
     
     
@@ -48,5 +49,6 @@ def grant(accesstoken, permset):
     permset.grant(record_med_fulfillments_post)
     
     permset.grant(record_med_fulfillment_get)
+    permset.grant(record_med_fulfillment_put)
     permset.grant(record_med_fulfillment_delete)
 
