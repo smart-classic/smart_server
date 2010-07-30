@@ -191,19 +191,6 @@ xmlns:bio="http://purl.org/vocab/bio/0.1/"
  ss_10.id,
  ss_11.id)
 
-p = Problem(record=ss_1, triples = """<?xml version="1.0" encoding="utf-8"?>
-<rdf:RDF  xmlns:foaf="http://xmlns.com/foaf/0.1/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:sp="http://smartplatforms.org/" xmlns:umls="http://www.nlm.nih.gov/research/umls/" xmlns:dcterms="http://purl.org/dc/terms/">
-         <rdf:Description>
-            <rdf:type rdf:resource="http://smartplatforms.org/problem"/>
-            <umls:cui>C0027424</umls:cui>
-            <dcterms:title>Nasal congestion (Finding)</dcterms:title>
-            <sp:onset>2008-12-14</sp:onset>
-            <sp:resolution>2009-02-01</sp:resolution>
-            <sp:notes>Congestion worst on first waking up.</sp:notes>
-         </rdf:Description>
-</rdf:RDF>
-""")
-p.save()
 
 interpolated_postgres_load(
     os.path.join(settings.APP_HOME, "codingsystems/data/load-snomedctcore.sql"),

@@ -94,17 +94,4 @@ urlpatterns = patterns(
                                        'DELETE': delete_rdf_store,
                                        'OPTIONS' : allow_options})),
 
-    (r'^med_store/records/(?P<record_id>[^/]*)/$', MethodDispatcher({
-                                       'GET': get_rdf_meds,
-                                       'PUT': put_rdf_meds,
-                                       'POST': post_rdf_meds,
-                                       'DELETE': delete_rdf_meds,
-                                       'OPTIONS' : allow_options})),
-
-    (r'^problem_store/records/(?P<record_id>[^/]*)/$', MethodDispatcher({
-                                       'GET': get_rdf_problems,
-                                       'PUT': put_rdf_problems,
-                                       'POST': post_rdf_problems,
-                                       'DELETE': delete_rdf_problems,
-                                       'OPTIONS' : allow_options}))
   )
