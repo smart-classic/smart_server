@@ -44,7 +44,6 @@ def grant(account, permset):
     permset.grant(request_token_claim, None)
     permset.grant(request_token_approve, None) # need to verify record ID?
     permset.grant(request_token_info, None) # need to verify exists?
-    permset.grant(get_rdf_meds, None)
     permset.grant(account_recent_records, [check_my_account])
     permset.grant(record_search, [])
     permset.grant(apps_for_account, [])
