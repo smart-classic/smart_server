@@ -319,11 +319,11 @@ def record_med_fulfillments_query(root_subject):
 
 @paramloader()
 def record_med_fulfillments_get(request, record, med_id):    
-    return rdf_get(record, record_med_fulfillments_query("<%s%s>"%(smart_base, utils.trim(request.path, 1))))
+    return rdf_get(record, record_med_fulfillments_query("<%s%s>"%(smart_base, utils.trim(request.path, 2))))
 
 @paramloader()
 def record_med_fulfillments_delete(request, record, med_id):    
-    return rdf_delete(record, record_med_fulfillments_query("<%s%s>"%(smart_base,utils.trim(request.path, 1))))
+    return rdf_delete(record, record_med_fulfillments_query("<%s%s>"%(smart_base,utils.trim(request.path, 2))))
 
 @paramloader()
 def record_med_fulfillments_post(request, record, med_id):
@@ -334,7 +334,7 @@ def record_med_fulfillments_post(request, record, med_id):
                   "%s/records/%s/medications/%s/fulfillments/${new_id}" % (smart_base, record.id, med_id))    
     
     for n in new_nodes:
-        parent_med = "%s%s"%(smart_base,utils.trim(request.path, 1))
+        parent_med = "%s%s"%(smart_base,utils.trim(request.path, 2))
         g.append(RDF.Statement(
                 subject=RDF.Node(uri_string=parent_med), 
                 predicate=RDF.Node(uri_string='http://smartplatforms.org/fulfillment'), 
@@ -376,6 +376,7 @@ def record_med_fulfillment_delete_external(request, record, med_id, external_id)
     return rdf_delete(record, record_med_fulfillment_query_external(external_id));
 
 
+# TODO: implement the delete query by first grabbing the internal ID, then running standard internal delete.
 @paramloader()
 def record_med_fulfillment_put(request, record, med_id, external_id):
     q = recursive_query(root_subject=None,
