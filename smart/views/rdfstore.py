@@ -117,6 +117,20 @@ def remap_node(model, old_node, new_node):
         model.append(RDF.Statement(s.subject, s.predicate, new_node))            
     return
 
+def internal_id(record, external_id):
+    graph = record_fetch_graph(record)
+    
+    qs = RDF.Statement(subject=None, 
+                       predicate=RDF.Node(uri_string="http://smartplatforms.org/external_id"), 
+                       object=RDF.Node(literal=external_id.encode()))
+    
+    child = None
+    for s in graph.find_statements(qs):
+        q = s.subject
+        break
+
+    return str(s.subject.uri)   
+    
 
 def generate_uris(g, type, uri_template):
     
@@ -205,7 +219,7 @@ def rdf_put(record, graph, new_nodes, external_id, delete_query):
     graph.append(RDF.Statement(
             subject=new_nodes[0], 
             predicate=RDF.Node(uri_string='http://smartplatforms.org/external_id'), 
-            object=RDF.Node(literal=external_id)))
+            object=RDF.Node(literal=external_id.encode())))
     
 
     print "PUTting ", serialize_rdf(graph)
@@ -259,12 +273,6 @@ ONE MED
 def record_med_query(root_subject):
     return record_meds_query(root_subject)
 
-def record_med_query_external(external_id):
-    q = recursive_query(root_subject=None,
-                            root_predicate="<http://smartplatforms.org/external_id>",
-                            root_object='"%s"'%external_id,
-                            child_levels= {0: ["<http://smartplatforms.org/medication>"]})
-
 
 @paramloader()
 def record_med_get(request, record, med_id):
@@ -276,12 +284,13 @@ def record_med_delete(request, record, med_id):
 
 @paramloader()
 def record_med_delete_external(request, record, external_id):
-    return rdf_delete(record, record_med_query_external(external_id))
-
+    id = internal_id(record, external_id)
+    return rdf_delete(record, record_med_query("<%s>"%(id)))
 
 @paramloader()
 def record_med_get_external(request, record, external_id):
-    return rdf_get(record, record_med_query_external(external_id))
+    id = internal_id(record, external_id)
+    return rdf_get(record, record_med_query("<%s>"%(id)))
 
 
 @paramloader()
@@ -356,24 +365,20 @@ def record_med_fulfillment_query(root_subject):
                                 child_levels= {0: ["any_type"]})
     return q
 
-def record_med_fulfillment_query_external(external_id):
-    q = recursive_query(root_subject=None,
-                            root_predicate="<http://smartplatforms.org/external_id>",
-                            root_object='"%s"'%external_id,
-                            child_levels= {0: ["<http://smartplatforms.org/fulfillment>"]})
-    return q
 
 @paramloader()
 def record_med_fulfillment_get(request, record, med_id, fill_id):
     return rdf_get(record, record_med_fulfillment_query("<%s%s>"%(smart_base, request.path)))
 
 @paramloader()
-def record_med_fulfillment_get_external(request, record, external_id):
-    return rdf_get(record, record_med_fulfillment_query_external(external_id));
+def record_med_fulfillment_get_external(request, record, med_id, external_id):
+    id = internal_id(record, external_id)
+    return rdf_get(record, record_med_fulfillment_query("<%s>"%(id)))
 
 @paramloader()
 def record_med_fulfillment_delete_external(request, record, med_id, external_id):
-    return rdf_delete(record, record_med_fulfillment_query_external(external_id));
+    id = internal_id(record, external_id)
+    return rdf_delete(record, record_med_fulfillment_query("<%s>"%(id)))
 
 
 # TODO: implement the delete query by first grabbing the internal ID, then running standard internal delete.
@@ -444,14 +449,6 @@ def record_problem_query(root_subject):
     return record_problems_query(root_subject)
 
 
-def record_problem_query_external(external_id):
-    q = recursive_query(root_subject=None,
-                            root_predicate="<http://smartplatforms.org/external_id>",
-                            root_object='"%s"'%external_id,
-                            child_levels= {0: ["<http://smartplatforms.org/problem>"]})
-
-    return q
-
 @paramloader()
 def record_problem_get(request, record, problem_id):
     return rdf_get(record, record_problem_query("<%s%s>"%(smart_base,request.path)))
@@ -459,11 +456,13 @@ def record_problem_get(request, record, problem_id):
 
 @paramloader()
 def record_problem_get_external(request, record, external_id):
-    return rdf_get(record, record_problem_query_external(external_id))
+    id = internal_id(record, external_id)
+    return rdf_get(record, record_problem_query("<%s>"%(id)))
 
 @paramloader()
 def record_problem_delete_external(request, record, external_id):
-    return rdf_delete(record, record_problem_query_external(external_id))
+    id = internal_id(record, external_id)
+    return rdf_delete(record, record_problem_query("<%s>"%(id)))
 
 @paramloader()
 def record_problem_delete(request, record, problem_id):
