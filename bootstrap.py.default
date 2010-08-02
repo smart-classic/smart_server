@@ -55,6 +55,17 @@ PHA.objects.create(start_url_template= 'http://localhost:8002/smart/start_auth?r
                    email='surescripts-sync@apps.smart.org',
                    background_p=True)
 
+PHA.objects.create(start_url_template= 'http://localhost:8001/api_playground.html',
+                   callback_url = 'http://localhost:8001/auth/after',
+                   has_ui = True,
+                   frameable = True,
+                   description = 'Experiment with the SMArt API in a controlled environment',
+                   consumer_key = 'smart-api-playground-app',
+                   secret = 'smartapp-secret',
+                   name ='SMArt API Playground',
+                   email='smart-api-playground@apps.smart.org',
+                   background_p=False)
+
 a = Account.objects.create(email = 'benadida@smart.org', full_name='Ben Adida', contact_email = 'ben@adida.net')
 a.set_username_and_password(username='benadida', password='test')
 
@@ -190,7 +201,6 @@ xmlns:bio="http://purl.org/vocab/bio/0.1/"
  ss_9.id,
  ss_10.id,
  ss_11.id)
-
 
 interpolated_postgres_load(
     os.path.join(settings.APP_HOME, "codingsystems/data/load-snomedctcore.sql"),
