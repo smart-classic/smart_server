@@ -132,7 +132,7 @@ def default_ns():
    d['dc'] = RDF.NS('http://purl.org/dc/elements/1.1/')
    d['dcterms'] = RDF.NS('http://purl.org/dc/terms/')
    d['med'] = RDF.NS('http://smartplatforms.org/medication#')
-   d['med'] = RDF.NS('http://www.nlm.nih.gov/research/umls/')
+   d['umls'] = RDF.NS('http://www.nlm.nih.gov/research/umls/')
    d['sp'] = RDF.NS('http://smartplatforms.org/')
    d['foaf']=RDF.NS('http://xmlns.com/foaf/0.1/')
    d['rdf'] = RDF.NS('http://www.w3.org/1999/02/22-rdf-syntax-ns#')
@@ -261,4 +261,4 @@ def x_domain(r):
 
 
 def trim(p, n):
-    return '/'.join(p.split('/')[:-n])
+    return '/'.join(p.split('/')[:-n]).encode()

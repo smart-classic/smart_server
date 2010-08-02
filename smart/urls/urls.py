@@ -45,6 +45,8 @@ urlpatterns = patterns(
     (r'^records/(?P<record_id>[^/]+)/medications/external_id/(?P<external_id>.*)$',  
                                     MethodDispatcher({
                                        'PUT': record_med_put,
+                                       'GET': record_med_get_external,
+                                       'DELETE': record_med_delete_external,
                                        'OPTIONS' : allow_options})),
 #    
     (r'^records/(?P<record_id>[^/]+)/medications/(?P<med_id>[^/]+)/fulfillments$',  MethodDispatcher({
@@ -60,6 +62,8 @@ urlpatterns = patterns(
 
     (r'^records/(?P<record_id>[^/]+)/medications/(?P<med_id>[^/]+)/fulfillments/external_id/(?P<external_id>.*)$',   MethodDispatcher({
                                        'PUT': record_med_fulfillment_put,
+                                       'GET': record_med_fulfillment_get_external,
+                                       'DELETE': record_med_fulfillment_delete_external,
                                        'OPTIONS' : allow_options})),
 
 #    
@@ -77,6 +81,7 @@ urlpatterns = patterns(
     (r'^records/(?P<record_id>[^/]+)/problems$', MethodDispatcher({
                                        'GET': record_problems_get,
                                        'POST': record_problems_post,
+                                       'DELETE': record_problems_delete,
                                        'OPTIONS' : allow_options})),
 #                                       
     (r'^records/(?P<record_id>[^/]+)/problems/(?P<problem_id>[^/]+)$', MethodDispatcher({
@@ -87,6 +92,8 @@ urlpatterns = patterns(
     (r'^records/(?P<record_id>[^/]+)/problems/external_id/(?P<external_id>.*)$',  
                                     MethodDispatcher({
                                        'PUT': record_problem_put,
+                                       'GET': record_problem_get_external,
+                                       'DELETE': record_problem_delete_external,
                                        'OPTIONS' : allow_options})),
 
 
