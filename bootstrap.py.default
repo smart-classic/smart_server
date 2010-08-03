@@ -72,8 +72,8 @@ a.set_username_and_password(username='benadida', password='test')
 a2 = Account.objects.create(email = 'joshmandel@smart.org', full_name='Josh Mandel', contact_email = 'jmandel@gmail.com')
 a2.set_username_and_password(username='joshmandel', password='test')
 
-a2 = Account.objects.create(email = 'test@smart.org', full_name='Test User', contact_email = 'jmandel@gmail.com')
-a2.set_username_and_password(username='test', password='test')
+a2 = Account.objects.create(email = 'test@smart.org', full_name='SMArt Developer', contact_email = 'jmandel@gmail.com')
+a2.set_username_and_password(username='developer', password='test')
 
 # create a couple of records
 
