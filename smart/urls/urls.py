@@ -42,7 +42,7 @@ urlpatterns = patterns(
                                        'OPTIONS' : allow_options})),
 
 
-    (r'^records/(?P<record_id>[^/]+)/medications/external_id/(?P<external_id>.*)$',  
+    (r'^records/(?P<record_id>[^/]+)/medications/external_id/(?P<external_id>[^/]+)$',  
                                     MethodDispatcher({
                                        'PUT': record_med_put,
                                        'GET': record_med_get_external,
@@ -61,10 +61,16 @@ urlpatterns = patterns(
                                        'OPTIONS' : allow_options})),
 
 
-    (r'^records/(?P<record_id>[^/]+)/medications/(?P<med_id>[^/]+)/fulfillments/external_id/(?P<external_id>.*)$',   MethodDispatcher({
-                                       'PUT': record_med_fulfillment_put,
+#    (r'^records/(?P<record_id>[^/]+)/medications/(?P<med_id>[^/]+)/fulfillments/external_id/(?P<external_id>.*)$',   MethodDispatcher({
+#                                       'PUT': record_med_fulfillment_put,
+#                                       'GET': record_med_fulfillment_get_external,
+#                                       'DELETE': record_med_fulfillment_delete_external,
+#                                       'OPTIONS' : allow_options})),
+
+    (r'^records/(?P<record_id>[^/]+)/medications/external_id/(?P<external_med_id>[^/]+)/fulfillments/external_id/(?P<external_fill_id>[^/]+)$',   MethodDispatcher({
                                        'GET': record_med_fulfillment_get_external,
                                        'DELETE': record_med_fulfillment_delete_external,
+                                       'PUT': record_med_fulfillment_put_external,
                                        'OPTIONS' : allow_options})),
 
 #    
@@ -90,7 +96,7 @@ urlpatterns = patterns(
                                        'DELETE': record_problem_delete,
                                        'OPTIONS' : allow_options})),
 
-    (r'^records/(?P<record_id>[^/]+)/problems/external_id/(?P<external_id>.*)$',  
+    (r'^records/(?P<record_id>[^/]+)/problems/external_id/(?P<external_id>[^/]+)$',  
                                     MethodDispatcher({
                                        'PUT': record_problem_put,
                                        'GET': record_problem_get_external,

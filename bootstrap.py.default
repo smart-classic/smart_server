@@ -51,7 +51,7 @@ PHA.objects.create(start_url_template= 'http://localhost:8002/smart/start_auth?r
                    description = 'Keeps SMArt updated from a SureScripts feed (long-term, runs in background)',
                    consumer_key = 'smart-bg-app',
                    secret = 'smartapp-secret',
-                   name ='SureScripts Sync',
+                   name ='SMArt Connector',
                    email='surescripts-sync@apps.smart.org',
                    background_p=True)
 
@@ -62,7 +62,7 @@ PHA.objects.create(start_url_template= 'http://localhost:8001/api_playground.htm
                    description = 'Experiment with the SMArt API in a controlled environment',
                    consumer_key = 'smart-api-playground-app',
                    secret = 'smartapp-secret',
-                   name ='SMArt API Playground',
+                   name ='API Playground',
                    email='smart-api-playground@apps.smart.org',
                    background_p=False)
 

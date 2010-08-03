@@ -42,8 +42,8 @@ def grant(accesstoken, permset):
     permset.grant(record_med_fulfillments_post)
     
     permset.grant(record_med_fulfillment_get)
-    permset.grant(record_med_fulfillment_get_external)
-    permset.grant(record_med_fulfillment_put)
     permset.grant(record_med_fulfillment_delete)
+    
     permset.grant(record_med_fulfillment_delete_external)
-
+    permset.grant(record_med_fulfillment_get_external)
+    permset.grant(record_med_fulfillment_put_external)
