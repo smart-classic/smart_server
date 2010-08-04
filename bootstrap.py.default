@@ -60,7 +60,7 @@ PHA.objects.create(start_url_template= 'http://localhost:8001/api_playground.htm
                    has_ui = True,
                    frameable = True,
                    description = 'Experiment with the SMArt API in a controlled environment',
-                   consumer_key = 'smart-api-playground-app',
+                   consumer_key = 'api-playground-app',
                    secret = 'smartapp-secret',
                    name ='API Playground',
                    email='api-playground@apps.smart.org',
@@ -116,6 +116,7 @@ xmlns:bio="http://purl.org/vocab/bio/0.1/"
   <foaf:givenName>Hiram</foaf:givenName>
   <foaf:gender>male</foaf:gender>
   <sp:zipcode>02543</sp:zipcode>
+  <sp:birthday>19631215</sp:birthday>
 </rdf:Description>
 
 <rdf:Description rdf:about="http://smartplatforms.org/records/%s">
@@ -124,6 +125,7 @@ xmlns:bio="http://purl.org/vocab/bio/0.1/"
   <foaf:givenName>Bert</foaf:givenName>
   <foaf:gender>male</foaf:gender>
   <sp:zipcode>63050</sp:zipcode>
+  <sp:birthday>19450419</sp:birthday>
 </rdf:Description>
 
 <rdf:Description rdf:about="http://smartplatforms.org/records/%s">
@@ -132,6 +134,7 @@ xmlns:bio="http://purl.org/vocab/bio/0.1/"
   <foaf:givenName>Bruce</foaf:givenName>
   <foaf:gender>male</foaf:gender>
   <sp:zipcode>54360</sp:zipcode>
+  <sp:birthday>19450201</sp:birthday>
 </rdf:Description>
 
 <rdf:Description rdf:about="http://smartplatforms.org/records/%s">
@@ -140,6 +143,7 @@ xmlns:bio="http://purl.org/vocab/bio/0.1/"
   <foaf:givenName>David</foaf:givenName>
   <foaf:gender>male</foaf:gender>
   <sp:zipcode>08608</sp:zipcode>
+  <sp:birthday>19720910</sp:birthday>
 </rdf:Description>
 
 <rdf:Description rdf:about="http://smartplatforms.org/records/%s">
@@ -148,6 +152,7 @@ xmlns:bio="http://purl.org/vocab/bio/0.1/"
   <foaf:givenName>Hans</foaf:givenName>
   <foaf:gender>male</foaf:gender>
   <sp:zipcode>19013</sp:zipcode>
+  <sp:birthday>19631201</sp:birthday>
 </rdf:Description>
 
 <rdf:Description rdf:about="http://smartplatforms.org/records/%s">
@@ -156,6 +161,7 @@ xmlns:bio="http://purl.org/vocab/bio/0.1/"
   <foaf:givenName>Mary</foaf:givenName>
   <foaf:gender>female</foaf:gender>
   <sp:zipcode>54360</sp:zipcode>
+  <sp:birthday>19510618</sp:birthday>
 </rdf:Description>
 
 <rdf:Description rdf:about="http://smartplatforms.org/records/%s">
@@ -164,6 +170,7 @@ xmlns:bio="http://purl.org/vocab/bio/0.1/"
   <foaf:givenName>Tad</foaf:givenName>
   <foaf:gender>male</foaf:gender>
   <sp:zipcode>82001</sp:zipcode>
+  <sp:birthday>19750705</sp:birthday>
 </rdf:Description>
 
 <rdf:Description rdf:about="http://smartplatforms.org/records/%s">
@@ -172,6 +179,7 @@ xmlns:bio="http://purl.org/vocab/bio/0.1/"
   <foaf:givenName>Nora</foaf:givenName>
   <foaf:gender>female</foaf:gender>
   <sp:zipcode>19013</sp:zipcode>
+  <sp:birthday>19641009</sp:birthday>
 </rdf:Description>
 
 <rdf:Description rdf:about="http://smartplatforms.org/records/%s">
@@ -180,6 +188,7 @@ xmlns:bio="http://purl.org/vocab/bio/0.1/"
   <foaf:givenName>Bob</foaf:givenName>
   <foaf:gender>male</foaf:gender>
   <sp:zipcode>90001</sp:zipcode>
+  <sp:birthday>19591225</sp:birthday>
 </rdf:Description>
 
 <rdf:Description rdf:about="http://smartplatforms.org/records/%s">
@@ -188,6 +197,7 @@ xmlns:bio="http://purl.org/vocab/bio/0.1/"
   <foaf:givenName>Douglas</foaf:givenName>
   <foaf:gender>female</foaf:gender>
   <sp:zipcode>01040</sp:zipcode>
+  <sp:birthday>19680901</sp:birthday>
 </rdf:Description>
 
 </rdf:RDF>""" % ( 
