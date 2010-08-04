@@ -124,6 +124,7 @@ class Account(Principal):
     try:
       return self.auth_systems.get(auth_system=AuthSystem.PASSWORD())
     except AccountAuthSystem.DoesNotExist:
+      print "No PASSWORD auth system for account."
       return None
 
   def _add_password_auth_system(self, username):

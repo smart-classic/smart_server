@@ -63,7 +63,7 @@ PHA.objects.create(start_url_template= 'http://localhost:8001/api_playground.htm
                    consumer_key = 'smart-api-playground-app',
                    secret = 'smartapp-secret',
                    name ='API Playground',
-                   email='smart-api-playground@apps.smart.org',
+                   email='api-playground@apps.smart.org',
                    background_p=False)
 
 a = Account.objects.create(email = 'benadida@smart.org', full_name='Ben Adida', contact_email = 'ben@adida.net')

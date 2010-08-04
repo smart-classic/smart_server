@@ -122,8 +122,11 @@ def apply_xslt(sourceDOM, stylesheetDOM):
 def bound_graph():
     return RDF.Model(storage=RDF.HashStorage("", options="hash-type='memory'"))
 
-def bound_serializer():
-    s = RDF.RDFXMLSerializer()
+def bound_serializer(format):
+    s = RDF.NTriplesSerializer()
+    if (format == "xml"):
+        s = RDF.RDFXMLSerializer()
+        
     bind_ns(s)
     return s 
 
@@ -173,8 +176,8 @@ def parse_rdf(string, model=None, context="none"):
     return model
         
 """Serializes a Redland model or CONSTRUCT query result with namespaces pre-set"""
-def serialize_rdf(model):
-    serializer = bound_serializer()
+def serialize_rdf(model, format="xml"):
+    serializer = bound_serializer(format)
 
     try: return serializer.serialize_model_to_string(model)
     except AttributeError:

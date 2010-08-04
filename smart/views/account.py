@@ -130,10 +130,15 @@ def account_create(request):
   """Create an account"""
 
   account_id = request.POST.get('account_id', None)
+  print "CREATING for", account_id
   if not account_id or not utils.is_valid_email(account_id):
     return HttpResponseBadRequest("Account ID not valid")
 
   new_account, create_p = Account.objects.get_or_create(email=urllib.unquote(account_id))
+
+  if not create_p:
+    return HttpResponse("account_exists")
+
   if create_p:
     """
     generate a secondary secret or not? Requestor can say no.
@@ -150,13 +155,12 @@ def account_create(request):
     primary_secret_p = (request.POST.get('primary_secret_p', "0") == "1")
     secondary_secret_p = (request.POST.get('secondary_secret_p', "0") == "1")
     password = request.POST.get('password', None)
-
     new_account.creator = request.principal
 
     # set password if need be
     #SZ: if not secondary_secret_p and password:
     if not primary_secret_p and not secondary_secret_p and password:
-      new_account.password_set(password)
+      new_account.set_username_and_password(account_id, password)
 
     new_account.save()
 
