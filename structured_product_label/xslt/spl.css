@@ -1,0 +1,1992 @@
+/*
+The contents of this file are subject to the Health Level-7 Public
+License Version 1.0 (the "License"); you may not use this file
+except in compliance with the License. You may obtain a copy of the
+License at http://www.hl7.org/HPL/hpl.txt.
+
+Software distributed under the License is distributed on an "AS IS"
+basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See
+the License for the specific language governing rights and
+limitations under the License.
+
+The Original Code is all this file.
+
+The Initial Developer of the Original Code is Gunther Schadow.
+Portions created by Initial Developer are Copyright (C) 2002-2004
+Health Level Seven, Inc. All Rights Reserved.
+
+Revision: $Id: spl.css,v 1.44 2005/10/07 17:14:07 gschadow Exp $
+
+FIXME: All the combinations of styleCode attributes need to
+be represented
+*/
+@media print {
+body {
+	background-color: white;
+	color: #000000;
+	font-family: "Arial Unicode MS";
+	margin-left: 0px;						
+	margin-right: 0px;
+}
+								
+h1 {	
+	text-indent: 0em;
+	font-size: 100%;
+	font-weight: bold;
+	margin-top: 2.2ex;
+	margin-bottom: 0ex;
+	text-align: left;
+}
+
+h2 {	
+	text-indent: 0em;
+	font-size: 100%;
+	font-weight: bold;
+	margin-top: 2.2ex;
+	margin-bottom: 0ex;
+	text-align: left;
+}
+
+h3 {	
+	text-indent: 0em;
+	font-size: 100%;
+	font-weight: normal;
+	margin-top: 2.2ex;
+	margin-bottom: 0ex;
+	text-align: left;
+}
+
+h4 {	
+	text-indent: 0em;
+	font-size: 100%;
+	font-weight: normal;
+	margin-top: 2.2ex;
+	margin-bottom: 0ex;
+	text-align: left;
+	font-style: italic;
+}
+
+h1.Warning {
+    margin-top: 0pt;
+    margin-bottom: 4pt;
+	text-align: center;
+	text-indent: 1em;
+}
+	
+h1.Highlights {	
+	display: inline;
+	text-align: center;
+	margin-bottom: 0ex;
+	margin-top: -1.5ex;			
+	background-color: white;
+	padding-left: 1em;
+	padding-right: 1em;
+	position: relative;
+	height: 100%;
+	white-space:nowrap;
+	text-indent: 0em;
+	margin-left: 4em;
+	margin-right: 4em;		
+}
+
+h1.toc {	
+	text-indent: 0em;
+	margin-top: 0ex;
+	margin-bottom: 0ex;
+	text-align: left;
+    padding-left:.25in;
+	padding-right: .25in;
+/* commented out by Brian Suggs. the FDA has requested that we see the title as is instead of transforming it */
+/* this is going back in for the PLR per FDA request on 05/03/2006 */
+	text-transform: uppercase;
+}
+
+h2.toc {	
+	/*padding-left: 1em;*/
+	margin-top: 0ex;
+	font-weight: normal;
+	margin-bottom: 0ex;
+	text-align: left;
+    padding-left:.40in;
+	padding-right: .40in;
+}
+
+h3.toc {	
+/*	padding-left: 2em;*/
+	font-size: 100%;
+	font-weight: normal;
+	margin-top: 0ex;
+	margin-bottom: 0ex;
+	text-align: left;
+    padding-left:.55in;
+	padding-right: .55in;
+}
+
+h4.toc {	
+	padding-left: 3em;
+	margin-top: 0ex;
+	margin-bottom: 0ex;
+	text-align: left;
+	font-style: italic;
+    padding-left:.70in;
+	padding-right: .70in;
+}
+
+span.SectionNumber {
+	position: absolute;
+	left: 10pt;
+	top: auto;
+}
+
+div.DotleaderTop {
+	text-align: center;
+	height: 2ex;
+	border-bottom: 1px solid;
+}
+
+div.DotleaderBot {
+	height: 1ex;
+}
+
+.titleCase {
+	text-transform: capitalize;
+}
+
+.lowerCase {
+	text-transform: lowercase;
+}
+p {	
+	text-indent: 0em;
+	margin-top: 1.2ex; 
+	margin-bottom: 0ex;
+	line-height: 2.2ex;  
+}
+
+td p {	
+	text-indent: 0em;
+	margin-top: 0ex; 
+	margin-bottom: 0ex;
+}
+				
+th p {	
+	text-indent: 0em;
+	margin-top: 0px; 
+	margin-bottom: 0px;
+}
+				
+p.DocumentTitle {	
+	text-indent: 0em;
+	font-size: 100%;
+	font-weight: bold;
+	margin-top: 0ex;
+	margin-bottom: 0ex;
+	text-align: left;
+}
+
+p.DocumentSubTitle {	
+	text-indent: 0em;
+	font-size: 100%;
+	font-weight: bold;
+	margin-top: 0ex;
+	margin-bottom: 0ex;
+	text-align: center;
+}
+
+span.EffectiveDate {	
+	font-size: 80%;
+	margin-top: 1ex;
+	margin-bottom: 1ex;
+	text-align: left;
+	float: left;
+}
+
+span.DistributorName {	
+	font-size: 80%;
+	margin-top: 1ex;
+	margin-bottom: 1ex;
+	float: right;
+}
+
+span.ParagraphCaption {
+	/* changed by Brian Suggs 11-16-05.  changed font-style: bold; --> font-weight: bold; */
+	font-weight: bold;
+	text-indent: 0em;
+}
+
+p.ListCaption {
+/* commented out by Brian Suggs 11-11-05.  The FDA requested that list caption not be centered */
+	/*text-align:center;*/
+	font-weight:bold;
+	font-size: 90%
+}
+
+p.MultiMediaCaption {
+	margin-top: 0; 
+	text-align: center;
+	font-weight: bold;
+	font-size: 90%
+}
+
+p.MultiMediaCaptionNotCentered {
+	margin-top: 0; 
+	text-align: left;
+	font-weight: bold;
+	font-size: 90%
+}
+
+/*
+em {
+	font-style: italic;
+	font-weight: normal;
+	text-decoration: none;
+}	
+*/
+.Italics {	
+	font-style: italic;
+}
+.Bold {	
+	font-weight: bold;
+}
+.Underline {
+	text-decoration: underline;
+}
+.Italics .Bold {	
+	font-weight: bold;
+        font-style: italic;
+}
+.Bold .Italics {	
+	font-weight: bold;
+        font-style: italic;
+}
+.Italics .Underline {	
+	text-decoration: underline;
+        font-style: italic;
+}
+.Underline .Italics {	
+	text-decoration: underline;
+        font-style: italic;
+}
+.Italics .Bold .Underline {	
+	text-decoration: underline;
+        font-style: italic;
+	font-weight: bold;
+}
+.Italics .Underline .Bold {	
+	text-decoration: underline;
+        font-style: italic;
+	font-weight: bold;
+}
+.Bold .Italics .Underline {	
+	text-decoration: underline;
+        font-style: italic;
+	font-weight: bold;
+}
+.Bold .Underline .Italics {	
+	text-decoration: underline;
+        font-style: italic;
+	font-weight: bold;
+}
+.Underline .Bold .Italics {	
+	text-decoration: underline;
+        font-style: italic;
+	font-weight: bold;
+}
+.Underline .Italics .Bold {	
+	text-decoration: underline;
+        font-style: italic;
+	font-weight: bold;
+}
+
+.BoldItalics {	
+	font-weight: bold;
+	font-style: italic;
+}
+.BoldItalicsUnderline {	
+	font-weight: bold;
+	font-style: italic;
+	text-decoration: underline;
+}
+.ItalicsUnderline {	
+	font-style: italic;
+	text-decoration: underline;
+}
+.BoldUnderline {	
+	font-weight: bold;
+	text-decoration: underline;
+}
+
+.Insert {
+	color: green;
+    border-bottom: 3px double;
+}
+.Delete {
+	color: red;
+    text-decoration: line-through;
+}
+.InsertItalics {	
+	color: green;
+    border-bottom: 3px double;
+	font-style: italic;
+}
+.BoldInsert {	
+	color: green;
+    border-bottom: 3px double;
+	font-weight: bold;
+}
+.BoldInsertItalics {	
+	color: green;
+    border-bottom: 3px double;
+	font-weight: bold;
+	font-style: italic;
+}
+.BoldInsertItalicsUnderline {	
+	color: green;
+    border-bottom: 3px double;
+	font-weight: bold;
+	font-style: italic;
+	text-decoration: underline;
+}
+.InsertItalicsUnderline {	
+	color: green;
+    border-bottom: 3px double;
+	font-style: italic;
+	text-decoration: underline;
+}
+.BoldInsertUnderline {	
+	color: green;
+    border-bottom: 3px double;
+	font-weight: bold;
+	text-decoration: underline;
+}
+.InsertUnderline {
+	color: green;
+    border-bottom: 3px double;
+	text-decoration: underline;
+}
+
+.DeleteItalics {	
+	color: red;
+    text-decoration: line-through;
+	font-style: italic;
+}
+.BoldDelete {	
+	color: red;
+    text-decoration: line-through;
+	font-weight: bold;
+}
+.BoldDeleteItalics {	
+	color: red;
+    text-decoration: line-through;
+	font-weight: bold;
+	font-style: italic;
+}
+.BoldDeleteItalicsUnderline {	
+	color: red;
+    text-decoration: line-through;
+	font-weight: bold;
+	font-style: italic;
+	text-decoration: underline;
+}
+.DeleteItalicsUnderline {	
+	color: red;
+    text-decoration: line-through;
+	font-style: italic;
+	text-decoration: underline;
+}
+.BoldDeleteUnderline {	
+	color: red;
+    text-decoration: line-through;
+	font-weight: bold;
+	text-decoration: underline;
+}
+.DeleteUnderline {
+	color: red;
+    text-decoration: line-through;
+	text-decoration: underline;
+}
+
+
+a:link    { text-decoration: none; }
+a:visited { text-decoration: none; }
+a:active  { text-decoration: none; }
+
+/* use <span class="sub"> to avoid ugly uneven line spacing in IE */
+.Sub { 
+	font-size: 80%;
+	position: relative;
+	bottom: -3px;
+}
+.Sup {
+	font-size: 80%;
+	position: relative;
+	top: -5px;
+}
+
+table	{
+	white-space: wrap;
+	font-size: 100%;
+/*
+	border-top-style: none;
+	border-bottom-style: none;
+	border-right-style: none;
+	border-left-style: none;
+*/
+	margin-top: 3ex;
+	margin-bottom: 3ex;
+	border-collapse: collapse;
+	border-color: black;
+	border-width: thin;
+}
+
+table caption {	
+	margin-top: 10px; /* Gecko needs this, IE doesn't add any extra */
+	text-align: center;
+	font-weight: bold;
+	font-size: 110%
+}
+
+				
+th, td { 
+/*
+	border-top-style: none;
+	border-bottom-style: none;
+	border-right-style: none;
+	border-left-style: none;
+*/
+	border-collapse: collapse;
+	border-color: black;
+	border-width: thin;
+	/*padding-top: 1px;
+	padding-bottom: 1px;
+*/
+}
+
+td.Warning {
+	border: 1px solid black; 
+	margin-top: 2ex;
+	margin-bottom: 2.2ex;
+	padding-left: 2em; 
+	padding-right: 2em;
+	padding-top: 0ex;
+	padding-bottom: 2ex;
+}
+
+/* the preferred way to rules in tables */
+
+tr.Botrule td, 
+tr.Botrule th,
+th.Botrule, 
+td.Botrule { 
+	border-bottom-style: solid;
+	border-bottom-width: thin;
+}
+
+thead tr.First td,
+thead tr.First th,
+thead tr.FirstLast td,
+thead tr.FirstLast th {
+        border-top-style: solid;
+/* changed by Brian Suggs 11-16-05.  changed 'medium' to 'thin' */
+	border-top-width: thin;
+}
+
+thead tr.BotruleFirst td,
+thead tr.BotruleFirst th {
+        border-top-style: solid;
+/* changed by Brian Suggs 11-16-05.  changed 'medium' to 'thin' */
+	border-top-width: thin;
+        border-bottom-style: solid;
+	border-bottom-width: thin;
+}
+
+thead tr.Last td, 
+thead tr.Last th {
+  /* rule here might fail with rowspan headers */
+} 
+
+tbody tr.First td, 
+tbody tr.First th  { 
+        border-top-style: solid;
+	border-top-width: thin;
+}	 
+
+tbody.Headless tr.First td, 
+tbody.Headless tr.First th  { 
+        border-top-style: solid;
+/* changed by Brian Suggs 11-16-05.  changed 'medium' to 'thin' */
+	border-top-width: thin;
+}	 
+
+tbody tr.Last td,
+tbody tr.Last th { 
+	border-bottom-style: solid;
+/* changed by Brian Suggs 11-16-05.  changed 'medium' to 'thin' */
+	border-bottom-width: thin;
+}	 
+
+tbody tr.FirstLast td,
+tbody tr.FirstLast th { 
+	border-top-style: solid;
+	border-top-width: thin;
+	border-bottom-style: solid;
+/* changed by Brian Suggs 11-16-05.  changed 'medium' to 'thin' */
+	border-bottom-width: thin;
+}	 
+
+tbody tr.BotruleFirst td, 
+tbody tr.BotruleFirst th { 
+	border-top-style: solid;
+	border-top-width: thin;
+	border-bottom-style: solid;
+	border-bottom-width: thin;
+}	 
+
+
+/* begin of combinatorics of individual rules */
+
+/* one rule only */
+th.Lrule, td.Lrule { 
+	border-top-style: none;
+	border-bottom-style: none;
+	border-right-style: none;
+	border-left-style: solid;
+	border-left-width: thin;
+}
+
+th.Rrule, td.Rrule { 
+	border-top-style: none;
+	border-bottom-style: none;
+	border-right-style: solid;
+	border-right-width: thin;
+	border-left-style: none;
+}
+
+th.Toprule, td.Toprule { 
+	border-top-style: solid;
+	border-top-width: thin;
+	border-bottom-style: none;
+	border-right-style: none;
+	border-left-style: none;
+}
+
+th.Botrule, td.Botrule { 
+	border-top-style: none;
+	border-bottom-style: solid;
+	border-right-style: none;
+	border-left-style: none;
+	border-bottom-width: thin;
+}
+
+/* combo of two */
+th.LruleRrule, td.LruleRrule { 
+	border-top-style: none;
+	border-bottom-style: none;
+	border-right-style: solid;
+	border-right-width: thin;
+	border-left-style: solid;
+	border-left-width: thin;
+}
+
+th.BotruleToprule, td.BotruleToprule { 
+	border-top-style: solid;
+	border-top-width: thin;
+	border-bottom-style: solid;
+	border-bottom-width: thin;
+	border-right-style: none;
+	border-left-style: none;
+}
+
+th.LruleToprule, td.LruleToprule { 
+	border-top-style: solid;
+	border-top-width: thin;
+	border-bottom-style: none;
+	border-right-style: none;
+	border-left-style: solid;
+	border-left-width: thin;
+}
+
+th.RruleToprule, td.RruleToprule { 
+	border-top-style: solid;
+	border-top-width: thin;
+	border-bottom-style: none;
+	border-left-style: none;
+	border-right-style: solid;
+	border-right-width: thin;
+}
+
+th.BotruleLrule, td.BotruleLrule { 
+	border-bottom-style: solid;
+	border-bottom-width: thin;
+	border-top-style: none;
+	border-right-style: none;
+	border-left-style: solid;
+	border-left-width: thin;
+}
+
+th.BotruleRrule, td.BotruleRrule { 
+	border-bottom-style: solid;
+	border-bottom-width: thin;
+	border-top-style: none;
+	border-left-style: none;
+	border-right-style: solid;
+	border-right-width: thin;
+}
+
+/* combo of 3 */
+th.LruleRruleToprule, td.LruleRruleToprule { 
+	border-top-style: solid;
+	border-top-width: thin;
+	border-bottom-style: none;
+	border-right-style: solid;
+	border-right-width: thin;
+	border-left-style: solid;
+	border-left-width: thin;
+}
+
+th.BotruleLruleRrule, td.BotruleLruleRrule { 
+	border-top-style: none;
+	border-bottom-style: solid;
+	border-bottom-width: thin;
+	border-right-style: solid;
+	border-right-width: thin;
+	border-left-style: solid;
+	border-left-width: thin;
+}
+
+th.BotruleLruleToprule, td.BotruleLruleToprule { 
+	border-top-style: solid;
+	border-top-width: thin;
+	border-bottom-style: solid;
+	border-bottom-width: thin;
+	border-right-style: none;
+	border-left-style: solid;
+	border-left-width: thin;
+}
+
+th.BotruleRruleToprule, td.BotruleRruleToprule { 
+	border-top-style: solid;
+	border-top-width: thin;
+	border-bottom-style: solid;
+	border-bottom-width: thin;
+	border-right-style: solid;
+	border-right-width: thin;
+	border-left-style: none;
+}
+
+/* combo of 4 */
+th.BotruleLruleRruleToprule, td.BotruleLruleRruleToprule { 
+	border-top-style: solid;
+	border-top-width: thin;
+	border-bottom-style: solid;
+	border-bottom-width: thin;
+	border-right-style: solid;
+	border-right-width: thin;
+	border-left-style: solid;
+	border-left-width: thin;
+}
+
+/* end of the combinatorics */
+
+ul { }
+	
+ol { }
+
+li {
+/* changed by Brian Suggs 11-16-05.  changed 1ex to .2ex */
+   margin-top: .2ex;
+}
+li p {
+/* changed by Brian Suggs 11-16-05.  changed 1ex to .2ex */
+   margin-top: .2ex;
+}
+
+ul.Disc { list-style-type: disc; }
+ul.Circle { list-style-type: circle; }
+ul.Square { list-style-type: square; }
+
+ol.LittleRoman { list-style-type: lower-roman; }
+ol.BigRoman { list-style-type: upper-roman; }
+ol.LittleAlpha { list-style-type: lower-alpha; }
+ol.BigAlpha { list-style-type: upper-alpha; }
+ol.Arabic { list-style-type: arabic; }
+
+dl {
+   /* display: compact; compact doesn't seem to work 
+
+     XXX: but display: inline would work
+   */
+   line-height:2.2ex;
+   margin-left:.9em;
+}
+
+dt {
+}
+
+dd {
+	position:relative;
+	top:-2.2ex;
+	margin-bottom:-2ex;
+	margin-left:1.5em;
+}
+
+dd p {
+	margin-bottom:0ex;
+}
+
+hr.Footnoterule {
+	margin-top:2ex;
+	width: 30%;
+	text-align: left;
+	/* FIXME: make a normal line, not a grey 3d effect */		
+}
+dl.Footnote {
+	margin-left:0em;
+	margin-bottom:0ex;
+	margin-top:0ex;
+}
+
+dl.Footnote dt {
+	font-size:90%;
+}
+
+dl.Footnote dd {
+	margin-left:1em;
+	font-size:90%;
+}
+
+dl.FootnoteContents {
+	text-align: right;
+	margin-left:0em;
+	margin-bottom:0ex;
+	margin-top:0ex;
+}
+dl.FootnoteContents dt {
+	font-size:100%;
+}
+dl.FootnoteContents dd {
+	margin-left:1em;
+	font-size:90%;
+}
+
+p.Footnote {
+	text-indent:-1em;
+	margin-left:1em;
+	font-size:90%;
+}
+
+p.Footnotesize {
+	margin-bottom:0ex;
+	margin-top:0ex;
+	font-size:90%;
+}
+img {
+	display: block;
+	margin-top: 0ex; 
+	margin-bottom: 0ex;
+	text-align: center;
+}					
+p img {
+	display: inline;
+	margin-top: 0ex; 
+	margin-bottom: 0ex;
+}	
+
+div.Figure {
+	margin-top: 4ex; 
+	margin-bottom: 4ex;
+}
+div.Warning {
+	border: 1px solid black; 
+	margin-top: 2ex;
+	margin-bottom: 2.2ex;
+	padding-left: 2em; 
+	padding-right: 2em;
+	padding-top: 0ex;
+	padding-bottom: 2ex;
+}
+/*  changed by Brian Suggs on 11-13-05.  this will highlight the subject better. */
+div.Subject {
+	margin-top: 1ex;
+	margin-bottom: 1ex;
+	padding-top: 1ex;
+	padding-bottom: 1ex;
+	padding-left: .5em;
+	padding-right: .5em;
+	font-size: 80%;
+	line-height: 2.1ex;
+	background-color: #E0E0E0;
+	cursor: pointer;
+}
+.contentTable {
+	border: 1px solid #999999;
+	background-color: #EAEAEA;
+}
+.contentTablePetite {
+	border: 1px solid #999999;
+	background-color: #EAEAEA;
+	font-size: 80%;
+}
+.contentTableTitle {
+	border-bottom: 1px solid #999999;
+	background-color: #CCCCCC;
+	font-size: 140%;
+	font-weight: bold;
+}
+.contentTableReg {
+	border-bottom: none;
+	background-color: #CCCCCC;
+	font-size: 80%;
+	font-weight: lighter;
+}
+.formTable {
+	border: 1px solid #FFFFFF;
+	border-collapse: collapse;
+}
+.formTablePetite {
+	border: 1px solid #FFFFFF;
+	border-collapse: collapse;
+	font-size: 80%;
+}
+.formTableMorePetite {
+	border: 1px solid #FFFFFF;
+	border-collapse: collapse;
+	font-size: 60%;
+}
+.formTitle {
+	background-color: #CCCCCC;
+	border: 1px solid #FFFFFF;
+	font-size: 125%;
+	font-weight: bold;
+}
+.formHeadingTitle {
+	border: none;
+	background-color: #CCCCCC;
+	font-size: 150%;
+	font-weight: bold;
+}
+.formHeadingReg {
+	background-color: #CCCCCC;
+	border: 1px solid #FFFFFF;
+	font-size: 125%;
+}
+.formTableRow {
+	background-color: #FFFFFF;
+}
+.formTableRowAlt {
+	background-color: #F2F2F2;
+}
+.formLabel {
+	border: 1px solid #FFFFFF;
+	background-color: #DDDDDD;
+	font-size: 115%;
+	font-weight: bold;
+}
+.formItem {
+	border: 1px solid #CCCCCC;
+	font-size: 110%;
+}
+.formTitle a:link {
+	font-weight: bold;
+	color: #006699;
+	text-decoration: underline;
+}
+.formTitle a:visited {
+	/*font-family: "Arial Unicode MS"; Arial, Helvetica, sans-serif;*/
+	font-weight: bold;
+	color: #006699;
+	text-decoration: underline;
+}
+.formTitle a:active {
+	/*font-family: "Arial Unicode MS"; Arial, Helvetica, sans-serif;*/
+	font-weight: bold;
+	/*color: #000000;*/
+	text-decoration: none;
+}
+.formTitle a:hover {
+	/*font-family: "Arial Unicode MS"; Arial, Helvetica, sans-serif;*/
+	font-weight: bold;
+	/*color: #000000;*/
+	text-decoration: none;
+}
+.normalizer {
+	font-size: 125%;
+}
+.textHighlights {
+	font-size: 8pt; 
+/*    color: #000000; */
+    font-family: "Times New Roman", Times, serif;
+	padding-left = .25in;
+	padding-right = .25in;
+}
+span.xmChange {
+	text-indent: 0em;
+	margin-top: 0ex; 
+	margin-bottom: 0ex;
+	line-height: 2.2ex;  
+
+	border-left-width: 3px;
+	border-left-style: solid;
+	border-left-color: #000000;
+	position: absolute;
+	left: 2em;
+	padding-left: 2em;
+}
+
+span.xmChange_all_rows {
+	text-indent: 0em;
+	margin-top: 0ex; 
+	margin-bottom: 0ex;
+	line-height: 10ex;  
+
+	border-left-width: 3px;
+	border-left-style: solid;
+	border-left-color: #000000;
+	position: absolute;
+	left: 2.5em;
+	padding-left: 2em;
+}
+
+span.xmChange_caption {
+	text-indent: 0em;
+	margin-top: 0ex; 
+	margin-bottom: 0ex;
+	line-height: 14ex;  
+
+	border-left-width: 3px;
+	border-left-style: solid;
+	border-left-color: #000000;
+	position: absolute;
+	left: 2.3em;
+	padding-left: 2em;
+}
+
+span.xmChange_footnote {
+	text-indent: 0em;
+	margin-top: -2ex; 
+	margin-bottom: 0ex;
+	line-height: 8ex;  
+
+	border-left-width: 3px;
+	border-left-style: solid;
+	border-left-color: #000000;
+	position: absolute;
+	left: 2.5em;
+	padding-left: 2em;
+}
+
+span.xmChange_footnotes {
+	text-indent: 0em;
+	margin-top: -2ex; 
+	margin-bottom: 0ex;
+	line-height: 8ex;  
+
+	border-left-width: 3px;
+	border-left-style: solid;
+	border-left-color: #000000;
+	position: absolute;
+	left: 2.8em;
+	padding-left: 2em;
+}
+
+span.xmChange_sp {
+	text-indent: 0em;
+	margin-top: 0ex; 
+	margin-bottom: 0ex;
+	line-height: 2.2ex;  
+
+	border-left-width: 3px;
+	border-left-style: solid;
+	border-left-color: #000000;
+	position: absolute;
+	left: -4.4em;
+	padding-left: -4.4em;
+}
+
+} /* end @media print */
+
+
+/********************************** This section is for display ********************************/
+@media screen {
+body {
+	background-color: white;
+	color: #000000;
+	font-family: "Arial Unicode MS";
+	margin-left: 4em;						
+	margin-right: 4em;
+}
+								
+h1 {	
+	text-indent: 0em;
+	font-size: 100%;
+	font-weight: bold;
+	margin-top: 4ex;
+	margin-bottom: 0ex;
+	text-align: left;
+}
+
+h2 {	
+	text-indent: 0em;
+	font-size: 100%;
+	font-weight: bold;
+	margin-top: 2.2ex;
+	margin-bottom: 0ex;
+	text-align: left;
+}
+
+h3 {	
+	text-indent: 0em;
+	font-size: 100%;
+	font-weight: normal;
+	margin-top: 2.2ex;
+	margin-bottom: 0ex;
+	text-align: left;
+}
+
+h4 {	
+	text-indent: 0em;
+	font-size: 100%;
+	font-weight: normal;
+	margin-top: 2.2ex;
+	margin-bottom: 0ex;
+	text-align: left;
+	font-style: italic;
+}
+
+h1.Warning {
+    margin-top: 0pt;
+    margin-bottom: 4pt;
+	text-align: center;
+	text-indent: 1em;
+}
+
+h1.Highlights {	
+	display: inline;
+	text-align: center;
+	margin-bottom: 0ex;
+	margin-top: -1.5ex;
+	background-color: white;
+	height: 100%;
+	padding-left: 1em;
+	padding-right: 1em;
+	white-space:nowrap;
+	text-indent: 0em;
+	margin-left: 0.5in;
+	margin-right: 0.5in;
+}
+
+h1.toc {	
+	text-indent: 0em;
+	margin-top: 0ex;
+	margin-bottom: 0ex;
+	text-align: left;
+    padding-left:.25in;
+	padding-right: .25in;
+/* commented out by Brian Suggs. the FDA has requested that we see the title as is instead of transforming it */
+/* this is going back in for the PLR per FDA request on 05/03/2006 */
+	text-transform: uppercase;
+}
+
+h2.toc {	
+	/*padding-left: 1em;*/
+	margin-top: 0ex;
+	font-weight: normal;
+	margin-bottom: 0ex;
+	text-align: left;
+    padding-left:.40in;
+	padding-right: .40in;
+}
+
+h3.toc {	
+/*	padding-left: 2em;*/
+	font-size: 100%;
+	font-weight: normal;
+	margin-top: 0ex;
+	margin-bottom: 0ex;
+	text-align: left;
+    padding-left:.55in;
+	padding-right: .55in;
+}
+
+h4.toc {	
+	padding-left: 3em;
+	margin-top: 0ex;
+	margin-bottom: 0ex;
+	text-align: left;
+	font-style: italic;
+    padding-left:.70in;
+	padding-right: .70in;
+}
+
+span.SectionNumber {
+	position: absolute;
+	left: 10pt;
+	top: auto;
+}
+
+div.DotleaderTop {
+	height: 2ex;
+	border-bottom: 1px solid;
+}
+
+div.DotleaderBot {
+	height: 1ex;
+}
+	
+.titleCase {
+	text-transform: capitalize;
+}
+
+.lowerCase {
+	text-transform: lowercase;
+}
+p {	
+	text-indent: 0em;
+	margin-top: 1.2ex; 
+	margin-bottom: 0ex;
+	line-height: 2.2ex;  
+}
+
+td p {	
+	text-indent: 0em;
+	margin-top: 0ex; 
+	margin-bottom: 0ex;
+}
+				
+th p {	
+	text-indent: 0em;
+	margin-top: 0px; 
+	margin-bottom: 0px;
+}
+				
+p.DocumentTitle {	
+	text-indent: 0em;
+	font-size: 100%;
+	font-weight: bold;
+	margin-top: 0ex;
+	margin-bottom: 0ex;
+	text-align: left;
+}
+
+p.DocumentSubTitle {	
+	text-indent: 0em;
+	font-size: 100%;
+	font-weight: bold;
+	margin-top: 0ex;
+	margin-bottom: 0ex;
+	text-align: center;
+}
+
+span.EffectiveDate {	
+	font-size: 80%;
+	margin-top: 1ex;
+	margin-bottom: 1ex;
+	text-align: left;
+	float: left;
+}
+
+span.DistributorName {	
+	font-size: 80%;
+	margin-top: 1ex;
+	margin-bottom: 1ex;
+	float: right;
+}
+
+span.ParagraphCaption {
+	/* changed by Brian Suggs 11-16-05.  changed font-style: bold; --> font-weight: bold; */
+	font-weight: bold;
+	text-indent: 0em;
+}
+
+p.ListCaption {
+/* commented out by Brian Suggs 11-11-05.  The FDA requested that list caption not be centered */
+	/*text-align:center;*/
+	font-weight:bold;
+	font-size: 90%
+}
+
+p.MultiMediaCaption {
+	margin-top: 0; 
+	text-align: center;
+	font-weight: bold;
+	font-size: 90%
+}
+
+p.MultiMediaCaptionNotCentered {
+	margin-top: 0; 
+	text-align: left;
+	font-weight: bold;
+	font-size: 90%
+}
+
+.Italics {	
+	font-style: italic;
+}
+.Bold {	
+	font-weight: bold;
+    font-style: normal;
+}
+.Underline {
+ 	text-decoration: underline;
+    font-style: normal;
+}
+.Italics .Bold {	
+	font-weight: bold;
+    font-style: italic;
+}
+.Bold .Italics {	
+	font-weight: bold;
+    font-style: italic;
+}
+.Italics .Underline {	
+	text-decoration: underline;
+    font-style: italic;
+}
+.Underline .Italics {	
+	text-decoration: underline;
+    font-style: italic;
+}
+.Italics .Bold .Underline {	
+	text-decoration: underline;
+        font-style: italic;
+	font-weight: bold;
+}
+.Italics .Underline .Bold {	
+	text-decoration: underline;
+        font-style: italic;
+	font-weight: bold;
+}
+.Bold .Italics .Underline {	
+	text-decoration: underline;
+        font-style: italic;
+	font-weight: bold;
+}
+.Bold .Underline .Italics {	
+	text-decoration: underline;
+        font-style: italic;
+	font-weight: bold;
+}
+.Underline .Bold .Italics {	
+	text-decoration: underline;
+        font-style: italic;
+	font-weight: bold;
+}
+.Underline .Italics .Bold {	
+	text-decoration: underline;
+        font-style: italic;
+	font-weight: bold;
+}
+
+.BoldItalics {	
+	font-weight: bold;
+	font-style: italic;
+}
+.BoldItalicsUnderline {	
+	font-weight: bold;
+	font-style: italic;
+	text-decoration: underline;
+}
+.ItalicsUnderline {	
+	font-style: italic;
+	text-decoration: underline;
+}
+.BoldUnderline {	
+	font-weight: bold;
+	text-decoration: underline;
+}
+.Insert {
+	color: green;
+    border-bottom: 3px double;
+}
+.Delete {
+       text-decoration: line-through;
+}
+.InsertItalics {	
+	color: green;
+    border-bottom: 3px double;
+	font-style: italic;
+}
+.BoldInsert {	
+	color: green;
+    border-bottom: 3px double;
+	font-weight: bold;
+}
+.BoldInsertItalics {	
+	color: green;
+    border-bottom: 3px double;
+	font-weight: bold;
+	font-style: italic;
+}
+.BoldInsertItalicsUnderline {	
+	color: green;
+    border-bottom: 3px double;
+	font-weight: bold;
+	font-style: italic;
+	text-decoration: underline;
+}
+.InsertItalicsUnderline {	
+	color: green;
+    border-bottom: 3px double;
+	font-style: italic;
+	text-decoration: underline;
+}
+.BoldInsertUnderline {	
+	color: green;
+    border-bottom: 3px double;
+	font-weight: bold;
+	text-decoration: underline;
+}
+.InsertUnderline {
+	color: green;
+    border-bottom: 3px double;
+	text-decoration: underline;
+}
+.DeleteItalics {	
+	color: red;
+    text-decoration: line-through;
+	font-style: italic;
+}
+.BoldDelete {	
+	color: red;
+    text-decoration: line-through;
+	font-weight: bold;
+}
+.BoldDeleteItalics {	
+	color: red;
+    text-decoration: line-through;
+	font-weight: bold;
+	font-style: italic;
+}
+.BoldDeleteItalicsUnderline {	
+	color: red;
+    text-decoration: line-through;
+	font-weight: bold;
+	font-style: italic;
+	text-decoration: underline;
+}
+.DeleteItalicsUnderline {	
+	color: red;
+    text-decoration: line-through;
+	font-style: italic;
+	text-decoration: underline;
+}
+.BoldDeleteUnderline {	
+	color: red;
+    text-decoration: line-through;
+	font-weight: bold;
+	text-decoration: underline;
+}
+.DeleteUnderline {
+	color: red;
+    text-decoration: line-through;
+	text-decoration: underline;
+}
+
+a:link    { text-decoration: none; }
+a:visited { text-decoration: none; }
+a:active  { text-decoration: none; }
+
+/* use <span class="sub"> to avoid ugly uneven line spacing in IE */
+.Sub { 
+	font-size: 80%;
+	position: relative;
+	bottom: -3px;
+}
+.Sup {
+	font-size: 80%;
+	position: relative;
+	top: -5px;
+}
+
+table	{
+	white-space: wrap;
+	font-size: 100%;
+/*
+	border-top-style: none;
+	border-bottom-style: none;
+	border-right-style: none;
+	border-left-style: none;
+*/
+	margin-top: 3ex;
+	margin-bottom: 3ex;
+	border-collapse: collapse;
+	border-color: black;
+	border-width: thin;
+}
+
+table caption {	
+	margin-top: 10px; /* Gecko needs this, IE doesn't add any extra */
+	text-align: center;
+	font-weight: bold;
+	font-size: 100%
+}
+
+				
+th, td { 
+/*
+	border-top-style: none;
+	border-bottom-style: none;
+	border-right-style: none;
+	border-left-style: none;
+*/
+	border-collapse: collapse;
+	border-color: black;
+	border-width: thin;
+	/*padding-top: 1px;
+	padding-bottom: 1px;
+*/
+}
+
+td.Warning {
+	border: 1px solid black; 
+	margin-top: 2ex;
+	margin-bottom: 2.2ex;
+	padding-left: 2em; 
+	padding-right: 2em;
+	padding-top: 0ex;
+	padding-bottom: 2ex;
+}
+
+/* the preferred way to rules in tables */
+
+tr.Botrule td, 
+tr.Botrule th,
+th.Botrule, 
+td.Botrule { 
+	border-bottom-style: solid;
+	border-bottom-width: thin;
+}
+
+thead tr.First td,
+thead tr.First th,
+thead tr.FirstLast td,
+thead tr.FirstLast th {
+        border-top-style: solid;
+/* changed by Brian Suggs 11-16-05.  changed 'medium' to 'thin' */
+	border-top-width: thin;
+}
+
+thead tr.BotruleFirst td,
+thead tr.BotruleFirst th {
+        border-top-style: solid;
+/* changed by Brian Suggs 11-16-05.  changed 'medium' to 'thin' */
+	border-top-width: thin;
+        border-bottom-style: solid;
+	border-bottom-width: thin;
+}
+
+thead tr.Last td, 
+thead tr.Last th {
+  /* rule here might fail with rowspan headers */
+} 
+
+tbody tr.First td, 
+tbody tr.First th  { 
+        border-top-style: solid;
+	border-top-width: thin;
+}	 
+
+tbody.Headless tr.First td, 
+tbody.Headless tr.First th  { 
+        border-top-style: solid;
+/* changed by Brian Suggs 11-16-05.  changed 'medium' to 'thin' */
+	border-top-width: thin;
+}	 
+
+tbody tr.Last td,
+tbody tr.Last th { 
+	border-bottom-style: solid;
+/* changed by Brian Suggs 11-16-05.  changed 'medium' to 'thin' */
+	border-bottom-width: thin;
+}	 
+
+tbody tr.FirstLast td,
+tbody tr.FirstLast th { 
+	border-top-style: solid;
+	border-top-width: thin;
+	border-bottom-style: solid;
+/* changed by Brian Suggs 11-16-05.  changed 'medium' to 'thin' */
+	border-bottom-width: thin;
+}	 
+
+tbody tr.BotruleFirst td, 
+tbody tr.BotruleFirst th { 
+	border-top-style: solid;
+	border-top-width: thin;
+	border-bottom-style: solid;
+	border-bottom-width: thin;
+}	 
+
+
+/* begin of combinatorics of individual rules */
+
+/* one rule only */
+th.Lrule, td.Lrule { 
+	border-top-style: none;
+	border-bottom-style: none;
+	border-right-style: none;
+	border-left-style: solid;
+	border-left-width: thin;
+}
+
+th.Rrule, td.Rrule { 
+	border-top-style: none;
+	border-bottom-style: none;
+	border-right-style: solid;
+	border-right-width: thin;
+	border-left-style: none;
+}
+
+th.Toprule, td.Toprule { 
+	border-top-style: solid;
+	border-top-width: thin;
+	border-bottom-style: none;
+	border-right-style: none;
+	border-left-style: none;
+}
+
+th.Botrule, td.Botrule { 
+	border-top-style: none;
+	border-bottom-style: solid;
+	border-right-style: none;
+	border-left-style: none;
+	border-bottom-width: thin;
+}
+
+/* combo of two */
+th.LruleRrule, td.LruleRrule { 
+	border-top-style: none;
+	border-bottom-style: none;
+	border-right-style: solid;
+	border-right-width: thin;
+	border-left-style: solid;
+	border-left-width: thin;
+}
+
+th.BotruleToprule, td.BotruleToprule { 
+	border-top-style: solid;
+	border-top-width: thin;
+	border-bottom-style: solid;
+	border-bottom-width: thin;
+	border-right-style: none;
+	border-left-style: none;
+}
+
+th.LruleToprule, td.LruleToprule { 
+	border-top-style: solid;
+	border-top-width: thin;
+	border-bottom-style: none;
+	border-right-style: none;
+	border-left-style: solid;
+	border-left-width: thin;
+}
+
+th.RruleToprule, td.RruleToprule { 
+	border-top-style: solid;
+	border-top-width: thin;
+	border-bottom-style: none;
+	border-left-style: none;
+	border-right-style: solid;
+	border-right-width: thin;
+}
+
+th.BotruleLrule, td.BotruleLrule { 
+	border-bottom-style: solid;
+	border-bottom-width: thin;
+	border-top-style: none;
+	border-right-style: none;
+	border-left-style: solid;
+	border-left-width: thin;
+}
+
+th.BotruleRrule, td.BotruleRrule { 
+	border-bottom-style: solid;
+	border-bottom-width: thin;
+	border-top-style: none;
+	border-left-style: none;
+	border-right-style: solid;
+	border-right-width: thin;
+}
+
+/* combo of 3 */
+th.LruleRruleToprule, td.LruleRruleToprule { 
+	border-top-style: solid;
+	border-top-width: thin;
+	border-bottom-style: none;
+	border-right-style: solid;
+	border-right-width: thin;
+	border-left-style: solid;
+	border-left-width: thin;
+}
+
+th.BotruleLruleRrule, td.BotruleLruleRrule { 
+	border-top-style: none;
+	border-bottom-style: solid;
+	border-bottom-width: thin;
+	border-right-style: solid;
+	border-right-width: thin;
+	border-left-style: solid;
+	border-left-width: thin;
+}
+
+th.BotruleLruleToprule, td.BotruleLruleToprule { 
+	border-top-style: solid;
+	border-top-width: thin;
+	border-bottom-style: solid;
+	border-bottom-width: thin;
+	border-right-style: none;	
+	border-left-style: solid;
+	border-left-width: thin;
+}
+
+th.BotruleRruleToprule, td.BotruleRruleToprule { 
+	border-top-style: solid;
+	border-top-width: thin;
+	border-bottom-style: solid;
+	border-bottom-width: thin;
+	border-right-style: solid;
+	border-right-width: thin;
+	border-left-style: none;
+}
+
+/* combo of 4 */
+th.BotruleLruleRruleToprule, td.BotruleLruleRruleToprule { 
+	border-top-style: solid;
+	border-top-width: thin;
+	border-bottom-style: solid;
+	border-bottom-width: thin;
+	border-right-style: solid;
+	border-right-width: thin;
+	border-left-style: solid;
+	border-left-width: thin;
+}
+
+/* end of the combinatorics */
+
+ul { 
+	margin-top: .2ex;
+	margin-left: 1.5em;
+}
+	
+ol { 
+	margin-top: .2ex;
+}
+
+li {
+/* changed by Brian Suggs 11-16-05.  changed 1ex to .2ex */
+   margin-top: .2ex;
+}
+li p {
+/* changed by Brian Suggs 11-16-05.  changed 1ex to .2ex */
+   margin-top: .2ex;
+}
+
+ul.Disc { list-style-type: disc; }
+ul.Circle { list-style-type: circle; }
+ul.Square { list-style-type: square; }
+
+ol.LittleRoman { list-style-type: lower-roman; }
+ol.BigRoman { list-style-type: upper-roman; }
+ol.LittleAlpha { list-style-type: lower-alpha; }
+ol.BigAlpha { list-style-type: upper-alpha; }
+ol.Arabic { list-style-type: arabic; }
+
+dl {
+   /* display: compact; compact doesn't seem to work 
+
+     XXX: but display: inline would work
+   */
+   line-height:2.2ex;
+   margin-left:.9em;
+}
+
+dt {
+}
+
+dd {
+	position:relative;
+	top:-2.2ex;
+	margin-bottom:-2ex;
+	margin-left:1.5em;
+}
+
+dd p {
+	margin-bottom:0ex;
+}
+
+
+hr.Footnoterule {
+	margin-top:2ex;
+	width: 30%;
+	text-align: left;
+	/* FIXME: make a normal line, not a grey 3d effect */		
+}
+dl.Footnote {
+	margin-left:0em;
+	margin-bottom:0ex;
+	margin-top:0ex;
+}
+
+dl.Footnote dt {
+	font-size:90%;
+}
+
+dl.Footnote dd {
+	margin-left:1em;
+	font-size:90%;
+}
+
+dl.FootnoteContents {
+	text-align: right;
+	margin-left:0em;
+	margin-bottom:0ex;
+	margin-top:0ex;
+}
+dl.FootnoteContents dt {
+	font-size:100%;
+}
+dl.FootnoteContents dd {
+	margin-left:1em;
+	font-size:90%;
+}
+
+p.Footnote {
+	text-indent:-1em;
+	margin-left:1em;
+	font-size:90%;
+}
+
+p.Footnotesize {
+	margin-bottom:0ex;
+	margin-top:0ex;
+	font-size:90%;
+}
+
+img {
+	display: block;
+	margin-top: 0ex; 
+	margin-bottom: 0ex;
+	text-align: center;
+}
+							
+p img {
+	display: inline;
+	margin-top: 0ex; 
+	margin-bottom: 0ex;
+}
+							
+div.Figure {
+	margin-top: 4ex; 
+	margin-bottom: 4ex;
+}
+
+div.Warning {
+	border: 1px solid black; 
+	margin-top: 2ex;
+	margin-bottom: 2.2ex;
+	padding-left: 2em; 
+	padding-right: 2em;
+	padding-top: 0ex;
+	padding-bottom: 2ex;
+}
+
+/*  changed by Brian Suggs on 11-13-05.  this will highlight the subject better. */
+div.Subject {
+	margin-top: 1ex;
+	margin-bottom: 1ex;
+	padding-top: 1ex;
+	padding-bottom: 1ex;
+	padding-left: .5em;
+	padding-right: .5em;
+	font-size: 80%;
+	line-height: 2.1ex;
+	background-color: #E0E0E0;
+	cursor: pointer;
+}
+
+.contentTable {
+	border: 1px solid #999999;
+	background-color: #EAEAEA;
+}
+.contentTablePetite {
+	border: 1px solid #999999;
+	background-color: #EAEAEA;
+	font-size: 80%;
+}
+.contentTableTitle {
+	border-bottom: 1px solid #999999;
+	background-color: #CCCCCC;
+	font-size: 140%;
+	font-weight: bold;
+}
+.contentTableReg {
+	border-bottom: none;
+	background-color: #CCCCCC;
+	font-size: 80%;
+	font-weight: lighter;
+}
+.formTable {
+	border: 1px solid #FFFFFF;
+	border-collapse: collapse;
+}
+.formTablePetite {
+	border: 1px solid #FFFFFF;
+	border-collapse: collapse;
+	font-size: 80%;
+}
+.formTableMorePetite {
+	border: 1px solid #FFFFFF;
+	border-collapse: collapse;
+	font-size: 60%;
+}
+.formTitle {
+	background-color: #CCCCCC;
+	border: 1px solid #FFFFFF;
+	font-size: 125%;
+	font-weight: bold;
+}
+.formHeadingTitle {
+	border: none;
+	background-color: #CCCCCC;
+	font-size: 150%;
+	font-weight: bold;
+}
+.formHeadingReg {
+	background-color: #CCCCCC;
+	border: 1px solid #FFFFFF;
+	font-size: 125%;
+}
+.formTableRow {
+	background-color: #FFFFFF;
+}
+.formTableRowAlt {
+	background-color: #F2F2F2;
+}
+.formLabel {
+	border: 1px solid #FFFFFF;
+	background-color: #DDDDDD;
+	font-size: 115%;
+	font-weight: bold;
+}
+.formItem {
+	border: 1px solid #CCCCCC;
+	font-size: 110%;
+}
+.formTitle a:link {
+	font-weight: bold;
+	color: #006699;
+	text-decoration: underline;
+}
+.formTitle a:visited {
+	/*font-family: "Arial Unicode MS"; Arial, Helvetica, sans-serif;*/
+	font-weight: bold;
+	color: #006699;
+	text-decoration: underline;
+}
+.formTitle a:active {
+	/*font-family: "Arial Unicode MS"; Arial, Helvetica, sans-serif;*/
+	font-weight: bold;
+	/*color: #000000;*/
+	text-decoration: none;
+}
+.formTitle a:hover {
+	/*font-family: "Arial Unicode MS"; Arial, Helvetica, sans-serif;*/
+	font-weight: bold;
+	/*color: #000000;*/
+	text-decoration: none;
+}
+.normalizer {
+	font-size: 125%;
+	font-weight: lighter;
+}
+.textHighlights {
+	font-size: 90%; 
+/*    color: #000000; */
+    font-family: "Times New Roman", Times, serif;
+	padding-left = .25in;
+	padding-right = .25in;
+}
+
+span.xmChange {
+	text-indent: 0em;
+	margin-top: 0ex; 
+	margin-bottom: 0ex;
+	line-height: 2.2ex;  
+
+	border-left-width: 3px;
+	border-left-style: solid;
+	border-left-color: #000000;
+	position: absolute;
+	left: 2em;
+	padding-left: 2em;
+}
+
+span.xmChange_all_rows {
+	text-indent: 0em;
+	margin-top: 0ex; 
+	margin-bottom: 0ex;
+	line-height: 10ex;  
+
+	border-left-width: 3px;
+	border-left-style: solid;
+	border-left-color: #000000;
+	position: absolute;
+	left: 2.5em;
+	padding-left: 2em;
+}
+
+span.xmChange_caption {
+	text-indent: 0em;
+	margin-top: 0ex; 
+	margin-bottom: 0ex;
+	line-height: 14ex;  
+
+	border-left-width: 3px;
+	border-left-style: solid;
+	border-left-color: #000000;
+	position: absolute;
+	left: 2.3em;
+	padding-left: 2em;
+}
+
+span.xmChange_footnote {
+	text-indent: 0em;
+	margin-top: -2ex; 
+	margin-bottom: 0ex;
+	line-height: 8ex;  
+
+	border-left-width: 3px;
+	border-left-style: solid;
+	border-left-color: #000000;
+	position: absolute;
+	left: 2.5em;
+	padding-left: 2em;
+}
+
+span.xmChange_footnotes {
+	text-indent: 0em;
+	margin-top: -2ex; 
+	margin-bottom: 0ex;
+	line-height: 8ex;  
+
+	border-left-width: 3px;
+	border-left-style: solid;
+	border-left-color: #000000;
+	position: absolute;
+	left: 2.8em;
+	padding-left: 2em;
+}
+
+span.xmChange_custom_caption {
+	text-indent: 0em;
+	margin-top: 0ex; 
+	margin-bottom: 0ex;
+	line-height: 2.2ex;  
+
+	border-left-width: 3px;
+	border-left-style: solid;
+	border-left-color: #000000;
+	position: absolute;
+	left: -4.4em;
+	padding-left: 0em;
+}
+} /* end @media screen */
