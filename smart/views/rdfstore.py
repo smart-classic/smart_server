@@ -9,8 +9,6 @@ from base import *
 from smart.lib import utils
 from django.http import HttpResponseBadRequest
 from django.conf import settings
-import psycopg2
-import psycopg2.extras
 import RDF
 from StringIO import StringIO
 import smart.models

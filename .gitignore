@@ -1,4 +1,4 @@
-*.cfg
+B1;2305;0c*.cfg
 *.log
 *.pyc
 *.tmproj
@@ -9,3 +9,4 @@ settings.py
 *#
 bootstrap.py
 .#*
+structured_product_label/data/*
