@@ -433,12 +433,12 @@ def record_problem_delete(request, record, problem_id):
 @paramloader()
 def record_problem_put(request, record, external_id):
     g = parse_rdf(request.raw_post_data)
-    q = record_med_problems_query("<%s>"%internal_id(record, external_id))
+    c = RecordStoreConnector(record)        
+    q = record_problems_query("<%s>"%internal_id(c, external_id))
 
     new_nodes = rdf_ensure_valid_put(g, 
                          "<http://smartplatforms.org/problem>",
                          "%s/records/%s/problems/${new_id}" % (smart_base, record.id))
-    c = RecordStoreConnector(record)        
     return rdf_put(c, g, new_nodes, external_id, q)    
  
 # Replace the entire store with data passed in
