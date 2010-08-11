@@ -90,6 +90,7 @@ def remap_node(model, old_node, new_node):
 def internal_id(record_connector, external_id):
     id_graph = parse_rdf(record_connector.sparql("""
         CONSTRUCT {?s <http://smartplatforms.org/external_id> "%s".}
+        FROM $context
         WHERE {?s <http://smartplatforms.org/external_id> "%s".}
     """%(external_id, external_id)))
     
@@ -351,7 +352,7 @@ def record_med_fulfillment_put_helper(request, c, med_id, external_fill_id):
 
     new_nodes = rdf_ensure_valid_put(g, 
                          "<http://smartplatforms.org/fulfillment>",
-                         "%s/${new_id}" % (med_id))
+                         "%s/fulfillments/${new_id}" % (med_id))
 
     # add the parent (med_ --> child (fulfillment) links, which aren't supplied by the app.
     for n in new_nodes:
@@ -632,9 +633,11 @@ class RecordStoreConnector():
         u = "%s/statements"%self.endpoint
         success =  self.request(u, "POST", {"Content-Type" : "application/x-rdftransaction"}, t)
         if (success):
+            print "Succeeded with transaction: \n%s"%t
             self.pending_adds = []
             self.pending_removes = []
             return True
+        print "*****\n\n\n************* FAILED TRANSACTION %s"%t
         
         raise Exception("Failed to execute sesame transaction: %s"%t)
     
