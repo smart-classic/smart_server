@@ -11,6 +11,7 @@ import psycopg2
 import psycopg2.extras
 from smart.lib.utils import serialize_rdf
 from xml.dom.minidom import parse, parseString
+import libxml2
 import urllib
 
 pillbox_api_key = "7SETYPBTYS"
@@ -19,6 +20,8 @@ rdf = RDF.NS("http://www.w3.org/1999/02/22-rdf-syntax-ns#")
 spl = RDF.NS("http://www.accessdata.fda.gov/spl/data/")
 spl_type = RDF.Node(uri_string="http://www.accessdata.fda.gov/spl/data")
 pillbox = RDF.NS("http://pillbox.nlm.nih.gov/")
+dcterms = RDF.NS('http://purl.org/dc/terms/')
+
 host = RDF.NS(settings.SITE_URL_PREFIX+"/spl/data/")
 
 class JSONObject(object):
@@ -59,20 +62,69 @@ class SPL(JSONObject):
         self.model.append(RDF.Statement(self.node, rdf["type"], spl_type))
         
         f = open(self.xml)
-        d = parseString(f.read())
+        d = libxml2.parseDoc(f.read())    
         f.close()
-
-        org = d.getElementsByTagName("representedOrganization")[0]
-        org_name = org.getElementsByTagName("name")[0].childNodes[0].nodeValue.encode()     
+        c = d.xpathNewContext()
+        c.xpathRegisterNs("spl", "urn:hl7-org:v3")
+        org_name = c.xpathEval("//spl:representedOrganization//spl:name")[0].content
         org_name = RDF.Node(org_name)
-       
         self.model.append(RDF.Statement(self.node, spl["representedOrganization"], org_name))
+
+        ndcs =  [x.content for  x in c.xpathEval("//spl:code[@codeSystem='2.16.840.1.113883.6.69']/@code")]
+        for ndc in ndcs:
+            if len(ndc.split("-")) != 2: continue # dont' need to distinguish 20- vs. 40-pill bottles...
+            ndc = RDF.Node(ndc)
+            self.model.append(RDF.Statement(self.node, spl["NDC"], ndc))
+            
    
         for image in glob.glob("%s/*.jpg"%self.dir):
             image = os.path.split(image)[1].encode()
             self.model.append(RDF.Statement(self.node, spl['image'], host['%s/%s'%(self.spl_set_id, image)]))
-    
-    def getPillboxImages(self, rxcui_id):
+
+class IngredientPillBox(JSONObject):
+    def __init__(self, rxcui_id):
+        self.rxcui_id = rxcui_id
+        self.ingredient = self.getIngredient()
+
+        self.model = RDF.Model()
+        self.getPillboxData()
+
+        if self.data == None: return
+        
+        for pill in self.data.getElementsByTagName("pill"):
+           has_image = pill.getElementsByTagName("HAS_IMAGE")[0].childNodes[0].nodeValue
+           if (has_image == "1"):
+               self.addPill(pill)
+
+
+
+    def addPill(self, pill):
+        print "Adding ", pill.toxml()
+        product_code =   pill.getElementsByTagName("PRODUCT_CODE")[0].childNodes[0].nodeValue.encode()
+        image_id = pill.getElementsByTagName("image_id")[0].childNodes[0].nodeValue.encode()
+        label = pill.getElementsByTagName("RXSTRING")[0].childNodes[0].nodeValue.encode()
+        
+        this_pill_node = RDF.Node(uri_string="%s?prodcode=%s"%(pillbox_url, product_code))
+        
+        self.model.append(RDF.Statement(
+                                      RDF.Node(uri_string="http://link.informatics.stonybrook.edu/rxnorm/RXCUI/%s"%self.rxcui_id), 
+                                      pillbox["pill"], 
+                                      this_pill_node))
+        
+        self.model.append(RDF.Statement(this_pill_node, rdf["type"], pillbox["pill"]))
+        self.model.append(RDF.Statement(this_pill_node, spl["NDC"], RDF.Node(product_code)))
+
+        self.model.append(RDF.Statement(this_pill_node, 
+                                pillbox['image'], 
+                                RDF.Node(uri_string='http://pillbox.nlm.nih.gov/assets/medium/%smd.jpg'%(image_id))))
+
+        self.model.append(RDF.Statement(this_pill_node, 
+                                dcterms["title"], 
+                                RDF.Node(label)))
+        
+
+
+    def getIngredient(self):
        conn=psycopg2.connect("dbname='%s' user='%s' password='%s'"%
                                  (settings.DATABASE_RXN, 
                                   settings.DATABASE_USER, 
@@ -82,33 +134,35 @@ class SPL(JSONObject):
        q = """select distinct(lower(split_part(str, ' ' ,1))) 
                    from rxnconso where rxcui=%s and sab='MTHSPL' LIMIT 1;"""
        
-       cur.execute(q, (rxcui_id,))
+       cur.execute(q, (self.rxcui_id,))
        rows = cur.fetchall()
        name = rows[0][0]
-       pillbox_xml = urllib.urlopen("%s?has_image=1&key=%s&ingredient=%s"%(pillbox_url, pillbox_api_key, name)).read()
+       return name
+
+                    
+    def getPillboxData(self):
+       print "FETCHING", "%s?has_image=1&key=%s&ingredient=%s"%(pillbox_url, pillbox_api_key, self.ingredient)
+       pillbox_xml = urllib.urlopen("%s?has_image=1&key=%s&ingredient=%s"%(pillbox_url, pillbox_api_key, self.ingredient)).read()
+       print "PB XML: ", pillbox_xml
        try:
            d = parseString(pillbox_xml)
        except:
+            self.data = None
             return
-
-       for image_node in d.getElementsByTagName("image_id"):
-           image_id = image_node.childNodes[0].nodeValue.encode()
-
-           self.model.append(RDF.Statement(self.node, 
-                                            pillbox['image'], 
-                                        RDF.Node(uri_string='http://pillbox.nlm.nih.gov/assets/medium/%smd.jpg'%(image_id))))
+        
+       self.data = d
        return
-
+   
     
     def toRDF(self):
         return serialize_rdf(self.model)
     
 
 
-def merge_models(spls):
+def merge_models(models):
     m = RDF.Model()
-    for spl in spls:
-        for s in spl.model:
+    for one_model in models:
+        for s in one_model.model:
             m.append(s)
     return serialize_rdf(m)
 
@@ -130,7 +184,8 @@ def SPL_from_rxn_concept(concept_id):
    cur.execute(q, (rxcui_id,))
    rows = cur.fetchall()
 
-   ret = []
+   ret = [IngredientPillBox(rxcui_id)]
+   
    for row in rows:
        set_id = row[0]
        one_spl = SPL(set_id)
@@ -144,8 +199,4 @@ def SPL_from_rxn_concept(concept_id):
                                       one_spl.node))
 
     
-   if (len(ret) > 0):
-        ret[0].getPillboxImages(rxcui_id)
-    
-       
    return ret

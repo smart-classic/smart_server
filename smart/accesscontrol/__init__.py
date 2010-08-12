@@ -71,3 +71,4 @@ def grant_baseline(permset):
 
   # Anyone can make an OPTIONS request on a page
   permset.grant(views.allow_options, None)
+  permset.grant(views.smarthacks.container_capabilities, None)

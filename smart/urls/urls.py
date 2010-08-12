@@ -19,6 +19,12 @@ urlpatterns = patterns(
     (r'^accounts/(?P<account_email>[^/]+)/recent_records/$', account_recent_records),
     (r'^accounts/(?P<account_email>[^/]+)/', include('smart.urls.account')),
 
+
+    #Capabilities    
+    (r'^capabilities/$', MethodDispatcher({
+                         'GET': container_capabilities,
+                         'OPTIONS' : allow_options})),
+
     # Record
     (r'^record_by_token/$', record_by_token),
     (r'^records/search/$', record_search),

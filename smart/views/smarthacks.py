@@ -25,6 +25,27 @@ SAMPLE_NOTIFICATION = {
     'content' : 'a sample notification',
     }
 
+def container_capabilities(request):
+    ns = utils.default_ns()
+    m = RDF.Model()
+    m.append(RDF.Statement(RDF.Node(uri_string=settings.SITE_URL_PREFIX),
+             ns['rdf']['type'],
+             ns['sp']['container']))
+
+    m.append(RDF.Statement(RDF.Node(uri_string=settings.SITE_URL_PREFIX),
+             ns['sp']['capability'],
+             ns['sp']['capability/SNOMED/lookup']))
+    m.append(RDF.Statement(RDF.Node(uri_string=settings.SITE_URL_PREFIX),
+             ns['sp']['capability'],
+             ns['sp']['capability/SPL/lookup']))
+    m.append(RDF.Statement(RDF.Node(uri_string=settings.SITE_URL_PREFIX),
+             ns['sp']['capability'],
+             ns['sp']['capability/Pillbox/lookup']))
+    
+    return utils.x_domain(HttpResponse(utils.serialize_rdf(m), "application/rdf+xml"))
+
+
+
 @paramloader()
 def record_list(request, account):
     return render_template('record_list', {'records': [ar.record for ar in account.accountrecord_set.all()]}, type='xml')
