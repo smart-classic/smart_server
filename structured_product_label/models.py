@@ -124,8 +124,11 @@ def SPL_from_rxn_concept(concept_id):
                                       spl_type, 
                                       one_spl.node))
 
-       one_spl.getPillboxImages(rxcui_id)
        
        ret.append(one_spl)
+    
+   if (len(ret) > 0):
+        ret[0].getPillboxImages(rxcui_id)
+    
        
    return ret
