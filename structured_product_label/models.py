@@ -44,14 +44,30 @@ class SPL(JSONObject):
             path = "%s/*.xml"%self.dir
             print "path", path
             print glob.glob(path)
-            spl_id = os.path.split(glob.glob(path)[0])[1].split(".xml")[0]
+            try:
+                spl_id = os.path.split(glob.glob(path)[0])[1].split(".xml")[0]
+            except:
+                self = None
+                return
                     
-        self.xml = os.path.join(self.dir, spl_id)
-
+        self.xml = os.path.join(self.dir, "%s.xml"%spl_id)
+        
+        
         self.spl_id=spl_id.encode()
         self.node = RDF.Node(spl['%s/%s.xml'%(self.spl_id,self.spl_id)])
         self.model = RDF.Model()
         self.model.append(RDF.Statement(self.node, rdf["type"], spl_type))
+        
+        f = open(self.xml)
+        d = parseString(f.read())
+        f.close()
+
+        org = d.getElementsByTagName("representedOrganization")[0]
+        org_name = org.getElementsByTagName("name")[0].childNodes[0].nodeValue.encode()     
+        org_name = RDF.Node(org_name)
+       
+        self.model.append(RDF.Statement(self.node, spl["representedOrganization"], org_name))
+   
         for image in glob.glob("%s/*.jpg"%self.dir):
             image = os.path.split(image)[1].encode()
             self.model.append(RDF.Statement(self.node, spl['image'], host['%s/%s'%(self.spl_set_id, image)]))
@@ -118,14 +134,14 @@ def SPL_from_rxn_concept(concept_id):
    for row in rows:
        set_id = row[0]
        one_spl = SPL(set_id)
-       
+       if (one_spl == None):
+           continue
+      
        one_spl.model.append(RDF.Statement(
                                       RDF.Node(uri_string="http://link.informatics.stonybrook.edu/rxnorm/RXCUI/%s"%concept_id), 
                                       spl_type, 
                                       one_spl.node))
 
-       
-       ret.append(one_spl)
     
    if (len(ret) > 0):
         ret[0].getPillboxImages(rxcui_id)
