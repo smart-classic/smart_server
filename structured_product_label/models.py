@@ -136,7 +136,8 @@ def SPL_from_rxn_concept(concept_id):
        one_spl = SPL(set_id)
        if (one_spl == None):
            continue
-      
+       ret.append(one_spl)
+       
        one_spl.model.append(RDF.Statement(
                                       RDF.Node(uri_string="http://link.informatics.stonybrook.edu/rxnorm/RXCUI/%s"%concept_id), 
                                       spl_type, 
