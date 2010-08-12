@@ -11,6 +11,8 @@ from django.http import *
 
 def spl_view(request, rxn_concept):
     r = SPL_from_rxn_concept(rxn_concept)
-    s = r.toRDF()
+    s = ""
+    if (r != None):
+        s = r.toRDF()
     print "Giving ", s
     return x_domain(HttpResponse(s, mimetype="application/rdf+xml"))

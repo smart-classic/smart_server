@@ -10,11 +10,15 @@ import os, glob
 import psycopg2
 import psycopg2.extras
 from smart.lib.utils import serialize_rdf
+from xml.dom.minidom import parse, parseString
+import urllib
 
-
+pillbox_api_key = "7SETYPBTYS"
+pillbox_url = "http://pillbox.nlm.nih.gov/PHP/pillboxAPIService.php"
 rdf = RDF.NS("http://www.w3.org/1999/02/22-rdf-syntax-ns#")
 spl = RDF.NS("http://www.accessdata.fda.gov/spl/data/")
 spl_type = RDF.Node(uri_string="http://www.accessdata.fda.gov/spl/data")
+pillbox = RDF.NS("http://pillbox.nlm.nih.gov/")
 host = RDF.NS(settings.SITE_URL_PREFIX+"/spl/data/")
 
 class JSONObject(object):
@@ -52,6 +56,34 @@ class SPL(JSONObject):
             image = os.path.split(image)[1].encode()
             self.model.append(RDF.Statement(self.node, spl['image'], host['%s/%s'%(self.spl_set_id, image)]))
     
+    def getPillboxImages(self, rxcui_id):
+       conn=psycopg2.connect("dbname='%s' user='%s' password='%s'"%
+                                 (settings.DATABASE_RXN, 
+                                  settings.DATABASE_USER, 
+                                  settings.DATABASE_PASSWORD))
+       cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+       
+       q = """select distinct(lower(split_part(str, ' ' ,1))) 
+                   from rxnconso where rxcui=%s and sab='MTHSPL' LIMIT 1;"""
+       
+       cur.execute(q, (rxcui_id,))
+       rows = cur.fetchall()
+       name = rows[0][0]
+       pillbox_xml = urllib.urlopen("%s?has_image=1&key=%s&ingredient=%s"%(pillbox_url, pillbox_api_key, name)).read()
+       try:
+           d = parseString(pillbox_xml)
+       except:
+            return
+
+       for image_node in d.getElementsByTagName("image_id"):
+           image_id = image_node.childNodes[0].nodeValue.encode()
+
+           self.model.append(RDF.Statement(self.node, 
+                                            pillbox['image'], 
+                                        RDF.Node(uri_string='http://pillbox.nlm.nih.gov/assets/medium/%smd.jpg'%(image_id))))
+       return
+
+    
     def toRDF(self):
         return serialize_rdf(self.model)
     
@@ -67,22 +99,27 @@ def SPL_from_rxn_concept(concept_id):
                               settings.DATABASE_PASSWORD))
    cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
    
-   q = """SELECT upper(a1.atv) as SPL_SET_ID 
-           FROM rxnsat a1 join rxnsat a2 on a1.rxaui=a2.rxaui 
+   q = """SELECT upper(a1.atv) as SPL_SET_ID
+           FROM rxnsat a1 
            WHERE  a1.atn='SPL_SET_ID' 
                    and a1.rxcui=%s
-                   and a2.atn='NDC' 
            GROUP BY a1.atv  
            ORDER BY count(*) DESC
            LIMIT 1;"""
-  
+
    cur.execute(q, (rxcui_id,))
    rows = cur.fetchall()
 
-   set_id = rows[0][0]
-   ret = SPL(set_id)
-   ret.model.append(RDF.Statement(
-                                  RDF.Node(uri_string="http://link.informatics.stonybrook.edu/rxnorm/RXCUI/%s"%concept_id), 
-                                  spl_type, 
-                                  ret.node))
-   return ret
+   if (len(rows) == 1):
+       set_id = rows[0][0]
+       ret = SPL(set_id)
+       
+       ret.model.append(RDF.Statement(
+                                      RDF.Node(uri_string="http://link.informatics.stonybrook.edu/rxnorm/RXCUI/%s"%concept_id), 
+                                      spl_type, 
+                                      ret.node))
+
+       ret.getPillboxImages(rxcui_id)
+       
+       return ret
+   return None
