@@ -94,8 +94,12 @@ def internal_id(record_connector, external_id):
         WHERE {?s <http://smartplatforms.org/external_id> "%s".}
     """%(external_id, external_id)))
     
+    l = list(id_graph)
+    if len(l) > 1:
+        raise Exception( "MORE THAN ONE ENTITY WITH EXTERNAL ID %s : %s"%(external_id, ", ".join([str(x.subject) for x in l])))
+
     try:
-        s =  list(id_graph)[0].subject
+        s =  l[0].subject
         return str(s.uri).encode()   
     except: 
         return None
@@ -357,7 +361,7 @@ def record_med_fulfillment_put_helper(request, c, med_id, external_fill_id):
     # add the parent (med_ --> child (fulfillment) links, which aren't supplied by the app.
     for n in new_nodes:
         g.append(RDF.Statement(
-                subject=RDF.Node(uri_string=med_id), 
+                subject=RDF.Node(uri_string=med_id),
                 predicate=RDF.Node(uri_string='http://smartplatforms.org/fulfillment'), 
                 object=n))
         
@@ -592,6 +596,7 @@ class RecordStoreConnector():
         else: raise Exception("Unexpected HTTP status %s"%r.status)
         
     def sparql(self, q):
+        if (q.find("$context") == -1 ): raise Exception("NO CONTEXT FOR %s"%q)
         q = Template(q).substitute(context="<%s>"%self.context)
         u = self.endpoint
         data = urllib.urlencode({"query" : q})
@@ -633,12 +638,10 @@ class RecordStoreConnector():
         u = "%s/statements"%self.endpoint
         success =  self.request(u, "POST", {"Content-Type" : "application/x-rdftransaction"}, t)
         if (success):
-            print "Succeeded with transaction: \n%s"%t
+#            print "Succeeded with transaction: \n%s"%t
             self.pending_adds = []
             self.pending_removes = []
             return True
-        print "*****\n\n\n************* FAILED TRANSACTION %s"%t
-        
         raise Exception("Failed to execute sesame transaction: %s"%t)
     
         

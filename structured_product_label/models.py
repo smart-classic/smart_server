@@ -47,11 +47,7 @@ class SPL(JSONObject):
             path = "%s/*.xml"%self.dir
             print "path", path
             print glob.glob(path)
-            try:
-                spl_id = os.path.split(glob.glob(path)[0])[1].split(".xml")[0]
-            except:
-                self = None
-                return
+            spl_id = os.path.split(glob.glob(path)[0])[1].split(".xml")[0]
                     
         self.xml = os.path.join(self.dir, "%s.xml"%spl_id)
         
@@ -84,12 +80,13 @@ class SPL(JSONObject):
 class IngredientPillBox(JSONObject):
     def __init__(self, rxcui_id):
         self.rxcui_id = rxcui_id
-        self.ingredient = self.getIngredient()
-
         self.model = RDF.Model()
-        self.getPillboxData()
 
-        if self.data == None: return
+        try:
+            self.ingredient = self.getIngredient()
+            self.getPillboxData()
+        except:
+            return
         
         for pill in self.data.getElementsByTagName("pill"):
            has_image = pill.getElementsByTagName("HAS_IMAGE")[0].childNodes[0].nodeValue
@@ -134,6 +131,7 @@ class IngredientPillBox(JSONObject):
        q = """select distinct(lower(split_part(str, ' ' ,1))) 
                    from rxnconso where rxcui=%s and sab='MTHSPL' LIMIT 1;"""
        
+       print q%self.rxcui_id
        cur.execute(q, (self.rxcui_id,))
        rows = cur.fetchall()
        name = rows[0][0]
@@ -144,12 +142,8 @@ class IngredientPillBox(JSONObject):
        print "FETCHING", "%s?has_image=1&key=%s&ingredient=%s"%(pillbox_url, pillbox_api_key, self.ingredient)
        pillbox_xml = urllib.urlopen("%s?has_image=1&key=%s&ingredient=%s"%(pillbox_url, pillbox_api_key, self.ingredient)).read()
        print "PB XML: ", pillbox_xml
-       try:
-           d = parseString(pillbox_xml)
-       except:
-            self.data = None
-            return
-        
+       
+       d = parseString(pillbox_xml)
        self.data = d
        return
    
@@ -188,15 +182,18 @@ def SPL_from_rxn_concept(concept_id):
    
    for row in rows:
        set_id = row[0]
-       one_spl = SPL(set_id)
-       if (one_spl == None):
-           continue
-       ret.append(one_spl)
        
+       try:
+           one_spl = SPL(set_id)
+       except:
+           continue
+       
+       print concept_id, set_id
+       ret.append(one_spl)
+              
        one_spl.model.append(RDF.Statement(
                                       RDF.Node(uri_string="http://link.informatics.stonybrook.edu/rxnorm/RXCUI/%s"%concept_id), 
                                       spl_type, 
                                       one_spl.node))
-
     
    return ret
