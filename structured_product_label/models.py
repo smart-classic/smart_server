@@ -89,6 +89,13 @@ class SPL(JSONObject):
     
 
 
+def merge_models(spls):
+    m = RDF.Model()
+    for spl in spls:
+        for s in spl.model:
+            m.append(s)
+    return serialize_rdf(m)
+
 def SPL_from_rxn_concept(concept_id):
    concept_id=concept_id.encode()
    rxcui_id = str(concept_id)
@@ -99,27 +106,26 @@ def SPL_from_rxn_concept(concept_id):
                               settings.DATABASE_PASSWORD))
    cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
    
-   q = """SELECT upper(a1.atv) as SPL_SET_ID
+   q = """SELECT distinct(upper(a1.atv)) as SPL_SET_ID
            FROM rxnsat a1 
            WHERE  a1.atn='SPL_SET_ID' 
-                   and a1.rxcui=%s
-           GROUP BY a1.atv  
-           ORDER BY count(*) DESC
-           LIMIT 1;"""
+                   and a1.rxcui=%s;"""
 
    cur.execute(q, (rxcui_id,))
    rows = cur.fetchall()
 
-   if (len(rows) == 1):
-       set_id = rows[0][0]
-       ret = SPL(set_id)
+   ret = []
+   for row in rows:
+       set_id = row[0]
+       one_spl = SPL(set_id)
        
-       ret.model.append(RDF.Statement(
+       one_spl.model.append(RDF.Statement(
                                       RDF.Node(uri_string="http://link.informatics.stonybrook.edu/rxnorm/RXCUI/%s"%concept_id), 
                                       spl_type, 
-                                      ret.node))
+                                      one_spl.node))
 
-       ret.getPillboxImages(rxcui_id)
+       one_spl.getPillboxImages(rxcui_id)
        
-       return ret
-   return None
+       ret.append(one_spl)
+       
+   return ret
