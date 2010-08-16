@@ -24,6 +24,7 @@ from StringIO import StringIO
 import psycopg2
 import psycopg2.extras
 import RDF
+import httplib
 
 # taken from pointy-stick.com with some modifications
 class MethodDispatcher(object):
@@ -265,3 +266,34 @@ def x_domain(r):
 
 def trim(p, n):
     return '/'.join(p.split('/')[:-n]).encode()
+
+def url_request(url, method, headers, data=None):
+    (scheme, url) = url.split("://")
+
+    domain = url.split("/")[0]
+    path = "/"+"/".join(url.split("/")[1:])
+    conn = None
+    
+    if (scheme == "http") :        
+        conn = httplib.HTTPConnection(domain)
+    elif (o.scheme == "https"):
+        conn = httplib.HTTPSConnection(domain)
+
+    if (method == "GET"):
+        path += "?%s"%data
+        data = None
+
+    print "URL_REQUEST:", domain, method, path, data, headers        
+    conn.request(method, path, data, headers)
+    r = conn.getresponse()
+
+    if (r.status == 200):
+        data = r.read()
+        conn.close()
+        return data
+    elif (r.status == 204):
+        conn.close()
+        return True
+    
+    
+    else: raise Exception("Unexpected HTTP status %s"%r.status)

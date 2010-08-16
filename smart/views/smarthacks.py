@@ -14,8 +14,10 @@ import psycopg2.extras
 from rdflib import ConjunctiveGraph, Namespace, Literal
 from StringIO import StringIO
 import smart.models
+from smart.models.rdf_store import SesameConnector, DemographicConnector
 from pha import immediate_tokens_for_browser_auth
 import RDF
+import libxml2
 
 
 SAMPLE_NOTIFICATION = {
@@ -111,7 +113,7 @@ def remove_app(request, account, app):
     """
     AccountApp.objects.get(account = account, app = app).delete()
 
-    #TODO:  This would be a good hook for removing shares and tokens for this app/account.
+    #TODO:  This would be a good hook for removing shares and tokens for this app/account. -JCM
     # pseudocode like;
     # foreach share(account, app):
     #    foreach token(share):
@@ -121,19 +123,21 @@ def remove_app(request, account, app):
     return DONE
 
 def record_search(request):
+    c = DemographicConnector()
+    q = request.GET.get('sparql', None)
+    res = c.sparql(q)
     
-    model = utils.get_backed_model()
-
-    # todo: sanitize these before passing them in to librdf -JM
-    sparql = request.GET.get('sparql', None)     
-    print "Searching for ", sparql
-
+    print "got, ", res
+    
+    d = libxml2.parseDoc(res)    
+    c = d.xpathNewContext()
+    c.xpathRegisterNs("sparql", "http://www.w3.org/2005/sparql-results#")
+    people = [x.content for x in c.xpathEval("//sparql:result/sparql:binding[@name='person']/sparql:uri")]
 
     record_list = []    
-    for r in RDF.SPARQLQuery(sparql.encode()).execute(model):
-        record_id = utils.strip_ns(r['person'], "http://smartplatforms.org/records/")        
+    for p in people:
+        record_id = p.split("http://smartplatforms.org/records/")[1]        
         record_list.append(Record.objects.get(id=record_id))
-    
     return render_template('record_list', {'records': record_list}, type='xml')
 
 def allow_options(request, **kwargs):
@@ -145,13 +149,3 @@ def allow_options(request, **kwargs):
     r['Access-Control-Max-Age'] = 60
     print r._headers
     return r
-
-#@paramloader()
-#
-#def meds(request, medcall, record):
-#    return utils.get_rdf_meds()
-#    fixture = "meds_%s.ccr"%("")
-#    raw_xml = render_template_raw("fixtures/%s"%fixture, {})
-#    rdf_xml = utils.meds_as_rdf(raw_xml)
-#    print "rdf version ", rdf_xml
-#    return HttpResponse(rdf_xml, mimetype="application/rdf+xml")

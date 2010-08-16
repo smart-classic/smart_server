@@ -66,31 +66,12 @@ urlpatterns = patterns(
                                        'DELETE': record_med_fulfillment_delete,
                                        'OPTIONS' : allow_options})),
 
-
-#    (r'^records/(?P<record_id>[^/]+)/medications/(?P<med_id>[^/]+)/fulfillments/external_id/(?P<external_id>.*)$',   MethodDispatcher({
-#                                       'PUT': record_med_fulfillment_put,
-#                                       'GET': record_med_fulfillment_get_external,
-#                                       'DELETE': record_med_fulfillment_delete_external,
-#                                       'OPTIONS' : allow_options})),
-
     (r'^records/(?P<record_id>[^/]+)/medications/external_id/(?P<external_med_id>[^/]+)/fulfillments/external_id/(?P<external_fill_id>[^/]+)$',   MethodDispatcher({
                                        'GET': record_med_fulfillment_get_external,
                                        'DELETE': record_med_fulfillment_delete_external,
                                        'PUT': record_med_fulfillment_put_external,
                                        'OPTIONS' : allow_options})),
 
-#    
-#    (r'^records/(?P<record_id>[^/]+)/medications/(?P<med_id>[^/]+)/prescriptions', MethodDispatcher({
-#                                       'GET': record_med_prescriptions_get,
-#                                       'POST': record_med_prescriptions_post,
-#                                       'OPTIONS' : allow_options})),
-#                                       
-#    (r'^records/(?P<record_id>[^/]+)/medications/(?P<med_id>[^/]+)/prescriptions/(?P<prescription_id>[^/]+)$', MethodDispatcher({
-#                                       'GET': record_med_prescription_get,
-#                                       'PUT': record_med_prescription_put,
-#                                       'DELETE': record_med_prescription_delete,
-#                                       'OPTIONS' : allow_options})),
-#    
     (r'^records/(?P<record_id>[^/]+)/problems/$', MethodDispatcher({
                                        'GET': record_problems_get,
                                        'POST': record_problems_post,
@@ -124,11 +105,10 @@ urlpatterns = patterns(
     (r'^static/(?P<path>.*)$', 'django.views.static.serve', {'document_root': 'static'}),
 
     # SMArt API
-    (r'^rdf_store/$', MethodDispatcher({
-                                       'GET': get_rdf_store,
-                                       'PUT': put_rdf_store,
-                                       'POST': post_rdf_store,
-                                       'DELETE': delete_rdf_store,
+    (r'^app_storage/(?P<pha_email>[^/]+)/$', MethodDispatcher({
+                                       'GET': pha_storage_get,
+                                       'POST': pha_storage_post,
+                                       'DELETE': pha_storage_delete,
                                        'OPTIONS' : allow_options}))
 
   )

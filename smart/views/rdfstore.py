@@ -12,7 +12,8 @@ from django.conf import settings
 import RDF
 from StringIO import StringIO
 import smart.models
-from smart.lib.utils import parse_rdf, serialize_rdf, bound_graph, strip_ns, x_domain
+from smart.models.rdf_store import RecordStoreConnector, PHAConnector
+from smart.lib.utils import url_request, parse_rdf, serialize_rdf, bound_graph, strip_ns, x_domain
 from string import Template
 import re
 import uuid
@@ -443,205 +444,35 @@ def record_problem_put(request, record, external_id):
                          "<http://smartplatforms.org/problem>",
                          "%s/records/%s/problems/${new_id}" % (smart_base, record.id))
     return rdf_put(c, g, new_nodes, external_id, q)    
- 
-# Replace the entire store with data passed in
-def post_rdf (request, connector, maintain_existing_store=False):
+
+
+def pha_storage_post (request, pha_email):
     ct = utils.get_content_type(request).lower()
     
     if (ct.find("application/rdf+xml") == -1):
         raise Exception("RDF Store only knows how to store RDF+XML content, not %s." %ct)
+
+    g = parse_rdf(request.raw_post_data)   
+    connector = PHAConnector(request) 
+    for s in g:
+        connector.pending_adds.append(s)
+    connector.execute_transaction()
     
-    
-    g = bound_graph()
-    triples = connector.get()
-    
-    if (maintain_existing_store and triples != ""):
-        parse_rdf(triples, g, "existing") 
-        
-    parse_rdf(request.raw_post_data,g, "new")
-   
-    triples = serialize_rdf(g)
-    connector.set( triples )
-    
-    return x_domain(HttpResponse(triples, mimetype="application/rdf+xml"))
+    return x_domain(HttpResponse(serialize_rdf(g), mimetype="application/rdf+xml"))
+
+def pha_storage_get (request, pha_email):    
+    # todo: fix so apps can't get other apps' RDF.
+    query = " CONSTRUCT {?s ?p ?o.} from $context WHERE {?s ?p ?o.}"
+    if (SPARQL in request.GET.keys()):
+        query = request.GET[SPARQL].replace("WHERE", " from $context WHERE ")
+
+    connector = PHAConnector(request) 
+    return rdf_get(connector, query)   
 
 
-# Fetch the entire store and pass back rdf/xml -- or pass back partial graph 
-# if a SPARQl CONSTRUCT query string is provided.
-def get_rdf(request, connector):
-   triples = connector.get()
-   g = bound_graph()        
+def pha_storage_delete(request, pha_email):
+    query =  urllib.unquote_plus(request.raw_post_data[7:]).encode()      
+    query = query.replace("WHERE", " from $context WHERE ")
+    connector = PHAConnector(request)
+    return rdf_delete(connector, query)
 
-   if (triples != ""):
-       parse_rdf(triples, g)
-   
-   if (SPARQL not in request.GET.keys()):
-       return x_domain(HttpResponse(triples, mimetype="application/rdf+xml"))
-
-   sq = request.GET[SPARQL].encode()
-   q = RDF.SPARQLQuery(sq)
-   res = q.execute(g)
-   res_string = serialize_rdf(res)
-   return x_domain(HttpResponse(res_string, mimetype="application/rdf+xml"))
-
-def put_rdf(request, connector):
-    return post_rdf(request, connector, maintain_existing_store=True)
-
-# delete all or a query-based subset of the store, returning deleted graph
-def delete_rdf(request, connector):
-   sparql = request.raw_post_data  
-   triples = connector.get()
-
-   if (sparql.strip() == ""):
-       connector.set("")
-       return x_domain(HttpResponse(triples, mimetype="application/rdf+xml"))
-
-   
-   sparql = urllib.unquote_plus(sparql[7:]).encode()
-   g = bound_graph()        
-   deleted = bound_graph()
-   
-   if (triples != ""):
-       parse_rdf(triples, g)
-
-    
-   q = RDF.SPARQLQuery(sparql)
-   res = q.execute(g)
- 
-   try:  
-       for r in res.as_stream():
-           deleted.append(r)
-           g.remove_statement(r)
-   except: 
-        pass
-
-   triples = serialize_rdf(g)
-   connector.set( triples )
-   return x_domain(HttpResponse(serialize_rdf(deleted), mimetype="application/rdf+xml"))
-
-
-    
-
-def post_rdf_store (request):
-    c = PHAStoreConnector(request)
-    return post_rdf(request, c)
-
-def get_rdf_store (request):    
-    c = PHAStoreConnector(request)
-    return get_rdf(request, c)
-
-def put_rdf_store(request):
-    c = PHAStoreConnector(request)
-    return put_rdf(request, c)
-
-def delete_rdf_store(request):
-    c = PHAStoreConnector(request)
-    return delete_rdf(request, c)
-    
-class PHAStoreConnector():
-    def __init__(self, request):
-        self.pha = request.principal
-        if not (isinstance(self.pha, smart.models.PHA)):
-            raise Exception("RDF Store only stores data for PHAs.")
-        try:
-            self.object = smart.models.PHA_RDFStore.objects.get(PHA=self.pha)
-        except:
-            self.object = smart.models.PHA_RDFStore.objects.create(PHA=self.pha)
-        
-    def get(self):    
-        return self.object.triples
-    
-    def set(self, triples):
-        self.object.triples = triples
-        self.object.save()
-
-class RecordStoreConnector():
-    cache = {}
-    def __init__(self, record):
-        self.pending_removes = []
-        self.pending_adds = []
-        self.endpoint = settings.RECORD_SPARQL_ENDPOINT
-        self.context = "http://smartplatforms.org/records/%s"%record.id
-        self.context = self.context.encode()
-        
-
-    def request(self, url, method, headers, data=None):
-        (scheme, url) = url.split("://")
-
-        domain = url.split("/")[0]
-        path = "/"+"/".join(url.split("/")[1:])
-        conn = None
-        
-        if (scheme == "http") :        
-            conn = httplib.HTTPConnection(domain)
-        elif (o.scheme == "https"):
-            conn = httplib.HTTPSConnection(domain)
-    
-        if (method == "GET"):
-            path += "?%s"%data
-            data = None
-            
-        conn.request(method, path, data, headers)
-        r = conn.getresponse()
-
-        if (r.status == 200):
-            data = r.read()
-            conn.close()
-            return data
-        elif (r.status == 204):
-            conn.close()
-            return True
-        
-        
-        else: raise Exception("Unexpected HTTP status %s"%r.status)
-        
-    def sparql(self, q):
-        if (q.find("$context") == -1 ): raise Exception("NO CONTEXT FOR %s"%q)
-        q = Template(q).substitute(context="<%s>"%self.context)
-        u = self.endpoint
-        data = urllib.urlencode({"query" : q})
-#        print "SPARQL %s"%q 
-        res = self.request(u, "GET", {"Accept" : "application/rdf+xml"}, data)
-#        print "yields:\n%s"%(res)
-        return res
-            
-    def serialize_node(self, node):
-        if (node.is_resource()):
-            return "<uri>%s</uri>"%node.uri
-        elif (node.is_blank()):
-            return "<bnode>%s</bnode>"%node.blank_identifier
-        elif (node.is_literal()):
-            return "<literal>%s</literal>"%node.literal_value['string']
-    
-        raise Exception("Unknown node type for %s"%node)
-
-
-    def serialize_statement(self, st):
-        return "%s %s %s %s %s"%(self.serialize_node(st.subject),
-                           self.serialize_node(st.predicate),
-                           self.serialize_node(st.object),
-                           self.serialize_node(RDF.Node(uri_string=self.context)),
-                           self.serialize_node(RDF.Node(uri_string="http://surescripts"))
-                           )
-    
-    def execute_transaction(self):
-        t = '<?xml version="1.0"?>'
-        t += "<transaction>"
-        for a in self.pending_adds:
-            t += "<add>%s</add>"%self.serialize_statement(a)
-
-        for d in self.pending_removes:
-            t += "<remove>%s</remove>"%self.serialize_statement(d)
-        
-        t += "</transaction>"
-
-        u = "%s/statements"%self.endpoint
-        success =  self.request(u, "POST", {"Content-Type" : "application/x-rdftransaction"}, t)
-        if (success):
-#            print "Succeeded with transaction: \n%s"%t
-            self.pending_adds = []
-            self.pending_removes = []
-            return True
-        raise Exception("Failed to execute sesame transaction: %s"%t)
-    
-        
