@@ -1,5 +1,5 @@
 from smart.models import *
-from bootstrap_utils import interpolated_postgres_load
+from bootstrap_utils import interpolated_postgres_load, put_rdf
 from django.conf import settings
 import os
 
@@ -90,12 +90,8 @@ ss_11 = Record.objects.create(full_name = 'Douglas Richardson')
 
 import RDF
 
-db = settings.DATABASE_REDLAND
 u = settings.DATABASE_USER
 p =settings.DATABASE_PASSWORD
-rs = RDF.Storage(storage_name="postgresql", name=db, 
-         options_string="new='yes',database='%s',host='localhost',user='%s',password='%s',contexts='yes'"%
-         (db, u, p))
 
 bios = """<?xml version="1.0"?>
 
@@ -212,6 +208,10 @@ xmlns:bio="http://purl.org/vocab/bio/0.1/"
  ss_10.id,
  ss_11.id)
 
+demographic_url  = "%s/statements"%settings.DEMOGRAPHIC_SPARQL_ENDPOINT
+put_rdf(demographic_url, bios)
+
+
 interpolated_postgres_load(
     os.path.join(settings.APP_HOME, "codingsystems/data/load-snomedctcore.sql"),
     {"snomed_core_data": 
@@ -220,10 +220,3 @@ interpolated_postgres_load(
     settings.DATABASE_NAME,
     settings.DATABASE_USER
 )
-
-
-model = RDF.Model(storage=rs)
-parser = RDF.Parser()
-parser.parse_string_into_model(model, bios.encode(),"bootstrap_context")
-
-
