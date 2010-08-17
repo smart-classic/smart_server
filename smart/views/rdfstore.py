@@ -88,12 +88,15 @@ def remap_node(model, old_node, new_node):
         model.append(RDF.Statement(s.subject, s.predicate, new_node))            
     return
 
-def internal_id(record_connector, external_id):
+def internal_id(record_connector, external_id, type):
     id_graph = parse_rdf(record_connector.sparql("""
+        PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
         CONSTRUCT {?s <http://smartplatforms.org/external_id> "%s".}
         FROM $context
-        WHERE {?s <http://smartplatforms.org/external_id> "%s".}
-    """%(external_id, external_id)))
+        WHERE {?s <http://smartplatforms.org/external_id> "%s".
+               ?s rdf:type %s.
+              }
+    """%(external_id, external_id, type)))
     
     l = list(id_graph)
     if len(l) > 1:
@@ -249,13 +252,13 @@ def record_med_delete(request, record, med_id):
 @paramloader()
 def record_med_delete_external(request, record, external_id):
     c = RecordStoreConnector(record)
-    id = internal_id(c, external_id)
+    id = internal_id(c, external_id, "<http://smartplatforms.org/medication>")
     return rdf_delete(c, record_med_query("<%s>"%(id)))
 
 @paramloader()
 def record_med_get_external(request, record, external_id):
     c = RecordStoreConnector(record)
-    id = internal_id(c, external_id)
+    id = internal_id(c, external_id, "<http://smartplatforms.org/medication>")
     return rdf_get(c, record_med_query("<%s>"%(id)))
 
 
@@ -263,7 +266,7 @@ def record_med_get_external(request, record, external_id):
 def record_med_put(request, record, external_id):
     g = parse_rdf(request.raw_post_data)    
     c = RecordStoreConnector(record)
-    q = record_med_query("<%s>"%internal_id(c, external_id))
+    q = record_med_query("<%s>"%internal_id(c, external_id, "<http://smartplatforms.org/medication>"))
     
     new_nodes = rdf_ensure_valid_put(g, 
                          "<http://smartplatforms.org/medication>",
@@ -341,18 +344,18 @@ def record_med_fulfillment_delete(request, record, med_id, fill_id):
 @paramloader()
 def record_med_fulfillment_get_external(request, record, external_med_id, external_fill_id):
     c = RecordStoreConnector(record)
-    fill_id = internal_id(c, external_fill_id)
+    fill_id = internal_id(c, external_fill_id, "<http://smartplatforms.org/fulfillment>")
     return rdf_get(c, record_med_fulfillment_query("<%s>"%(fill_id)))
 
 @paramloader()
 def record_med_fulfillment_delete_external(request, record, external_med_id, external_fill_id):
     c = RecordStoreConnector(record)
-    fill_id = internal_id(c, external_fill_id)
+    fill_id = internal_id(c, external_fill_id, "<http://smartplatforms.org/fulfillment>")
     return rdf_delete(c, record_med_fulfillment_query("<%s>"%(fill_id)))
 
 def record_med_fulfillment_put_helper(request, c, med_id, external_fill_id):
     g = parse_rdf(request.raw_post_data)
-    fill_id=internal_id(c, external_fill_id)
+    fill_id=internal_id(c, external_fill_id, "<http://smartplatforms.org/fulfillment>")
     q = record_med_fulfillment_query("<%s>"%fill_id)
 
     new_nodes = rdf_ensure_valid_put(g, 
@@ -371,7 +374,7 @@ def record_med_fulfillment_put_helper(request, c, med_id, external_fill_id):
 @paramloader()
 def record_med_fulfillment_put_external(request, record, external_med_id, external_fill_id):
     c = RecordStoreConnector(record)
-    med_id = internal_id(c, external_med_id)
+    med_id = internal_id(c, external_med_id, "<http://smartplatforms.org/medication>")
     return record_med_fulfillment_put_helper(request, c, med_id, external_fill_id)
 
 
@@ -420,13 +423,13 @@ def record_problem_get(request, record, problem_id):
 @paramloader()
 def record_problem_get_external(request, record, external_id):
     c = RecordStoreConnector(record)
-    id = internal_id(c, external_id)
+    id = internal_id(c, external_id, "<http://smartplatforms.org/problem>")
     return rdf_get(c, record_problem_query("<%s>"%(id)))
 
 @paramloader()
 def record_problem_delete_external(request, record, external_id):
     c = RecordStoreConnector(record)
-    id = internal_id(c, external_id)
+    id = internal_id(c, external_id, "<http://smartplatforms.org/problem>")
     return rdf_delete(c, record_problem_query("<%s>"%(id)))
 
 @paramloader()
@@ -438,7 +441,7 @@ def record_problem_delete(request, record, problem_id):
 def record_problem_put(request, record, external_id):
     g = parse_rdf(request.raw_post_data)
     c = RecordStoreConnector(record)        
-    q = record_problems_query("<%s>"%internal_id(c, external_id))
+    q = record_problems_query("<%s>"%internal_id(c, external_id, "<http://smartplatforms.org/problem>"))
 
     new_nodes = rdf_ensure_valid_put(g, 
                          "<http://smartplatforms.org/problem>",

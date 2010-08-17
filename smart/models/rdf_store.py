@@ -39,7 +39,7 @@ class SesameConnector(object):
         
     def sparql(self, q):
         u = self.endpoint
-        print "Querying, ", q
+        #print "Querying, ", q
         data = urllib.urlencode({"query" : q})
         res = self.request(u, "GET", {"Accept" : "application/rdf+xml,  application/sparql-results+xml"}, data)
         return res
