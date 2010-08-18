@@ -6,8 +6,8 @@ Steve Zabak
 """
 
 from base import *
-from apps import *
 from accounts import *
+from apps import *
 from records import *
 from shares import *
 from rdf_store import *
