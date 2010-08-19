@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <Records>
 {% for record in records %}
-  <Record id="{{ record.id }}" label="{{ record.full_name }}" />
+  <Record id="{{ record.id }}" label="{{record.fn}} {{record.ln}}" >
+  <demographics>
+  <firstname>{{record.fn}}</firstname>
+  <lastname>{{record.ln}}</lastname>
+  <dob>{{record.dob}}</dob>
+  </demographics>
+  </Record>
 {% endfor %}
 </Records>

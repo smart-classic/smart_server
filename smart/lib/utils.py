@@ -148,15 +148,6 @@ def default_ns():
    d['ccr'] = RDF.NS('urn:astm-org:CCR')
    return d
 
-def get_backed_model():
-    db = settings.DATABASE_REDLAND                                                                                                                                                              
-    u = settings.DATABASE_USER                                                                                           
-    p =settings.DATABASE_PASSWORD
-    rs = RDF.Storage(storage_name="postgresql", name=db,options_string="new='no',database='%s',host='localhost',user='%s',password='%s',contexts='yes'"%(db, u, p))      
-    
-    model = RDF.Model(storage=rs)
-    return model
-
 
 def bind_ns(serializer, ns=default_ns()):
     for k in ns.keys():
