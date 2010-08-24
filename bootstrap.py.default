@@ -40,8 +40,8 @@ PHA.objects.create(start_url_template= 'http://localhost:8001/statin.html?record
                    description = 'States whether patient is taking a statin.',
                    consumer_key = 'smart-statin-app',
                    secret = 'smartapp-secret',
-                   name ='Are-Statins-On-Board?',
-                   email='are-statins-on-board@apps.smart.org')
+                   name ='Got-Statins?',
+                   email='got-statins@apps.smart.org')
 
 
 PHA.objects.create(start_url_template= 'http://localhost:8002/smart/start_auth?record_id={record_id}',
