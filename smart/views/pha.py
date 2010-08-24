@@ -11,7 +11,6 @@ from oauth.djangoutils import extract_request
 from oauth import oauth
 
 from smart.accesscontrol import auth
-from smart.accesscontrol.oauth_servers import UserDataStore
 from smart.lib import iso8601
 import base64, hmac, datetime
 
@@ -35,7 +34,6 @@ def immediate_tokens_for_browser_auth(record, account, app):
     except AccountApp.DoesNotExist:
       raise Exception("Can't launch an app %s that hasn't been added to this account %s" % (app, account))
 
-    store = UserDataStore()    
     share, create_p = models.Share.objects.get_or_create( record        = record, 
                                                           with_pha      = app, 
                                                           authorized_by = account,
@@ -44,11 +42,11 @@ def immediate_tokens_for_browser_auth(record, account, app):
                                                                      })
 
     token, secret = oauth.generate_token_and_secret()
-    ret =  share.new_access_token(token, 
-                                  secret)  
-
+    
+    ret =  share.new_access_token(token, secret)  
     ret.smart_connect_p = True
     ret.save()
+    
     return ret
   
 ##
