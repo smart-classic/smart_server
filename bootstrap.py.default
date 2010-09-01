@@ -78,6 +78,17 @@ PHA.objects.create(start_url_template= 'http://localhost:8000/index.html',
                    email='developer-sandbox@apps.smart.org',
                    background_p=False)
 
+PHA.objects.create(start_url_template= 'http://localhost:8001/blue_button_import.html',
+                   callback_url = 'http://localhost:8001/blue_button_import.html',
+                   has_ui = True,
+                   frameable = True,
+                   description = 'Import medications from CMS / VA Blue Button.',
+                   consumer_key = 'blue-button-app',
+                   secret = 'smartapp-secret',
+                   name ='Blue Button Import',
+                   email='blue-button-import@apps.smart.org',
+                   background_p=False)
+
 
 a = Account.objects.create(email = 'benadida@smart.org', full_name='Ben Adida', contact_email = 'ben@adida.net')
 a.set_username_and_password(username='benadida', password='test')
