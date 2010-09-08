@@ -7,7 +7,7 @@ Ben Adida
 from base import *
 from smart.lib import utils
 from django.db import models, transaction, IntegrityError
-from django.http import HttpResponseBadRequest
+from django.http import HttpResponse, HttpResponseBadRequest
 from django.conf import settings
 import psycopg2
 import psycopg2.extras
@@ -146,10 +146,27 @@ def record_search(request):
 
 def allow_options(request, **kwargs):
     r =  utils.x_domain(HttpResponse())
-    scheme = request.is_secure() and "https" or "http"
-    ui = settings.SMART_UI_SERVER_LOCATION
     r['Access-Control-Allow-Methods'] = "POST, GET, PUT, DELETE"
     r['Access-Control-Allow-Headers'] = "authorization,x-requested-with"
     r['Access-Control-Max-Age'] = 60
     print r._headers
     return r
+
+def do_intent(request, intent_name):
+    app_intent = None
+
+    # Find the preferred app for this intent...
+    try:
+        app_intent = AppIntent.objects.get(intent__name=intent_name, preferred=True)
+    # or, failing that, find any app for this intent.
+    except AppIntent.DoesNotExist:
+        app_intent = AppIntent.objects.filter(intent__name=intent_name)[0]
+    except AppIntent.DoesNotExist:
+        raise Exception("No intent exists with name:  '%s'"%intent_name)
+    
+    data = request.raw_post_data
+    if (request.method == 'GET'): data = request.META['QUERY_STRING']    
+    
+    response = utils.url_request(app_intent.url, request.method, {}, data)
+    print "GOT,", response
+    return utils.x_domain(HttpResponse(response, mimetype='application/rdf+xml'))

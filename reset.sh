@@ -13,4 +13,3 @@ wget --post-data='type=native&Repository+ID=pha_rdf&Repository+title=PHA-leve+RD
 
 
 python manage.py syncdb
-

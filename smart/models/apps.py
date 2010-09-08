@@ -10,7 +10,7 @@ Steve Zabak
 from django.db import models
 from django.conf import settings
 
-from base import Object, Principal, BaseModel, BaseMeta
+from base import Object, Principal, BaseModel, BaseMeta, APP_LABEL
 
 import urllib, datetime
 
@@ -43,6 +43,7 @@ class OAuthApp(Principal):
 
 ## HACK because of problem
 #OAuthApp = Principal
+
 
 ##
 ## PHAs
@@ -80,6 +81,18 @@ class PHA(OAuthApp):
   background_p = models.BooleanField(default=False)
 
 
+class HelperApp(OAuthApp):
+  """
+  Helper Applications provide a service to other apps.  
+  For now, they don't get access to patient record data...
+  """
+
+  Meta = BaseMeta()
+  # short description of the app
+  description = models.CharField(max_length=2000, null=True)
+
+
+
 ##
 ## App Tokens are implemented separately, since they require access to record and docs
 ## (yes, this is confusing, but otherwise it's circular import hell)
@@ -114,6 +127,21 @@ class MachineApp(OAuthApp):
   def from_consumer(cls, consumer):
     return cls.objects.get(consumer=consumer)
 
+
+class Intent(Object):
+    name=models.CharField(max_length=50)
+    description=models.TextField(null=True)
+
+class AppIntent(Object):
+    intent = models.ForeignKey('Intent', related_name = 'apps', null=False)
+    app = models.ForeignKey('HelperApp', related_name = 'intents', null=False)
+    url = models.TextField(max_length=200,null=False)
+    preferred = models.BooleanField(default=False)
+
+    class Meta:
+        app_label = APP_LABEL
+        unique_together = (('app', 'intent'),)
+    
 ##
 ## session tokens
 ##
@@ -128,9 +156,7 @@ class SessionRequestToken(Object):
 class SessionToken(Object):
   token = models.CharField(max_length=40)
   secret = models.CharField(max_length=60)
-
   user = models.ForeignKey('Account', null = True)
-
   expires_at = models.DateTimeField(null = False)
 
   @property

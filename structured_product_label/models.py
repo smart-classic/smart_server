@@ -129,7 +129,7 @@ class IngredientPillBox(JSONObject):
        cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
        
        q = """select distinct(lower(split_part(str, ' ' ,1))) 
-                   from rxnconso where rxcui=%s and sab='MTHSPL' LIMIT 1;"""
+                   from rxnconso where rxcui=%s LIMIT 1;"""
        
        print q%self.rxcui_id
        cur.execute(q, (self.rxcui_id,))

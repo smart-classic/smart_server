@@ -35,7 +35,17 @@ def record_sparql(request, record):
     res = c.sparql(request.GET['q'].encode())
     return rdf_response(res)
 
-from string import Template
+def sp_query(s, p):
+    return """
+    CONSTRUCT {?s ?p ?o.}
+    FROM $context
+    WHERE {
+        ?s ?p ?o.
+        FILTER (?s=<%s> &&  ?p=<%s>)
+    }
+    """% (str(s.uri), str(p.uri))
+    
+
 def recursive_query(root_subject, root_predicate, root_object, child_levels):
 
     base_query = """
@@ -244,6 +254,20 @@ def record_med_query(root_subject):
 @paramloader()
 def record_med_get(request, record, med_id):
     return rdf_get(RecordStoreConnector(record), record_med_query("<%s%s>"%(smart_base, request.path)))
+
+
+@paramloader()
+def record_med_post(request, record, med_id):
+    c = RecordStoreConnector(record)    
+    g = parse_rdf(request.raw_post_data)
+    med_node = RDF.Node(uri_string="%s/records/%s/medications/%s" % (smart_base, record.id.encode(), med_id.encode()))
+   
+    for s in g:
+        if (s.subject != med_node):
+            raise Exception("Can't post data to %s where the subject is %s" %  (str(med_node), str(s.subject)))
+        rdf_delete(c, sp_query(s.subject, s.predicate))
+    
+    return rdf_post(c, g)
 
 @paramloader()
 def record_med_delete(request, record, med_id):
@@ -461,7 +485,7 @@ def pha_storage_post (request, pha_email):
         connector.pending_adds.append(s)
     connector.execute_transaction()
     
-    return x_domain(HttpResponse(serialize_rdf(g), mimetype="application/rdf+xml"))
+    return rdf_response(serialize_rdf(g))
 
 def pha_storage_get (request, pha_email):    
     # todo: fix so apps can't get other apps' RDF.

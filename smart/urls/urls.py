@@ -43,7 +43,8 @@ urlpatterns = patterns(
                                        
     (r'^records/(?P<record_id>[^/]+)/medications/(?P<med_id>[^/]+)$',  MethodDispatcher({
                                        'GET': record_med_get,
-                                       'PUT': record_med_put,
+                                       #'PUT': record_med_put,
+                                       'POST': record_med_post,
                                        'DELETE': record_med_delete,
                                        'OPTIONS' : allow_options})),
 
@@ -109,6 +110,13 @@ urlpatterns = patterns(
                                        'GET': pha_storage_get,
                                        'POST': pha_storage_post,
                                        'DELETE': pha_storage_delete,
+                                       'OPTIONS' : allow_options})),
+
+    # SMArt Intent API
+    (r'^intent/(?P<intent_name>[^/]+)$', MethodDispatcher({
+                                       'GET': do_intent,
                                        'OPTIONS' : allow_options}))
 
+  
   )
+

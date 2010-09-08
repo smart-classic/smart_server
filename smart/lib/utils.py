@@ -19,8 +19,6 @@ import logging
 import string, random
 import functools
 
-from rdflib import ConjunctiveGraph, Namespace, Literal
-from StringIO import StringIO
 import psycopg2
 import psycopg2.extras
 import RDF
@@ -267,7 +265,7 @@ def url_request(url, method, headers, data=None):
     
     if (scheme == "http") :        
         conn = httplib.HTTPConnection(domain)
-    elif (o.scheme == "https"):
+    elif (scheme == "https"):
         conn = httplib.HTTPSConnection(domain)
 
     if (method == "GET"):

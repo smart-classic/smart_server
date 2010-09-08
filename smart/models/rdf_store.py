@@ -102,7 +102,6 @@ class ContextSesameConnector(SesameConnector):
         q = Template(q).substitute(context="<%s>"%self.context)
         return super(ContextSesameConnector, self).sparql(q)
 
-
 class DemographicConnector(SesameConnector):
     def __init__(self):
         super(DemographicConnector, self).__init__(settings.DEMOGRAPHIC_SPARQL_ENDPOINT)

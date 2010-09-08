@@ -11,3 +11,4 @@ bootstrap.py
 .#*
 structured_product_label/data/*
 structured_product_label/data.tgz
+.settings/*

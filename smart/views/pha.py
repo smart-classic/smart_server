@@ -30,9 +30,9 @@ def pha(request, pha_email):
 
 def immediate_tokens_for_browser_auth(record, account, app):
     try:
-      AccountApp.objects.get(account=account, app=app)
+        AccountApp.objects.get(account=account, app=app)
     except AccountApp.DoesNotExist:
-      raise Exception("Can't launch an app %s that hasn't been added to this account %s" % (app, account))
+        raise Exception("Can't launch an app %s that hasn't been added to this account %s" % (app, account))
 
     share, create_p = models.Share.objects.get_or_create( record        = record, 
                                                           with_pha      = app, 

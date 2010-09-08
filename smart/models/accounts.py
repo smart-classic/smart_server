@@ -247,8 +247,7 @@ class AuthSystem(Object):
 
 class AccountAuthSystem(Object):
   account = models.ForeignKey(Account, related_name = 'auth_systems')
-  auth_system = models.ForeignKey(AuthSystem)
-  
+  auth_system = models.ForeignKey(AuthSystem)  
   username = models.CharField(max_length = 250)
   
   # json content for extra parameters
