@@ -90,6 +90,32 @@ PHA.objects.create(start_url_template= 'http://localhost:8001/blue_button_import
                    background_p=False)
 
 
+PHA.objects.create(start_url_template= 'http://localhost:8001/med_coder.html',
+                   callback_url = 'http://localhost:8001/med_coder.html',
+                   has_ui = True,
+                   frameable = True,
+                   description = 'Helps determine RXNorm code for each medication in the list.',
+                   consumer_key = 'med-coder-app',
+                   secret = 'smartapp-secret',
+                   name ='Med Coder',
+                   email='med-coder@apps.smart.org',
+                   background_p=False)
+
+
+ha = HelperApp.objects.create(
+                   description = 'Provides basic implementation of fuzzy_match_rxnorm intent, as a service to other apps',
+                   consumer_key = 'basic-fuzzy-match-app-key',
+                   secret = 'smartapp-secret',
+                   name ='Basic Fuzzy Match',
+                   email='basic-fuzzy-match-app@apps.smart.org'
+                  )
+
+
+i = Intent.objects.create(name='fuzzy_match_rxnorm', description='Intent to fuzzy-match a text description of a drug to a set of matching RxNorm Concepts')
+
+ai = AppIntent.objects.create(app=ha, intent=i, url='http://localhost:8001/intent/fuzzy_match_rxnorm', preferred=True)
+
+"""
 a = Account.objects.create(email = 'benadida@smart.org', full_name='Ben Adida', contact_email = 'ben@adida.net')
 a.set_username_and_password(username='benadida', password='test')
 
@@ -98,7 +124,7 @@ a2.set_username_and_password(username='joshmandel', password='test')
 
 a2 = Account.objects.create(email = 'test@smart.org', full_name='SMArt Developer', contact_email = 'jmandel@gmail.com')
 a2.set_username_and_password(username='developer', password='test')
-
+"""
 # create a couple of records
 
 ss_1 = Record.objects.create(full_name = 'Hiram Bach')
