@@ -47,3 +47,7 @@ def grant(account, permset):
     permset.grant(account_recent_records, [check_my_account])
     permset.grant(record_search, [])
     permset.grant(apps_for_account, [])
+    permset.grant(resolve_activity, [])
+    permset.grant(resolve_activity_with_app, [])
+    
+    

@@ -48,4 +48,4 @@ def grant(accesstoken, permset):
     permset.grant(record_med_fulfillment_put_external)
 
 
-    permset.grant(do_intent)
+    permset.grant(do_webhook)

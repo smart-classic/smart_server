@@ -16,9 +16,27 @@ import base64, hmac, datetime
 
 def all_phas(request):
   """A list of the PHAs as JSON"""
-
-  phas = PHA.objects.all()
+  phas = [PHA.objects.get(id=x.app.id) for x in AppActivity.objects.filter(name="main")]
   return render_template('phas', {'phas': phas}, type="xml")
+
+
+def resolve_activity(request, activity_name):
+    return resolve_activity_with_app(request, activity_name, None)
+
+def resolve_activity_with_app(request, activity_name, app_id):
+  """Map an activity name (and optionally specified app id) to activity URL."""
+  act = None
+  
+  if (app_id != None):
+      act = AppActivity.objects.filter(name=activity_name, app__email=app_id)[0]
+  else:
+      act = AppActivity.objects.filter(name=activity_name)[0]
+      
+  print "mapped ", activity_name, app_id, " to: ", act
+  if (act.url == None):
+    act.url = PHA.objects.get(id=act.app.id).start_url_template
+    
+  return render_template('activity', {'a': act}, type="xml")
 
   
 def pha(request, pha_email):

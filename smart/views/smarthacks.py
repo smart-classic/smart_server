@@ -152,21 +152,18 @@ def allow_options(request, **kwargs):
     print r._headers
     return r
 
-def do_intent(request, intent_name):
-    app_intent = None
+def do_webhook(request, webhook_name):
+    hook = None
 
-    # Find the preferred app for this intent...
+    # Find the preferred app for this webhook...
     try:
-        app_intent = AppIntent.objects.get(intent__name=intent_name, preferred=True)
-    # or, failing that, find any app for this intent.
-    except AppIntent.DoesNotExist:
-        app_intent = AppIntent.objects.filter(intent__name=intent_name)[0]
-    except AppIntent.DoesNotExist:
-        raise Exception("No intent exists with name:  '%s'"%intent_name)
+        hook = AppWebHook.objects.filter(name=webhook_name)[0]
+    except:
+        raise Exception("No hook exists with name:  '%s'"%webhook_name)
     
     data = request.raw_post_data
     if (request.method == 'GET'): data = request.META['QUERY_STRING']    
     
-    response = utils.url_request(app_intent.url, request.method, {}, data)
+    response = utils.url_request(hook.url, request.method, {}, data)
     print "GOT,", response
     return utils.x_domain(HttpResponse(response, mimetype='application/rdf+xml'))

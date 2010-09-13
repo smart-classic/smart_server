@@ -35,7 +35,7 @@ class OAuthApp(Principal):
   An intermediate abstract class for all OAuth applications
   """
 
-  Meta = BaseMeta(True)
+  Meta = BaseMeta(False)
 
   consumer_key = models.CharField(max_length=200)
   secret = models.CharField(max_length=60)
@@ -70,7 +70,7 @@ class PHA(OAuthApp):
   has_ui = models.BooleanField(default=False)
 
   # does the application fit in an iframe?
-  frameable = models.BooleanField(default=False)
+  frameable = models.BooleanField(default=True)
 
   # short description of the app
   description = models.CharField(max_length=2000, null=True)
@@ -127,20 +127,26 @@ class MachineApp(OAuthApp):
   def from_consumer(cls, consumer):
     return cls.objects.get(consumer=consumer)
 
-
-class Intent(Object):
+class AppWebHook(Object):
+    app = models.ForeignKey('OAuthApp', related_name = 'hooks', null=False)
     name=models.CharField(max_length=50)
     description=models.TextField(null=True)
-
-class AppIntent(Object):
-    intent = models.ForeignKey('Intent', related_name = 'apps', null=False)
-    app = models.ForeignKey('HelperApp', related_name = 'intents', null=False)
     url = models.TextField(max_length=200,null=False)
     preferred = models.BooleanField(default=False)
 
     class Meta:
         app_label = APP_LABEL
-        unique_together = (('app', 'intent'),)
+        unique_together = (('app', 'name'),)
+
+class AppActivity(Object):
+    app = models.ForeignKey('OAuthApp', related_name = 'activities', null=False)
+    name=models.CharField(max_length=50,null=False)
+    description=models.TextField(null=True)
+    url = models.TextField(max_length=200,null=True)
+
+    class Meta:
+        app_label = APP_LABEL
+        unique_together = (('app', 'name'),)
     
 ##
 ## session tokens

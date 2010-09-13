@@ -101,6 +101,10 @@ urlpatterns = patterns(
     # PHAs
     (r'^apps/$', all_phas),
     (r'^apps/accounts/(?P<account_id>[^/]+)/$', apps_for_account),
+    (r'^activity/(?P<activity_name>[^/]+)/app/(?P<app_id>[^/]+)$', resolve_activity_with_app),
+    (r'^activity/(?P<activity_name>[^/]+)$', resolve_activity),
+    
+    
     
     # static
     (r'^static/(?P<path>.*)$', 'django.views.static.serve', {'document_root': 'static'}),
@@ -112,9 +116,9 @@ urlpatterns = patterns(
                                        'DELETE': pha_storage_delete,
                                        'OPTIONS' : allow_options})),
 
-    # SMArt Intent API
-    (r'^intent/(?P<intent_name>[^/]+)$', MethodDispatcher({
-                                       'GET': do_intent,
+    # SMArt webhook API
+    (r'^webhook/(?P<webhook_name>[^/]+)$', MethodDispatcher({
+                                       'GET': do_webhook,
                                        'OPTIONS' : allow_options}))
 
   

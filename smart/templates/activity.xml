@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Activity id="{{a.id}}">
+  <name>{{a.name}}</name>
+  <app>{{a.app.email}}</app>
+  <url>{{a.url}}</url>
+  <description>{{a.description}}</description>
+</Activity>
+
