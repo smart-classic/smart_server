@@ -11,7 +11,7 @@ MachineApp.objects.create(name='chrome',
                           app_type='chrome',
                           email='chrome@apps.smart-project.org')
 
-PHA.objects.create(start_url_template= 'http://localhost:8001/meds.html?record_id={record_id}',
+a = PHA.objects.create(start_url_template= 'http://localhost:8001/meds.html?record_id={record_id}',
                    callback_url = 'http://localhost:8001/auth/after',
                    has_ui = True,
                    frameable = True,
@@ -21,7 +21,10 @@ PHA.objects.create(start_url_template= 'http://localhost:8001/meds.html?record_i
                    name ='MedList',
                    email='medlist@apps.smart.org')
 
-PHA.objects.create(start_url_template= 'http://localhost:8001/problems.html?record_id={record_id}',
+AppActivity.objects.create(app=a, name='main')
+AppActivity.objects.create(app=a, name='view_medications')
+
+a=PHA.objects.create(start_url_template= 'http://localhost:8001/problems.html?record_id={record_id}',
                    callback_url = 'http://localhost:8001/auth/after',
                    has_ui = True,
                    frameable = True,
@@ -30,10 +33,11 @@ PHA.objects.create(start_url_template= 'http://localhost:8001/problems.html?reco
                    secret = 'smartapp-secret',
                    name ='Problems',
                    email='smart-problems@apps.smart.org')
+AppActivity.objects.create(app=a, name='main')
 
 
 
-PHA.objects.create(start_url_template= 'http://localhost:8001/statin.html?record_id={record_id}',
+a=PHA.objects.create(start_url_template= 'http://localhost:8001/statin.html?record_id={record_id}',
                    callback_url = 'http://localhost:8001/auth/after',
                    has_ui = True,
                    frameable = True,
@@ -42,9 +46,10 @@ PHA.objects.create(start_url_template= 'http://localhost:8001/statin.html?record
                    secret = 'smartapp-secret',
                    name ='Got Statins?',
                    email='got-statins@apps.smart.org')
+AppActivity.objects.create(app=a, name='main')
 
 
-PHA.objects.create(start_url_template= 'http://localhost:8002/smart/start_auth?record_id={record_id}',
+a=PHA.objects.create(start_url_template= 'http://localhost:8002/smart/start_auth?record_id={record_id}',
                    callback_url = 'http://localhost:8002/smart/after_auth',
                    has_ui = True,
                    frameable = True,
@@ -54,8 +59,9 @@ PHA.objects.create(start_url_template= 'http://localhost:8002/smart/start_auth?r
                    name ='SMArt Connector',
                    email='surescripts-sync@apps.smart.org',
                    background_p=True)
+AppActivity.objects.create(app=a, name='main')
 
-PHA.objects.create(start_url_template= 'http://localhost:8001/api_playground.html',
+a=PHA.objects.create(start_url_template= 'http://localhost:8001/api_playground.html',
                    callback_url = 'http://localhost:8001/auth/after',
                    has_ui = True,
                    frameable = True,
@@ -66,8 +72,9 @@ PHA.objects.create(start_url_template= 'http://localhost:8001/api_playground.htm
                    email='api-playground@apps.smart.org',
                    background_p=False)
 
+AppActivity.objects.create(app=a, name='main')
 
-PHA.objects.create(start_url_template= 'http://localhost:8000/index.html',
+a=PHA.objects.create(start_url_template= 'http://localhost:8000/index.html',
                    callback_url = 'http://localhost:8000/after_auth.html',
                    has_ui = True,
                    frameable = True,
@@ -77,8 +84,9 @@ PHA.objects.create(start_url_template= 'http://localhost:8000/index.html',
                    name ='Developers Sandbox',
                    email='developer-sandbox@apps.smart.org',
                    background_p=False)
+AppActivity.objects.create(app=a, name='main')
 
-PHA.objects.create(start_url_template= 'http://localhost:8001/blue_button_import.html',
+a=PHA.objects.create(start_url_template= 'http://localhost:8001/blue_button_import.html',
                    callback_url = 'http://localhost:8001/blue_button_import.html',
                    has_ui = True,
                    frameable = True,
@@ -89,8 +97,9 @@ PHA.objects.create(start_url_template= 'http://localhost:8001/blue_button_import
                    email='blue-button-import@apps.smart.org',
                    background_p=False)
 
+AppActivity.objects.create(app=a, name='main')
 
-PHA.objects.create(start_url_template= 'http://localhost:8001/med_coder.html',
+a=PHA.objects.create(start_url_template= 'http://localhost:8001/med_coder.html',
                    callback_url = 'http://localhost:8001/med_coder.html',
                    has_ui = True,
                    frameable = True,
@@ -101,9 +110,11 @@ PHA.objects.create(start_url_template= 'http://localhost:8001/med_coder.html',
                    email='med-coder@apps.smart.org',
                    background_p=False)
 
+#AppActivity.objects.create(app=a, name='main')
+AppActivity.objects.create(app=a, name='reconcile_medications', url='http://localhost:8001/med_coder.html')
 
 ha = HelperApp.objects.create(
-                   description = 'Provides basic implementation of fuzzy_match_rxnorm intent, as a service to other apps',
+                   description = 'Provides basic implementation of fuzzy_match_rxnorm webhook, as a service to other apps',
                    consumer_key = 'basic-fuzzy-match-app-key',
                    secret = 'smartapp-secret',
                    name ='Basic Fuzzy Match',
@@ -111,9 +122,7 @@ ha = HelperApp.objects.create(
                   )
 
 
-i = Intent.objects.create(name='fuzzy_match_rxnorm', description='Intent to fuzzy-match a text description of a drug to a set of matching RxNorm Concepts')
-
-ai = AppIntent.objects.create(app=ha, intent=i, url='http://localhost:8001/intent/fuzzy_match_rxnorm', preferred=True)
+h = AppWebHook.objects.create(app=ha, name='fuzzy_match_rxnorm', description='webhookt to fuzzy-match a text description of a drug to a set of matching RxNorm Concepts', url='http://localhost:8001/webhook/fuzzy_match_rxnorm')
 
 """
 a = Account.objects.create(email = 'benadida@smart.org', full_name='Ben Adida', contact_email = 'ben@adida.net')
