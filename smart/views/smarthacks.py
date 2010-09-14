@@ -91,7 +91,7 @@ def launch_app(request, record, account, app):
     sid = transaction.savepoint()
     try:
         AccountApp.objects.create(account = account, app = app)
-    except Exception,e:
+    except Exception, e:
         if isinstance(e, IntegrityError):
             transaction.savepoint_rollback(sid)
 
