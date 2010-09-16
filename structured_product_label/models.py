@@ -18,11 +18,12 @@ pillbox_api_key = "7SETYPBTYS"
 pillbox_url = "http://pillbox.nlm.nih.gov/PHP/pillboxAPIService.php"
 rdf = RDF.NS("http://www.w3.org/1999/02/22-rdf-syntax-ns#")
 spl = RDF.NS("http://www.accessdata.fda.gov/spl/data/")
-spl_type = RDF.Node(uri_string="http://www.accessdata.fda.gov/spl/data")
 pillbox = RDF.NS("http://pillbox.nlm.nih.gov/")
 dcterms = RDF.NS('http://purl.org/dc/terms/')
-
 host = RDF.NS(settings.SITE_URL_PREFIX+"/spl/data/")
+
+
+
 
 class JSONObject(object):
     JSON_FIELDS = []
@@ -38,6 +39,7 @@ class JSONObject(object):
      
 
 class SPL(JSONObject):
+    spl_type = RDF.Node(uri_string="http://www.accessdata.fda.gov/spl/data")
     def __init__(self, spl_set_id, spl_id=None):
         
         self.spl_set_id=spl_set_id.encode()
@@ -55,7 +57,7 @@ class SPL(JSONObject):
         self.spl_id=spl_id.encode()
         self.node = RDF.Node(spl['%s/%s.xml'%(self.spl_id,self.spl_id)])
         self.model = RDF.Model()
-        self.model.append(RDF.Statement(self.node, rdf["type"], spl_type))
+        self.model.append(RDF.Statement(self.node, rdf["type"], SPL.spl_type))
         
         f = open(self.xml)
         d = libxml2.parseDoc(f.read())    
@@ -193,7 +195,7 @@ def SPL_from_rxn_concept(concept_id):
               
        one_spl.model.append(RDF.Statement(
                                       RDF.Node(uri_string="http://link.informatics.stonybrook.edu/rxnorm/RXCUI/%s"%concept_id), 
-                                      spl_type, 
+                                      SPL.spl_type, 
                                       one_spl.node))
     
    return ret

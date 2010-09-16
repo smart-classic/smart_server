@@ -129,25 +129,29 @@ def bound_serializer(format):
     bind_ns(s)
     return s 
 
+d = {}
+d['dc'] = RDF.NS('http://purl.org/dc/elements/1.1/')
+d['dcterms'] = RDF.NS('http://purl.org/dc/terms/')
+d['med'] = RDF.NS('http://smartplatforms.org/medication#')
+d['umls'] = RDF.NS('http://www.nlm.nih.gov/research/umls/')
+d['sp'] = RDF.NS('http://smartplatforms.org/')
+d['foaf']=RDF.NS('http://xmlns.com/foaf/0.1/')
+d['rdf'] = RDF.NS('http://www.w3.org/1999/02/22-rdf-syntax-ns#')
+d['rxn'] = RDF.NS('http://link.informatics.stonybrook.edu/rxnorm/')
+d['rxcui'] = RDF.NS('http://link.informatics.stonybrook.edu/rxnorm/RXCUI/')
+d['rxaui'] = RDF.NS('http://link.informatics.stonybrook.edu/rxnorm/RXAUI/')
+d['rxatn'] = RDF.NS('http://link.informatics.stonybrook.edu/rxnorm/RXATN#')
+d['rxrel'] = RDF.NS('http://link.informatics.stonybrook.edu/rxnorm/REL#')
+d['ccr'] = RDF.NS('urn:astm-org:CCR')
+
+
 def default_ns():
-   d = {}
-   d['dc'] = RDF.NS('http://purl.org/dc/elements/1.1/')
-   d['dcterms'] = RDF.NS('http://purl.org/dc/terms/')
-   d['med'] = RDF.NS('http://smartplatforms.org/medication#')
-   d['umls'] = RDF.NS('http://www.nlm.nih.gov/research/umls/')
-   d['sp'] = RDF.NS('http://smartplatforms.org/')
-   d['foaf']=RDF.NS('http://xmlns.com/foaf/0.1/')
-   d['rdf'] = RDF.NS('http://www.w3.org/1999/02/22-rdf-syntax-ns#')
-   d['rxn'] = RDF.NS('http://link.informatics.stonybrook.edu/rxnorm/')
-   d['rxcui'] = RDF.NS('http://link.informatics.stonybrook.edu/rxnorm/RXCUI/')
-   d['rxaui'] = RDF.NS('http://link.informatics.stonybrook.edu/rxnorm/RXAUI/')
-   d['rxatn'] = RDF.NS('http://link.informatics.stonybrook.edu/rxnorm/RXATN#')
-   d['rxrel'] = RDF.NS('http://link.informatics.stonybrook.edu/rxnorm/REL#')
-   d['ccr'] = RDF.NS('urn:astm-org:CCR')
-   return d
+    return d
 
 
-def bind_ns(serializer, ns=default_ns()):
+def bind_ns(serializer, ns=None):
+    if (ns == None):
+        ns = d
     for k in ns.keys():
         v = ns[k]
         serializer.set_namespace(k, RDF.Uri(v._prefix))
@@ -171,12 +175,12 @@ def serialize_rdf(model, format="xml"):
 
     try: return serializer.serialize_model_to_string(model)
     except AttributeError:
-      try:
-          tmpmodel = RDF.Model(storage=RDF.HashStorage("", options="hash-type='memory'"))
-          tmpmodel.add_statements(model.as_stream())
-          return serializer.serialize_model_to_string(tmpmodel)
-      except AttributeError:
-          return '<?xml version="1.0" encoding="UTF-8"?>'
+        try:
+            tmpmodel = RDF.Model(storage=RDF.HashStorage("", options="hash-type='memory'"))
+            tmpmodel.add_statements(model.as_stream())
+            return serializer.serialize_model_to_string(tmpmodel)
+        except AttributeError:
+            return '<?xml version="1.0" encoding="UTF-8"?>'
 
 
 def xslt_ccr_to_rdf(source, stylesheet="ccr_to_med_rdf"):
@@ -286,3 +290,8 @@ def url_request(url, method, headers, data=None):
     
     
     else: raise Exception("Unexpected HTTP status %s"%r.status)
+
+logging.basicConfig(
+      level = logging.DEBUG,
+      format = '%(asctime)s %(levelname)s %(message)s',
+)
