@@ -129,29 +129,28 @@ def bound_serializer(format):
     bind_ns(s)
     return s 
 
-d = {}
-d['dc'] = RDF.NS('http://purl.org/dc/elements/1.1/')
-d['dcterms'] = RDF.NS('http://purl.org/dc/terms/')
-d['med'] = RDF.NS('http://smartplatforms.org/medication#')
-d['umls'] = RDF.NS('http://www.nlm.nih.gov/research/umls/')
-d['sp'] = RDF.NS('http://smartplatforms.org/')
-d['foaf']=RDF.NS('http://xmlns.com/foaf/0.1/')
-d['rdf'] = RDF.NS('http://www.w3.org/1999/02/22-rdf-syntax-ns#')
-d['rxn'] = RDF.NS('http://link.informatics.stonybrook.edu/rxnorm/')
-d['rxcui'] = RDF.NS('http://link.informatics.stonybrook.edu/rxnorm/RXCUI/')
-d['rxaui'] = RDF.NS('http://link.informatics.stonybrook.edu/rxnorm/RXAUI/')
-d['rxatn'] = RDF.NS('http://link.informatics.stonybrook.edu/rxnorm/RXATN#')
-d['rxrel'] = RDF.NS('http://link.informatics.stonybrook.edu/rxnorm/REL#')
-d['ccr'] = RDF.NS('urn:astm-org:CCR')
 
 
 def default_ns():
+    d = {}
+    d['dc'] = RDF.NS('http://purl.org/dc/elements/1.1/')
+    d['dcterms'] = RDF.NS('http://purl.org/dc/terms/')
+    d['med'] = RDF.NS('http://smartplatforms.org/medication#')
+    d['umls'] = RDF.NS('http://www.nlm.nih.gov/research/umls/')
+    d['sp'] = RDF.NS('http://smartplatforms.org/')
+    d['foaf']=RDF.NS('http://xmlns.com/foaf/0.1/')
+    d['rdf'] = RDF.NS('http://www.w3.org/1999/02/22-rdf-syntax-ns#')
+    d['rxn'] = RDF.NS('http://link.informatics.stonybrook.edu/rxnorm/')
+    d['rxcui'] = RDF.NS('http://link.informatics.stonybrook.edu/rxnorm/RXCUI/')
+    d['rxaui'] = RDF.NS('http://link.informatics.stonybrook.edu/rxnorm/RXAUI/')
+    d['rxatn'] = RDF.NS('http://link.informatics.stonybrook.edu/rxnorm/RXATN#')
+    d['rxrel'] = RDF.NS('http://link.informatics.stonybrook.edu/rxnorm/REL#')
+    d['ccr'] = RDF.NS('urn:astm-org:CCR')
     return d
-
 
 def bind_ns(serializer, ns=None):
     if (ns == None):
-        ns = d
+        ns = default_ns()
     for k in ns.keys():
         v = ns[k]
         serializer.set_namespace(k, RDF.Uri(v._prefix))
@@ -160,13 +159,12 @@ def parse_rdf(string, model=None, context="none"):
 #    print "PSIM: STRING=", string
 #    print "PSIM: MODEL = ", model
     if model == None:
-        model = RDF.Model() 
+        model = RDF.Model()
+    else:
+        print "We already had a model passed in." 
     parser = RDF.Parser()
 #    print "Parsing into model: ", string.encode()
-    try:
-        parser.parse_string_into_model(model, string.encode(), context)
-        
-    except  RDF.RedlandError: pass
+    parser.parse_string_into_model(model, string.encode(), context)        
     return model
         
 """Serializes a Redland model or CONSTRUCT query result with namespaces pre-set"""
