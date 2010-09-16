@@ -229,7 +229,7 @@ def record_meds_delete(request, record):
 def record_meds_post(request, record):
     
     g = parse_rdf(request.raw_post_data)
-    utils.log("before sub: %s"%serialize_rdf(g))
+#    utils.log("before sub: %s"%serialize_rdf(g))
     generate_uris(g, 
                   "<http://smartplatforms.org/medication>", 
                   "%s/records/%s/medications/${new_id}" % (smart_base, record.id))
@@ -242,7 +242,7 @@ def record_meds_post(request, record):
                   "<http://smartplatforms.org/prescription>", 
                   "${parent_id}/prescriptions/${new_id}")
     
-    utils.log("after sub: %s"%serialize_rdf(g))
+#    utils.log("after sub: %s"%serialize_rdf(g))
     return rdf_post(RecordStoreConnector(record), g)
 
 
