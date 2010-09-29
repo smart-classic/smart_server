@@ -119,6 +119,7 @@ urlpatterns = patterns(
     # SMArt webhook API
     (r'^webhook/(?P<webhook_name>[^/]+)$', MethodDispatcher({
                                        'GET': do_webhook,
+                                       'POST': do_webhook,
                                        'OPTIONS' : allow_options}))
 
   

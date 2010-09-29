@@ -123,6 +123,44 @@ ha = HelperApp.objects.create(
 
 
 h = AppWebHook.objects.create(app=ha, name='fuzzy_match_rxnorm', description='webhookt to fuzzy-match a text description of a drug to a set of matching RxNorm Concepts', url='http://localhost:8001/webhook/fuzzy_match_rxnorm')
+a=PHA.objects.create(start_url_template= 'http://sample-apps.smartplatforms.org/nlp_import.html',
+                   callback_url = '',
+                   has_ui = True,
+                   frameable = True,
+                   description = 'Import medications from a plaintext clinical note.',
+                   consumer_key = 'nlp-import-app',
+                   secret = 'smartapp-secret',
+                   name ='NLP Meds',
+                   email='nlp-import@apps.smart.org',
+                   background_p=False)
+AppActivity.objects.create(app=a, name='main')
+
+
+
+a=PHA.objects.create(start_url_template= 'http://sample-apps.smartplatforms.org/framework/med_batch_add/med_batch_add.html',
+                   callback_url = '',
+                   has_ui = True,
+                   frameable = True,
+                   description = 'Add a batch of medications to a patient record',
+                   consumer_key = 'med-bach-add-app',
+                   secret = 'smartapp-secret',
+                   name ='Med Batch Add',
+                   email='med-batch-add@apps.smart.org',
+                   background_p=False)
+AppActivity.objects.create(app=a, name='batch_add_medications')
+
+
+
+ha = HelperApp.objects.create(
+                   description = 'Provides NLP-based medication extraction from free-text notes',
+                   consumer_key = 'med-extraction-app-key',
+                   secret = 'smartapp-secret',
+                   name ='Med Extraction NLP',
+                   email='med-extraction-nlp@apps.smart.org'
+                  )
+
+h = AppWebHook.objects.create(app=ha, name='extract_meds_from_plaintext', description='webhook to extract meds from plaintext', url='http://sample-apps.smartplatforms.org/webhook/extract_meds_from_plaintext')
+
 
 """
 a = Account.objects.create(email = 'benadida@smart.org', full_name='Ben Adida', contact_email = 'ben@adida.net')
