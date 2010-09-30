@@ -2,8 +2,7 @@ from string import Template
 from smart.models import *
 from bootstrap_utils import interpolated_postgres_load, put_rdf
 from django.conf import settings
-import sys
-import os
+import re, sys, os
 import simplejson
 import urllib2
 
@@ -15,6 +14,7 @@ apps = apps["app_list"]
 
 for app in apps:
   print app
+  base_url = re.search("https?://.*?[/$]", app).group()
   s = urllib2.urlopen(app)
   r = simplejson.loads(s.read())
 
