@@ -29,12 +29,35 @@ class Record(Object):
     PREFIX foaf:   <http://xmlns.com/foaf/0.1/>
     PREFIX sp: <http://smartplatforms.org/>
     CONSTRUCT  {
-        <http://smartplatforms.org/records/$who> ?p ?o.
+        <http://smartplatforms.org/records/$who/demographics> ?p ?o.
     } WHERE {
-        <http://smartplatforms.org/records/$who> ?p ?o.
+        <http://smartplatforms.org/records/$who/demographics> ?p ?o.
     }""").substitute(who=self.id)
 
     return c.sparql(q)
+
+  @classmethod
+  def search_records(cls, query):
+    c = DemographicConnector()
+    res = c.sparql(query)
+    
+    m = utils.parse_rdf(res)
+    d = utils.default_ns()
+    
+    print "Got", res
+    people = m.find_statements(RDF.Statement(None, d['rdf']['type'], d['foaf']['Person']))
+    
+    record_list = []
+    for p in people:
+        record = Record()
+        record.id = utils.strip_ns(p.subject, "http://smartplatforms.org/records/").split("/demographics")[0]
+        record.fn = list(m.find_statements(RDF.Statement(p.subject, d['foaf']['givenName'], None)))[0].object.literal_value['string']
+        record.ln = list(m.find_statements(RDF.Statement(p.subject, d['foaf']['familyName'], None)))[0].object.literal_value['string']
+        dob = list(m.find_statements(RDF.Statement(p.subject, d['sp']['birthday'], None)))[0].object.literal_value['string']
+        record.dob = dob[4:6]+'-'+dob[6:8]+'-'+dob[0:4]
+        record_list.append(record)
+
+    return record_list
     
 class AccountApp(Object):
   account = models.ForeignKey(Account)

@@ -1,5 +1,6 @@
 import sys
-from smart import views
+import smart
+#from smart import views
 
 class PermissionSet(object):
 
@@ -53,16 +54,16 @@ def grant_baseline(permset):
   """Grant a common set of base grants"""
   
   # home
-  permset.grant(views.home, None)
+  permset.grant(smart.views.home, None)
 
   # list the phas
-  permset.grant(views.all_phas, None)
+  permset.grant(smart.views.all_phas, None)
 
   # version
-  permset.grant(views.get_version, None)
+  permset.grant(smart.views.get_version, None)
 #
 #  # SMArt API -- this should check perm based on app, user, record...
-#  permset.grant(views.smarthacks.meds, [])
+#  permset.grant(smart.views.smarthacks.meds, [])
 #  
   # static files
   # for development purposes
@@ -70,5 +71,5 @@ def grant_baseline(permset):
   permset.grant(django.views.static.serve, None)
 
   # Anyone can make an OPTIONS request on a page
-  permset.grant(views.allow_options, None)
-  permset.grant(views.smarthacks.container_capabilities, None)
+  permset.grant(smart.views.allow_options, None)
+  permset.grant(smart.views.smarthacks.container_capabilities, None)

@@ -165,7 +165,6 @@ def rdf_delete(record_connector, query, save=True):
        deleted.append(r)
        record_connector.pending_removes.append(r)
        
-    
     if (save): record_connector.execute_transaction()
        
     return rdf_response(serialize_rdf(deleted))
@@ -195,10 +194,12 @@ def rdf_ensure_valid_put(g, type, uri_string):
     return new_nodes
     
 def rdf_put(record_connector, graph, new_nodes, external_id, delete_query):
-    graph.append(RDF.Statement(
-            subject=new_nodes[0], 
-            predicate=RDF.Node(uri_string='http://smartplatforms.org/external_id'), 
-            object=RDF.Node(literal=external_id.encode())))
+
+    if (external_id != None):
+        graph.append(RDF.Statement(
+                subject=new_nodes[0], 
+                predicate=RDF.Node(uri_string='http://smartplatforms.org/external_id'), 
+                object=RDF.Node(literal=external_id.encode())))
 
     rdf_delete(record_connector, delete_query, save=False)
     return rdf_post(record_connector, graph)
@@ -473,6 +474,44 @@ def record_problem_put(request, record, external_id):
                          "<http://smartplatforms.org/problem>",
                          "%s/records/%s/problems/${new_id}" % (smart_base, record.id))
     return rdf_put(c, g, new_nodes, external_id, q)    
+
+
+"""
+DEMOGRAPHICS 
+"""
+def record_demographics_query(root_subject=None):
+    q = recursive_query(root_subject=root_subject,
+                                root_predicate="rdf:type",
+                                root_object="<http://xmlns.com/foaf/0.1/Person>",
+                                child_levels= {0: ['any_type']})
+    return q
+
+@paramloader()
+def record_demographics_get(request, record):
+    return record_demographics_get_helper(request, record)
+
+def record_demographics_get_helper(request, record):
+    c = RecordStoreConnector(record)
+    return rdf_get(c, record_demographics_query())
+
+@paramloader()
+def record_demographics_put(request, record):
+    return record_demographics_put_helper(request, record)
+
+def record_demographics_put_helper(request, record):
+    g = parse_rdf(request.raw_post_data)    
+    c = RecordStoreConnector(record)
+
+    delect_existing_demographics = record_demographics_query("<%s/records/%s/demographics>"%(smart_base, record.id))
+    return rdf_put(c, g, None, None, delect_existing_demographics)
+
+
+def record_demographics_put(request, record):
+    g = parse_rdf(request.raw_post_data)    
+    c = RecordStoreConnector(record)
+
+    delect_existing_demographics = record_demographics_query("<%s/records/%s/demographics>"%(smart_base, record.id))
+    return rdf_put(c, g, None, None, delect_existing_demographics)
 
 
 def pha_storage_post (request, pha_email):

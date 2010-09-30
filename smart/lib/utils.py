@@ -251,7 +251,7 @@ def update_store(permanent_store, new_data):
 
 def x_domain(r):
   ui = settings.SMART_UI_SERVER_LOCATION
-  r['Access-Control-Allow-Origin'] = "*"# "%s://%s:%s"%(ui['scheme'], ui['host'], ui['port'])
+  r['Access-Control-Allow-Origin'] = ui#"*"# "%s://%s:%s"%(ui['scheme'], ui['host'], ui['port'])
   return r
 
 

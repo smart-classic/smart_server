@@ -123,25 +123,8 @@ def remove_app(request, account, app):
     return DONE
 
 def record_search(request):
-    c = DemographicConnector()
     q = request.GET.get('sparql', None)
-    res = c.sparql(q)
-    
-    m = utils.parse_rdf(res)
-    d = utils.default_ns()
-    print "Got", res
-    people = m.find_statements(RDF.Statement(None, d['rdf']['type'], d['foaf']['Person']))
-    
-    record_list = []
-    for p in people:
-        record = Record()
-        record.id = utils.strip_ns(p.subject, "http://smartplatforms.org/records/")
-        record.fn = list(m.find_statements(RDF.Statement(p.subject, d['foaf']['givenName'], None)))[0].object.literal_value['string']
-        record.ln = list(m.find_statements(RDF.Statement(p.subject, d['foaf']['familyName'], None)))[0].object.literal_value['string']
-        dob = list(m.find_statements(RDF.Statement(p.subject, d['sp']['birthday'], None)))[0].object.literal_value['string']
-        record.dob = dob[4:6]+'-'+dob[6:8]+'-'+dob[0:4]
-        record_list.append(record)
-    print "record list: ", record_list
+    record_list = Record.search_records(q)
     return render_template('record_list', {'records': record_list}, type='xml')
 
 def allow_options(request, **kwargs):

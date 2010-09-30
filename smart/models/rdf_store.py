@@ -104,7 +104,7 @@ class ContextSesameConnector(SesameConnector):
 
 class DemographicConnector(SesameConnector):
     def __init__(self):
-        super(DemographicConnector, self).__init__(settings.DEMOGRAPHIC_SPARQL_ENDPOINT)
+        super(DemographicConnector, self).__init__(settings.RECORD_SPARQL_ENDPOINT)
 
 class RecordStoreConnector(ContextSesameConnector):
     def __init__(self, record):
