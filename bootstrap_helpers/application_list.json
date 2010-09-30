@@ -1,0 +1,13 @@
+{
+"app_list" : [
+  "http://localhost:8001/framework/med_list/smart_manifest.json",
+  "http://localhost:8001/framework/problem_list/smart_manifest.json",
+  "http://localhost:8001/framework/got_statins/smart_manifest.json",
+  "http://localhost:8002/smart_manifest.json",
+  "http://localhost:8001/framework/api_playground/smart_manifest.json",
+  "http://localhost:8001/framework/blue_button_import/smart_manifest.json",
+  "http://localhost:8001/framework/med_coder/smart_manifest.json",
+  "http://localhost:8001/framework/nlp_import/smart_manifest.json",
+  "http://localhost:8001/framework/med_batch_add/smart_manifest.json"
+]
+}
