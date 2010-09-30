@@ -7,7 +7,7 @@ settings.py
 .project
 .pydevproject
 *#
-bootstrap.py
+bootstrap_helpers/application_list.json
 .#*
 structured_product_label/data/*
 structured_product_label/data.tgz

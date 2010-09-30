@@ -1,0 +1,13 @@
+{
+"app_list" : [
+  "http://sample-apps.smartplatforms.org/framework/med_list/smart_manifest.json",
+  "http://sample-apps.smartplatforms.org/framework/problem_list/smart_manifest.json",
+  "http://sample-apps.smartplatforms.org/framework/got_statins/smart_manifest.json",
+  "http://sample-apps.smartplatforms.org/framework/api_playground/smart_manifest.json",
+  "http://sample-apps.smartplatforms.org/framework/blue_button_import/smart_manifest.json",
+  "http://sample-apps.smartplatforms.org/framework/med_coder/smart_manifest.json",
+  "http://sample-apps.smartplatforms.org/framework/nlp_import/smart_manifest.json",
+  "http://sample-apps.smartplatforms.org/framework/med_batch_add/smart_manifest.json",
+  "http://sample-app-connector.smartplatforms.org/smart_manifest.json",
+]
+}
