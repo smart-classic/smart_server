@@ -71,7 +71,7 @@ def apps_for_account(request, account):
 
 @paramloader()
 def account_recent_records(request, account):
-    return render_template('record_list', {'records': [r for r in Record.objects.all()]}, type='xml')
+    return render_template('record_list', {'records': []}, type='xml')
 
 @paramloader()
 def add_app(request, account, app):
@@ -130,7 +130,7 @@ def record_search(request):
 def allow_options(request, **kwargs):
     r =  utils.x_domain(HttpResponse())
     r['Access-Control-Allow-Methods'] = "POST, GET, PUT, DELETE"
-    r['Access-Control-Allow-Headers'] = "authorization,x-requested-with"
+    r['Access-Control-Allow-Headers'] = "authorization,x-requested-with,content-type"
     r['Access-Control-Max-Age'] = 60
     print r._headers
     return r

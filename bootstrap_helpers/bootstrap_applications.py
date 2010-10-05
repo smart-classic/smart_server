@@ -14,7 +14,7 @@ apps = apps["app_list"]
 
 for app in apps:
   print app
-  base_url = re.search("https?://.*?[/$]", app).group()
+  base_url = re.search("https?://.*?[/$]", app).group()[:-1]
   s = urllib2.urlopen(app)
   r = simplejson.loads(s.read())
 
