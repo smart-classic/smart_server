@@ -23,7 +23,16 @@ def grant(accesstoken, permset):
     permset.grant(record_problem_put)
     permset.grant(record_problem_delete)
     permset.grant(record_problem_delete_external)
+
+    permset.grant(record_notes_get)
+    permset.grant(record_notes_post)
+    permset.grant(record_notes_delete)
     
+    permset.grant(record_note_get)
+    permset.grant(record_note_get_external)
+    permset.grant(record_note_put)
+    permset.grant(record_note_delete)
+    permset.grant(record_note_delete_external)
         
     permset.grant(record_meds_get)
     permset.grant(record_meds_post)

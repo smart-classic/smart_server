@@ -475,6 +475,81 @@ def record_problem_put(request, record, external_id):
                          "%s/records/%s/problems/${new_id}" % (smart_base, record.id))
     return rdf_put(c, g, new_nodes, external_id, q)    
 
+"""
+NOTES 
+"""
+def record_notes_query(root_subject=None):
+    q = recursive_query(root_subject=root_subject,
+                                root_predicate="rdf:type",
+                                root_object="<http://smartplatforms.org/note>",
+                                # Must look three levels deep:  
+                                #   Note --> Provider --> Person/Organization
+                                child_levels= {0:None,
+                                               1:None,
+                                               2:None})
+    return q
+
+@paramloader()
+def record_notes_get(request, record):
+    c = RecordStoreConnector(record)
+    return rdf_get(c, record_notes_query())
+
+@paramloader()
+def record_notes_delete(request, record):
+    c = RecordStoreConnector(record)
+    return rdf_delete(c, record_notes_query())
+
+
+@paramloader()
+def record_notes_post(request, record):
+    g = parse_rdf(request.raw_post_data)
+    generate_uris(g, 
+                  "<http://smartplatforms.org/note>", 
+                  "%s/records/%s/notes/${new_id}" % (smart_base,record.id))
+    c = RecordStoreConnector(record)    
+    return rdf_post(c, g)
+
+
+"""
+ONE NOTE 
+"""
+def record_note_query(root_subject):
+    return record_notes_query(root_subject)
+
+@paramloader()
+def record_note_get(request, record, note_id):
+    c = RecordStoreConnector(record)
+    return rdf_get(c, record_note_query("<%s%s>"%(smart_base,request.path)))
+
+@paramloader()
+def record_note_get_external(request, record, external_id):
+    c = RecordStoreConnector(record)
+    id = internal_id(c, external_id, "<http://smartplatforms.org/note>")
+    return rdf_get(c, record_note_query("<%s>"%(id)))
+
+@paramloader()
+def record_note_delete_external(request, record, external_id):
+    c = RecordStoreConnector(record)
+    id = internal_id(c, external_id, "<http://smartplatforms.org/note>")
+    return rdf_delete(c, record_note_query("<%s>"%(id)))
+
+@paramloader()
+def record_note_delete(request, record, note_id):
+    c = RecordStoreConnector(record)
+    return rdf_delete(c, record_note_query("<%s%s>"%(smart_base,request.path)))
+
+@paramloader()
+def record_note_put(request, record, external_id):
+    g = parse_rdf(request.raw_post_data)
+    c = RecordStoreConnector(record)        
+    q = record_note_query("<%s>"%internal_id(c, external_id, "<http://smartplatforms.org/note>"))
+
+    new_nodes = rdf_ensure_valid_put(g, 
+                         "<http://smartplatforms.org/note>",
+                         "%s/records/%s/notes/${new_id}" % (smart_base, record.id))
+    return rdf_put(c, g, new_nodes, external_id, q)    
+
+
 
 """
 DEMOGRAPHICS 
@@ -501,17 +576,16 @@ def record_demographics_put(request, record):
 def record_demographics_put_helper(request, record):
     g = parse_rdf(request.raw_post_data)    
     c = RecordStoreConnector(record)
+    
+    generate_uris(g, 
+              "<http://xmlns.com/foaf/0.1/Person>", 
+              "%s/records/%s/demographics" % (smart_base, record.id))
 
-    delect_existing_demographics = record_demographics_query("<%s/records/%s/demographics>"%(smart_base, record.id))
-    return rdf_put(c, g, None, None, delect_existing_demographics)
+
+    delete_existing_demographics = record_demographics_query("<%s/records/%s/demographics>"%(smart_base, record.id))
+    return rdf_put(c, g, None, None, delete_existing_demographics)
 
 
-def record_demographics_put(request, record):
-    g = parse_rdf(request.raw_post_data)    
-    c = RecordStoreConnector(record)
-
-    delect_existing_demographics = record_demographics_query("<%s/records/%s/demographics>"%(smart_base, record.id))
-    return rdf_put(c, g, None, None, delect_existing_demographics)
 
 
 def pha_storage_post (request, pha_email):

@@ -194,7 +194,7 @@ def request_token_approve(request, request_token):
   request_token = OAUTH_SERVER.authorize_request_token(rt.token, record=record, account = request.principal, offline = offline)
 
   # where to redirect to + parameters
-  redirect_url = request_token.oauth_callback or request_token.pha.callback_url
+  redirect_url = AppActivity.objects.get(app=request_token.pha, name="after_auth").url
   redirect_url += "?oauth_token=%s&oauth_verifier=%s" % (request_token.token, request_token.verifier)
 
   # redirect to the request token's callback, or if null the PHA's default callback

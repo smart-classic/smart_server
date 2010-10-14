@@ -138,6 +138,7 @@ def default_ns():
     d['med'] = RDF.NS('http://smartplatforms.org/medication#')
     d['umls'] = RDF.NS('http://www.nlm.nih.gov/research/umls/')
     d['sp'] = RDF.NS('http://smartplatforms.org/')
+    d['spdemo'] = RDF.NS('http://smartplatforms.org/demographics/')
     d['foaf']=RDF.NS('http://xmlns.com/foaf/0.1/')
     d['rdf'] = RDF.NS('http://www.w3.org/1999/02/22-rdf-syntax-ns#')
     d['rxn'] = RDF.NS('http://link.informatics.stonybrook.edu/rxnorm/')

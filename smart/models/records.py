@@ -46,14 +46,16 @@ class Record(Object):
     
     print "Got", res
     people = m.find_statements(RDF.Statement(None, d['rdf']['type'], d['foaf']['Person']))
-    
+    print "got all people ", utils.serialize_rdf(people)
     record_list = []
     for p in people:
         record = Record()
+        print "working with person ", p
         record.id = utils.strip_ns(p.subject, "http://smartplatforms.org/records/").split("/demographics")[0]
         record.fn = list(m.find_statements(RDF.Statement(p.subject, d['foaf']['givenName'], None)))[0].object.literal_value['string']
         record.ln = list(m.find_statements(RDF.Statement(p.subject, d['foaf']['familyName'], None)))[0].object.literal_value['string']
-        dob = list(m.find_statements(RDF.Statement(p.subject, d['sp']['birthday'], None)))[0].object.literal_value['string']
+        print "found the snames ", record.fn, record.ln, record.id
+        dob = list(m.find_statements(RDF.Statement(p.subject, d['spdemo']['birthday'], None)))[0].object.literal_value['string']
         record.dob = dob[4:6]+'-'+dob[6:8]+'-'+dob[0:4]
         record_list.append(record)
 

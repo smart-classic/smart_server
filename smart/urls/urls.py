@@ -91,6 +91,31 @@ urlpatterns = patterns(
                                        'DELETE': record_problem_delete_external,
                                        'OPTIONS' : allow_options})),
 
+    (r'^records/(?P<record_id>[^/]+)/notes/$', MethodDispatcher({
+                                       'GET': record_notes_get,
+                                       'POST': record_notes_post,
+                                       'DELETE': record_notes_delete,
+                                       'OPTIONS' : allow_options})),
+                                       
+    (r'^records/(?P<record_id>[^/]+)/notes/(?P<note_id>[^/]+)$', MethodDispatcher({
+                                       'GET': record_note_get,
+                                       'DELETE': record_note_delete,
+                                       'OPTIONS' : allow_options})),
+
+    (r'^records/(?P<record_id>[^/]+)/notes/external_id/(?P<external_id>[^/]+)$',  
+                                    MethodDispatcher({
+                                       'PUT': record_note_put,
+                                       'GET': record_note_get_external,
+                                       'DELETE': record_note_delete_external,
+                                       'OPTIONS' : allow_options})),
+
+
+    (r'^records/(?P<record_id>[^/]+)/demographics/$', MethodDispatcher({
+                                       'GET': record_demographics_get,
+                                       'POST': record_demographics_put,
+                                       'PUT': record_demographics_put,
+                                       'OPTIONS' : allow_options})),
+
 
     (r'^accounts/(?P<account_id>[^/]+)/apps/(?P<app_email>[^/]+)$', MethodDispatcher({
                 'PUT': add_app,
