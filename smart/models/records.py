@@ -56,7 +56,7 @@ class Record(Object):
         record.ln = list(m.find_statements(RDF.Statement(p.subject, d['foaf']['familyName'], None)))[0].object.literal_value['string']
         print "found the snames ", record.fn, record.ln, record.id
         dob = list(m.find_statements(RDF.Statement(p.subject, d['spdemo']['birthday'], None)))[0].object.literal_value['string']
-        record.dob = dob[4:6]+'-'+dob[6:8]+'-'+dob[0:4]
+        record.dob = dob
         record_list.append(record)
 
     return record_list

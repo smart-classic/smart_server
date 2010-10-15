@@ -65,7 +65,9 @@ def get_problems(p):
 
 def get_meds(p): 
     
-   q = """select substr(concept_cd,5,20) as ndc, 
+   q = """select substr(concept_cd,5,20) as ndc,
+       valtype_cd as valtype,
+       tval_char as text_quantity,
        nval_num as quantity, 
        units_cd as units,
        start_date, end_date
@@ -118,6 +120,8 @@ def get_meds(p):
        newmed.strengthUnit = None
        newmed.route=None
        newmed.doseForm = None
+       newmed.dose = None
+       newmed.doseUnit = None
        
        for vr in v:
            attrs[vr['atn']] = vr['atv']
@@ -132,17 +136,26 @@ def get_meds(p):
                newmed.strength = " ".join(filter(lambda x: re.match("^\d",x), strength[:-1]))
                newmed.strengthUnit = strength[-1]
        except: pass
-       
-       newmed.dose = str(r['quantity'])
-       if (newmed.dose == "None"): newmed.dose = ""
-       try:
-         f = float(newmed.dose)
-         newmed.dose = str(f)
-       except: pass
-       
-       newmed.doseUnit = r['units'].lower()
-       if (newmed.doseUnit == "@"): newmed.doseUnit = ""
-       
+ 
+       if r['valtype']  == 'N':     
+           newmed.dose = str(r['quantity'])
+           if (newmed.dose == "None"): newmed.dose = ""
+           try:
+             f = float(newmed.dose)
+             if (f == int(f)): f = int(f)
+             newmed.dose = str(f)
+           except: pass
+       elif r['valtype'] == 'T':
+           newmed.dose = str(r['text_quantity']).lower()
+       if r['valtype'] != '@':
+           newmed.doseUnit = r['units'].lower()
+    
+       if newmed.doseUnit == '@':
+           newmed.doseUnit = None
+           if len(newmed.dose.split(" ")) > 1:
+               newmed.doseUnit = newmed.dose.split(" ")[-1]
+               newmed.dose = " ".join(newmed.dose.split(" ")[:-1])
+           
        newmed.startDate = r['start_date']
        newmed.endDate = r['end_date']
        newmed.ndc = r['ndc']
@@ -157,7 +170,7 @@ def get_demographics(p):
    r = rows[0]
    
    d = i2demographic()
-   d.givenName = 'AnonPatient'
+   d.givenName = 'Sample'
    d.familyName = str(p)
    d.birthday = r['birth_date']
    d.deathday = r['death_date']
@@ -209,6 +222,7 @@ class i2b2Patient():
             m.append(RDF.Statement(om, ns['med']['ndc'], RDF.Node(literal=med.ndc.encode())))
             if med.dose:
                 m.append(RDF.Statement(om, ns['med']['dose'], RDF.Node(literal=med.dose.encode())))
+            if med.doseUnit:
                 m.append(RDF.Statement(om, ns['med']['doseUnit'], RDF.Node(literal=med.doseUnit.encode())))
             if med.strength:
                 m.append(RDF.Statement(om, ns['med']['strength'], RDF.Node(literal=med.strength.encode())))
