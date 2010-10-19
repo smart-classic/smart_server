@@ -31,6 +31,7 @@ rxnconn=psycopg2.connect("dbname='%s' user='%s' password='%s'"%
 
 rxncur = rxnconn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
+
 def get_i2b2_patients():   
    q = """select distinct patient_num from patient_dimension order by patient_num;"""
    cur.execute(q)
@@ -44,6 +45,7 @@ def get_problems(p):
    q = """select concept_cd, 
        max(umls_cui) as umls_cui, 
        max(snomed_fsn) as snomed_fsn, 
+       max(snomed_cid) as snomed_cid, 
        max(start_date) as start_date, 
        max(end_date) as end_date 
    from observation_fact f 
@@ -52,15 +54,18 @@ def get_problems(p):
    group by concept_cd;"""
    cur.execute(q, (p,))
    rows = cur.fetchall()
-   
+
    problems = []
    for row in rows: 
        p = i2problem()
        problems.append(p)
        p.title = row['snomed_fsn']
        p.umlsCui = row['umls_cui']
+       p.snomedCID = row['snomed_cid']
        p.onset = row['start_date']
        p.resolution = row['end_date']
+       p.external_id="%s"%len(problems)
+
    return problems
 
 def get_meds(p): 
@@ -159,6 +164,7 @@ def get_meds(p):
        newmed.startDate = r['start_date']
        newmed.endDate = r['end_date']
        newmed.ndc = r['ndc']
+       newmed.external_id="%s"%len(meds)
    return meds
     
 def get_demographics(p):
@@ -180,6 +186,7 @@ def get_demographics(p):
    d.maritalStatus = r['marital_status_cd']
    d.religion  =r['religion_cd']
    d.zip = r['zip_cd']
+   d.income = r['income_cd']
    
    return d
    
@@ -211,43 +218,39 @@ class i2b2Patient():
     def get_demographics(self):
         self.demographics = get_demographics(self.id)
     
-    def rdf_meds(self):
-        ret = []
-        for med in self.meds:
-            m = RDF.Model()
-            om = RDF.Node(blank="one_med")
-            m.append(RDF.Statement(om, ns['rdf']['type'], ns['sp']['medication']))
-            m.append(RDF.Statement(om, ns['dcterms']['title'], RDF.Node(literal=med.title.encode() )))
-            m.append(RDF.Statement(om, ns['med']['drug'], ns['rxcui'][med.rxcui.encode()]))
-            m.append(RDF.Statement(om, ns['med']['ndc'], RDF.Node(literal=med.ndc.encode())))
-            if med.dose:
-                m.append(RDF.Statement(om, ns['med']['dose'], RDF.Node(literal=med.dose.encode())))
-            if med.doseUnit:
-                m.append(RDF.Statement(om, ns['med']['doseUnit'], RDF.Node(literal=med.doseUnit.encode())))
-            if med.strength:
-                m.append(RDF.Statement(om, ns['med']['strength'], RDF.Node(literal=med.strength.encode())))
-            if (med.strengthUnit):
-                m.append(RDF.Statement(om, ns['med']['strengthUnit'], RDF.Node(literal=med.strengthUnit.encode())))
-            if (med.route):
-                m.append(RDF.Statement(om, ns['med']['route'], RDF.Node(literal=med.route.encode())))
-            m.append(RDF.Statement(om, ns['med']['startDate'], RDF.Node(literal=med.startDate.isoformat()[:10].encode())))
-            m.append(RDF.Statement(om, ns['med']['endDate'], RDF.Node(literal=med.endDate.isoformat()[:10].encode())))
-            ret.append(m)
-        return ret
+    def rdf_med(self, med):
+        m = RDF.Model()
+        om = RDF.Node(blank="one_med")
+        m.append(RDF.Statement(om, ns['rdf']['type'], ns['sp']['medication']))
+        m.append(RDF.Statement(om, ns['dcterms']['title'], RDF.Node(literal=med.title.encode() )))
+        m.append(RDF.Statement(om, ns['med']['drug'], ns['rxcui'][med.rxcui.encode()]))
+        m.append(RDF.Statement(om, ns['med']['ndc'], RDF.Node(literal=med.ndc.encode())))
+        if med.dose:
+            m.append(RDF.Statement(om, ns['med']['dose'], RDF.Node(literal=med.dose.encode())))
+        if med.doseUnit:
+            m.append(RDF.Statement(om, ns['med']['doseUnit'], RDF.Node(literal=med.doseUnit.encode())))
+        if med.strength:
+            m.append(RDF.Statement(om, ns['med']['strength'], RDF.Node(literal=med.strength.encode())))
+        if (med.strengthUnit):
+            m.append(RDF.Statement(om, ns['med']['strengthUnit'], RDF.Node(literal=med.strengthUnit.encode())))
+        if (med.route):
+            m.append(RDF.Statement(om, ns['med']['route'], RDF.Node(literal=med.route.encode())))
+        m.append(RDF.Statement(om, ns['med']['startDate'], RDF.Node(literal=med.startDate.isoformat()[:10].encode())))
+        m.append(RDF.Statement(om, ns['med']['endDate'], RDF.Node(literal=med.endDate.isoformat()[:10].encode())))
+        return m
 
 
-    def rdf_problems(self):
-        ret = []
-        for problem in self.problems:
-            m = RDF.Model()
-            o = RDF.Node(blank="one_problem")
-            m.append(RDF.Statement(o, ns['rdf']['type'], ns['sp']['problem']))
-            m.append(RDF.Statement(o, ns['dcterms']['title'], RDF.Node(literal=problem.title.encode())))
-            m.append(RDF.Statement(o, ns['umls']['cui'], RDF.Node(literal=problem.umlsCui.encode())))
-            m.append(RDF.Statement(o, ns['sp']['onset'], RDF.Node(literal=problem.onset.isoformat()[:10].encode())))
-            m.append(RDF.Statement(o, ns['sp']['resolution'], RDF.Node(literal=problem.resolution.isoformat()[:10].encode())))
-            ret.append(m)
-        return ret
+    def rdf_problem(self, problem):
+        m = RDF.Model()
+        o = RDF.Node(blank="one_problem")
+        m.append(RDF.Statement(o, ns['rdf']['type'], ns['sp']['problem']))
+        m.append(RDF.Statement(o, ns['dcterms']['title'], RDF.Node(literal=problem.title.encode())))
+        m.append(RDF.Statement(o, ns['umls']['cui'], RDF.Node(literal=problem.umlsCui.encode())))
+        m.append(RDF.Statement(o, ns['umls']['snomed_cid'], RDF.Node(literal=problem.snomedCID.encode())))
+        m.append(RDF.Statement(o, ns['sp']['onset'], RDF.Node(literal=problem.onset.isoformat()[:10].encode())))
+        m.append(RDF.Statement(o, ns['sp']['resolution'], RDF.Node(literal=problem.resolution.isoformat()[:10].encode())))
+        return m
+    
 
             
 
@@ -259,17 +262,19 @@ class i2b2Patient():
         m.append(RDF.Statement(o, ns['foaf']['givenName'], RDF.Node(literal=d.givenName.encode())))
         m.append(RDF.Statement(o, ns['foaf']['familyName'], RDF.Node(literal=d.familyName.encode())))
         m.append(RDF.Statement(o, ns['foaf']['gender'], RDF.Node(literal=d.gender.encode())))
-        m.append(RDF.Statement(o, ns['spdemo']['birthday'], RDF.Node(literal=d.birthday.isoformat()[:10].encode())))
         if (d.zip):
             m.append(RDF.Statement(o, ns['spdemo']['zipcode'], RDF.Node(literal=d.zip.encode())))
         if (d.deathday):
             m.append(RDF.Statement(o, ns['spdemo']['deathday'], RDF.Node(literal=d.deathday.isoformat()[:10].encode())))
+        if (d.birthday):
+            m.append(RDF.Statement(o, ns['spdemo']['birthday'], RDF.Node(literal=d.birthday.isoformat()[:10].encode())))
         m.append(RDF.Statement(o, ns['spdemo']['language'], RDF.Node(literal=d.language.encode())))
         m.append(RDF.Statement(o, ns['spdemo']['race'], RDF.Node(literal=d.race.encode())))
         m.append(RDF.Statement(o, ns['spdemo']['maritalStatus'], RDF.Node(literal=d.maritalStatus.encode())))
         m.append(RDF.Statement(o, ns['spdemo']['religion'], RDF.Node(literal=d.religion.encode())))
+        m.append(RDF.Statement(o, ns['spdemo']['income'], RDF.Node(literal=d.income.encode())))
         
-        return [m]
+        return m
 
     def write_to_files(self, base="."):
         
@@ -283,27 +288,25 @@ class i2b2Patient():
         os.mkdir(os.path.join(base, "medications"))
         os.mkdir(os.path.join(base, "problems"))
         os.mkdir(os.path.join(base, "demographics"))
+
+        os.mkdir(os.path.join(base, "medications", "external_id"))
+        os.mkdir(os.path.join(base, "problems", "external_id"))
         
-        i = 0
-        for m in self.rdf_meds():
-            i  += 1
-            f = open(os.path.join(base, "medications/%03.d"%i), "w")
-            f.write(serialize_rdf(m))
+        for m in self.meds:
+            os.mkdir(os.path.join(base, "medications", "external_id",m.external_id))
+            f = open(os.path.join(base, "medications/external_id/%s/data.rdf"%m.external_id), "w")
+            f.write(serialize_rdf(self.rdf_med(m)))
             f.close()
             
-        i = 0
-        for m in self.rdf_problems():
-            i  += 1
-            f = open(os.path.join(base, "problems/%03.d"%i), "w")
-            f.write(serialize_rdf(m))
+        for p in self.problems:
+            os.mkdir(os.path.join(base, "problems", "external_id", p.external_id))
+            f = open(os.path.join(base, "problems/external_id/%s/data.rdf"%p.external_id), "w")
+            f.write(serialize_rdf(self.rdf_problem(p)))
             f.close()
             
-        i = 0
-        for m in self.rdf_demographics():
-            i  += 1
-            f = open(os.path.join(base, "demographics/%03.d"%i), "w")
-            f.write(serialize_rdf(m))
-            f.close()
+        f = open(os.path.join(base, "demographics/data.rdf"), "w")
+        f.write(serialize_rdf(self.rdf_demographics()))
+        f.close()
             
         
         

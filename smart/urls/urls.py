@@ -43,7 +43,6 @@ urlpatterns = patterns(
                                        
     (r'^records/(?P<record_id>[^/]+)/medications/(?P<med_id>[^/]+)$',  MethodDispatcher({
                                        'GET': record_med_get,
-                                       #'PUT': record_med_put,
                                        'POST': record_med_post,
                                        'DELETE': record_med_delete,
                                        'OPTIONS' : allow_options})),
@@ -52,6 +51,7 @@ urlpatterns = patterns(
     (r'^records/(?P<record_id>[^/]+)/medications/external_id/(?P<external_id>[^/]+)$',  
                                     MethodDispatcher({
                                        'PUT': record_med_put,
+                                       'POST': record_med_put,
                                        'GET': record_med_get_external,
                                        'DELETE': record_med_delete_external,
                                        'OPTIONS' : allow_options})),
@@ -71,6 +71,7 @@ urlpatterns = patterns(
                                        'GET': record_med_fulfillment_get_external,
                                        'DELETE': record_med_fulfillment_delete_external,
                                        'PUT': record_med_fulfillment_put_external,
+                                       'POST': record_med_fulfillment_put_external,
                                        'OPTIONS' : allow_options})),
 
     (r'^records/(?P<record_id>[^/]+)/problems/$', MethodDispatcher({
@@ -87,6 +88,7 @@ urlpatterns = patterns(
     (r'^records/(?P<record_id>[^/]+)/problems/external_id/(?P<external_id>[^/]+)$',  
                                     MethodDispatcher({
                                        'PUT': record_problem_put,
+                                       'POST': record_problem_put,
                                        'GET': record_problem_get_external,
                                        'DELETE': record_problem_delete_external,
                                        'OPTIONS' : allow_options})),
@@ -105,6 +107,7 @@ urlpatterns = patterns(
     (r'^records/(?P<record_id>[^/]+)/notes/external_id/(?P<external_id>[^/]+)$',  
                                     MethodDispatcher({
                                        'PUT': record_note_put,
+                                       'POST': record_note_put,
                                        'GET': record_note_get_external,
                                        'DELETE': record_note_delete_external,
                                        'OPTIONS' : allow_options})),
@@ -112,6 +115,13 @@ urlpatterns = patterns(
 
     (r'^records/(?P<record_id>[^/]+)/demographics/$', MethodDispatcher({
                                        'GET': record_demographics_get,
+                                       'POST': record_demographics_put,
+                                       'PUT': record_demographics_put,
+                                       'OPTIONS' : allow_options})),
+
+
+
+    (r'^records/(?P<record_id>[^/]+)/demographics$', MethodDispatcher({
                                        'POST': record_demographics_put,
                                        'PUT': record_demographics_put,
                                        'OPTIONS' : allow_options})),
