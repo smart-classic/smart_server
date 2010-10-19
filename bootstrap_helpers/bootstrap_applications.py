@@ -1,8 +1,10 @@
-from string import Template
-from smart.models import *
 from bootstrap_utils import interpolated_postgres_load, put_rdf
 from django.conf import settings
-import re, sys, os
+from smart.models import *
+from string import Template
+import re
+import sys
+import os
 import simplejson
 import urllib2
 
@@ -26,7 +28,8 @@ for app in apps:
                    consumer_key = r["id"],
                    secret = 'smartapp-secret',
                    name =r["name"],
-                   email=r["id"])
+                   email=r["id"],
+                   icon_url=Template(r["icon"]).substitute(base_url=base_url))
 
   try:
     for (act_name, act_url) in r["activities"].iteritems():

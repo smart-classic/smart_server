@@ -62,6 +62,7 @@ class PHA(OAuthApp):
   # start_url_template may contain a {document_id} parameter
   # start_url_template may contain a {next_url} parameter
   start_url_template = models.CharField(max_length=500)
+  icon_url = models.CharField(max_length=500)
 
   # callback_url
   callback_url = models.CharField(max_length=500)

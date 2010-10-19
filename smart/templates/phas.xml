@@ -11,6 +11,7 @@
   {%if not pha.background_p%}
   <consumer_key>{{pha.consumer_key}}</consumer_key>
   <secret>{{pha.secret}}</secret>
+  <iconURL>{{pha.icon_url}}</iconURL>
   {%endif%}
 </App>
 {% endfor %}
