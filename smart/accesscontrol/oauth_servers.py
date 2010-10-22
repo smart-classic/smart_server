@@ -28,7 +28,7 @@ class UserDataStore(oauth.OAuthStore):
 
   def __get_token(self, token_str, pha=None):
     kwargs = {'token': token_str}
-    if pha: kwargs['share__with_pha'] = pha
+    if pha: kwargs['share__with_app'] = pha
 
     try:
       return models.AccessToken.objects.get(**kwargs)
@@ -72,7 +72,7 @@ class UserDataStore(oauth.OAuthStore):
 
     # (BA) added record to the req token now that it can store it
     # (BA 2010-05-06) added offline_capable
-    return models.ReqToken.objects.create(pha             = consumer, 
+    return models.ReqToken.objects.create(app             = consumer, 
                                           token           = request_token_str, 
                                           token_secret    = request_token_secret, 
                                           verifier        = verifier, 
@@ -90,7 +90,7 @@ class UserDataStore(oauth.OAuthStore):
     try:
       # (BA) fix for consumer being null when we don't know yet who the consumer is
       if consumer:
-        return models.ReqToken.objects.get(token = request_token_str, pha = consumer)
+        return models.ReqToken.objects.get(token = request_token_str, app = consumer)
       else:
         return models.ReqToken.objects.get(token = request_token_str)
     except models.ReqToken.DoesNotExist:
@@ -116,7 +116,7 @@ class UserDataStore(oauth.OAuthStore):
     # store the share in the request token
     # added use of defaults to reduce code size if creating an object
     share, create_p = models.Share.objects.get_or_create( record        = record, 
-                                                            with_pha      = request_token.pha,
+                                                            with_app      = request_token.pha,
                                                             authorized_by = account,
                                                             defaults = {  'offline':offline, 
                                                                           'authorized_at': request_token.authorized_at, 
@@ -131,7 +131,7 @@ class UserDataStore(oauth.OAuthStore):
     Mark that this request token has been used.
     Should fail if it is already used
     """
-    new_rt = models.ReqToken.objects.get(pha = consumer, token = request_token.token)
+    new_rt = models.ReqToken.objects.get(app = consumer, token = request_token.token)
 
     # authorized?
     if not new_rt.authorized:
@@ -193,25 +193,12 @@ class MachineDataStore(oauth.OAuthStore):
       return None
 
   def lookup_consumer(self, consumer_key):
-    """
-    looks up a consumer
-    """
     return self.__get_machine_app(consumer_key)
 
   def lookup_request_token(self, consumer, request_token_str):
-    """
-    token is the token string
-    returns a OAuthRequestToken
-
-    consumer may be null.
-    """
     return None
 
   def lookup_access_token(self, consumer, access_token_str):
-    """
-    token is the token string
-    no access tokens for machine apps
-    """
     return None
 
   def check_and_store_nonce(self, nonce_str):
@@ -224,6 +211,37 @@ class MachineDataStore(oauth.OAuthStore):
     if not created:
       raise oauth.OAuthError("Nonce already exists")
 
+class HelperAppDataStore(oauth.OAuthStore):
+  def __get_token(self, token_str, app=None):
+    kwargs = {'token': token_str}
+    if app: kwargs['share__with_app'] = app
+
+    try:
+      return models.AccessToken.objects.get(**kwargs)
+    except models.AccessToken.DoesNotExist:
+      return None
+  def __get_helper_app(self, consumer_key):
+    try:
+      return models.HelperApp.objects.get(consumer_key = consumer_key)
+    except models.HelperApp.DoesNotExist:
+        
+      return None
+
+  def lookup_consumer(self, consumer_key):
+    return self.__get_helper_app(consumer_key)
+
+  def check_and_store_nonce(self, nonce_str):
+    nonce, created = models.Nonce.objects.get_or_create(nonce = nonce_str)
+    if not created:
+      raise oauth.OAuthError("Nonce already exists")
+
+  def lookup_request_token(self, consumer, request_token_str):
+      return None
+
+  def lookup_access_token(self, consumer, access_token_str):
+      r = self.__get_token(token_str = access_token_str, app = consumer)
+      print "HA Access token", r, r.token,r.secret
+      return r
 
 class SessionDataStore(oauth.OAuthStore):
   """
@@ -332,3 +350,4 @@ ADMIN_OAUTH_SERVER = oauth.OAuthServer(store = MachineDataStore())
 SESSION_OAUTH_SERVER = oauth.OAuthServer(store = SessionDataStore())
 
 OAUTH_SERVER = oauth.OAuthServer(store = UserDataStore())
+HELPER_APP_SERVER = oauth.OAuthServer(store = HelperAppDataStore())

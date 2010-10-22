@@ -7,6 +7,7 @@ Josh Mandel
 
 from base import *
 from smart.lib import utils
+from smart.lib.utils import smart_base
 from django.http import HttpResponseBadRequest
 from django.conf import settings
 import RDF
@@ -20,7 +21,6 @@ import uuid
 import httplib, urllib, urllib2
 
 SPARQL = 'SPARQL'
-smart_base = "http://smartplatforms.org"
 
 def record_save_graph(record, g):
     c = RecordStoreConnector(record)

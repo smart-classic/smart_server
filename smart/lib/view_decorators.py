@@ -20,8 +20,8 @@ EMAIL = 'email'
 QPARAM_RELS = { 
   'account_email'   : ( 'account',  models.Account,  EMAIL ),
   'account_id'      : ( 'account',  models.Account,  EMAIL ),
-  'pha_email'       : ( 'pha',      models.PHA,      EMAIL ),
-  'app_email'       : ( 'app',      models.PHA,      EMAIL ),
+  'pha_email'       : ( 'app',      models.PHA,      EMAIL ),
+  'app_email'       : ( 'app',      models.OAuthApp,      EMAIL ),
   'record_id'       : ( 'record',   models.Record,   ID    )
 }
 

@@ -3,7 +3,7 @@
 <Apps>
 {% for pha in phas %}
 <App id="{{pha.email}}">
-  <startURLTemplate>{{pha.start_url_template}}</startURLTemplate>
+  <startURLTemplate>{{pha.activity.main}}</startURLTemplate>
   <name>{{pha.name}}</name>
   <description>{{pha.description}}</description>
   <frameable>{{pha.frameable}}</frameable>

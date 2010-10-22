@@ -53,7 +53,7 @@ def immediate_tokens_for_browser_auth(record, account, app):
         raise Exception("Can't launch an app %s that hasn't been added to this account %s" % (app, account))
 
     share, create_p = models.Share.objects.get_or_create( record        = record, 
-                                                          with_pha      = app, 
+                                                          with_app      = app, 
                                                           authorized_by = account,
                                                           defaults = {  'offline':False, 
                                                                           'authorized_at': datetime.datetime.utcnow(), 

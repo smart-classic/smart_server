@@ -79,6 +79,7 @@ def add_app(request, account, app):
     expecting
     PUT /accounts/{account_id}/apps/{app_email}
     """
+    app = PHA.objects.get(id=app.id)
     AccountApp.objects.create(account = account, app = app)
     return DONE
 
@@ -88,12 +89,9 @@ def launch_app(request, record, account, app):
     expecting
     PUT /accounts/{account_id}/apps/{app_email}
     """
-    sid = transaction.savepoint()
-    try:
-        AccountApp.objects.create(account = account, app = app)
-    except Exception, e:
-        if isinstance(e, IntegrityError):
-            transaction.savepoint_rollback(sid)
+    print "Adding AccountApp"
+    AccountApp.objects.get_or_create(account = account, app = app)
+    print "Added AccountApp"
 
     t = immediate_tokens_for_browser_auth(record, account, app)
 
@@ -104,6 +102,56 @@ def launch_app(request, record, account, app):
                             type='xml')
 
 
+def generate_oauth_record_tokens(record, app):
+    share, created_p = smart.models.Share.objects.get_or_create( record        = record, 
+                                                          with_app      = app,
+                                                          defaults = {'authorized_at': datetime.datetime.utcnow()})
+
+    token, secret = oauth.generate_token_and_secret()
+        
+    ret =  share.new_access_token(token, secret)  
+    ret.save()
+    
+    return ret
+
+
+@paramloader()
+def get_record_tokens(request, record, app):
+    return get_record_tokens_helper(record, app)
+    
+def get_record_tokens_helper(record, app):
+    t = generate_oauth_record_tokens(record, app)
+    m = RDF.Model()
+    ns = utils.default_ns()
+    
+    record_uri= utils.smart_base+"/records/"+record.id
+    tnode = RDF.Node(blank="brief_record_token")
+    m.append(RDF.Statement(tnode,
+             ns['rdf']['type'],
+             ns['sp']['accesstoken']))
+    m.append(RDF.Statement(tnode,
+             ns['sp']['token'],
+             RDF.Node(literal=t.token)))
+    m.append(RDF.Statement(tnode,
+             ns['sp']['secret'],
+             RDF.Node(literal=t.secret)))
+    m.append(RDF.Statement(tnode,
+             ns['sp']['record'],
+             RDF.Node(uri_string=record_uri.encode())))
+
+    return utils.x_domain(HttpResponse(utils.serialize_rdf(m), "application/rdf+xml"))
+ 
+@paramloader()
+def get_first_record_tokens(request, app):
+    record = Record.objects.order_by("id")[0]
+    return get_record_tokens_helper(record, app)
+
+@paramloader()
+def get_next_record_tokens(request,record, app):
+    try:
+        record = Record.objects.order_by("id").filter(id__gt=record.id)[0]
+        return get_record_tokens_helper(record, app)
+    except: raise Http404
 
 @paramloader()
 def remove_app(request, account, app):

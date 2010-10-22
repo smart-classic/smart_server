@@ -20,7 +20,7 @@ class Share(Object):
 
   # the record that's being shared
   record = models.ForeignKey('Record', related_name = 'shares')
-  with_pha = models.ForeignKey('PHA', related_name='shares_to', null=True)
+  with_app = models.ForeignKey('OAuthApp', related_name='shares_to', null=True)
 
   # authorized
   authorized_at = models.DateTimeField(null=True, blank=True)
@@ -35,7 +35,7 @@ class Share(Object):
 
   class Meta:
     app_label = APP_LABEL
-    unique_together = (('record', 'with_pha', 'authorized_by'),)
+    unique_together = (('record', 'with_app', 'authorized_by'),)
     
 
   def new_access_token(self, token_str, token_secret):
@@ -76,7 +76,7 @@ class AccessToken(Principal, Token):
   
   @property
   def effective_principal(self):
-      return self.share.with_pha
+      return self.share.with_app
 
 class ReqToken(Principal, Token):
   token = models.CharField(max_length=40)
@@ -84,7 +84,7 @@ class ReqToken(Principal, Token):
   verifier = models.CharField(max_length=60)
   oauth_callback = models.CharField(max_length=500, null=True)
 
-  pha = models.ForeignKey('PHA')
+  app = models.ForeignKey('OAuthApp')
 
   record = models.ForeignKey('Record', null=True)
 
@@ -107,7 +107,7 @@ class ReqToken(Principal, Token):
     """
     a request token's identity is really the PHA it comes from.
     """
-    return self.pha
+    return self.app
 
   @property
   def authorized(self):

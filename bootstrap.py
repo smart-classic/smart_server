@@ -11,17 +11,14 @@ MachineApp.objects.create(name='chrome',
                           email='chrome@apps.smart-project.org')
 
 
-a=PHA.objects.create(start_url_template= 'http://localhost:8000/index.html',
-                   callback_url = 'http://localhost:8000/after_auth.html',
-                   has_ui = True,
-                   frameable = True,
-                   description = 'Points to a locally-hosted app for development.',
+a=PHA.objects.create(description = 'Points to a locally-hosted app for development.',
                    consumer_key = 'developers-sandbox-app',
                    secret = 'smartapp-secret',
                    name ='Developers Sandbox',
                    email='developer-sandbox@apps.smart.org',
-                   background_p=False)
-AppActivity.objects.create(app=a, name='main')
+                     )
+AppActivity.objects.create(app=a, name='main', url='http://localhost:8000/index.html')
+AppActivity.objects.create(app=a, name='after_auth', url='http://localhost:8000/after_auth.html')
 
 # then add additional apps by manifest
 from bootstrap_helpers import bootstrap_codingsystems

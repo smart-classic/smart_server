@@ -55,13 +55,13 @@ urlpatterns = patterns(
                                        'GET': record_med_get_external,
                                        'DELETE': record_med_delete_external,
                                        'OPTIONS' : allow_options})),
-#    
+    
     (r'^records/(?P<record_id>[^/]+)/medications/(?P<med_id>[^/]+)/fulfillments/$',  MethodDispatcher({
                                        'GET': record_med_fulfillments_get,
                                        'DELETE': record_med_fulfillments_delete,
                                        'POST': record_med_fulfillments_post,
                                        'OPTIONS' : allow_options})),
-#                                       
+                                       
     (r'^records/(?P<record_id>[^/]+)/medications/(?P<med_id>[^/]+)/fulfillments/(?P<fill_id>[^/]+)$',   MethodDispatcher({
                                        'GET': record_med_fulfillment_get,
                                        'DELETE': record_med_fulfillment_delete,
@@ -113,15 +113,8 @@ urlpatterns = patterns(
                                        'OPTIONS' : allow_options})),
 
 
-    (r'^records/(?P<record_id>[^/]+)/demographics/$', MethodDispatcher({
-                                       'GET': record_demographics_get,
-                                       'POST': record_demographics_put,
-                                       'PUT': record_demographics_put,
-                                       'OPTIONS' : allow_options})),
-
-
-
     (r'^records/(?P<record_id>[^/]+)/demographics$', MethodDispatcher({
+                                       'GET': record_demographics_get,
                                        'POST': record_demographics_put,
                                        'PUT': record_demographics_put,
                                        'OPTIONS' : allow_options})),
@@ -131,7 +124,7 @@ urlpatterns = patterns(
                 'PUT': add_app,
                 'DELETE': remove_app})),
                 
-    (r'^accounts/(?P<account_id>[^/]+)/apps/(?P<app_email>[^/]+)/records/(?P<record_id>[^/]+)/launch$', launch_app),
+    (r'^accounts/(?P<account_id>[^/]+)/apps/(?P<pha_email>[^/]+)/records/(?P<record_id>[^/]+)/launch$', launch_app),
     
     # PHAs
     (r'^apps/$', all_phas),
@@ -139,7 +132,9 @@ urlpatterns = patterns(
     (r'^activity/(?P<activity_name>[^/]+)/app/(?P<app_id>[^/]+)$', resolve_activity_with_app),
     (r'^activity/(?P<activity_name>[^/]+)$', resolve_activity),
     
-    
+    (r'^apps/(?P<app_email>[^/]+)/tokens/records/first$', get_first_record_tokens),
+    (r'^apps/(?P<app_email>[^/]+)/tokens/records/(?P<record_id>[^/]+)/next$', get_next_record_tokens),
+    (r'^apps/(?P<app_email>[^/]+)/tokens/records/(?P<record_id>[^/]+)$', get_record_tokens),
     
     # static
     (r'^static/(?P<path>.*)$', 'django.views.static.serve', {'document_root': 'static'}),
@@ -159,4 +154,3 @@ urlpatterns = patterns(
 
   
   )
-

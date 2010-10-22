@@ -18,7 +18,7 @@ bios.append("""
   <foaf:givenName>Hiram</foaf:givenName>
   <foaf:gender>male</foaf:gender>
   <spdemo:zipcode>02543</spdemo:zipcode>
-  <spdemo:birthday>19631215</spdemo:birthday>
+  <spdemo:birthday>1963-12-15</spdemo:birthday>
 </rdf:Description>
 """)
 bios.append("""
@@ -28,7 +28,7 @@ bios.append("""
   <foaf:givenName>Bert</foaf:givenName>
   <foaf:gender>male</foaf:gender>
   <spdemo:zipcode>63050</spdemo:zipcode>
-  <spdemo:birthday>19450419</spdemo:birthday>
+  <spdemo:birthday>1945-04-19</spdemo:birthday>
 </rdf:Description>
 """)
 bios.append("""
@@ -38,7 +38,7 @@ bios.append("""
   <foaf:givenName>Bruce</foaf:givenName>
   <foaf:gender>male</foaf:gender>
   <spdemo:zipcode>54360</spdemo:zipcode>
-  <spdemo:birthday>19450201</spdemo:birthday>
+  <spdemo:birthday>1945-02-01</spdemo:birthday>
 </rdf:Description>
 """)
 bios.append("""
@@ -48,7 +48,7 @@ bios.append("""
   <foaf:givenName>David</foaf:givenName>
   <foaf:gender>male</foaf:gender>
   <spdemo:zipcode>08608</spdemo:zipcode>
-  <spdemo:birthday>19720910</spdemo:birthday>
+  <spdemo:birthday>1972-09-10</spdemo:birthday>
 </rdf:Description>
 """)
 bios.append("""
@@ -58,7 +58,7 @@ bios.append("""
   <foaf:givenName>Hans</foaf:givenName>
   <foaf:gender>male</foaf:gender>
   <spdemo:zipcode>19013</spdemo:zipcode>
-  <spdemo:birthday>19631201</spdemo:birthday>
+  <spdemo:birthday>1963-12-01</spdemo:birthday>
 </rdf:Description>
 """)
 bios.append("""
@@ -68,7 +68,7 @@ bios.append("""
   <foaf:givenName>Mary</foaf:givenName>
   <foaf:gender>female</foaf:gender>
   <spdemo:zipcode>54360</spdemo:zipcode>
-  <spdemo:birthday>19510618</spdemo:birthday>
+  <spdemo:birthday>1951-06-18</spdemo:birthday>
 </rdf:Description>
 """)
 bios.append("""
@@ -78,7 +78,7 @@ bios.append("""
   <foaf:givenName>Tad</foaf:givenName>
   <foaf:gender>male</foaf:gender>
   <spdemo:zipcode>82001</spdemo:zipcode>
-  <spdemo:birthday>19750705</spdemo:birthday>
+  <spdemo:birthday>1975-07-05</spdemo:birthday>
 </rdf:Description>
 """)
 bios.append("""
@@ -88,7 +88,7 @@ bios.append("""
   <foaf:givenName>Nora</foaf:givenName>
   <foaf:gender>female</foaf:gender>
   <spdemo:zipcode>19013</spdemo:zipcode>
-  <spdemo:birthday>19641009</spdemo:birthday>
+  <spdemo:birthday>1964-10-09</spdemo:birthday>
 </rdf:Description>
 """)
 bios.append("""
@@ -98,7 +98,7 @@ bios.append("""
   <foaf:givenName>Bob</foaf:givenName>
   <foaf:gender>male</foaf:gender>
   <spdemo:zipcode>90001</spdemo:zipcode>
-  <spdemo:birthday>19591225</spdemo:birthday>
+  <spdemo:birthday>1959-12-25</spdemo:birthday>
 </rdf:Description>
 """)
 bios.append("""
@@ -108,16 +108,16 @@ bios.append("""
   <foaf:givenName>Douglas</foaf:givenName>
   <foaf:gender>male</foaf:gender>
   <spdemo:zipcode>01040</spdemo:zipcode>
-  <spdemo:birthday>19680901</spdemo:birthday>
+  <spdemo:birthday>1968-09-01</spdemo:birthday>
 </rdf:Description>
 """)
 
 from smart.views.rdfstore import record_demographics_put_helper
 
 
-count=1
+count=2000000000
 for b in bios:
-  id="sample_patient_%03d"%count
+  id="%03d"%count
   count += 1
   ss_patient = Record.objects.create(id=id)
   req = Object()

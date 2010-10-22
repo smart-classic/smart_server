@@ -15,35 +15,18 @@ import functools, copy, logging
 from oauth import oauth, djangoutils
 
 from smart import models
-from smart.accesscontrol.oauth_servers import ADMIN_OAUTH_SERVER, OAUTH_SERVER, SESSION_OAUTH_SERVER
+from smart.accesscontrol.oauth_servers import ADMIN_OAUTH_SERVER, OAUTH_SERVER, SESSION_OAUTH_SERVER, HELPER_APP_SERVER
 
 ##
 ## Gather information about the request
 ##
 
-def get_chrome_user_session_info(request):
+def get_oauth_info(request, server):
   try:
-    oauth_request = SESSION_OAUTH_SERVER.extract_oauth_request(djangoutils.extract_request(request))
-    consumer, token, parameters = SESSION_OAUTH_SERVER.check_resource_access(oauth_request)
+    oauth_request = server.extract_oauth_request(djangoutils.extract_request(request))
+    consumer, token, parameters = server.check_resource_access(oauth_request)
     return consumer, token, parameters, oauth_request
   except oauth.OAuthError:
-    return None, None, None, None
-
-
-def get_user_app_info(request):
-  try:
-    oauth_request = OAUTH_SERVER.extract_oauth_request(djangoutils.extract_request(request))
-    consumer, token, parameters = OAUTH_SERVER.check_resource_access(oauth_request)
-    return consumer, token, parameters, oauth_request
-  except oauth.OAuthError:
-    return None, None, None, None
-
-def get_admin_app_info(request):
-  try:
-    oauth_request = ADMIN_OAUTH_SERVER.extract_oauth_request(djangoutils.extract_request(request))
-    admin_app, null_token, parameters = ADMIN_OAUTH_SERVER.check_resource_access(oauth_request)
-    return admin_app, null_token, parameters, oauth_request
-  except:
     return None, None, None, None
 
 def get_principal(request):
@@ -54,22 +37,32 @@ def get_principal(request):
   """
 
   # is this a chrome app with a user session token?
-  chrome_app, token, parameters, oauth_request = get_chrome_user_session_info(request)
+  chrome_app, token, parameters, oauth_request = get_oauth_info(request, SESSION_OAUTH_SERVER)
   if token:
     return token.user, oauth_request
   
   # check oauth
   # IMPORTANT: the principal is the token, not the PHA itself
   # TODO: is this really the right thing, is the token the principal?
-  pha, token, parameters, oauth_request = get_user_app_info(request)
+  pha, token, parameters, oauth_request = get_oauth_info(request, OAUTH_SERVER)
   if pha:
     if token:
       return token, oauth_request
     else:
       return pha, oauth_request
 
-  # check a machine application
-  admin_app, token, params, oauth_request = get_admin_app_info(request)
+  # check oauth
+  # IMPORTANT: the principal is the token, not the PHA itself
+  # TODO: is this really the right thing, is the token the principal?
+  ha, token, parameters, oauth_request = get_oauth_info(request, HELPER_APP_SERVER)
+  if ha:
+    if token:
+      return token, oauth_request
+    else:
+      return ha, oauth_request
+  
+    # check a machine application
+  admin_app, token, params, oauth_request = get_oauth_info(request, ADMIN_OAUTH_SERVER)
 
   if admin_app:
     return admin_app, oauth_request

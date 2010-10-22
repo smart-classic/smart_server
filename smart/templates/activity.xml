@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <Activity id="{{a.id}}">
   <name>{{a.name}}</name>
-  <description>{{a.description}}</description>
+  <description>{{a.app.description}}</description>
   <url>{{a.url}}</url>
   <app>{{a.app.email}}</app>
   <consumer_key>{{a.app.consumer_key}}</consumer_key>

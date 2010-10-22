@@ -24,6 +24,9 @@ import psycopg2.extras
 import RDF
 import httplib
 
+
+smart_base = "http://smartplatforms.org"
+
 # taken from pointy-stick.com with some modifications
 class MethodDispatcher(object):
   def __init__(self, method_map):

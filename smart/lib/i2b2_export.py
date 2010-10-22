@@ -68,16 +68,23 @@ def get_problems(p):
 
    return problems
 
+
+frequency_map = {"QD" : "daily", "QHS" : "at bed", "BID": "twice daily"}
+
 def get_meds(p): 
     
    q = """select substr(concept_cd,5,20) as ndc,
+       encounter_num,
+        instance_num,
+        modifier_cd,
        valtype_cd as valtype,
        tval_char as text_quantity,
        nval_num as quantity, 
        units_cd as units,
        start_date, end_date
        from observation_fact f 
-       where patient_num=%s and concept_cd like 'NDC%%';
+       where patient_num=%s and concept_cd like 'NDC%%'
+       order by encounter_num, concept_cd, modifier_cd;
        """
    cur.execute(q, (p,))
    rows = cur.fetchall()
@@ -94,16 +101,37 @@ def get_meds(p):
    where rxcui=%s and sab='MMSL' 
    and atn in ('DDF', 'DRT', 'DST');"""
 
-
-   meds = []
+   meds = {}
    
    for r in rows:
-       newmed = i2med()
-       meds.append(newmed)
-       
+        medkey = str(r['encounter_num'])+str(r['ndc'])+str(r['instance_num'])
+        try:
+           newmed = meds[medkey]
+        except:
+           assert str(r['modifier_cd']) == '@', "expecting one null modifer code per med"
+           newmed = i2med()
+           newmed.startDate = r['start_date']
+           newmed.endDate = r['end_date']
+           newmed.ndc = r['ndc']
+           newmed.external_id="%s"%len(meds)
+           newmed.dose = None
+           newmed.doseUnit = None
+           meds[medkey] = newmed
+        
+        if (r['modifier_cd'] == 'MED:DOSE'):            
+            newmed.dose = str(r['quantity'])
+            f = float(newmed.dose)
+            if (f == int(f)): f = int(f)
+            newmed.dose = str(f)
+            newmed.doseUnit = r['units']
+
+        if (r['modifier_cd'] == 'MED:FREQ'):
+            newmed.frequency = frequency_map[r['text_quantity']]
+
+   for newmed in meds.values():       
        try:       
-           rxncur.execute(rxq, (r['ndc'],))
-           print "looking up " , r['ndc']
+           rxncur.execute(rxq, (newmed.ndc,))
+           print "looking up " , newmed.ndc
            v = rxncur.fetchall()[0]
            newmed.rxcui=v['rxcui']
            newmed.title=v['str']
@@ -111,13 +139,12 @@ def get_meds(p):
 #           meds[-1].append([v['rxcui'],v['str']])
        except:
            print "resorting to backup query"
-           rxncur.execute(rxq_backup, (r['ndc'],))
-           print "backup looking up " , r['ndc']
+           rxncur.execute(rxq_backup, (newmed.ndc,))
+           print "backup looking up " , newmed.ndc
            v = rxncur.fetchall()[0]
-           print "and backed up by ", meds[-1]
            newmed.rxcui=v['rxcui']
            newmed.title=v['str']
-           
+           print "and resolved to ", newmed.rxcui
        rxncur.execute(rxq_details, (newmed.rxcui,))
        v = rxncur.fetchall()
        attrs = {}
@@ -125,8 +152,6 @@ def get_meds(p):
        newmed.strengthUnit = None
        newmed.route=None
        newmed.doseForm = None
-       newmed.dose = None
-       newmed.doseUnit = None
        
        for vr in v:
            attrs[vr['atn']] = vr['atv']
@@ -141,31 +166,8 @@ def get_meds(p):
                newmed.strength = " ".join(filter(lambda x: re.match("^\d",x), strength[:-1]))
                newmed.strengthUnit = strength[-1]
        except: pass
- 
-       if r['valtype']  == 'N':     
-           newmed.dose = str(r['quantity'])
-           if (newmed.dose == "None"): newmed.dose = ""
-           try:
-             f = float(newmed.dose)
-             if (f == int(f)): f = int(f)
-             newmed.dose = str(f)
-           except: pass
-       elif r['valtype'] == 'T':
-           newmed.dose = str(r['text_quantity']).lower()
-       if r['valtype'] != '@':
-           newmed.doseUnit = r['units'].lower()
-    
-       if newmed.doseUnit == '@':
-           newmed.doseUnit = None
-           if len(newmed.dose.split(" ")) > 1:
-               newmed.doseUnit = newmed.dose.split(" ")[-1]
-               newmed.dose = " ".join(newmed.dose.split(" ")[:-1])
            
-       newmed.startDate = r['start_date']
-       newmed.endDate = r['end_date']
-       newmed.ndc = r['ndc']
-       newmed.external_id="%s"%len(meds)
-   return meds
+   return meds.values()
     
 def get_demographics(p):
    q = """select * from patient_dimension
@@ -224,7 +226,7 @@ class i2b2Patient():
         m.append(RDF.Statement(om, ns['rdf']['type'], ns['sp']['medication']))
         m.append(RDF.Statement(om, ns['dcterms']['title'], RDF.Node(literal=med.title.encode() )))
         m.append(RDF.Statement(om, ns['med']['drug'], ns['rxcui'][med.rxcui.encode()]))
-        m.append(RDF.Statement(om, ns['med']['ndc'], RDF.Node(literal=med.ndc.encode())))
+        #m.append(RDF.Statement(om, ns['med']['ndc'], RDF.Node(literal=med.ndc.encode())))
         if med.dose:
             m.append(RDF.Statement(om, ns['med']['dose'], RDF.Node(literal=med.dose.encode())))
         if med.doseUnit:
@@ -235,8 +237,11 @@ class i2b2Patient():
             m.append(RDF.Statement(om, ns['med']['strengthUnit'], RDF.Node(literal=med.strengthUnit.encode())))
         if (med.route):
             m.append(RDF.Statement(om, ns['med']['route'], RDF.Node(literal=med.route.encode())))
+        if (med.frequency):
+            m.append(RDF.Statement(om, ns['med']['frequency'], RDF.Node(literal=med.frequency.encode())))
         m.append(RDF.Statement(om, ns['med']['startDate'], RDF.Node(literal=med.startDate.isoformat()[:10].encode())))
-        m.append(RDF.Statement(om, ns['med']['endDate'], RDF.Node(literal=med.endDate.isoformat()[:10].encode())))
+        if (med.endDate):
+            m.append(RDF.Statement(om, ns['med']['endDate'], RDF.Node(literal=med.endDate.isoformat()[:10].encode())))
         return m
 
 
@@ -248,7 +253,8 @@ class i2b2Patient():
         m.append(RDF.Statement(o, ns['umls']['cui'], RDF.Node(literal=problem.umlsCui.encode())))
         m.append(RDF.Statement(o, ns['umls']['snomed_cid'], RDF.Node(literal=problem.snomedCID.encode())))
         m.append(RDF.Statement(o, ns['sp']['onset'], RDF.Node(literal=problem.onset.isoformat()[:10].encode())))
-        m.append(RDF.Statement(o, ns['sp']['resolution'], RDF.Node(literal=problem.resolution.isoformat()[:10].encode())))
+        if (problem.resolution):    
+                m.append(RDF.Statement(o, ns['sp']['resolution'], RDF.Node(literal=problem.resolution.isoformat()[:10].encode())))
         return m
     
 

@@ -55,32 +55,15 @@ class PHA(OAuthApp):
   """
 
   Meta = BaseMeta()
-
   # URL templates look like http://host/url/{param1}?foo={param2}
 
-  # start_url_template should contain a {record_id} parameter
-  # start_url_template may contain a {document_id} parameter
-  # start_url_template may contain a {next_url} parameter
-  start_url_template = models.CharField(max_length=500)
   icon_url = models.CharField(max_length=500)
-
-  # callback_url
-  callback_url = models.CharField(max_length=500)
-
-  # does the application have a user interface at all? (some are just background)
-  has_ui = models.BooleanField(default=False)
 
   # does the application fit in an iframe?
   frameable = models.BooleanField(default=True)
 
   # short description of the app
   description = models.CharField(max_length=2000, null=True)
-
-  # privacy terms of use (XML)
-  # FIXME: probably change this field type to XMLField()
-  privacy_tou = models.TextField(null=True)
-  background_p = models.BooleanField(default=False)
-
 
 class HelperApp(OAuthApp):
   """
@@ -91,8 +74,6 @@ class HelperApp(OAuthApp):
   Meta = BaseMeta()
   # short description of the app
   description = models.CharField(max_length=2000, null=True)
-
-
 
 ##
 ## App Tokens are implemented separately, since they require access to record and docs

@@ -58,3 +58,5 @@ def grant(accesstoken, permset):
 
 
     permset.grant(do_webhook)
+    permset.grant(record_demographics_get)
+    permset.grant(record_demographics_put)

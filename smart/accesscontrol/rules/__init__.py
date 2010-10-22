@@ -2,7 +2,7 @@
 A directory of rules
 """
 
-import account, principal, accesstoken, machineapp, pha, requesttoken
+import account, principal, accesstoken, machineapp, pha, requesttoken, helper_app
 import smart.models as models
 
 RULES = {}
@@ -12,6 +12,7 @@ RULES[models.MachineApp] = machineapp
 RULES[models.PHA] = pha
 RULES[models.ReqToken] = requesttoken
 RULES[models.AccessToken] = accesstoken
+RULES[models.HelperApp] = helper_app
 
 def get_module_by_principal(principal):
     return RULES[principal.__class__]

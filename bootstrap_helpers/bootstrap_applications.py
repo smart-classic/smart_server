@@ -22,14 +22,22 @@ for app in apps:
 
   if ('base_url' not in locals()):
     base_url = r["base_url"]
-
-  a = PHA.objects.create(
-                   description = r["description"],
-                   consumer_key = r["id"],
-                   secret = 'smartapp-secret',
-                   name =r["name"],
-                   email=r["id"],
-                   icon_url=Template(r["icon"]).substitute(base_url=base_url))
+  
+  if "mode" in r.keys() and r["mode"] == "background":
+      a = HelperApp.objects.create(
+                       description = r["description"],
+                       consumer_key = r["id"],
+                       secret = 'smartapp-secret',
+                       name =r["name"],
+                       email=r["id"])
+  else:
+      a = PHA.objects.create(
+                       description = r["description"],
+                       consumer_key = r["id"],
+                       secret = 'smartapp-secret',
+                       name =r["name"],
+                       email=r["id"],
+                       icon_url=Template(r["icon"]).substitute(base_url=base_url))
 
   try:
     for (act_name, act_url) in r["activities"].iteritems():
