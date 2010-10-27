@@ -8,11 +8,13 @@ import os
 import simplejson
 import urllib2
 
+def sub(str, var, val):
+    return str.replace("{%s}"%var, val)
+
 # Some basic apps and a couple of accounts to get things going.
 
 apps = simplejson.loads(open(os.path.join(settings.APP_HOME, "bootstrap_helpers/application_list.json")).read())
 apps = apps["app_list"]
-
 
 for app in apps:
   print app
@@ -37,17 +39,17 @@ for app in apps:
                        secret = 'smartapp-secret',
                        name =r["name"],
                        email=r["id"],
-                       icon_url=Template(r["icon"]).substitute(base_url=base_url))
+                       icon_url=sub(r["icon"], "base_url", base_url))
 
   try:
     for (act_name, act_url) in r["activities"].iteritems():
-      act_url = Template(act_url).substitute(base_url=base_url)
+      act_url = sub(act_url, "base_url", base_url)
       AppActivity.objects.create(app=a, name=act_name, url=act_url)
   except: pass
 
   try:
     for (hook_name, hook_data) in r["web_hooks"].iteritems():
-      hook_url = Template(hook_data["url"]).substitute(base_url=base_url)
+      hook_url = sub(hook_data["url"], "base_url", base_url)
       AppWebHook.objects.create(app=a,
                               name=hook_name, 
                               description=hook_data["description"],

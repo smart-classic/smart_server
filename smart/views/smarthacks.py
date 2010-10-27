@@ -121,25 +121,9 @@ def get_record_tokens(request, record, app):
     
 def get_record_tokens_helper(record, app):
     t = generate_oauth_record_tokens(record, app)
-    m = RDF.Model()
-    ns = utils.default_ns()
-    
-    record_uri= utils.smart_base+"/records/"+record.id
-    tnode = RDF.Node(blank="brief_record_token")
-    m.append(RDF.Statement(tnode,
-             ns['rdf']['type'],
-             ns['sp']['accesstoken']))
-    m.append(RDF.Statement(tnode,
-             ns['sp']['token'],
-             RDF.Node(literal=t.token)))
-    m.append(RDF.Statement(tnode,
-             ns['sp']['secret'],
-             RDF.Node(literal=t.secret)))
-    m.append(RDF.Statement(tnode,
-             ns['sp']['record'],
-             RDF.Node(uri_string=record_uri.encode())))
 
-    return utils.x_domain(HttpResponse(utils.serialize_rdf(m), "application/rdf+xml"))
+    r  = {'oauth_token' : t.token, 'oauth_token_secret': t.secret, 'smart_record_id' : record.id}
+    return utils.x_domain(HttpResponse(urllib.urlencode(r), "application/x-www-form-urlencoded"))
  
 @paramloader()
 def get_first_record_tokens(request, app):
