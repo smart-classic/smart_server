@@ -27,13 +27,23 @@ def grant(accesstoken, permset):
     permset.grant(record_notes_get)
     permset.grant(record_notes_post)
     permset.grant(record_notes_delete)
-    
     permset.grant(record_note_get)
     permset.grant(record_note_get_external)
     permset.grant(record_note_put)
     permset.grant(record_note_delete)
     permset.grant(record_note_delete_external)
         
+    permset.grant(record_allergies_get)
+    permset.grant(record_allergies_post)
+    permset.grant(record_allergies_delete)
+    permset.grant(record_allergy_get)
+    permset.grant(record_allergy_get_external)
+    permset.grant(record_allergy_put)
+    permset.grant(record_allergy_delete)
+    permset.grant(record_allergy_delete_external)
+        
+
+    
     permset.grant(record_meds_get)
     permset.grant(record_meds_post)
     permset.grant(record_meds_delete)
@@ -48,6 +58,7 @@ def grant(accesstoken, permset):
     
     permset.grant(record_med_fulfillments_get)
     permset.grant(record_med_fulfillments_post)
+    permset.grant(record_med_fulfillments_delete)
     
     permset.grant(record_med_fulfillment_get)
     permset.grant(record_med_fulfillment_delete)

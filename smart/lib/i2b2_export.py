@@ -250,8 +250,8 @@ class i2b2Patient():
         o = RDF.Node(blank="one_problem")
         m.append(RDF.Statement(o, ns['rdf']['type'], ns['sp']['problem']))
         m.append(RDF.Statement(o, ns['dcterms']['title'], RDF.Node(literal=problem.title.encode())))
-        m.append(RDF.Statement(o, ns['umls']['cui'], RDF.Node(literal=problem.umlsCui.encode())))
-        m.append(RDF.Statement(o, ns['umls']['snomed_cid'], RDF.Node(literal=problem.snomedCID.encode())))
+#        m.append(RDF.Statement(o, ns['umls']['cui'], RDF.Node(literal=problem.umlsCui.encode())))
+        m.append(RDF.Statement(o, ns['snomed-ct']['concept'], ns['snomed-ct']['concepts/'+problem.snomedCID.encode()]))
         m.append(RDF.Statement(o, ns['sp']['onset'], RDF.Node(literal=problem.onset.isoformat()[:10].encode())))
         if (problem.resolution):    
                 m.append(RDF.Statement(o, ns['sp']['resolution'], RDF.Node(literal=problem.resolution.isoformat()[:10].encode())))

@@ -113,6 +113,27 @@ urlpatterns = patterns(
                                        'OPTIONS' : allow_options})),
 
 
+
+    (r'^records/(?P<record_id>[^/]+)/allergies/$', MethodDispatcher({
+                                       'GET': record_allergies_get,
+                                       'POST': record_allergies_post,
+                                       'DELETE': record_allergies_delete,
+                                       'OPTIONS' : allow_options})),
+                                       
+    (r'^records/(?P<record_id>[^/]+)/allergies/(?P<allergy_id>[^/]+)$', MethodDispatcher({
+                                       'GET': record_allergy_get,
+                                       'DELETE': record_allergy_delete,
+                                       'OPTIONS' : allow_options})),
+
+    (r'^records/(?P<record_id>[^/]+)/allergies/external_id/(?P<external_id>[^/]+)$',  
+                                    MethodDispatcher({
+                                       'PUT': record_allergy_put,
+                                       'POST': record_allergy_put,
+                                       'GET': record_allergy_get_external,
+                                       'DELETE': record_allergy_delete_external,
+                                       'OPTIONS' : allow_options})),
+
+
     (r'^records/(?P<record_id>[^/]+)/demographics$', MethodDispatcher({
                                        'GET': record_demographics_get,
                                        'POST': record_demographics_put,

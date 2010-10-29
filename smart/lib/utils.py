@@ -139,6 +139,7 @@ def default_ns():
     d['dc'] = RDF.NS('http://purl.org/dc/elements/1.1/')
     d['dcterms'] = RDF.NS('http://purl.org/dc/terms/')
     d['med'] = RDF.NS('http://smartplatforms.org/medication#')
+    d['allergy'] = RDF.NS('http://smartplatforms.org/allergy/')
     d['umls'] = RDF.NS('http://www.nlm.nih.gov/research/umls/')
     d['sp'] = RDF.NS('http://smartplatforms.org/')
     d['spdemo'] = RDF.NS('http://smartplatforms.org/demographics/')
@@ -149,6 +150,7 @@ def default_ns():
     d['rxaui'] = RDF.NS('http://link.informatics.stonybrook.edu/rxnorm/RXAUI/')
     d['rxatn'] = RDF.NS('http://link.informatics.stonybrook.edu/rxnorm/RXATN#')
     d['rxrel'] = RDF.NS('http://link.informatics.stonybrook.edu/rxnorm/REL#')
+    d['snomed-ct'] = RDF.NS('http://www.ihtsdo.org/snomed-ct/')
     d['ccr'] = RDF.NS('urn:astm-org:CCR')
     return d
 

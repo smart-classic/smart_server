@@ -214,7 +214,9 @@ def record_meds_query(root_subject=None):
                                 root_object="<http://smartplatforms.org/medication>",
                                 child_levels= {0: ['any_type'],
                                                1: ["<http://smartplatforms.org/fulfillment>",
-                                                   "<http://smartplatforms.org/prescription>"]
+                                                   "<http://smartplatforms.org/prescription>"],
+                                               2: ['any_type'], # drill down to fill/pharmacy 
+                                               3: ['any_type']  # drill to fill/pharmacy/address
                                                })
     return q
 
@@ -309,7 +311,9 @@ def record_med_fulfillments_query(root_subject):
                                 root_predicate="rdf:type",
                                 root_object="<http://smartplatforms.org/medication>",
                                 child_levels= {
-                                               1: ["<http://smartplatforms.org/fulfillment>"]
+                                               1: ["<http://smartplatforms.org/fulfillment>"],
+                                               2: ['any_type'], # fill/pharmacy,
+                                               3: ['any_type'] # fill/pharmacy/address
                                                })
     return q
 
@@ -550,6 +554,80 @@ def record_note_put(request, record, external_id):
     return rdf_put(c, g, new_nodes, external_id, q)    
 
 
+"""
+ALLERGIES 
+"""
+def record_allergies_query(root_subject=None):
+    q = recursive_query(root_subject=root_subject,
+                                root_predicate="rdf:type",
+                                root_object="<http://smartplatforms.org/allergy>",
+                                # Must look three levels deep:  
+                                #   Allergy --> Allergen --> Substance
+                                child_levels= {0:None,
+                                               1:None,
+                                               2:None})
+    return q
+
+@paramloader()
+def record_allergies_get(request, record):
+    c = RecordStoreConnector(record)
+    return rdf_get(c, record_allergies_query())
+
+@paramloader()
+def record_allergies_delete(request, record):
+    c = RecordStoreConnector(record)
+    return rdf_delete(c, record_allergies_query())
+
+
+@paramloader()
+def record_allergies_post(request, record):
+    g = parse_rdf(request.raw_post_data)
+    generate_uris(g, 
+                  "<http://smartplatforms.org/allergy>", 
+                  "%s/records/%s/allergies/${new_id}" % (smart_base,record.id))
+    c = RecordStoreConnector(record)    
+    return rdf_post(c, g)
+
+
+"""
+ONE ALLERGY
+"""
+def record_allergy_query(root_subject):
+    return record_allergies_query(root_subject)
+
+@paramloader()
+def record_allergy_get(request, record, allergy_id):
+    c = RecordStoreConnector(record)
+    return rdf_get(c, record_allergy_query("<%s%s>"%(smart_base,request.path)))
+
+@paramloader()
+def record_allergy_get_external(request, record, external_id):
+    c = RecordStoreConnector(record)
+    id = internal_id(c, external_id, "<http://smartplatforms.org/allergy>")
+    return rdf_get(c, record_allergy_query("<%s>"%(id)))
+
+@paramloader()
+def record_allergy_delete_external(request, record, external_id):
+    c = RecordStoreConnector(record)
+    id = internal_id(c, external_id, "<http://smartplatforms.org/allergy>")
+    return rdf_delete(c, record_allergy_query("<%s>"%(id)))
+
+@paramloader()
+def record_allergy_delete(request, record, allergy_id):
+    c = RecordStoreConnector(record)
+    return rdf_delete(c, record_allergy_query("<%s%s>"%(smart_base,request.path)))
+
+@paramloader()
+def record_allergy_put(request, record, external_id):
+    g = parse_rdf(request.raw_post_data)
+    c = RecordStoreConnector(record)        
+    q = record_allergy_query("<%s>"%internal_id(c, external_id, "<http://smartplatforms.org/allergy>"))
+
+    new_nodes = rdf_ensure_valid_put(g, 
+                         "<http://smartplatforms.org/allergy>",
+                         "%s/records/%s/allergies/${new_id}" % (smart_base, record.id))
+    return rdf_put(c, g, new_nodes, external_id, q)    
+
 
 """
 DEMOGRAPHICS 
@@ -617,4 +695,3 @@ def pha_storage_delete(request, pha_email):
     query = query.replace("WHERE", " from $context WHERE ")
     connector = PHAConnector(request)
     return rdf_delete(connector, query)
-
