@@ -186,15 +186,16 @@ def do_webhook(request, webhook_name):
 
 
 def user_get(request, user_id):
-    a = Account.objects.get(id=user_id)
-
+    
     ns = utils.default_ns()
     m = RDF.Model()
-    
-    n = RDF.Node(uri_string="%s/users/%s" % (smart_base, a.id.encode()))
-    m.append(RDF.Statement(n, ns['rdf']['type'], ns['sp']['user']))    
-    m.append(RDF.Statement(n, ns['dcterms']['title'], RDF.Node(literal=a.full_name.encode())))    
-    m.append(RDF.Statement(n, ns['foaf']['mbox'], RDF.Node(literal="mailto:%s"%a.email.encode())))    
+    try:
+        a = Account.objects.get(id=user_id)
+        n = RDF.Node(uri_string="%s/users/%s" % (smart_base, a.id.encode()))
+        m.append(RDF.Statement(n, ns['rdf']['type'], ns['sp']['user']))    
+        m.append(RDF.Statement(n, ns['dcterms']['title'], RDF.Node(literal=a.full_name.encode())))    
+        m.append(RDF.Statement(n, ns['foaf']['mbox'], RDF.Node(literal="mailto:%s"%a.email.encode())))    
+    except: return Http404
     
     return utils.x_domain(HttpResponse(utils.serialize_rdf(m), "application/rdf+xml"))
 
@@ -213,6 +214,7 @@ def user_search(request):
         m.append(RDF.Statement(n, ns['rdf']['type'], ns['sp']['user']))    
         m.append(RDF.Statement(n, ns['dcterms']['title'], RDF.Node(literal=a.full_name.encode())))    
         m.append(RDF.Statement(n, ns['foaf']['mbox'], RDF.Node(literal="mailto:%s"%a.email.encode())))    
+        
     
     return utils.x_domain(HttpResponse(utils.serialize_rdf(m), "application/rdf+xml"))
 
