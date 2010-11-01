@@ -168,10 +168,17 @@ urlpatterns = patterns(
                                        'OPTIONS' : allow_options})),
 
     # SMArt webhook API
-    (r'^webhook/(?P<webhook_name>[^/]+)$', MethodDispatcher({
-                                       'GET': do_webhook,
-                                       'POST': do_webhook,
-                                       'OPTIONS' : allow_options}))
+    (r'^users/search$', MethodDispatcher({
+                                       'GET': user_search,
+                                       'OPTIONS' : allow_options})),
+                                       
+
+    # SMArt webhook API
+    (r'^users/(?P<user_id>[^/]+)$', MethodDispatcher({
+                                       'GET': user_get,
+                                       'OPTIONS' : allow_options})),
+                                       
+
 
   
   )

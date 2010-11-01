@@ -20,7 +20,10 @@ a=PHA.objects.create(description = 'Points to a locally-hosted app for developme
 AppActivity.objects.create(app=a, name='main', url='http://localhost:8000/index.html')
 AppActivity.objects.create(app=a, name='after_auth', url='http://localhost:8000/after_auth.html')
 
+print "startinbootstrap codingsystems"
 # then add additional apps by manifest
 from bootstrap_helpers import bootstrap_codingsystems
+print "startinbootstrap demo"
+
 from bootstrap_helpers import bootstrap_demographics
 from bootstrap_helpers import bootstrap_applications
