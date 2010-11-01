@@ -206,16 +206,17 @@ def user_search(request):
     ns = utils.default_ns()
     m = RDF.Model()
     
-    regex  = request.GET.get("regex", None)
-    if (regex != None): regex = re.compile(request.GET["regex"])
+    f  = request.GET.get("fname", None)
+    l  = request.GET.get("lname", None)
+    
+    if (f != None): aa = aa.filter(full_name__icontains=f)
+    if (l != None): aa = aa.filter(full_name__icontains=l)
     
     for a in aa:
-        if (regex and not regex.match(a.full_name)): continue
         n = RDF.Node(uri_string="%s/users/%s" % (smart_base, a.email.encode()))
         m.append(RDF.Statement(n, ns['rdf']['type'], ns['sp']['user']))    
         m.append(RDF.Statement(n, ns['dcterms']['title'], RDF.Node(literal=a.full_name.encode())))    
         m.append(RDF.Statement(n, ns['foaf']['mbox'], RDF.Node(literal="mailto:%s"%a.email.encode())))    
-        
     
     return utils.x_domain(HttpResponse(utils.serialize_rdf(m), "application/rdf+xml"))
 
