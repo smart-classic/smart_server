@@ -8,7 +8,8 @@ from base import *
 from smart.lib import utils
 from smart.lib.utils import smart_base
 from django.db import models, transaction, IntegrityError
-from django.http import HttpResponse, HttpResponseBadRequest
+from django.http import HttpResponse, HttpResponseBadRequest,\
+    HttpResponseNotFound
 from django.conf import settings
 import psycopg2
 import psycopg2.extras
@@ -195,7 +196,7 @@ def user_get(request, user_id):
         m.append(RDF.Statement(n, ns['rdf']['type'], ns['sp']['user']))    
         m.append(RDF.Statement(n, ns['dcterms']['title'], RDF.Node(literal=a.full_name.encode())))    
         m.append(RDF.Statement(n, ns['foaf']['mbox'], RDF.Node(literal="mailto:%s"%a.email.encode())))    
-    except: return Http404
+    except: return HttpResponseNotFound()
     
     return utils.x_domain(HttpResponse(utils.serialize_rdf(m), "application/rdf+xml"))
 
