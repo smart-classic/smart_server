@@ -80,9 +80,14 @@ class AccessToken(Principal, Token):
 
   def __str__(self):
     vars = {'oauth_token' : self.token, 
-            'oauth_token_secret' : self.token_secret,
-            'record_id' : self.share.record.id,
-            'user_id' : self.share.authorized_by.id}
+            'oauth_token_secret' : self.token_secret
+            }
+    
+    if (self.share.record != None):
+        vars['record_id'] = self.share.record.id 
+    if (self.share.authorized_by != None):
+        vars['user_id'] =  self.share.authorized_by.id
+        
     return urllib.urlencode(vars)
   to_string = __str__
 
