@@ -213,7 +213,7 @@ def user_search(request):
     if (l != None): aa = aa.filter(full_name__icontains=l)
     
     for a in aa:
-        n = RDF.Node(uri_string="%s/users/%s" % (smart_base, a.email.encode()))
+        n = RDF.Node(uri_string="%s/users/%s" % (smart_base, a.id.encode()))
         m.append(RDF.Statement(n, ns['rdf']['type'], ns['sp']['user']))    
         m.append(RDF.Statement(n, ns['dcterms']['title'], RDF.Node(literal=a.full_name.encode())))    
         m.append(RDF.Statement(n, ns['foaf']['mbox'], RDF.Node(literal="mailto:%s"%a.email.encode())))    
