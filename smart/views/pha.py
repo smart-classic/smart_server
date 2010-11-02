@@ -162,7 +162,7 @@ def request_token_info(request, request_token):
 
   try:
     if rt.record:
-      share = Share.objects.get(record= rt.record, with_pha = rt.pha,authorized_by=request.principal)
+      share = Share.objects.get(record= rt.record, with_app = rt.app,authorized_by=request.principal)
   except Share.DoesNotExist:
     pass
 
@@ -194,7 +194,7 @@ def request_token_approve(request, request_token):
   request_token = OAUTH_SERVER.authorize_request_token(rt.token, record=record, account = request.principal, offline = offline)
 
   # where to redirect to + parameters
-  redirect_url = AppActivity.objects.get(app=request_token.pha, name="after_auth").url
+  redirect_url = AppActivity.objects.get(app=request_token.app, name="after_auth").url
   redirect_url += "?oauth_token=%s&oauth_verifier=%s" % (request_token.token, request_token.verifier)
 
   # redirect to the request token's callback, or if null the PHA's default callback

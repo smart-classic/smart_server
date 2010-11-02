@@ -116,7 +116,7 @@ class UserDataStore(oauth.OAuthStore):
     # store the share in the request token
     # added use of defaults to reduce code size if creating an object
     share, create_p = models.Share.objects.get_or_create( record        = record, 
-                                                            with_app      = request_token.pha,
+                                                            with_app      = request_token.app,
                                                             authorized_by = account,
                                                             defaults = {  'offline':offline, 
                                                                           'authorized_at': request_token.authorized_at, 

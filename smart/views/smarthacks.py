@@ -105,8 +105,8 @@ def launch_app(request, record, account, app):
 
 
 def generate_oauth_record_tokens(record, app):
-    share, created_p = smart.models.Share.objects.get_or_create( record        = record, 
-                                                          with_app      = app,
+    share, created_p = smart.models.Share.objects.get_or_create( record   = record, 
+                                                                 with_app = app,
                                                           defaults = {'authorized_at': datetime.datetime.utcnow()})
 
     token, secret = oauth.generate_token_and_secret()
@@ -187,7 +187,6 @@ def do_webhook(request, webhook_name):
 
 
 def user_get(request, user_id):
-    
     ns = utils.default_ns()
     m = RDF.Model()
     try:
@@ -220,4 +219,3 @@ def user_search(request):
     
     return utils.x_domain(HttpResponse(utils.serialize_rdf(m), "application/rdf+xml"))
 
-    

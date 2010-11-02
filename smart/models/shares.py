@@ -78,6 +78,21 @@ class AccessToken(Principal, Token):
   def effective_principal(self):
       return self.share.with_app
 
+  def __str__(self):
+    vars = {'oauth_token' : self.token, 
+            'oauth_token_secret' : self.token_secret,
+            'record_id' : self.share.record.id,
+            'user_id' : self.share.authorized_by.id}
+    return urllib.urlencode(vars)
+  to_string = __str__
+
+  @property
+  def secret(self):
+    return self.token_secret
+
+  
+
+
 class ReqToken(Principal, Token):
   token = models.CharField(max_length=40)
   token_secret = models.CharField(max_length=60)
