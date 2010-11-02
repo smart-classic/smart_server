@@ -167,7 +167,14 @@ urlpatterns = patterns(
                                        'DELETE': pha_storage_delete,
                                        'OPTIONS' : allow_options})),
 
+
     # SMArt webhook API
+    (r'^webhook/(?P<webhook_name>[^/]+)$', MethodDispatcher({
+                                       'GET': do_webhook,
+                                       'POST': do_webhook,
+                                       'OPTIONS' : allow_options})),
+
+      # SMArt users API    
     (r'^users/search$', MethodDispatcher({
                                        'GET': user_search,
                                        'OPTIONS' : allow_options})),
