@@ -21,7 +21,6 @@ from pha import immediate_tokens_for_browser_auth
 import RDF, re
 import libxml2
 
-
 SAMPLE_NOTIFICATION = {
     'id' : 'foonotification',
     'sender' : {'email':'foo@smart.org'},
@@ -185,37 +184,4 @@ def do_webhook(request, webhook_name):
     print "GOT,", response
     return utils.x_domain(HttpResponse(response, mimetype='application/rdf+xml'))
 
-
-def user_get(request, user_id):
-    ns = utils.default_ns()
-    m = RDF.Model()
-    try:
-        a = Account.objects.get(id=user_id)
-        n = RDF.Node(uri_string="%s/users/%s" % (smart_base, a.id.encode()))
-        m.append(RDF.Statement(n, ns['rdf']['type'], ns['sp']['user']))    
-        m.append(RDF.Statement(n, ns['dcterms']['title'], RDF.Node(literal=a.full_name.encode())))    
-        m.append(RDF.Statement(n, ns['foaf']['mbox'], RDF.Node(literal="mailto:%s"%a.email.encode())))    
-    except: return HttpResponseNotFound()
-    
-    return utils.x_domain(HttpResponse(utils.serialize_rdf(m), "application/rdf+xml"))
-
-def user_search(request):
-    aa = Account.objects.all()
-
-    ns = utils.default_ns()
-    m = RDF.Model()
-    
-    f  = request.GET.get("fname", None)
-    l  = request.GET.get("lname", None)
-    
-    if (f != None): aa = aa.filter(full_name__icontains=f)
-    if (l != None): aa = aa.filter(full_name__icontains=l)
-    
-    for a in aa:
-        n = RDF.Node(uri_string="%s/users/%s" % (smart_base, a.id.encode()))
-        m.append(RDF.Statement(n, ns['rdf']['type'], ns['sp']['user']))    
-        m.append(RDF.Statement(n, ns['dcterms']['title'], RDF.Node(literal=a.full_name.encode())))    
-        m.append(RDF.Statement(n, ns['foaf']['mbox'], RDF.Node(literal="mailto:%s"%a.email.encode())))    
-    
-    return utils.x_domain(HttpResponse(utils.serialize_rdf(m), "application/rdf+xml"))
 

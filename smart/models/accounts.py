@@ -7,6 +7,7 @@ Ben Adida
 from base import *
 from django.utils import simplejson
 from smart.lib import utils
+import RDF
 
 ##
 ## Accounts
@@ -24,12 +25,18 @@ class Account(Principal):
   secondary_secret = models.CharField(max_length=8, null=True)
 
   # account's name and contact email
-  full_name = models.CharField(max_length = 150, null= False)
+  given_name = models.CharField(max_length = 150, null= True)
+  family_name = models.CharField(max_length = 150, null= False)
+  
+  department = models.CharField(max_length = 150, default="any")
+  role = models.CharField(max_length = 150, default="any")
+    
   contact_email = models.CharField(max_length = 300, null = False)
 
-  # password
-  # password_hash = models.CharField(max_length = 64)
-  # password_salt = models.CharField(max_length = 64)
+  @property
+  def full_name(self):
+    if (self.given_name == None): return self.family_name
+    return self.given_name + " " + self.family_name
 
   # login status
   last_login_at = models.DateTimeField(auto_now_add=False, null=True)
@@ -194,6 +201,28 @@ class Account(Principal):
                       type='txt')
 
     utils.send_mail(subject,body, settings.EMAIL_FROM_ADDRESS, [self.contact_email])
+
+  def to_rdf(self, model = None):
+    ns = utils.default_ns()
+    
+    if model == None:  m = RDF.Model()
+    else: m = model
+    
+    n = RDF.Node(uri_string="%s/users/%s" % (utils.smart_base, self.id.encode()))
+    m.append(RDF.Statement(n, ns['rdf']['type'], ns['sp']['user']))    
+
+    try:
+        gn = self.given_name or "?"
+        fn = self.family_name or "?"
+        
+        m.append(RDF.Statement(n, ns['foaf']['givenName'], RDF.Node(literal=gn.encode())))    
+        m.append(RDF.Statement(n, ns['foaf']['familyName'], RDF.Node(literal=fn.encode())))    
+        m.append(RDF.Statement(n, ns['sp']['department'], RDF.Node(literal=self.department.encode())))    
+        m.append(RDF.Statement(n, ns['sp']['role'], RDF.Node(literal=self.role.encode())))    
+        m.append(RDF.Statement(n, ns['foaf']['mbox'], RDF.Node(literal="mailto:%s"%self.email.encode())))    
+    except: pass
+    
+    return m
 
   @classmethod
   def compute_hash(cls, password, salt):

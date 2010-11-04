@@ -13,7 +13,6 @@ urlpatterns = patterns(
     
     (r'^version$', get_version),
 
-    (r'^accounts/$', account_create),
     (r'^accounts/search$', account_search),
     (r'^accounts/(?P<account_email>[^/]+)$', account_info),
     (r'^accounts/(?P<account_email>[^/]+)/recent_records/$', account_recent_records),
@@ -31,10 +30,7 @@ urlpatterns = patterns(
     (r'^records/(?P<record_id>[^/]+)$', record_info),
 
     
-    (r'^records/(?P<record_id>[^/]+)/sparql$', MethodDispatcher({
-                                       'GET': record_sparql,
-                                       'OPTIONS' : allow_options})),
-                                       
+    # Medications                                
     (r'^records/(?P<record_id>[^/]+)/medications/$', MethodDispatcher({
                                        'GET': record_meds_get,
                                        'POST': record_meds_post,
@@ -43,7 +39,7 @@ urlpatterns = patterns(
                                        
     (r'^records/(?P<record_id>[^/]+)/medications/(?P<med_id>[^/]+)$',  MethodDispatcher({
                                        'GET': record_med_get,
-                                       'POST': record_med_post,
+#                                       'POST': record_med_post,
                                        'DELETE': record_med_delete,
                                        'OPTIONS' : allow_options})),
 
@@ -52,10 +48,12 @@ urlpatterns = patterns(
                                     MethodDispatcher({
                                        'PUT': record_med_put,
                                        'POST': record_med_put,
-                                       'GET': record_med_get_external,
-                                       'DELETE': record_med_delete_external,
+                                       'GET': record_med_get,
+                                       'DELETE': record_meds_delete,
                                        'OPTIONS' : allow_options})),
     
+
+#fulfillments
     (r'^records/(?P<record_id>[^/]+)/medications/(?P<med_id>[^/]+)/fulfillments/$',  MethodDispatcher({
                                        'GET': record_med_fulfillments_get,
                                        'DELETE': record_med_fulfillments_delete,
@@ -67,13 +65,15 @@ urlpatterns = patterns(
                                        'DELETE': record_med_fulfillment_delete,
                                        'OPTIONS' : allow_options})),
 
-    (r'^records/(?P<record_id>[^/]+)/medications/external_id/(?P<external_med_id>[^/]+)/fulfillments/external_id/(?P<external_fill_id>[^/]+)$',   MethodDispatcher({
-                                       'GET': record_med_fulfillment_get_external,
-                                       'DELETE': record_med_fulfillment_delete_external,
-                                       'PUT': record_med_fulfillment_put_external,
-                                       'POST': record_med_fulfillment_put_external,
+    (r'^records/(?P<record_id>[^/]+)/medications/external_id/(?P<external_med_id>[^/]+)/fulfillments/external_id/(?P<external_id>[^/]+)$',   MethodDispatcher({
+                                       'GET': record_med_fulfillment_get,
+                                       'DELETE': record_med_fulfillment_delete,
+                                       'PUT': record_med_fulfillment_put,
+                                       'POST': record_med_fulfillment_put,
                                        'OPTIONS' : allow_options})),
 
+
+#Problems
     (r'^records/(?P<record_id>[^/]+)/problems/$', MethodDispatcher({
                                        'GET': record_problems_get,
                                        'POST': record_problems_post,
@@ -89,14 +89,14 @@ urlpatterns = patterns(
                                     MethodDispatcher({
                                        'PUT': record_problem_put,
                                        'POST': record_problem_put,
-                                       'GET': record_problem_get_external,
-                                       'DELETE': record_problem_delete_external,
+                                       'GET': record_problem_get,
+                                       'DELETE': record_problem_delete,
                                        'OPTIONS' : allow_options})),
 
     (r'^records/(?P<record_id>[^/]+)/notes/$', MethodDispatcher({
                                        'GET': record_notes_get,
                                        'POST': record_notes_post,
-                                       'DELETE': record_notes_delete,
+                                       'DELETE': record_note_delete,
                                        'OPTIONS' : allow_options})),
                                        
     (r'^records/(?P<record_id>[^/]+)/notes/(?P<note_id>[^/]+)$', MethodDispatcher({
@@ -108,8 +108,8 @@ urlpatterns = patterns(
                                     MethodDispatcher({
                                        'PUT': record_note_put,
                                        'POST': record_note_put,
-                                       'GET': record_note_get_external,
-                                       'DELETE': record_note_delete_external,
+                                       'GET': record_note_get,
+                                       'DELETE': record_note_delete,
                                        'OPTIONS' : allow_options})),
 
 
@@ -129,8 +129,8 @@ urlpatterns = patterns(
                                     MethodDispatcher({
                                        'PUT': record_allergy_put,
                                        'POST': record_allergy_put,
-                                       'GET': record_allergy_get_external,
-                                       'DELETE': record_allergy_delete_external,
+                                       'GET': record_allergy_get,
+                                       'DELETE': record_allergy_delete,
                                        'OPTIONS' : allow_options})),
 
 
@@ -186,6 +186,9 @@ urlpatterns = patterns(
                                        'OPTIONS' : allow_options})),
                                        
 
+    (r'^users/$', MethodDispatcher({
+                                       'POST': user_create,
+                                       'OPTIONS' : allow_options})),
 
   
   )

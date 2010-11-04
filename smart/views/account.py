@@ -6,7 +6,8 @@ Indivo views for Account
 from base import *
 import urllib
 from smart.lib import utils
-from django.http import HttpResponseBadRequest
+from smart.lib.utils import smart_base
+from django.http import HttpResponseBadRequest, HttpResponseNotFound
 
 ACTIVE_STATE, UNINITIALIZED_STATE = 'active', 'uninitialized'
 HTTP_METHOD_GET = 'GET'
@@ -126,7 +127,7 @@ def account_secret(request, account):
   return HttpResponse("<secret>%s</secret>" % account.secondary_secret)
 
 @transaction.commit_on_success
-def account_create(request):
+def user_create(request):
   """Create an account"""
 
   account_id = request.POST.get('account_id', None)
@@ -147,7 +148,10 @@ def account_create(request):
     see the primary secret.
     """
 
-    new_account.full_name = request.POST.get('full_name', '')
+    new_account.given_name = request.POST.get('given_name', '')
+    new_account.family_name = request.POST.get('family_name', '')
+    new_account.department = request.POST.get('department', 'any')
+    new_account.role = request.POST.get('role', 'any')
 
     # FIXME: do we really want a contact email to be account_id?
     new_account.contact_email = request.POST.get('contact_email', account_id)
@@ -170,3 +174,33 @@ def account_create(request):
       new_account.send_secret()
 
   return render_template('account', {'account' : new_account}, type='xml')
+  
+  
+def user_get(request, user_id):
+    try:
+        a = Account.objects.get(id=user_id)
+        m = a.to_rdf()
+    except: return HttpResponseNotFound()
+    
+    return utils.x_domain(HttpResponse(utils.serialize_rdf(m), "application/rdf+xml"))
+
+def user_search(request):
+    aa = Account.objects.all()
+
+    m = RDF.Model()
+    
+    f  = request.GET.get("givenName", None)
+    l  = request.GET.get("familyName", None)
+    d  = request.GET.get("department", None)
+    r  = request.GET.get("role", None)
+    
+    if (f != None): aa = aa.filter(given_name__icontains=f)
+    if (l != None): aa = aa.filter(family_name__icontains=l)
+    if (d != None): aa = aa.filter(department__icontains=d)
+    if (r != None): aa = aa.filter(role__icontains=r)
+    
+    for a in aa:
+        print "Adding ", a.email, a.given_name, a.family_name
+        a.to_rdf(m)
+    
+    return utils.x_domain(HttpResponse(utils.serialize_rdf(m), "application/rdf+xml"))

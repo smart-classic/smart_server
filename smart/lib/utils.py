@@ -133,6 +133,21 @@ def bound_serializer(format):
     return s 
 
 
+def smart_path(request):
+    ret = smart_base + request.path
+    return ret.encode()
+
+def smart_external_path(request):
+    ret = smart_base + request.path
+    split_point = ret.rfind("external_id")
+    assert (split_point >= 0), "Expected external_id in %s"%ret
+    ret = ret[:split_point]
+    return ret.encode()
+
+def smart_parent(path):
+    ret = path.split("/")
+    return "/".join(ret[:-2])
+
 
 def default_ns():
     d = {}
@@ -152,6 +167,7 @@ def default_ns():
     d['rxrel'] = RDF.NS('http://link.informatics.stonybrook.edu/rxnorm/REL#')
     d['snomed-ct'] = RDF.NS('http://www.ihtsdo.org/snomed-ct/')
     d['ccr'] = RDF.NS('urn:astm-org:CCR')
+    d['v'] = RDF.NS('http://www.w3.org/2006/vcard/ns#')
     return d
 
 def bind_ns(serializer, ns=None):
@@ -295,7 +311,36 @@ def url_request(url, method, headers, data=None):
     
     else: raise Exception("Unexpected HTTP status %s"%r.status)
 
+
+
+def rdf_response(s):
+    return x_domain(HttpResponse(s, mimetype="application/rdf+xml"))
+
+def rdf_get(record_connector, query):
+    res = record_connector.sparql(query)    
+    return rdf_response(res)
+
+def rdf_delete(record_connector, query, save=True): 
+    to_delete = parse_rdf(record_connector.sparql(query))
+    deleted = bound_graph()
+
+    for r in to_delete:
+       deleted.append(r)
+       record_connector.pending_removes.append(r)
+       
+    if (save): record_connector.execute_transaction()
+       
+    return rdf_response(serialize_rdf(deleted))
+
+def rdf_post(record_connector, new_g):
+    for s in new_g:
+        record_connector.pending_adds.append(s)
+
+    record_connector.execute_transaction()
+    return rdf_response(serialize_rdf(new_g))
+
+
 logging.basicConfig(
       level = logging.DEBUG,
       format = '%(asctime)s %(levelname)s %(message)s',
-)
+      )

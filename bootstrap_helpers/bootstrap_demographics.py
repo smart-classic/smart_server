@@ -3,13 +3,6 @@ from bootstrap_utils import interpolated_postgres_load, put_rdf
 from smart.models import *
 import os, glob
 
-sample_dir = settings.APP_HOME#os.path.join(settings.APP_HOME, "bootstrap_helperes/sample_data")
-sample_patients = [os.path.split(x)[-1] for x in glob.glob("%s/records/*"%sample_dir)]
-
-for s in sample_patients:
-    Record.objects.create(id=s)
-
-
 bios = []
 bios.append("""
 <rdf:Description rdf:about="http://smartplatforms.org/records/%s">
