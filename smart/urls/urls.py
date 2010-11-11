@@ -1,9 +1,24 @@
-from django.conf.urls.defaults import *
-
+from django.conf.urls.defaults import include, patterns
 from smart.views import *
-from smart.lib.utils import MethodDispatcher
 
-urlpatterns = patterns(
+urlpatterns = patterns('')
+"""
+Record objects (meds, fills, notes, problems, etc.) are handled (when possible)
+in an ontology-driven way:  rdfobjects loads the ontology, registers
+handlers for all the relevant paths (e.g. /records/{record_id}/medications/)
+and specified methods (GET, POST, PUT, DELETE).
+"""
+
+for p in api_calls:
+    urlpatterns += patterns( '',
+                             (p.django_path(),  
+                              MethodDispatcher(p.getMethods()), 
+                              p.getArguments())) 
+
+"""
+Remaining API calls are dealt with individually, below.
+"""     
+urlpatterns += patterns(
     '',
     # Homepage
     (r'^$', home),
@@ -29,116 +44,12 @@ urlpatterns = patterns(
     (r'^records/search/$', record_search),
     (r'^records/(?P<record_id>[^/]+)$', record_info),
 
-    
-    # Medications                                
-    (r'^records/(?P<record_id>[^/]+)/medications/$', MethodDispatcher({
-                                       'GET': record_meds_get,
-                                       'POST': record_meds_post,
-                                       'DELETE': record_meds_delete,
-                                       'OPTIONS' : allow_options})),
-                                       
-    (r'^records/(?P<record_id>[^/]+)/medications/(?P<med_id>[^/]+)$',  MethodDispatcher({
-                                       'GET': record_med_get,
-#                                       'POST': record_med_post,
-                                       'DELETE': record_med_delete,
-                                       'OPTIONS' : allow_options})),
-
-
-    (r'^records/(?P<record_id>[^/]+)/medications/external_id/(?P<external_id>[^/]+)$',  
-                                    MethodDispatcher({
-                                       'PUT': record_med_put,
-                                       'POST': record_med_put,
-                                       'GET': record_med_get,
-                                       'DELETE': record_meds_delete,
-                                       'OPTIONS' : allow_options})),
-    
-
-#fulfillments
-    (r'^records/(?P<record_id>[^/]+)/medications/(?P<med_id>[^/]+)/fulfillments/$',  MethodDispatcher({
-                                       'GET': record_med_fulfillments_get,
-                                       'DELETE': record_med_fulfillments_delete,
-                                       'POST': record_med_fulfillments_post,
-                                       'OPTIONS' : allow_options})),
-                                       
-    (r'^records/(?P<record_id>[^/]+)/medications/(?P<med_id>[^/]+)/fulfillments/(?P<fill_id>[^/]+)$',   MethodDispatcher({
-                                       'GET': record_med_fulfillment_get,
-                                       'DELETE': record_med_fulfillment_delete,
-                                       'OPTIONS' : allow_options})),
-
-    (r'^records/(?P<record_id>[^/]+)/medications/external_id/(?P<external_med_id>[^/]+)/fulfillments/external_id/(?P<external_id>[^/]+)$',   MethodDispatcher({
-                                       'GET': record_med_fulfillment_get,
-                                       'DELETE': record_med_fulfillment_delete,
-                                       'PUT': record_med_fulfillment_put,
-                                       'POST': record_med_fulfillment_put,
-                                       'OPTIONS' : allow_options})),
-
-
-#Problems
-    (r'^records/(?P<record_id>[^/]+)/problems/$', MethodDispatcher({
-                                       'GET': record_problems_get,
-                                       'POST': record_problems_post,
-                                       'DELETE': record_problems_delete,
-                                       'OPTIONS' : allow_options})),
-#                                       
-    (r'^records/(?P<record_id>[^/]+)/problems/(?P<problem_id>[^/]+)$', MethodDispatcher({
-                                       'GET': record_problem_get,
-                                       'DELETE': record_problem_delete,
-                                       'OPTIONS' : allow_options})),
-
-    (r'^records/(?P<record_id>[^/]+)/problems/external_id/(?P<external_id>[^/]+)$',  
-                                    MethodDispatcher({
-                                       'PUT': record_problem_put,
-                                       'POST': record_problem_put,
-                                       'GET': record_problem_get,
-                                       'DELETE': record_problem_delete,
-                                       'OPTIONS' : allow_options})),
-
-    (r'^records/(?P<record_id>[^/]+)/notes/$', MethodDispatcher({
-                                       'GET': record_notes_get,
-                                       'POST': record_notes_post,
-                                       'DELETE': record_note_delete,
-                                       'OPTIONS' : allow_options})),
-                                       
-    (r'^records/(?P<record_id>[^/]+)/notes/(?P<note_id>[^/]+)$', MethodDispatcher({
-                                       'GET': record_note_get,
-                                       'DELETE': record_note_delete,
-                                       'OPTIONS' : allow_options})),
-
-    (r'^records/(?P<record_id>[^/]+)/notes/external_id/(?P<external_id>[^/]+)$',  
-                                    MethodDispatcher({
-                                       'PUT': record_note_put,
-                                       'POST': record_note_put,
-                                       'GET': record_note_get,
-                                       'DELETE': record_note_delete,
-                                       'OPTIONS' : allow_options})),
-
-
-
-    (r'^records/(?P<record_id>[^/]+)/allergies/$', MethodDispatcher({
-                                       'GET': record_allergies_get,
-                                       'POST': record_allergies_post,
-                                       'DELETE': record_allergies_delete,
-                                       'OPTIONS' : allow_options})),
-                                       
-    (r'^records/(?P<record_id>[^/]+)/allergies/(?P<allergy_id>[^/]+)$', MethodDispatcher({
-                                       'GET': record_allergy_get,
-                                       'DELETE': record_allergy_delete,
-                                       'OPTIONS' : allow_options})),
-
-    (r'^records/(?P<record_id>[^/]+)/allergies/external_id/(?P<external_id>[^/]+)$',  
-                                    MethodDispatcher({
-                                       'PUT': record_allergy_put,
-                                       'POST': record_allergy_put,
-                                       'GET': record_allergy_get,
-                                       'DELETE': record_allergy_delete,
-                                       'OPTIONS' : allow_options})),
-
-
     (r'^records/(?P<record_id>[^/]+)/demographics$', MethodDispatcher({
-                                       'GET': record_demographics_get,
+                                       'GET': record_get_all_objects,
                                        'POST': record_demographics_put,
                                        'PUT': record_demographics_put,
-                                       'OPTIONS' : allow_options})),
+                                       'OPTIONS' : allow_options}),
+                                       {'obj_type' : 'http://xmlns.com/foaf/0.1/Person'}),
 
 
     (r'^accounts/(?P<account_id>[^/]+)/apps/(?P<app_email>[^/]+)$', MethodDispatcher({
@@ -188,6 +99,11 @@ urlpatterns = patterns(
 
     (r'^users/$', MethodDispatcher({
                                        'POST': user_create,
+                                       'OPTIONS' : allow_options})),
+
+    # SMArt ontology
+    (r'^ontology/$', MethodDispatcher({
+                                       'GET': download_ontology,
                                        'OPTIONS' : allow_options})),
 
   

@@ -3,10 +3,10 @@
 {% if account.secondary_secret %}
   <secret>{{account.secondary_secret}}</secret>
 {% endif %}
-  <givenName>{{account.full_name}}</givenName>
-  <familyName>{{account.full_name}}</familyName>
-  <department>{{account.full_name}}</department>
-  <role>{{account.full_name}}</role>
+  <givenName>{{account.given_name|default_if_none:""}}</givenName>
+  <familyName>{{account.family_name|default_if_none:""}}</familyName>
+  <department>{{account.department}}</department>
+  <role>{{account.role}}</role>
   <contactEmail>{{account.contact_email}}</contactEmail>
   <lastLoginAt>{{account.last_login_at|check_empty|format_iso8601}}</lastLoginAt>
   <totalLoginCount>{{account.total_login_count}}</totalLoginCount>

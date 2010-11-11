@@ -98,7 +98,6 @@ def request_token(request):
 def exchange_token(request):
     # ask the oauth server to exchange a request token into an access token
     # this will check proper oauth for this action
-
     try:
       access_token = OAUTH_SERVER.exchange_request_token(request.oauth_request)
       # an exception can be raised if there is a bad signature (or no signature) in the request
@@ -107,26 +106,17 @@ def exchange_token(request):
 
     return HttpResponse(access_token.to_string(), mimetype='text/plain')
 
-
 ##
 ## OAuth internal calls
 ##
-
 def session_create(request):
   password = None
   if request.POST.has_key('username'):
     username = request.POST['username']
+
   if request.POST.has_key('password'):
     password = request.POST['password']
     user = auth.authenticate(request, username, password)
-
-  if not password and request.POST.has_key('system'):
-    system = request.POST['system']
-    try:
-      AuthSystems.objects.get(short_name=system)
-      user = auth.authenticate(request, username, None, system)
-    except AuthSystems.DoesNotExist:
-      raise PermissionDenied()
 
   if not user:
     raise PermissionDenied()

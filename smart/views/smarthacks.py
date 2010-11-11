@@ -2,24 +2,19 @@
 Quick hacks for SMArt
 
 Ben Adida
+Josh Mandel
 """
 
 from base import *
 from smart.lib import utils
-from smart.lib.utils import smart_base
-from django.db import models, transaction, IntegrityError
-from django.http import HttpResponse, HttpResponseBadRequest,\
-    HttpResponseNotFound
+from smart.lib.utils import *
+from django.http import HttpResponse
 from django.conf import settings
-import psycopg2
-import psycopg2.extras
-from rdflib import ConjunctiveGraph, Namespace, Literal
-from StringIO import StringIO
-import smart.models
-from smart.models.rdf_store import SesameConnector, DemographicConnector
+from smart.models import *
+from smart.models import rdf_ontology 
 from pha import immediate_tokens_for_browser_auth
-import RDF, re
-import libxml2
+import RDF
+import datetime
 
 SAMPLE_NOTIFICATION = {
     'id' : 'foonotification',
@@ -104,9 +99,9 @@ def launch_app(request, record, account, app):
 
 
 def generate_oauth_record_tokens(record, app):
-    share, created_p = smart.models.Share.objects.get_or_create( record   = record, 
-                                                                 with_app = app,
-                                                          defaults = {'authorized_at': datetime.datetime.utcnow()})
+    share, created_p = Share.objects.get_or_create( record   = record, 
+                                                               with_app = app,
+                                                               defaults = {'authorized_at': datetime.datetime.utcnow()})
 
     token, secret = oauth.generate_token_and_secret()
         
@@ -179,9 +174,12 @@ def do_webhook(request, webhook_name):
     
     data = request.raw_post_data
     if (request.method == 'GET'): data = request.META['QUERY_STRING']    
-    
+        
     response = utils.url_request(hook.url, request.method, {}, data)
     print "GOT,", response
     return utils.x_domain(HttpResponse(response, mimetype='application/rdf+xml'))
 
-
+def download_ontology(request):
+    import os
+    f = open(os.path.join(settings.APP_HOME, "smart/document_processing/schema/smart.owl")).read()
+    return HttpResponse(f, mimetype="application/rdf+xml")

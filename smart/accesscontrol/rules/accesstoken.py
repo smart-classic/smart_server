@@ -3,6 +3,7 @@ Rules for Accounts
 """
 
 from smart.views import *
+from smart.models.rdf_ontology import *
 
 def grant(accesstoken, permset):
     """
@@ -12,49 +13,12 @@ def grant(accesstoken, permset):
     permset.grant(home)
     permset.grant(record_by_token)
 
-    permset.grant(record_problems_get)
-    permset.grant(record_problems_post)
-    permset.grant(record_problems_delete)
-    
-    permset.grant(record_problem_get)
-    permset.grant(record_problem_put)
-    permset.grant(record_problem_delete)
-
-    permset.grant(record_note_get)
-    permset.grant(record_note_put)
-    permset.grant(record_note_delete)
-    
-    permset.grant(record_notes_get)
-    permset.grant(record_notes_post)
-    permset.grant(record_note_delete)
-
-    permset.grant(record_allergy_get)
-    permset.grant(record_allergy_put)
-    permset.grant(record_allergy_delete)
-        
-    permset.grant(record_allergies_get)
-    permset.grant(record_allergies_post)
-    permset.grant(record_allergies_delete)
-
-    
-    permset.grant(record_med_get)
-    permset.grant(record_med_put)
-    permset.grant(record_med_delete)
-
-    permset.grant(record_meds_get)
-    permset.grant(record_meds_post)
-    permset.grant(record_meds_delete)
-    
-    permset.grant(record_med_fulfillments_get)
-    permset.grant(record_med_fulfillments_post)
-    permset.grant(record_med_fulfillments_delete)
-    
-    permset.grant(record_med_fulfillment_get)
-    permset.grant(record_med_fulfillment_delete)
-    permset.grant(record_med_fulfillment_put)
-
-
     permset.grant(do_webhook)
-    permset.grant(record_demographics_get)
     permset.grant(record_demographics_put)
+    permset.grant(record_delete_all_objects)
+    permset.grant(record_delete_object)
+    permset.grant(record_put_object)
+    permset.grant(record_post_objects)
+    permset.grant(record_get_all_objects)
+    permset.grant(record_get_object)
     
