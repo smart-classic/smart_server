@@ -1,6 +1,5 @@
 from django.conf import settings
-from bootstrap_utils import interpolated_postgres_load, put_rdf
-from smart.models import *
+from bootstrap_utils import interpolated_postgres_load
 import os, glob
 
 bios = []
@@ -104,9 +103,10 @@ bios.append("""
   <spdemo:birthday>1968-09-01</spdemo:birthday>
 </rdf:Description>
 """)
+print "Appending bios"
 
-from smart.views.rdfstore import record_demographics_put_helper
-
+from smart.models import *
+from smart.models.rdf_ontology import put_demographics
 
 count=2000000000
 for b in bios:
@@ -114,6 +114,8 @@ for b in bios:
   count += 1
   ss_patient = Record.objects.create(id=id)
   req = Object()
+
+  req.path = "/records/%s/demographics"%id
   req.raw_post_data = """<?xml version="1.0"?>
    <rdf:RDF
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
@@ -123,6 +125,6 @@ for b in bios:
      xmlns:dcterms="http://purl.org/dc/terms/"
      xmlns:bio="http://purl.org/vocab/bio/0.1/">
    %s
-   </rdf:RDF>"""%(b%ss_patient.id)
+   </rdf:RDF>"""%(b%id)
 
-  record_demographics_put_helper(req,ss_patient)
+  put_demographics(req, id, "http://xmlns.com/foaf/0.1/Person")

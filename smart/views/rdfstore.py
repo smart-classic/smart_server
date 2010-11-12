@@ -8,20 +8,6 @@ from smart.models.rdf_ontology import *
 from smart.lib.utils import rdf_response
 from rdfobjects import *
 
-def record_demographics_put(request, record_id, **kwargs):
-    record, create_p = Record.objects.get_or_create(id=record_id)
-    record_demographics_put_helper(request, record)
-    
-def record_demographics_put_helper(request, record):
-    g = parse_rdf(request.raw_post_data)    
-    c = RecordStoreConnector(record)
-    demographic = RDFObject(type=str(NS['foaf']['Person'].uri),  path="http://smartplatforms.org/records/{record_id}/demographics")
-
-
-    demographic.generate_uris(g, "http://smartplatforms.org/records/%s/demographics"%record.id)
-    rdf_delete(c, demographic.query_all(), save=False)
-    return rdf_post(c, g)
-
 """ 
 Implementation of application-specific storage
  

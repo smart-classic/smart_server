@@ -11,5 +11,4 @@ wget --post-data='type=native&Repository+ID=demographic_rdf&Repository+title=Con
 wget --post-data='context='  http://localhost:8080/openrdf-workbench/repositories/pha_rdf/clear -O /dev/null
 wget --post-data='type=native&Repository+ID=pha_rdf&Repository+title=PHA-leve+RDF+by+context&Triple+indexes=spoc%2Cposc'  http://localhost:8080/openrdf-workbench/repositories/NONE/create -O /dev/null
 
-
 python manage.py syncdb

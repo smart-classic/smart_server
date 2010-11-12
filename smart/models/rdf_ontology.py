@@ -505,6 +505,7 @@ def put_demographics(request, record_id, obj_type, parent_obj_type=None, **kwarg
     Record.objects.create(id=record_id)
   record_delete_object(request, record_id, obj_type, **kwargs)
   return record_post_objects(request, record_id, obj_type, parent_obj_type, **kwargs)
-  
+
 ontology["http://xmlns.com/foaf/0.1/Person"].post = put_demographics
 ontology["http://xmlns.com/foaf/0.1/Person"].put = put_demographics
+print "And ontolgoy loaded."
