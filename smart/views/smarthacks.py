@@ -13,6 +13,7 @@ from django.conf import settings
 from smart.models import *
 from smart.models import rdf_ontology 
 from pha import immediate_tokens_for_browser_auth
+from smart.models.rdf_rest_operations import *
 import RDF
 import datetime
 
@@ -23,7 +24,7 @@ SAMPLE_NOTIFICATION = {
     'content' : 'a sample notification',
     }
 
-def container_capabilities(request):
+def container_capabilities(request, **kwargs):
     ns = utils.default_ns()
     m = RDF.Model()
     m.append(RDF.Statement(RDF.Node(uri_string=settings.SITE_URL_PREFIX),
@@ -174,12 +175,24 @@ def do_webhook(request, webhook_name):
     
     data = request.raw_post_data
     if (request.method == 'GET'): data = request.META['QUERY_STRING']    
-        
+    
+    print "requesting web hook", hook.url, request.method, data    
     response = utils.url_request(hook.url, request.method, {}, data)
     print "GOT,", response
     return utils.x_domain(HttpResponse(response, mimetype='application/rdf+xml'))
 
-def download_ontology(request):
+def download_ontology(request, **kwargs):
     import os
     f = open(os.path.join(settings.APP_HOME, "smart/document_processing/schema/smart.owl")).read()
     return HttpResponse(f, mimetype="application/rdf+xml")
+
+# hook to build in demographics-specific behavior: 
+# if a record doesn't exist, create it before adding
+# demographic data
+def put_demographics(request, record_id, obj_type, parent_obj_type=None, **kwargs):
+  try:
+    Record.objects.get(id=record_id)
+  except:
+    Record.objects.create(id=record_id)
+  record_delete_object(request, record_id, obj_type, **kwargs)
+  return record_post_objects(request, record_id, obj_type, parent_obj_type, **kwargs)

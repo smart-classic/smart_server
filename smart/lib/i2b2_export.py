@@ -258,8 +258,6 @@ class i2b2Patient():
         return m
     
 
-            
-
     def rdf_demographics(self):
         d = self.demographics
         m = RDF.Model()

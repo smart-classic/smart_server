@@ -3,7 +3,7 @@ Rules for Accounts
 """
 
 from smart.views import *
-from smart.models.rdf_ontology import *
+from smart.models.rdf_rest_operations import *
 
 def grant(accesstoken, permset):
     """
@@ -14,7 +14,6 @@ def grant(accesstoken, permset):
     permset.grant(record_by_token)
 
     permset.grant(do_webhook)
-    permset.grant(record_demographics_put)
     permset.grant(record_delete_all_objects)
     permset.grant(record_delete_object)
     permset.grant(record_put_object)

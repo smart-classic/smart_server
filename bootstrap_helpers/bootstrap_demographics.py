@@ -106,13 +106,19 @@ bios.append("""
 print "Appending bios"
 
 from smart.models import *
-from smart.models.rdf_ontology import put_demographics
+from smart.models.rdf_ontology import ontology
 
+print "models imported"
+from smart.views.smarthacks import put_demographics
+print "put_demo imported"
+print "total # to append", len(bios)
 count=2000000000
 for b in bios:
   id="%03d"%count
   count += 1
+  print "creating record", id
   ss_patient = Record.objects.create(id=id)
+  print "created record."
   req = Object()
 
   req.path = "/records/%s/demographics"%id
@@ -126,5 +132,7 @@ for b in bios:
      xmlns:bio="http://purl.org/vocab/bio/0.1/">
    %s
    </rdf:RDF>"""%(b%id)
-
-  put_demographics(req, id, "http://xmlns.com/foaf/0.1/Person")
+  
+  print "putting ", id
+  put_demographics(req, id, "http://xmlns.com/foaf/0.1/Person", ontology=ontology)
+  print "done putting ", id

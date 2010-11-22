@@ -176,7 +176,7 @@ def user_create(request):
   return render_template('account', {'account' : new_account}, type='xml')
   
   
-def user_get(request, user_id):
+def user_get(request, user_id, **kwargs):
     try:
         a = Account.objects.get(id=user_id)
         m = a.to_rdf()
@@ -184,7 +184,7 @@ def user_get(request, user_id):
     
     return utils.x_domain(HttpResponse(utils.serialize_rdf(m), "application/rdf+xml"))
 
-def user_search(request):
+def user_search(request, **kwargs):
     aa = Account.objects.all()
 
     m = RDF.Model()

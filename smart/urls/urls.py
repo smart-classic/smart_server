@@ -1,19 +1,8 @@
 from django.conf.urls.defaults import include, patterns
 from smart.views import *
+from smart.models.ontology_url_patterns import OntologyURLMapper
 
 urlpatterns = patterns('')
-"""
-Record objects (meds, fills, notes, problems, etc.) are handled (when possible)
-in an ontology-driven way:  rdfobjects loads the ontology, registers
-handlers for all the relevant paths (e.g. /records/{record_id}/medications/)
-and specified methods (GET, POST, PUT, DELETE).
-"""
-
-for p in api_calls:
-    urlpatterns += patterns( '',
-                             (p.django_path(),  
-                              MethodDispatcher(p.getMethods()), 
-                              p.getArguments())) 
 
 """
 Remaining API calls are dealt with individually, below.
@@ -34,23 +23,10 @@ urlpatterns += patterns(
     (r'^accounts/(?P<account_email>[^/]+)/', include('smart.urls.account')),
 
 
-    #Capabilities    
-    (r'^capabilities/$', MethodDispatcher({
-                         'GET': container_capabilities,
-                         'OPTIONS' : allow_options})),
-
     # Record
     (r'^record_by_token/$', record_by_token),
     (r'^records/search/$', record_search),
     (r'^records/(?P<record_id>[^/]+)$', record_info),
-
-    (r'^records/(?P<record_id>[^/]+)/demographics$', MethodDispatcher({
-                                       'GET': record_get_all_objects,
-                                       'POST': record_demographics_put,
-                                       'PUT': record_demographics_put,
-                                       'OPTIONS' : allow_options}),
-                                       {'obj_type' : 'http://xmlns.com/foaf/0.1/Person'}),
-
 
     (r'^accounts/(?P<account_id>[^/]+)/apps/(?P<app_email>[^/]+)$', MethodDispatcher({
                 'PUT': add_app,
@@ -85,26 +61,29 @@ urlpatterns += patterns(
                                        'POST': do_webhook,
                                        'OPTIONS' : allow_options})),
 
-      # SMArt users API    
-    (r'^users/search$', MethodDispatcher({
-                                       'GET': user_search,
-                                       'OPTIONS' : allow_options})),
-                                       
-
-    # SMArt webhook API
-    (r'^users/(?P<user_id>[^/]+)$', MethodDispatcher({
-                                       'GET': user_get,
-                                       'OPTIONS' : allow_options})),
-                                       
 
     (r'^users/$', MethodDispatcher({
                                        'POST': user_create,
                                        'OPTIONS' : allow_options})),
-
-    # SMArt ontology
-    (r'^ontology/$', MethodDispatcher({
-                                       'GET': download_ontology,
-                                       'OPTIONS' : allow_options})),
-
   
   )
+
+"""
+Record objects (meds, fills, notes, problems, etc.) are handled (when possible)
+in an ontology-driven way:  rdfobjects loads the ontology, registers
+handlers for all the relevant paths (e.g. /records/{record_id}/medications/)
+and specified methods (GET, POST, PUT, DELETE).
+"""
+
+ontology["http://xmlns.com/foaf/0.1/Person"].put = put_demographics
+ontology["http://smartplatforms.org/user"].get_one = user_get
+ontology["http://smartplatforms.org/user"].get_all = user_search
+ontology["http://smartplatforms.org/container"].get_all = container_capabilities
+ontology["http://smartplatforms.org/ontology"].get_one = download_ontology
+
+m =  OntologyURLMapper() 
+for p,calls in m.calls_by_path():
+    urlpatterns += patterns( '',
+                             (m.django_path(calls),  
+                              MethodDispatcher(m.getMethods(calls)), 
+                              m.getArguments(calls)))

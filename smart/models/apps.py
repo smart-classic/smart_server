@@ -159,3 +159,4 @@ class SessionToken(Object):
   def __str__(self):
     vars = {'oauth_token' : self.token, 'oauth_token_secret' : self.secret, 'account_id': self.user.email}
     return urllib.urlencode(vars)
+

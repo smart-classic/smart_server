@@ -51,9 +51,6 @@ def get_principal(request):
     else:
       return pha, oauth_request
 
-  # check oauth
-  # IMPORTANT: the principal is the token, not the PHA itself
-  # TODO: is this really the right thing, is the token the principal?
   ha, token, parameters, oauth_request = get_oauth_info(request, HELPER_APP_SERVER)
   if ha:
     if token:
