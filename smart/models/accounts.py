@@ -208,7 +208,7 @@ class Account(Principal):
     if model == None:  m = RDF.Model()
     else: m = model
     
-    n = RDF.Node(uri_string="%s/users/%s" % (utils.smart_base, self.id.encode()))
+    n = RDF.Node(uri_string="%s/users/%s" % (utils.smart_base, self.email.encode()))
     m.append(RDF.Statement(n, ns['rdf']['type'], ns['sp']['user']))    
 
     try:

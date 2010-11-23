@@ -178,7 +178,7 @@ def user_create(request):
   
 def user_get(request, user_id, **kwargs):
     try:
-        a = Account.objects.get(id=user_id)
+        a = Account.objects.get(email=user_id)
         m = a.to_rdf()
     except: return HttpResponseNotFound()
     
