@@ -12,7 +12,7 @@ from django.http import HttpResponse
 from django.conf import settings
 from smart.models import *
 from smart.models import rdf_ontology 
-from pha import immediate_tokens_for_browser_auth
+from pha import immediate_tokens_for_browser_auth, cookie_for_token
 from smart.models.rdf_rest_operations import *
 import RDF
 import datetime
@@ -91,11 +91,14 @@ def launch_app(request, record, account, app):
     print "Added AccountApp"
 
     t = immediate_tokens_for_browser_auth(record, account, app)
+    cookie = cookie_for_token(t)
+    
 
     return render_template('token', 
                              {'token':          t, 
                               'app_email':      app.email, 
-                              'account_email':  account.email}, 
+                              'account_email':  account.email,
+                              'oauth_cookie': cookie}, 
                             type='xml')
 
 

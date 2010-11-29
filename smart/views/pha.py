@@ -64,8 +64,38 @@ def immediate_tokens_for_browser_auth(record, account, app):
     ret =  share.new_access_token(token, secret)  
     ret.smart_connect_p = True
     ret.save()
-    
+
     return ret
+  
+def cookie_for_token(t):
+    c = {}
+
+    c['smart_oauth_token'] = t.token
+    c['smart_oauth_token_secret'] = t.secret
+    c['smart_record_id'] = t.share.record.id
+    c['smart_user_id'] = t.share.authorized_by.email
+    c['smart_app_id'] = t.share.with_app.email
+    c['oauth_version'] = oauth.VERSION    
+    c['oauth_nonce'] = oauth.generate_nonce()
+    c['oauth_timestamp'] = oauth.generate_timestamp()
+    c['oauth_consumer_key'] = t.share.with_app.consumer_key
+    
+    sig_method_name = 'HMAC-SHA1'
+    sig_method = oauth.SIGNATURE_METHODS[sig_method_name]
+
+    c['oauth_signature_method'] = sig_method.get_name()
+
+    normalized_parameters = oauth.normalize_parameters(c)
+    sbs = oauth.escape(normalized_parameters)
+    
+    signature = sig_method.sign(sbs, t.share.with_app, None)
+    c['oauth_signature'] = signature
+    c['oauth_signature_method'] = sig_method_name
+
+    key_values = c.items()
+    key_values.sort()
+    kv_string = ", ".join(['%s="%s"'%(oauth.escape(str(k)),oauth.escape(str(v))) for k,v in key_values])    
+    return {'oauth_cookie' : "Authorization: " + kv_string}
   
 ##
 ## OAuth Process

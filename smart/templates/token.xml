@@ -4,6 +4,7 @@
   <Account id="{{account_email}}" />{% endif %}{% if record_id %}
   <Record id="{{record_id}}" />{% endif %}
   <Token>{{token.token}}</Token>
-  <Secret>{{token.secret}}</Secret>
+  <Secret>{{token.secret}}</Secret>{% if oauth_cookie %}  
+  <OAuthCookie>{{oauth_cookie.oauth_cookie}}</OAuthCookie>{% endif %}
 </AccessToken>
 
