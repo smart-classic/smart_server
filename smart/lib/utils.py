@@ -23,7 +23,7 @@ import psycopg2
 import psycopg2.extras
 import RDF
 import httplib
-
+import time
 
 smart_base = "http://smartplatforms.org"
 
@@ -274,6 +274,9 @@ def update_store(permanent_store, new_data):
 def x_domain(r):
   ui = settings.SMART_UI_SERVER_LOCATION
   r['Access-Control-Allow-Origin'] = ui#"*"# "%s://%s:%s"%(ui['scheme'], ui['host'], ui['port'])
+  r['Expires'] = "Sun, 19 Nov 1978 05:00:00 GMT"
+  r['Last-Modified'] =  time.ctime()
+  r['Cache-Control'] = "store, no-cache, must-revalidate, post-check=0, pre-check=0" 
   return r
 
 
