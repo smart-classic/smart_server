@@ -15,13 +15,14 @@ MachineApp.objects.create(name='chrome',
 
 
 a=PHA.objects.create(description = 'Points to a locally-hosted app for development.',
-                   consumer_key = 'developers-sandbox-app',
+                   consumer_key = 'developer-sandbox@apps.smartplatforms.org',
                    secret = 'smartapp-secret',
                    name ='Developers Sandbox',
-                   email='developer-sandbox@apps.smart.org',
+                   email='developer-sandbox@apps.smartplatforms.org',
                    icon_url="http://sandbox.smartplatforms.org/static/resources/images/app_icons_32/developers_sandbox.png"
                      )
-AppActivity.objects.create(app=a, name='main', url='http://localhost:8000/index.html')
+
+AppActivity.objects.create(app=a, name='main', url='http://localhost:8000/index.html?record_id={record_id}')
 AppActivity.objects.create(app=a, name='after_auth', url='http://localhost:8000/after_auth.html')
 
 print "BOOTSTRAP helpers"
