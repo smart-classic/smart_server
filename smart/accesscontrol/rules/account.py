@@ -27,9 +27,6 @@ def grant(account, permset):
     # see the record list
     permset.grant(record_list, [check_my_account])
 
-    # see the notifications
-    permset.grant(account_notifications, [check_my_account])
-
     # see the records
     permset.grant(record_info, [])
 

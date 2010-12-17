@@ -21,3 +21,4 @@ def grant(accesstoken, permset):
     permset.grant(record_get_all_objects)
     permset.grant(record_get_object)
     
+    permset.grant(put_demographics)

@@ -211,37 +211,14 @@ class MachineDataStore(oauth.OAuthStore):
     if not created:
       raise oauth.OAuthError("Nonce already exists")
 
-class HelperAppDataStore(oauth.OAuthStore):
+class HelperAppDataStore(UserDataStore):
   def __get_token(self, token_str, app=None):
     kwargs = {'token': token_str}
     if app: kwargs['share__with_app'] = app
-
     try:
       return models.AccessToken.objects.get(**kwargs)
     except models.AccessToken.DoesNotExist:
       return None
-  def __get_helper_app(self, consumer_key):
-    try:
-      return models.HelperApp.objects.get(consumer_key = consumer_key)
-    except models.HelperApp.DoesNotExist:
-        
-      return None
-
-  def lookup_consumer(self, consumer_key):
-    return self.__get_helper_app(consumer_key)
-
-  def check_and_store_nonce(self, nonce_str):
-    nonce, created = models.Nonce.objects.get_or_create(nonce = nonce_str)
-    if not created:
-      raise oauth.OAuthError("Nonce already exists")
-
-  def lookup_request_token(self, consumer, request_token_str):
-      return None
-
-  def lookup_access_token(self, consumer, access_token_str):
-      r = self.__get_token(token_str = access_token_str, app = consumer)
-      print "HA Access token", r, r.token,r.secret
-      return r
 
 class SessionDataStore(oauth.OAuthStore):
   """

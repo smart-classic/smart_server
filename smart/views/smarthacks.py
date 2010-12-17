@@ -12,8 +12,8 @@ from django.http import HttpResponse
 from django.conf import settings
 from smart.models import *
 from smart.models import rdf_ontology 
-from pha import immediate_tokens_for_browser_auth, cookie_for_token
 from smart.models.rdf_rest_operations import *
+from oauth.oauth import OAuthRequest
 import RDF
 import datetime
 
@@ -30,7 +30,6 @@ def container_capabilities(request, **kwargs):
     m.append(RDF.Statement(RDF.Node(uri_string=settings.SITE_URL_PREFIX),
              ns['rdf']['type'],
              ns['sp']['container']))
-
     m.append(RDF.Statement(RDF.Node(uri_string=settings.SITE_URL_PREFIX),
              ns['sp']['capability'],
              ns['sp']['capability/SNOMED/lookup']))
@@ -43,15 +42,9 @@ def container_capabilities(request, **kwargs):
     
     return utils.x_domain(HttpResponse(utils.serialize_rdf(m), "application/rdf+xml"))
 
-
-
 @paramloader()
 def record_list(request, account):
     return render_template('record_list', {'records': [ar.record for ar in account.accountrecord_set.all()]}, type='xml')
-
-@paramloader()
-def account_notifications(request, account):
-    return render_template('notifications', {'notifications': [SAMPLE_NOTIFICATION]})
 
 def record_by_token(request):
     print "token", request.oauth_request.token
@@ -62,6 +55,7 @@ def record_by_token(request):
 @paramloader()
 def record_info(request, record):
     return render_template('record', {'record': record})
+
 @paramloader()
 def apps_for_account(request, account):
     return render_template('phas', {'phas': [aa.app for aa in account.accountapp_set.order_by("app__name")]})
@@ -80,6 +74,37 @@ def add_app(request, account, app):
     AccountApp.objects.create(account = account, app = app)
     return DONE
 
+def immediate_tokens_for_browser_auth(record, account, app):
+    ret = OAUTH_SERVER.generate_and_preauthorize_access_token(app, record=record, account=account)
+    ret.smart_connect_p = True
+    ret.save()
+    return ret
+  
+def cookie_for_token(t):
+    c = t.passalong_params
+
+    c['oauth_version'] = oauth.VERSION    
+    c['oauth_nonce'] = oauth.generate_nonce()
+    c['oauth_timestamp'] = oauth.generate_timestamp()
+    c['oauth_consumer_key'] = t.share.with_app.consumer_key
+    
+    sig_method_name = 'HMAC-SHA1'
+    sig_method = oauth.SIGNATURE_METHODS[sig_method_name]
+
+    c['oauth_signature_method'] = sig_method.get_name()
+
+    normalized_parameters = oauth.normalize_parameters(c)
+    sbs = oauth.escape(normalized_parameters)
+    
+    signature = sig_method.sign(sbs, t.share.with_app, None)
+    c['oauth_signature'] = signature
+    c['oauth_signature_method'] = sig_method_name
+
+    key_values = c.items()
+    key_values.sort()
+    kv_string = ", ".join(['%s="%s"'%(oauth.escape(str(k)),oauth.escape(str(v))) for k,v in key_values])    
+    return {'oauth_cookie' : "Authorization: " + kv_string}
+
 @paramloader()
 def launch_app(request, record, account, app):
     """
@@ -93,7 +118,6 @@ def launch_app(request, record, account, app):
     t = immediate_tokens_for_browser_auth(record, account, app)
     cookie = cookie_for_token(t)
     
-
     return render_template('token', 
                              {'token':          t, 
                               'app_email':      app.email, 
@@ -101,27 +125,12 @@ def launch_app(request, record, account, app):
                               'oauth_cookie': cookie}, 
                             type='xml')
 
-
-def generate_oauth_record_tokens(record, app):
-    share, created_p = Share.objects.get_or_create( record   = record, 
-                                                               with_app = app,
-                                                               defaults = {'authorized_at': datetime.datetime.utcnow()})
-
-    token, secret = oauth.generate_token_and_secret()
-        
-    ret =  share.new_access_token(token, secret)  
-    ret.save()
-    
-    return ret
-
-
 @paramloader()
 def get_record_tokens(request, record, app):
     return get_record_tokens_helper(record, app)
     
 def get_record_tokens_helper(record, app):
-    t = generate_oauth_record_tokens(record, app)
-
+    t = HELPER_APP_SERVER.generate_and_preauthorize_access_token(app, record=record)
     r  = {'oauth_token' : t.token, 'oauth_token_secret': t.secret, 'smart_record_id' : record.id}
     return utils.x_domain(HttpResponse(urllib.urlencode(r), "application/x-www-form-urlencoded"))
  
@@ -169,7 +178,8 @@ def allow_options(request, **kwargs):
 
 def do_webhook(request, webhook_name):
     hook = None
-
+    headers = {}
+    
     # Find the preferred app for this webhook...
     try:
         hook = AppWebHook.objects.filter(name=webhook_name)[0]
@@ -179,8 +189,27 @@ def do_webhook(request, webhook_name):
     data = request.raw_post_data
     if (request.method == 'GET'): data = request.META['QUERY_STRING']    
     
-    print "requesting web hook", hook.url, request.method, data    
-    response = utils.url_request(hook.url, request.method, {}, data)
+    print "requesting web hook", hook.url, request.method, data
+
+    hook_req = utils.url_request_build(hook.url, request.method, headers, data)
+    
+    # If the web hook needs patient context, we've got to generate + pass along tokens
+    if (hook.requires_patient_context):        
+        app = hook.app
+        record = request.principal.share.record
+        account = request.principal.share.authorized_by
+        # Create a new token for the webhook to access the in-context patient record
+        token = HELPER_APP_SERVER.generate_and_preauthorize_access_token(app, record=record, account=account)
+        
+        # And supply the token details as part of the Authorization header, 2-legged signed
+        # Using the helper app's consumer token + secret
+        # (the 2nd parameter =None --> 2-legged OAuth request)
+        oauth_request = OAuthRequest(app, None, hook_req, oauth_parameters=token.passalong_params)
+        oauth_request.sign()        
+        for (hname, hval) in oauth_request.to_header().iteritems():
+            hook_req.headers[hname] = hval 
+    
+    response = utils.url_request(hook.url, request.method, headers, data)
     print "GOT,", response
     return utils.x_domain(HttpResponse(response, mimetype='application/rdf+xml'))
 

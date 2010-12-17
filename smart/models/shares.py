@@ -95,6 +95,15 @@ class AccessToken(Principal, Token):
   def secret(self):
     return self.token_secret
 
+  @property
+  def passalong_params(self):
+    c = {}
+    c['smart_oauth_token'] = self.token
+    c['smart_oauth_token_secret'] = self.secret
+    c['smart_record_id'] = self.share.record.id
+    c['smart_user_id'] = self.share.authorized_by.email
+    c['smart_app_id'] = self.share.with_app.email
+    return c
   
 
 

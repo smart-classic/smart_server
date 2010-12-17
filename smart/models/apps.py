@@ -115,7 +115,7 @@ class AppWebHook(Object):
     description=models.TextField(null=True)
     url = models.TextField(max_length=200,null=False)
     preferred = models.BooleanField(default=False)
-
+    requires_patient_context = models.BooleanField(default=False)
     class Meta:
         app_label = APP_LABEL
         unique_together = (('app', 'name'),)

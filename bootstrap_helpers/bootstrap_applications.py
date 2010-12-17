@@ -13,7 +13,8 @@ def sub(str, var, val):
 
 # Some basic apps and a couple of accounts to get things going.
 
-apps = simplejson.loads(open(os.path.join(settings.APP_HOME, "bootstrap_helpers/application_list.json")).read())
+apps = simplejson.loads(open(os.path.join(settings.APP_HOME, 
+                                          "bootstrap_helpers/application_list.json")).read())
 apps = apps["app_list"]
 
 for app in apps:
@@ -32,6 +33,7 @@ for app in apps:
                        secret = 'smartapp-secret',
                        name =r["name"],
                        email=r["id"])
+      
   elif r["mode"] == "ui":
       a = PHA.objects.create(
                        description = r["description"],
@@ -51,10 +53,15 @@ for app in apps:
   try:
     for (hook_name, hook_data) in r["web_hooks"].iteritems():
       hook_url = sub(hook_data["url"], "base_url", base_url)
+
+      try: rpc = hook_data['requires_patient_context']
+      except: rpc = False
+      
       AppWebHook.objects.create(app=a,
                               name=hook_name, 
                               description=hook_data["description"],
-                              url=hook_url)
+                              url=hook_url,
+                              requires_patient_context=rpc)
   except: pass
   print "done ", app
-  s.close()
+  s.close() 

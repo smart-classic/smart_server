@@ -12,7 +12,7 @@ from django import http
 from django.utils import simplejson
 from xml.dom import minidom
 import libxml2, libxslt
-
+from oauth.oauth import HTTPRequest
 from django.forms.fields import email_re
 import django.core.mail as mail
 import logging
@@ -280,9 +280,15 @@ def x_domain(r):
 def trim(p, n):
     return '/'.join(p.split('/')[:-n]).encode()
 
-def url_request(url, method, headers, data=None):
-    (scheme, url) = url.split("://")
+def url_request(url,  method, headers, data=None):
+    req = url_request_build(url,  method, headers, data)
+    return url_request_execute(req)
 
+def url_request_build(url,  method, headers, data=None):
+  return HTTPRequest(method, url, HTTPRequest.FORM_URLENCODED_TYPE, data, headers)
+
+def url_request_execute(req):
+    (scheme, url) = req.path.split("://")
     domain = url.split("/")[0]
     path = "/"+"/".join(url.split("/")[1:])
     conn = None
@@ -292,12 +298,13 @@ def url_request(url, method, headers, data=None):
     elif (scheme == "https"):
         conn = httplib.HTTPSConnection(domain)
 
-    if (method == "GET"):
+    data = req.data
+    if (req.method == "GET"):
         path += "?%s"%data
         data = None
 
-    print "URL_REQUEST:", domain, method, path, data, headers        
-    conn.request(method, path, data, headers)
+    print "URL_REQUEST:", domain, req.method, path, data, req.headers        
+    conn.request(req.method, path, data, req.headers)
     r = conn.getresponse()
 
     if (r.status == 200):

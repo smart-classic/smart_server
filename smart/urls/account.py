@@ -37,8 +37,6 @@ urlpatterns = patterns(
     # record list
     (r'^records/$', record_list),
 
-    # healthfeed
-    (r'^notifications/$', account_notifications),
 
     (r'^records/$', MethodDispatcher({
                 'GET' : record_list
