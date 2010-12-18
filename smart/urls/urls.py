@@ -17,12 +17,6 @@ urlpatterns += patterns(
     
     (r'^version$', get_version),
 
-    (r'^accounts/search$', account_search),
-    (r'^accounts/(?P<account_email>[^/]+)$', account_info),
-    (r'^accounts/(?P<account_email>[^/]+)/recent_records/$', account_recent_records),
-    (r'^accounts/(?P<account_email>[^/]+)/', include('smart.urls.account')),
-
-
     # Record
     (r'^record_by_token/$', record_by_token),
     (r'^records/search/$', record_search),
@@ -34,15 +28,16 @@ urlpatterns += patterns(
                 
     (r'^accounts/(?P<account_id>[^/]+)/apps/(?P<pha_email>[^/]+)/records/(?P<record_id>[^/]+)/launch$', launch_app),
     
+    (r'^users/$', MethodDispatcher({ 'POST': user_create,'OPTIONS' : allow_options})),
+    (r'^users/reset_password_request$', MethodDispatcher({'POST': user_reset_password_request})),
+    (r'^users/reset_password$', MethodDispatcher({'POST': user_reset_password})),
+
+    
     # PHAs
     (r'^apps/$', all_phas),
     (r'^apps/accounts/(?P<account_id>[^/]+)/$', apps_for_account),
     (r'^activity/(?P<activity_name>[^/]+)/app/(?P<app_id>[^/]+)$', resolve_activity_with_app),
     (r'^activity/(?P<activity_name>[^/]+)$', resolve_activity),
-    
-    (r'^apps/(?P<app_email>[^/]+)/tokens/records/first$', get_first_record_tokens),
-    (r'^apps/(?P<app_email>[^/]+)/tokens/records/(?P<record_id>[^/]+)/next$', get_next_record_tokens),
-    (r'^apps/(?P<app_email>[^/]+)/tokens/records/(?P<record_id>[^/]+)$', get_record_tokens),
     
     # static
     (r'^static/(?P<path>.*)$', 'django.views.static.serve', {'document_root': 'static'}),
@@ -55,17 +50,19 @@ urlpatterns += patterns(
                                        'OPTIONS' : allow_options})),
 
 
-    # SMArt webhook API
     (r'^webhook/(?P<webhook_name>[^/]+)$', MethodDispatcher({
                                        'GET': do_webhook,
                                        'POST': do_webhook,
-                                       'OPTIONS' : allow_options})),
+                                       'OPTIONS' : allow_options})),  
 
+    (r'^apps/(?P<app_email>[^/]+)/tokens/records/first$', get_first_record_tokens),
+    (r'^apps/(?P<app_email>[^/]+)/tokens/records/(?P<record_id>[^/]+)/next$', get_next_record_tokens),
+    (r'^apps/(?P<app_email>[^/]+)/tokens/records/(?P<record_id>[^/]+)$', get_record_tokens),
 
-    (r'^users/$', MethodDispatcher({
-                                       'POST': user_create,
-                                       'OPTIONS' : allow_options})),
-  
+    (r'^accounts/search$', account_search),
+    (r'^accounts/(?P<account_email>[^/]+)$', account_info),
+    (r'^accounts/(?P<account_email>[^/]+)/recent_records/$', account_recent_records),
+    (r'^accounts/(?P<account_email>[^/]+)/', include('smart.urls.account')),    
   )
 
 """
@@ -82,7 +79,7 @@ ontology["http://smartplatforms.org/container"].get_all = container_capabilities
 ontology["http://smartplatforms.org/ontology"].get_one = download_ontology
 
 m =  OntologyURLMapper() 
-for p,calls in m.calls_by_path():
+for p, calls in m.calls_by_path():
     urlpatterns += patterns( '',
                              (m.django_path(calls),  
                               MethodDispatcher(m.getMethods(calls)), 

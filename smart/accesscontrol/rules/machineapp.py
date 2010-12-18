@@ -13,4 +13,6 @@ def grant(machineapp, permset):
     permset.grant(session_create, None)
     permset.grant(request_token_claim, None)
     permset.grant(request_token_info, None)
+    permset.grant(user_reset_password, None)
+    permset.grant(user_reset_password_request, None)
     

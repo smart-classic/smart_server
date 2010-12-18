@@ -86,6 +86,10 @@ class Account(Principal):
       self.failed_login_count = 0
     return self.state == ACTIVE
 
+  def forgot_password(self):
+      self.generate_secrets(False)
+      self.send_secret()      
+
   def generate_secrets(self, secondary_secret_p = True):
     self.primary_secret = utils.random_string(16)
     if secondary_secret_p:
@@ -100,22 +104,22 @@ class Account(Principal):
     subject = utils.render_template_raw('email/secret/subject', {'account' : self}, type='txt').strip()
     body = utils.render_template_raw('email/secret/body', 
                       { 'account'  : self, 
-                        'url_prefix' : settings.SITE_URL_PREFIX,
+                        'url_prefix' : settings.SMART_UI_SERVER_LOCATION,
                         'from_name'  : settings.EMAIL_SUPPORT_NAME, 
                         'from_email' : settings.EMAIL_SUPPORT_ADDRESS,
                         'full_name'  : self.full_name or self.contact_email }, 
                       type='txt')
 
     utils.send_mail(subject, body, 
-            "%s <%s>" % (settings.EMAIL_SUPPORT_NAME, settings.EMAIL_SUPPORT_ADDRESS), 
-            ["%s <%s>" % (self.full_name or self.contact_email, self.contact_email)])
+            "\"%s\" <%s>" % (settings.EMAIL_SUPPORT_NAME, settings.EMAIL_SUPPORT_ADDRESS), 
+            ["\"%s\" <%s>" % (self.full_name or self.contact_email, self.contact_email)])
 
   def send_welcome_email(self):
     subject = utils.render_template_raw('email/welcome/subject', {'account' : self}, type='txt').strip()
     body = utils.render_template_raw('email/welcome/body', 
                       { 'account'         : self, 
                         'full_name'       : self.full_name or self.contact_email,
-                        'url_prefix'      : settings.SITE_URL_PREFIX, 
+                        'url_prefix'      : settings.SMART_UI_SERVER_LOCATION, 
                         'email_support_name'  : settings.EMAIL_SUPPORT_NAME,
                         'email_support_address' : settings.EMAIL_SUPPORT_ADDRESS }, 
                     type='txt')
@@ -196,7 +200,7 @@ class Account(Principal):
     subject = utils.render_template_raw('email/password_reset/subject', {'account': self}, type='txt').strip()
     body = utils.render_template_raw('email/password_reset/body', 
                       { 'account'     : self, 
-                        'url_prefix'  : settings.SITE_URL_PREFIX, 
+                        'url_prefix'  : settings.SMART_UI_SERVER_LOCATION, 
                         'new_password'  : new_password}, 
                       type='txt')
 

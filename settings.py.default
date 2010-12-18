@@ -17,6 +17,8 @@ ADMINS = (
 )
 
 MANAGERS = ADMINS
+EMAIL_SUPPORT_NAME = "E-mail Support"
+EMAIL_SUPPORT_ADDRESS = "e-mail-support-address@host.com"
 
 RECORD_SPARQL_ENDPOINT = 'http://localhost:8080/openrdf-sesame/repositories/record_rdf'
 DEMOGRAPHIC_SPARQL_ENDPOINT = 'http://localhost:8080/openrdf-sesame/repositories/demographic_rdf'
@@ -88,7 +90,9 @@ TEMPLATE_DIRS = (
     # Don't forget to use absolute paths, not relative paths.
 )
 
+CONCURRENT_THREADING = False
 INSTALLED_APPS = (
+    'django_concurrent_test_server',
     'django.contrib.contenttypes',
     'django.contrib.sites',
     'django.contrib.admin',

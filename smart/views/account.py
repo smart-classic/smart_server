@@ -174,7 +174,32 @@ def user_create(request):
       new_account.send_secret()
 
   return render_template('account', {'account' : new_account}, type='xml')
+
+def user_reset_password_request(request):
+    email = request.POST.get('account_email', None)
+    try:
+        a = Account.objects.get(email=email)
+    except:
+        return HttpResponse("no_account_exists")
+
+    a.forgot_password()
+    return render_template('account', {'account' : a}, type='xml')
   
+def user_reset_password(request):
+    email = request.POST.get('account_email', None)
+    secret = request.POST.get('account_secret', None)
+    new_password = request.POST.get('new_password', None)
+    
+    if email == None or secret == None or new_password == None:   
+        return HttpResponseBadRequest()
+    
+    try:
+        a = Account.objects.get(email=email, primary_secret=secret)
+        a.password = new_password
+        a.generate_secrets()
+        return render_template('account', {'account' : a}, type='xml')
+
+    except: return HttpResponseBadRequest()
   
 def user_get(request, user_id, **kwargs):
     try:
