@@ -15,8 +15,6 @@ class LazyUser(object):
 
 class Authentication(object):
   def process_request(self, request):
-#    import rpdb2    
-#    rpdb2.start_embedded_debugger("a")
     request.principal, request.oauth_request = security.get_principal(request)
   def process_exception(self, request, exception):
     print "PROCESSING EXCEPTION"

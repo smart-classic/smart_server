@@ -44,12 +44,6 @@ class CallInfo(object):
       calls.append(i)
     return calls
 
-  def target_name(self):
-      ret = ""
-      for t in self.targets:
-          if t == "record_item": return "Single item"
-          if t == "record_items": return "Multiple Items"
-
   def sorted_methods(self):
       ret = []
       if "GET" in self.methods: ret.append("GET")
@@ -100,7 +94,7 @@ class TypeInfo(object):
     
     self.calls = []
     for c in calls:
-        if c.target == self.type:
+        if  self.type == c.target:
             self.calls.append(c)
     
     return

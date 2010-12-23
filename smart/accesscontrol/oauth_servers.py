@@ -152,6 +152,7 @@ class UserDataStore(oauth.OAuthStore):
     share = request_token.share
     
     # create an access token for this share
+    print "Creating new token with ", access_token_str, access_token_secret
     t =  share.new_access_token(access_token_str, 
                                   access_token_secret)
     return t

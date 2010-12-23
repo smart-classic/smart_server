@@ -2,21 +2,22 @@
 
 <rdf:RDF
      xml:base="http://smartplatforms.org/"
-     xmlns:medication="http://smartplatforms.org/medication#"
+     xmlns:sp="http://smartplatforms.org/"
+     xmlns:spmed="http://smartplatforms.org/medication#"
      xmlns:spdemo="http://smartplatforms.org/demographics/"
+     xmlns:spallergy="http://smartplatforms.org/allergy/"
+     xmlns:api="http://smartplatforms.org/api/"
      xmlns:dc="http://purl.org/dc/elements/1.1/"
      xmlns:foaf="http://xmlns.com/foaf/0.1/"
-     xmlns:terms="http://purl.org/dc/terms/"
+     xmlns:dcterms="http://purl.org/dc/terms/"
      xmlns:calls="http://smartplatforms.org/api/calls/"
-     xmlns:snomed-ct="http://www.ihtsdo.org/snomed-ct/"
+     xmlns:snomedct="http://www.ihtsdo.org/snomed-ct/"
      xmlns:v="http://www.w3.org/2006/vcard/ns#"
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:owl="http://www.w3.org/2002/07/owl#"
      xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-     xmlns:api="http://smartplatforms.org/api/"
-     xmlns:anonymous_types="http://smartplatforms.org/anonymous_types/"
-     xmlns:allergy="http://smartplatforms.org/allergy/">
+     xmlns:anonymous_types="http://smartplatforms.org/anonymous_types/">
 
     <owl:Ontology rdf:about="http://smartplatforms.org/">
         <rdfs:comment xml:lang="en">Basic representation of SMArt Ontology.</rdfs:comment>
@@ -87,18 +88,18 @@
   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
   xmlns:sp="http://smartplatforms.org/"
   xmlns:foaf="http://xmlns.com/foaf/0.1/"
-  xmlns:allergy="http://smartplatforms.org/allergy/">
+  xmlns:spallergy="http://smartplatforms.org/allergy/">
   <rdf:Description>
       <rdf:type rdf:resource="http://smartplatforms.org/allergy"/>
-      <allergy:severity rdf:resource="http://smartplatforms.org/allergy/severity/mild"/>
-      <allergy:reaction>Erythema of lower extremities</allergy:reaction>
-      <allergy:allergen>
+      <spallergy:severity rdf:resource="http://smartplatforms.org/allergy/severity/mild"/>
+      <spallergy:reaction>Erythema of lower extremities</spallergy:reaction>
+      <spallergy:allergen>
       <rdf:Description>
-        <allergy:category rdf:resource="http://smartplatforms.org/allergy/category/food" />
-        <allergy:substance rdf:resource="http://fda.gov/UNII/QE1QX6B99R"/>
+        <spallergy:category rdf:resource="http://smartplatforms.org/allergy/category/food" />
+        <spallergy:substance rdf:resource="http://fda.gov/UNII/QE1QX6B99R"/>
         <dcterms:title>Peanut</dcterms:title>
       </rdf:Description>
-      </allergy:allergen>
+      </spallergy:allergen>
    </rdf:Description>
 </rdf:RDF>]]></api:example>
     </owl:Class>
@@ -849,11 +850,11 @@
   xmlns:dcterms="http://purl.org/dc/terms/"
   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
   xmlns:sp="http://smartplatforms.org/"
-  xmlns:snomed-ct="http://www.ihtsdo.org/snomed-ct/">
+  xmlns:snomedct="http://www.ihtsdo.org/snomed-ct/">
 	<rdf:Description>
       <rdf:type rdf:resource="http://smartplatforms.org/problem"/>
       <dcterms:title>Backache (finding)</dcterms:title>
-      <snomed-ct:concept rdf:resource="http://www.ihtsdo.org/snomed-ct/concepts/161891005"/>
+      <snomedct:concept rdf:resource="http://www.ihtsdo.org/snomed-ct/concepts/161891005"/>
       <sp:onset>2007-06-12</sp:onset>
       <sp:resolution>2007-08-01</sp:resolution>
 	</rdf:Description>
