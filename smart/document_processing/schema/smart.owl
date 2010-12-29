@@ -359,9 +359,8 @@
   <api:category>record_item</api:category>
 </api:call>
 
-
 <api:call>
-  <api:description>Get a all fulfillments</api:description>
+  <api:description>Get all fulfillments in the record.</api:description>
   <api:method>GET</api:method>
   <api:path>http://smartplatforms.org/records/{record_id}/fulfillments/</api:path>
   <api:target rdf:resource="http://smartplatforms.org/clinical#Fulfillment"/>
@@ -369,16 +368,14 @@
   <api:category>record_items</api:category>
 </api:call>
 
-
 <api:call>
-  <api:description>Delete all fulfillments for a given medication</api:description>
+  <api:description>Delete all fulfillments in the record.</api:description>
   <api:method>DELETE</api:method>
   <api:path>http://smartplatforms.org/records/{record_id}/fulfillments/</api:path>
   <api:target rdf:resource="http://smartplatforms.org/clinical#Fulfillment"/>
   <api:by_internal_id>true</api:by_internal_id>
   <api:category>record_items</api:category>
 </api:call>
-
 
 <api:call>
   <api:description>Add fulfillments in the absence of a medication</api:description>
@@ -387,6 +384,47 @@
   <api:target rdf:resource="http://smartplatforms.org/clinical#Fulfillment"/>
   <api:by_internal_id>true</api:by_internal_id>
   <api:category>record_items</api:category>
+</api:call>
+
+
+<api:call>
+  <api:description>View fulfillments for a given medication</api:description>
+  <api:method>GET</api:method>
+  <api:path>http://smartplatforms.org/records/{record_id}/medications/{medication_id}/fulfillments/</api:path>
+  <api:above rdf:resource="http://smartplatforms.org/clinical#Medication"/>
+  <api:target rdf:resource="http://smartplatforms.org/clinical#Fulfillment"/>
+  <api:by_internal_id>true</api:by_internal_id>
+  <api:category>record_items</api:category>
+</api:call>
+
+<api:call>
+  <api:description>View fulfillments for a given medication</api:description>
+  <api:method>DELETE</api:method>
+  <api:path>http://smartplatforms.org/records/{record_id}/medications/{medication_id}/fulfillments/</api:path>
+  <api:above rdf:resource="http://smartplatforms.org/clinical#Medication"/>
+  <api:target rdf:resource="http://smartplatforms.org/clinical#Fulfillment"/>
+  <api:by_internal_id>true</api:by_internal_id>
+  <api:category>record_items</api:category>
+</api:call>
+
+<api:call>
+  <api:description>GET fulfillment for a given medication by external key</api:description>
+  <api:method>GET</api:method>
+  <api:path>http://smartplatforms.org/records/{record_id}/medications/external_id/{med_external_id}/fulfillments/external_id/{external_id}</api:path>
+  <api:above rdf:resource="http://smartplatforms.org/clinical#Medication"/>
+  <api:target rdf:resource="http://smartplatforms.org/clinical#Fulfillment"/>
+  <api:by_internal_id>false</api:by_internal_id>
+  <api:category>record_item</api:category>
+</api:call>
+
+<api:call>
+  <api:description>PUT fulfillment for a given medication by external key</api:description>
+  <api:method>PUT</api:method>
+  <api:path>http://smartplatforms.org/records/{record_id}/medications/external_id/{med_external_id}/fulfillments/external_id/{external_id}</api:path>
+  <api:above rdf:resource="http://smartplatforms.org/clinical#Medication"/>
+  <api:target rdf:resource="http://smartplatforms.org/clinical#Fulfillment"/>
+  <api:by_internal_id>false</api:by_internal_id>
+  <api:category>record_item</api:category>
 </api:call>
 
 <api:call>
@@ -398,9 +436,6 @@
   <api:by_internal_id>true</api:by_internal_id>
   <api:category>record_items</api:category>
 </api:call>
-
-
-
     <!-- http://smartplatforms.org/clinical#Medication -->
 
     <owl:Class rdf:about="http://smartplatforms.org/clinical#Medication">
@@ -1652,7 +1687,165 @@ No example yet.]]>
      <api:base_path>http://smartplatforms.org/records/{record_id}/lab_results/{lab_result_id}</api:base_path>
      <api:description>In RDF/XML, a serum sodium result looks like this: </api:description>
         <api:example rdf:datatype="http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
-No example yet.]]>
+<rdf:RDF xmlns:sp="http://smartplatforms.org/" 
+  xmlns:dcterms="http://purl.org/dc/terms/" 
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" 
+  xmlns:foaf="http://xmlns.com/foaf/0.1/"
+  xmlns:v="http://www.w3.org/2006/vcard/ns#"
+  xmlns:clin="http://smartplatforms.org/clinical#"
+  xmlns:lab="http://smartplatforms.org/clinical/lab#"
+  xmlns:core="http://smartplatforms.org/core#" >
+  <clin:LabResult>
+      <lab:loincCode>
+        <core:CodedValue>
+          <lab:loincCode rdf:resource="http://loinc.org/codes/2951-2"/>
+          <dcterms:title>Serum sodium</dcterms:title>
+          <core:codeProvenance>
+              <core:CodeProvenance>
+                <core:sourceCode rdf:resource="http://my.local.coding.system/01234" />
+                <dcterms:title>Random blood sodium level</dcterms:title>
+                <core:translationFidelity rdf:resource="http://smartplatforms.org/core/code/fidelity#verified" />
+              </core:CodeProvenance>
+          </core:codeProvenance>
+        </core:CodedValue>
+      </lab:loincCode>
+      <lab:quantitativeResult>
+        <lab:QuantitativeResult>
+          <lab:valueAndUnit>
+            <core:ValueAndUnit>
+              <core:value>140</core:value>
+              <core:unit>mg/dL</core:unit>
+            </core:ValueAndUnit>
+          </lab:valueAndUnit>
+          <lab:normalRange>
+             <lab:ResultRange>
+              <lab:minimum>
+                <core:ValueAndUnit>
+                   <core:value>135</core:value>
+                   <core:unit>mg/dL</core:unit>
+                </core:ValueAndUnit>
+              </lab:minimum>
+              <lab:maximum>
+                <core:ValueAndUnit>
+                   <core:value>145</core:value>
+                   <core:unit>mg/dL</core:unit>
+                </core:ValueAndUnit>
+              </lab:maximum>
+             </lab:ResultRange>
+          </lab:normalRange>
+          <lab:nonCriticalRange>
+             <lab:ResultRange>
+              <lab:minimum>
+                <core:ValueAndUnit>
+                   <core:value>120</core:value>
+                   <core:unit>mg/dL</core:unit>
+                </core:ValueAndUnit>
+              </lab:minimum>
+              <lab:maximum>
+                <core:ValueAndUnit>
+                   <core:value>155</core:value>
+                   <core:unit>mg/dL</core:unit>
+                </core:ValueAndUnit>
+              </lab:maximum>
+             </lab:ResultRange>
+          </lab:nonCriticalRange>
+        </lab:QuantitativeResult>
+      </lab:quantitativeResult>
+      <lab:externalID>AC09205823577</lab:externalID>
+      <lab:status>
+        <core:CodedValue>
+          <core:code rdf:resource="http://smartplatforms.org/core/code/labStatus#final"/>
+          <dcterms:title>Final results: complete and verified</dcterms:title>      
+        </core:CodedValue>
+      </lab:status>
+      <lab:abnormalInterpretation>
+        <core:CodedValue>
+          <core:code rdf:resource="http://smartplatforms.org/core/code/labInterpretation#normal"/>
+          <dcterms:title>Normal</dcterms:title>      
+        </core:CodedValue>
+      </lab:abnormalInterpretation>
+
+      <lab:specimenCollected>
+        <core:Attribution>
+          <core:startTime>2010-12-26T16:33:01</core:startTime>
+          <core:participant>
+            <core:Participant>
+              <core:person>
+                <core:Person><foaf:name>Jane Bellister</foaf:name></core:Person>
+              </core:person>
+              <core:organization>
+                <core:Organization>
+                  <foaf:name>City Hospital</foaf:name>
+                  <core:address>
+                    <core:Address>
+                      <v:street-address>10 Main St</v:street-address>
+                      <v:locality>Springfield</v:locality>
+                      <v:postal-code>11111</v:postal-code>
+                      <v:country-name>USA</v:country-name>
+                    </core:Address>
+                  </core:address>
+                </core:Organization>
+              </core:organization>
+              <core:role>Phlebotomist</core:role>
+            </core:Participant>
+          </core:participant>
+        </core:Attribution>
+      </lab:specimenCollected>
+      <lab:specimenReceived>
+        <core:Attribution>
+          <core:startTime>2010-12-27T12:27:00</core:startTime>
+          <core:participant>
+            <core:Participant>
+              <core:person>
+                <core:Person><foaf:name>Tad Finnialispi</foaf:name></core:Person>
+              </core:person>
+              <core:organization>
+                <core:Organization>
+                  <foaf:name>City Lab</foaf:name>
+                  <core:address>
+                    <core:Address>
+                      <v:street-address>20 Elm St</v:street-address>
+                      <v:locality>Springfield</v:locality>
+                      <v:postal-code>11111</v:postal-code>
+                      <v:country-name>USA</v:country-name>
+                    </core:Address>
+                  </core:address>
+                </core:Organization>
+              </core:organization>
+              <core:role>Laboratory Technologist</core:role>
+            </core:Participant>
+          </core:participant>
+        </core:Attribution>
+      </lab:specimenReceived>
+      <lab:resulted>
+        <core:Attribution>
+          <core:startTime>2010-12-27T17:00:00</core:startTime>
+          <core:participant>
+            <core:Participant>
+              <core:person>
+                <core:Person><foaf:name>Tad Finnialispi</foaf:name></core:Person>
+              </core:person>
+              <core:organization>
+                <core:Organization>
+                  <foaf:name>City Lab</foaf:name>
+                  <core:address>
+                    <core:Address>
+                      <v:street-address>20 Elm St</v:street-address>
+                      <v:locality>Springfield</v:locality>
+                      <v:postal-code>11111</v:postal-code>
+                      <v:country-name>USA</v:country-name>
+                    </core:Address>
+                  </core:address>
+                </core:Organization>
+              </core:organization>
+              <core:role>Laboratory Technologist</core:role>
+            </core:Participant>
+          </core:participant>
+        </core:Attribution>
+      </lab:resulted>
+      <lab:comments>Blood sample appears to have hemolyzed</lab:comments>
+   </clin:LabResult>
+</rdf:RDF>]]>
     </api:example>
 
     </owl:Class>

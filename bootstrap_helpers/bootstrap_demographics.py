@@ -134,5 +134,5 @@ for b in bios:
    </rdf:RDF>"""%(b%id)
   
   print "putting ", id
-  put_demographics(req, id, "http://xmlns.com/foaf/0.1/Person", ontology=ontology)
+  put_demographics(req, id, ontology["http://xmlns.com/foaf/0.1/Person"], ontology=ontology)
   print "done putting ", id

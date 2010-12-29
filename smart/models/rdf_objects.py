@@ -69,10 +69,10 @@ class RDFObject(object):
     
         try:
             s =  l[0].subject
+            print "FOUND an internal id", s
             return str(s.uri).encode()   
         except: 
             return None
-
     
     def remap_node(self, model, old_node, new_node):
         for s in list(model.find_statements(RDF.Statement(old_node, None, None))):
@@ -106,39 +106,17 @@ class RDFObject(object):
 
       return var_values        
     
-    def determine_full_path(self, request_path, var_bindings=None):
-        full_path  = self.path
-        ret = None
-        print "Starting with full_path", full_path
-        # This is a top-level entity being posted (e.g. we've done POST /records/{rid}/medications
-        # and we're currently posing a medication object, as opposed to, say, a fill).
-        if (var_bindings == None):
-            var_bindings = self.path_var_bindings(request_path)
-            assert(len(var_bindings) > 0)
+    def determine_full_path(self, var_bindings=None):
+        ret  = self.path
+        for vname, vval in var_bindings.iteritems():
+            if vval == "": vval="{new_id}"
+            ret = ret.replace("{"+vname+"}", vval)
+
+        still_unbound = re.findall("{(.*?)}",ret)
+        assert len(still_unbound) == 1, "Can't match path closely enough: %s given %s -- got to %s"%(self.path, var_bindings, ret)
+        ret = ret.replace("{"+still_unbound[0]+"}", str(uuid.uuid4()))
         
-            for vname, vval in var_bindings.iteritems():
-                if vval == "": vval = "{new_id}"
-                print "replacing ", vname, vval
-                full_path = full_path.replace("{"+vname+"}", vval)
-            ret = full_path
-
-            print "Novars resolved to", ret
-
-        # This is a sub-entity posted (e.g. we've done POST /records/{rid}/medications
-        # and we're currently posing a fill object, which needs its own GUID.
-        else:
-            ret = self.path
-            for vname, vval in var_bindings.iteritems():
-                print "replacing", vname, vval, ret
-                ret = ret.replace("{"+vname+"}", vval)
-
-            still_unbound = re.findall("{(.*?)}",ret)
-            assert len(still_unbound) <= 1, "Can't match path closely enough: %s"%self.path
-            ret = ret.replace("{"+still_unbound[0]+"}", "{new_id}")
-            print "oldvars resolved to", ret
-
-        ret = ret.replace("{new_id}", str(uuid.uuid4()))
-        return ret.encode(), var_bindings
+        return ret.encode()
     
     def ensure_only_one_put(self, g):
         qs = RDF.Statement(subject=None, 
@@ -159,7 +137,7 @@ class RDFObject(object):
     
         return
     
-    def generate_uris(self, g, request_path, var_bindings=None):   
+    def generate_uris(self, g, var_bindings=None):   
 	# Only give URIs to objects that support externally-referenced paths.
         if (self.path == None): return 
     
@@ -171,24 +149,25 @@ class RDFObject(object):
         for s in g.find_statements(q_typed_nodes):
             if s.subject not in node_map:
                 parent_path = self.find_parent(g, s.subject)
-                full_path, var_bindings = self.determine_full_path(request_path, var_bindings)                
+                full_path = self.determine_full_path(var_bindings)                
                 node_map[s.subject] = RDF.Node(uri_string=full_path)
 
         for (old_node, new_node) in node_map.iteritems():
             self.remap_node(g, old_node, new_node)
         for c in self.children.values():
-            c.generate_uris(g, request_path, var_bindings)
+            c.generate_uris(g, var_bindings)
 
         return node_map.values()
 
     
-    def query_one(self, id, restrict=None):
-        return self.query_one_better(id)
+    def query_one(self, id):
+        print "Asked to query one for ", id
+        return self.query(one_name=id)
 
-    def query_all(self, id=None,level=0, restrict=None):
-        return self.query_one_better()
+    def query_all(self, above_type=None, above_uri=None):
+        return self.query(above_type=above_type, above_uri=above_uri)
 
-    def query_one_better(self, one_name="?root_subject"):
+    def query(self, one_name="?root_subject", above_type=None, above_uri=None):
         ret = """
         BASE <http://smartplatforms.org/>
         PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
@@ -199,24 +178,33 @@ class RDFObject(object):
         }
         """
 
-        q = QueryBuilder(self)
-        b = q.build(one_name)
+        q = QueryBuilder(self, one_name)
+        q.require_above(above_type, above_uri)
+        b = q.build()
 
         ret = ret.replace("$construct_triples", q.construct_triples())
         ret = ret.replace("$query_triples", b)        
         return ret
 
 class QueryBuilder(object):
-    def __init__(self, root_type):
+    def __init__(self, root_type, root_name):
         self.root_type = root_type
         self.triples_created = []
         self.identifier_count = {}
+        
+        self.root_name = self.get_identifier(root_name)
 
     def construct_triples(self):
         return "\n ".join(self.triples_created)
         
-
+    def require_above(self, above_type=None, above_uri=None):
+        if (above_uri == None): return
+        predicate = above_type.predicate_for_child(self.root_type)
+        self.required_triple("<"+above_uri+">", "<"+predicate+">", self.root_name )
+        
     def get_identifier(self, id_base, role="predicate"):
+        if id_base[0] == "<": return id_base
+        
         start = id_base[0] == "?" and "?" or ""
 
         if "/" in id_base:
@@ -227,15 +215,15 @@ class QueryBuilder(object):
         id_base = re.sub(r'\W+', '', id_base)
         id_base = start + id_base + "_" + role
 
-        nc = self.identifier_count.setdefault(id_base, 0)
+        self.identifier_count.setdefault(id_base, 0)
         self.identifier_count[id_base] += 1
         return "%s_%s"%(id_base, self.identifier_count[id_base])
 
-    def required_property(self, root_name, pred, obj):
+    def required_triple(self, root_name, pred, obj):
         self.triples_created.append("%s %s %s. " % (root_name, pred, obj))
         return " %s %s %s. \n" % (root_name, pred, obj)
 
-    def optional_property(self, root_name, pred, obj):
+    def optional_triple(self, root_name, pred, obj):
         self.triples_created.append("%s %s %s. " % (root_name, pred, obj))
         return " OPTIONAL { %s %s %s. } \n" % (root_name, pred, obj)
         
@@ -247,23 +235,23 @@ class QueryBuilder(object):
         return ret
 
 
-    def build(self, root_name, root_type=None):
-
-        if root_type == None:
-            root_type = self.root_type
-        self.get_identifier(root_name)
-
+    def build(self, root_name=None, root_type=None):
         ret = ""
-
+        # Recursion starting off:  set initial conditions (if any).
+        if root_type == None:
+            root_name = self.root_name
+            root_type = self.root_type            
+            ret = " ".join(self.triples_created)
+            
         if (root_type.type != None):
             if (root_type.path != None):
-                ret = self.required_property(root_name, "rdf:type", "<"+root_type.type+">")
+                ret += self.required_triple(root_name, "rdf:type", "<"+root_type.type+">")
             else:
-                ret = self.optional_property(root_name, "rdf:type", "<"+root_type.type+">")
+                ret += self.optional_triple(root_name, "rdf:type", "<"+root_type.type+">")
 
         for p in root_type.properties:
             oid = self.get_identifier("?"+p.predicate, "object")
-            ret  += self.optional_property(root_name, "<"+p.predicate+">", oid)
+            ret  += self.optional_triple(root_name, "<"+p.predicate+">", oid)
 
         for (p, child) in root_type.children.iteritems():
             oid = self.get_identifier("?"+p, "object")
