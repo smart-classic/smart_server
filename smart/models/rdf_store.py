@@ -12,9 +12,10 @@ from smart.models.accounts import *
 from smart.models import PHA
 from django.conf import settings
 from string import Template
+import urllib
 import RDF
 
-class PHA_RDFStore(Object):
+class PHA_RDFStore(Object): 
   Meta = BaseMeta()
   PHA = models.ForeignKey(PHA, unique=True)
   triples = models.XMLField(schema_path=
@@ -41,7 +42,7 @@ class SesameConnector(object):
         u = self.endpoint
         print "Querying, ", q
         data = urllib.urlencode({"query" : q})
-        res = self.request(u, "GET", {"Accept" : "application/rdf+xml,  application/sparql-results+xml"}, data)
+        res = self.request(u, "POST", {"Accept" : "application/rdf+xml, application/sparql-results+xml", "Content-Type":"application/x-www-form-urlencoded"}, data)
         return res
             
     def serialize_node(self, node):

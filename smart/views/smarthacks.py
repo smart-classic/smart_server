@@ -81,29 +81,13 @@ def immediate_tokens_for_browser_auth(record, account, app):
     return ret
   
 def cookie_for_token(t):
-    c = t.passalong_params
-
-    c['oauth_version'] = oauth.VERSION    
-    c['oauth_nonce'] = oauth.generate_nonce()
-    c['oauth_timestamp'] = oauth.generate_timestamp()
-    c['oauth_consumer_key'] = t.share.with_app.consumer_key
-    
-    sig_method_name = 'HMAC-SHA1'
-    sig_method = oauth.SIGNATURE_METHODS[sig_method_name]
-
-    c['oauth_signature_method'] = sig_method.get_name()
-
-    normalized_parameters = oauth.normalize_parameters(c)
-    sbs = oauth.escape(normalized_parameters)
-    
-    signature = sig_method.sign(sbs, t.share.with_app, None)
-    c['oauth_signature'] = signature
-    c['oauth_signature_method'] = sig_method_name
-
-    key_values = c.items()
-    key_values.sort()
-    kv_string = ", ".join(['%s="%s"'%(oauth.escape(str(k)),oauth.escape(str(v))) for k,v in key_values])    
-    return {'oauth_cookie' : "Authorization: " + kv_string}
+    app=t.share.with_app
+    activity = AppActivity.objects.get(name="main", app=app)
+    app_index_req = utils.url_request_build(activity.url, "GET", {}, "")
+    oauth_request = OAuthRequest(app, None, app_index_req, oauth_parameters=t.passalong_params)
+    oauth_request.sign()
+    auth = oauth_request.to_header()["Authorization"]
+    return {'oauth_cookie' : "Authorization: OAuth " + auth}
 
 @paramloader()
 def launch_app(request, record, account, app):
