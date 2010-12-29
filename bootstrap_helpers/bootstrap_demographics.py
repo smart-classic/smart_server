@@ -125,7 +125,7 @@ for b in bios:
   req.raw_post_data = """<?xml version="1.0"?>
    <rdf:RDF
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-     xmlns:spdemo="http://smartplatforms.org/demographics/"
+     xmlns:spdemo="http://smartplatforms.org/clinical/demographics#"
      xmlns:foaf="http://xmlns.com/foaf/0.1/"
      xmlns:dc="http://purl.org/dc/elements/1.1/"
      xmlns:dcterms="http://purl.org/dc/terms/"

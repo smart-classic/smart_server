@@ -75,8 +75,8 @@ and specified methods (GET, POST, PUT, DELETE).
 ontology["http://xmlns.com/foaf/0.1/Person"].put = put_demographics
 ontology["http://smartplatforms.org/user"].get_one = user_get
 ontology["http://smartplatforms.org/user"].get_all = user_search
-ontology["http://smartplatforms.org/container"].get_all = container_capabilities
-ontology["http://smartplatforms.org/ontology"].get_one = download_ontology
+ontology["http://smartplatforms.org/core#Container"].get_all = container_capabilities
+ontology["http://smartplatforms.org/core#Ontology"].get_one = download_ontology
 
 m =  OntologyURLMapper() 
 for p, calls in m.calls_by_path():

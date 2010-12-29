@@ -29,15 +29,15 @@ def container_capabilities(request, **kwargs):
     m = RDF.Model()
     m.append(RDF.Statement(RDF.Node(uri_string=settings.SITE_URL_PREFIX),
              ns['rdf']['type'],
-             ns['sp']['container']))
+             ns['core']['Container']))
     m.append(RDF.Statement(RDF.Node(uri_string=settings.SITE_URL_PREFIX),
-             ns['sp']['capability'],
+             ns['core']['capability'],
              ns['sp']['capability/SNOMED/lookup']))
     m.append(RDF.Statement(RDF.Node(uri_string=settings.SITE_URL_PREFIX),
-             ns['sp']['capability'],
+             ns['core']['capability'],
              ns['sp']['capability/SPL/lookup']))
     m.append(RDF.Statement(RDF.Node(uri_string=settings.SITE_URL_PREFIX),
-             ns['sp']['capability'],
+             ns['core']['capability'],
              ns['sp']['capability/Pillbox/lookup']))
     
     return utils.x_domain(HttpResponse(utils.serialize_rdf(m), "application/rdf+xml"))
@@ -149,6 +149,7 @@ def remove_app(request, account, app):
 
 def record_search(request):
     q = request.GET.get('sparql', None)
+    print "Query for pts", q
     record_list = Record.search_records(q)
     return render_template('record_list', {'records': record_list}, type='xml')
 

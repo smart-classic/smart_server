@@ -42,7 +42,8 @@ class SesameConnector(object):
         u = self.endpoint
         print "Querying, ", q
         data = urllib.urlencode({"query" : q})
-        res = self.request(u, "POST", {"Accept" : "application/rdf+xml, application/sparql-results+xml", "Content-Type":"application/x-www-form-urlencoded"}, data)
+        res = self.request(u, "POST", {"Content-type": "application/x-www-form-urlencoded", 
+                                        "Accept" : "application/rdf+xml,  application/sparql-results+xml"}, data)
         return res
             
     def serialize_node(self, node):

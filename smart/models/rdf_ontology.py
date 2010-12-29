@@ -7,6 +7,9 @@ class CallInfo(object):
     try: self.target = [str(x.object.uri) for x in m.find_statements(RDF.Statement(c, sp['api/target'], None))][0]
     except: self.target = None
 
+    try: self.above = [str(x.object.uri) for x in m.find_statements(RDF.Statement(c, sp['api/above'], None))][0]
+    except: self.above = None
+
     try: self.description = [str(x.object.literal_value['string']) for x in m.find_statements(RDF.Statement(c, sp['api/description'], None))][0]
     except: self.description = None
 
@@ -107,9 +110,9 @@ class TypeInfo(object):
     u = self.type
     if u not in by_type: by_type[u] = RDFObject()          
 
+    by_type[u].type = self.type
     if (self.path != None):
         by_type[u].path = self.path
-        by_type[u].type = self.type
      # add properties  
     for p in self.properties:
       by_type[u].properties.append(RDFProperty(p))    
@@ -183,4 +186,6 @@ p.parse_string_into_model(m, f, "nodefault")
 
 api_types = TypeInfo.find_all_types(m)
 ontology = TypeInfo.populate_ontology(api_types)
+RDFObject.ontology = ontology
 api_calls = CallInfo.find_all_calls(m)
+

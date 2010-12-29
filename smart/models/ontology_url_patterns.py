@@ -29,6 +29,7 @@ class OntologyURLMapper():
     return methodHash      
 
   def getArguments(self, calls):
+      print "GEtting arguments for ", [c.path for c in calls]
       r = {}
       r['ontology'] = ontology      
       GetCallMapper(calls[0]).arguments(r)
@@ -61,11 +62,10 @@ class CallMapper(object):
         self.call = c
         
     def arguments(self, r):
-      r['obj_type'] = self.call.target
-      
       t = ontology[self.call.target]
-      if t.parent:
-          r['parent_obj_type'] = t.parent.type
+      r['obj'] = t
+      if self.call.above:
+          r['above_obj'] = ontology[self.call.above]
 
       return r
       

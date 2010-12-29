@@ -11,7 +11,7 @@ from smart.models.apps import *
 from smart.models.accounts import *
 from smart.models.rdf_store import DemographicConnector
 from string import Template
-import RDF
+import RDF, re
 
 class Record(Object):
   Meta = BaseMeta()
@@ -51,10 +51,11 @@ class Record(Object):
     for p in people:
         record = Record()
         print "working with person ", p
-        record.id = utils.strip_ns(p.subject, "http://smartplatforms.org/records/").split("/demographics")[0]
+        record.id = re.search("\/records\/(.*?)\/", str(p.subject)).group(1)
         record.fn = list(m.find_statements(RDF.Statement(p.subject, d['foaf']['givenName'], None)))[0].object.literal_value['string']
         record.ln = list(m.find_statements(RDF.Statement(p.subject, d['foaf']['familyName'], None)))[0].object.literal_value['string']
         print "found the snames ", record.fn, record.ln, record.id
+        print "demobirth", d['spdemo']['birthday']
         dob = list(m.find_statements(RDF.Statement(p.subject, d['spdemo']['birthday'], None)))[0].object.literal_value['string']
         record.dob = dob
         record_list.append(record)

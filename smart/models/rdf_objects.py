@@ -18,8 +18,8 @@ class RDFProperty(object):
         self.object = object
 
 class RDFObject(object):
-    def __init__(self, type=None, path=None):
-        self.type = type
+    def __init__(self, intype=None, path=None):
+        self.type = intype
         self.path=path
         self.parent = None
         self.properties = [RDFProperty(predicate=str(NS['rdf']['type'].uri)), 
@@ -32,6 +32,11 @@ class RDFObject(object):
         self.post = record_post_objects
         self.put = record_put_object
 
+    def predicate_for_child(self, child):
+        print "finding predicate for ", self.type, child.type
+        for (p,c) in self.children.iteritems():
+            if c == child:  return p
+        return None
     
     def type_node(self):
         return RDF.Node(uri_string=self.type)
@@ -82,21 +87,58 @@ class RDFObject(object):
         stripped = child_type.path.replace(self.path, "")
         stripped = re.sub("{.*?}", "", stripped)
         return stripped
+
+    def path_var_bindings(self, request_path):
+      var_names =  re.findall("{(.*?)}",self.path)
+      
+      match_string = self.path
+      for i,v in enumerate(var_names):
+          # Force all variables to match, except the final one
+          # (which can be a new GUID, substituted in on-the-fly.)
+          repl = i+1 < len(var_names) and "([^\/]+).*" or "([^\/]*?)"
+          match_string = re.sub("{"+v+"}", repl, match_string)
+      print "re.search", match_string, request_path,re.search(match_string, request_path).groups()
+      matches = re.search(match_string, request_path).groups()
+      var_values = {}
+
+      for i,v in enumerate(var_names):
+        var_values[v] = matches[i]
+
+      return var_values        
     
-    def determine_full_path(self, request_path, parent_path):
-        if parent_path == None: # No parent in the supplied graph, so we just use the requess's path
-                                # e.g. (/records/{rid}/medications/) to determine URIs
-            if (request_path.endswith("/")): request_path += "{new_id}"
-            match_string = re.sub("{.*?}", "(.*?)", self.path)
-            request_path_ok = re.search(match_string, request_path).groups()
-            assert(len(request_path_ok) > 0), "Expect request path to match child path"
-            ret = request_path
-            
-        else: # a parent *was* supplied!  Just take the relative portion of this path.
-            ret =  str(parent_path) + "/" + self.path.split("/")[-2] + "/{new_id}"
-            
+    def determine_full_path(self, request_path, var_bindings=None):
+        full_path  = self.path
+        ret = None
+        print "Starting with full_path", full_path
+        # This is a top-level entity being posted (e.g. we've done POST /records/{rid}/medications
+        # and we're currently posing a medication object, as opposed to, say, a fill).
+        if (var_bindings == None):
+            var_bindings = self.path_var_bindings(request_path)
+            assert(len(var_bindings) > 0)
+        
+            for vname, vval in var_bindings.iteritems():
+                if vval == "": vval = "{new_id}"
+                print "replacing ", vname, vval
+                full_path = full_path.replace("{"+vname+"}", vval)
+            ret = full_path
+
+            print "Novars resolved to", ret
+
+        # This is a sub-entity posted (e.g. we've done POST /records/{rid}/medications
+        # and we're currently posing a fill object, which needs its own GUID.
+        else:
+            ret = self.path
+            for vname, vval in var_bindings.iteritems():
+                print "replacing", vname, vval, ret
+                ret = ret.replace("{"+vname+"}", vval)
+
+            still_unbound = re.findall("{(.*?)}",ret)
+            assert len(still_unbound) <= 1, "Can't match path closely enough: %s"%self.path
+            ret = ret.replace("{"+still_unbound[0]+"}", "{new_id}")
+            print "oldvars resolved to", ret
+
         ret = ret.replace("{new_id}", str(uuid.uuid4()))
-        return ret.encode()
+        return ret.encode(), var_bindings
     
     def ensure_only_one_put(self, g):
         qs = RDF.Statement(subject=None, 
@@ -106,14 +148,20 @@ class RDFObject(object):
         typed_object_count = 0
         errors = []
         for s in g.find_statements(qs):
+            # If this is a typed object with no externally-accessible path, it's fine
+            # (stays as a blank node, doesn't trigger a PUT error)
+            t = self.ontology[str(s.object.uri)]
+            if (t.path == None): continue
+
             typed_object_count += 1
             errors.append(str(s.object))
         assert typed_object_count == 1, "You must PUT exactly one typed resource at a time; you tried putting %s: %s"%(typed_object_count, ", ".join(errors))
     
         return
     
-    def generate_uris(self, g, request_path):   
-        if (self.type == None): return 
+    def generate_uris(self, g, request_path, var_bindings=None):   
+	# Only give URIs to objects that support externally-referenced paths.
+        if (self.path == None): return 
     
         q_typed_nodes = RDF.Statement(subject=None, 
                                       predicate=RDF.Node(uri_string='http://www.w3.org/1999/02/22-rdf-syntax-ns#type'), 
@@ -123,76 +171,102 @@ class RDFObject(object):
         for s in g.find_statements(q_typed_nodes):
             if s.subject not in node_map:
                 parent_path = self.find_parent(g, s.subject)
-                full_path =  self.determine_full_path(request_path, parent_path)                
+                full_path, var_bindings = self.determine_full_path(request_path, var_bindings)                
                 node_map[s.subject] = RDF.Node(uri_string=full_path)
 
         for (old_node, new_node) in node_map.iteritems():
             self.remap_node(g, old_node, new_node)
         for c in self.children.values():
-            c.generate_uris(g, request_path)
+            c.generate_uris(g, request_path, var_bindings)
 
         return node_map.values()
 
-    def typed(self, level=0):
-        if (self.type == None): return ""
-        name = self.leveled("?s", level)
-        return " " + name + " rdf:type <"+self.type+">. "
-    
-    def leveled(self, val, level=0):
-        if level == 0: return val
-        return val + "_"+str(level)
-    
-    def id_filter(self, id=None):
-        if (id != None): return "FILTER (?s=" + id + ") "
-        return ""
-        
-    def insertions(self, id=None, level=1, parent_clause="", restrict_to_child_types=None):
-        ret = []
-        
-        this_level = parent_clause
-        this_level += self.typed()
-        
-        if (id != None):
-            ret.append("?s ?p ?o FILTER (?o="+id+")")
-            this_level += self.id_filter(id)
-            
-        if (level == 1): 
-            parent_clause = this_level
-            parent_clause = parent_clause.replace("?s ", "?s_1 ") 
-            parent_clause = parent_clause.replace("?s=", "?s_1=") 
-
-        # If we're only interested in querying, e.g. fills that belong to a medication
-        # We should still recurse down the type hierachy starting at meds -- but
-        # don't actually CONSTRUCT any triples unless/until we get to a fill object.
-        predicates_to_capture = [restrict_to_child_types]
-        if (restrict_to_child_types == None or restrict_to_child_types == self.type):      
-            restrict_to_child_types = None
-            predicates_to_capture = [x.predicate for x in self.properties]  + self.children.keys() 
-
-        this_level += "?s ?p ?o.  FILTER (" + " || ".join(["?p=<"+p+">" for p in predicates_to_capture])+")"
-        ret.append(this_level)
-        
-        for (rel, c) in self.children.iteritems():
-            next_parent_clause = parent_clause.replace("?s.", self.leveled("?s", level) + ".") + self.leveled("?s", level) + " <"+rel+"> ?s. "
-            ret.extend(c.insertions(level=level+1, parent_clause=next_parent_clause, restrict_to_child_types=restrict_to_child_types)) 
-            
-        return ret
     
     def query_one(self, id, restrict=None):
-        return self.query_all(id=id, restrict=restrict)
-        
+        return self.query_one_better(id)
+
     def query_all(self, id=None,level=0, restrict=None):
+        return self.query_one_better()
+
+    def query_one_better(self, one_name="?root_subject"):
         ret = """
         BASE <http://smartplatforms.org/>
         PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-        CONSTRUCT {?s ?p ?o.}
+        CONSTRUCT { $construct_triples }
         FROM $context
         WHERE {
-           { $insertion_point } 
+           { $query_triples } 
         }
         """
 
-        insertions = self.insertions(id=id, restrict_to_child_types=restrict)
-        ret = ret.replace("$insertion_point", " } UNION { ".join(insertions))
+        q = QueryBuilder(self)
+        b = q.build(one_name)
+
+        ret = ret.replace("$construct_triples", q.construct_triples())
+        ret = ret.replace("$query_triples", b)        
+        return ret
+
+class QueryBuilder(object):
+    def __init__(self, root_type):
+        self.root_type = root_type
+        self.triples_created = []
+        self.identifier_count = {}
+
+    def construct_triples(self):
+        return "\n ".join(self.triples_created)
         
+
+    def get_identifier(self, id_base, role="predicate"):
+        start = id_base[0] == "?" and "?" or ""
+
+        if "/" in id_base:
+          id_base = id_base.rsplit("/", 1)[1]
+        if "#" in id_base:
+          id_base = id_base.rsplit("#", 1)[1]
+
+        id_base = re.sub(r'\W+', '', id_base)
+        id_base = start + id_base + "_" + role
+
+        nc = self.identifier_count.setdefault(id_base, 0)
+        self.identifier_count[id_base] += 1
+        return "%s_%s"%(id_base, self.identifier_count[id_base])
+
+    def required_property(self, root_name, pred, obj):
+        self.triples_created.append("%s %s %s. " % (root_name, pred, obj))
+        return " %s %s %s. \n" % (root_name, pred, obj)
+
+    def optional_property(self, root_name, pred, obj):
+        self.triples_created.append("%s %s %s. " % (root_name, pred, obj))
+        return " OPTIONAL { %s %s %s. } \n" % (root_name, pred, obj)
+        
+    def optional_child(self, root_name, child, pred, obj):
+        self.triples_created.append("%s %s %s. " % (root_name, pred, obj))
+        ret = " OPTIONAL { %s %s %s. $insertion } \n" % (root_name, pred, obj)
+        repl = self.build(obj, child)
+        ret = ret.replace("$insertion", repl)
+        return ret
+
+
+    def build(self, root_name, root_type=None):
+
+        if root_type == None:
+            root_type = self.root_type
+        self.get_identifier(root_name)
+
+        ret = ""
+
+        if (root_type.type != None):
+            if (root_type.path != None):
+                ret = self.required_property(root_name, "rdf:type", "<"+root_type.type+">")
+            else:
+                ret = self.optional_property(root_name, "rdf:type", "<"+root_type.type+">")
+
+        for p in root_type.properties:
+            oid = self.get_identifier("?"+p.predicate, "object")
+            ret  += self.optional_property(root_name, "<"+p.predicate+">", oid)
+
+        for (p, child) in root_type.children.iteritems():
+            oid = self.get_identifier("?"+p, "object")
+            ret += self.optional_child(root_name, child, "<"+p+">", oid)
+
         return ret
