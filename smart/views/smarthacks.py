@@ -82,7 +82,11 @@ def immediate_tokens_for_browser_auth(record, account, app):
   
 def cookie_for_token(t):
     app=t.share.with_app
-    activity = AppActivity.objects.get(name="main", app=app)
+    try:
+        activity = AppActivity.objects.get(name="main", app=app)
+    except AppActivity.DoesNotExist:    
+        activity = AppActivity.objects.get(app=app)
+        
     app_index_req = utils.url_request_build(activity.url, "GET", {}, "")
     oauth_request = OAuthRequest(app, None, app_index_req, oauth_parameters=t.passalong_params)
     oauth_request.sign()

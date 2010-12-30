@@ -29,7 +29,6 @@ class OntologyURLMapper():
     return methodHash      
 
   def getArguments(self, calls):
-      print "GEtting arguments for ", [c.path for c in calls]
       r = {}
       r['ontology'] = ontology      
       GetCallMapper(calls[0]).arguments(r)

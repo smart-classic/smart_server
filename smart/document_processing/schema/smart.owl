@@ -48,11 +48,17 @@
 					<rdf:Description>
 						<api:name>Severity of an allergy</api:name>
 							<api:description rdf:datatype="http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral"><![CDATA[RDF CodedValue node where code is drawn from the following:
+
 							Code=http://www.ihtsdo.org/snomed-ct/concepts/255604002, Title="Mild"
+
 							Code=http://www.ihtsdo.org/snomed-ct/concepts/371923003, Title="Mild to moderate"
+
 							Code=http://www.ihtsdo.org/snomed-ct/concepts/6736007, Title="Moderate"
+
 							Code=http://www.ihtsdo.org/snomed-ct/concepts/371924009, Title="Moderate to severe"
+
 							Code=http://www.ihtsdo.org/snomed-ct/concepts/24484000, Title="Severe"
+
 							Code=http://www.ihtsdo.org/snomed-ct/concepts/399166001, Title="Fatal"
 							]]></api:description>
 					</rdf:Description>
@@ -82,14 +88,23 @@
 				  <rdf:Description>
 					<api:name>Category of an allergy</api:name>
 					<api:description rdf:datatype="http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral"><![CDATA[RDF CodedValue node where code is drawn from the following:
+
 Code=http://www.ihtsdo.org/snomed-ct/concepts/420134006, Title="propensity to adverse reactions"
+
 Code=http://www.ihtsdo.org/snomed-ct/concepts/418038007, Title="propensity to adverse reactions to substance"
+
 Code=http://www.ihtsdo.org/snomed-ct/concepts/419511003, Title="propensity to adverse reactions to drug"
+
 Code=http://www.ihtsdo.org/snomed-ct/concepts/418471000, Title="propensity to adverse reactions to food"
+
 Code=http://www.ihtsdo.org/snomed-ct/concepts/419199007, Title="allergy to substance"
+
 Code=http://www.ihtsdo.org/snomed-ct/concepts/416098002, Title="drug allergy"
+
 Code=http://www.ihtsdo.org/snomed-ct/concepts/414285001, Title="food allergy"
+
 Code=http://www.ihtsdo.org/snomed-ct/concepts/59037007, Title="drug intolerance"
+
 Code=http://www.ihtsdo.org/snomed-ct/concepts/235719002, Title="food intolerance"
 ]]></api:description>
 				  </rdf:Description>
@@ -105,8 +120,27 @@ Code=http://www.ihtsdo.org/snomed-ct/concepts/235719002, Title="food intolerance
                 <api:doc>
 				  <rdf:Description>
 					<api:name>Substance acting as an allergen</api:name>
-					<api:description>RDF CodedValue node.  For drugs, substance is an RxNorm Concept URI:  http://link.informatics.stonybrook.edu/rxnorm/RXCUI/{RXCUI} ; 
-					For environmental and food substance is a UNII:  http://fda.gov/UNII/{UNII}</api:description>
+					<api:description rdf:datatype="http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral"><![CDATA[RDF CodedValue node.  For drugs, substance is an RxNorm Concept URI:  
+
+http://link.informatics.stonybrook.edu/rxnorm/RXCUI/{RXCUI}
+
+
+For environmental and food substance is a UNII:  
+
+http://fda.gov/UNII/{UNII}]]></api:description>
+				  </rdf:Description>
+				</api:doc>            
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#class"/>
+                <owl:onClass rdf:resource="http://smartplatforms.org/terms#CodedValue"/>
+                <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
+                <api:doc>
+				  <rdf:Description>
+					<api:name>Class of allergen, e.g. Sulfonamides or ACE inhibitors</api:name>
+					<api:description>RDF CodedValue node, with code drawn from NDF-RT:  http://rxnav.nlm.nih.gov/REST/rxcui?idtype=NUI&amp;id={NDFRT_ID}</api:description>
 				  </rdf:Description>
 				</api:doc>            
             </owl:Restriction>
@@ -246,7 +280,7 @@ Code=http://www.ihtsdo.org/snomed-ct/concepts/235719002, Title="food intolerance
                 <api:doc>
 					<rdf:Description>
 						<api:name>Clinician who prescribed the medication</api:name>
-						<api:description>Provider RDF node (see below)</api:description>
+						<api:description>Provider RDF node</api:description>
 					</rdf:Description>
 				</api:doc>
             </owl:Restriction>
@@ -295,7 +329,7 @@ Code=http://www.ihtsdo.org/snomed-ct/concepts/235719002, Title="food intolerance
                 <api:doc>
 					<rdf:Description>
 						<api:name>The pharmacy that dispensed the medication</api:name>
-						<api:description>RDF Pharmacy node (see below).</api:description>
+						<api:description>RDF Pharmacy node.</api:description>
 					</rdf:Description>
 				</api:doc>
 			</owl:Restriction>
@@ -449,7 +483,7 @@ Code=http://www.ihtsdo.org/snomed-ct/concepts/235719002, Title="food intolerance
 
 
 <api:call>
-  <api:description>View fulfillments for a given medication</api:description>
+  <api:description>Get all fulfillments for a given medication</api:description>
   <api:method>GET</api:method>
   <api:path>http://smartplatforms.org/records/{record_id}/medications/{medication_id}/fulfillments/</api:path>
   <api:above rdf:resource="http://smartplatforms.org/terms#Medication"/>
@@ -459,7 +493,7 @@ Code=http://www.ihtsdo.org/snomed-ct/concepts/235719002, Title="food intolerance
 </api:call>
 
 <api:call>
-  <api:description>View fulfillments for a given medication</api:description>
+  <api:description>Deletefulfillments for a given medication</api:description>
   <api:method>DELETE</api:method>
   <api:path>http://smartplatforms.org/records/{record_id}/medications/{medication_id}/fulfillments/</api:path>
   <api:above rdf:resource="http://smartplatforms.org/terms#Medication"/>
@@ -469,17 +503,7 @@ Code=http://www.ihtsdo.org/snomed-ct/concepts/235719002, Title="food intolerance
 </api:call>
 
 <api:call>
-  <api:description>GET fulfillment for a given medication by external key</api:description>
-  <api:method>GET</api:method>
-  <api:path>http://smartplatforms.org/records/{record_id}/medications/external_id/{med_external_id}/fulfillments/external_id/{external_id}</api:path>
-  <api:above rdf:resource="http://smartplatforms.org/terms#Medication"/>
-  <api:target rdf:resource="http://smartplatforms.org/terms#Fulfillment"/>
-  <api:by_internal_id>false</api:by_internal_id>
-  <api:category>record_item</api:category>
-</api:call>
-
-<api:call>
-  <api:description>PUT fulfillment for a given medication by external key</api:description>
+  <api:description>Put a single fulfillmentby its external key</api:description>
   <api:method>PUT</api:method>
   <api:path>http://smartplatforms.org/records/{record_id}/medications/external_id/{med_external_id}/fulfillments/external_id/{external_id}</api:path>
   <api:above rdf:resource="http://smartplatforms.org/terms#Medication"/>
@@ -777,7 +801,7 @@ Code=http://www.ihtsdo.org/snomed-ct/concepts/235719002, Title="food intolerance
                 <api:doc>
 					<rdf:Description>
 						<api:name>Provider responsible for a clinical note</api:name>
-						<api:description>RDF Provider node (see below)</api:description>
+						<api:description>RDF Provider node</api:description>
 					</rdf:Description>
 				</api:doc>
             </owl:Restriction>
@@ -1314,7 +1338,7 @@ Code=http://www.ihtsdo.org/snomed-ct/concepts/235719002, Title="food intolerance
                 <owl:minQualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</owl:minQualifiedCardinality>
                 <api:doc>
 					<rdf:Description>
-						<api:name>Organization represented by teh pharmacy</api:name>
+						<api:name>Organization represented by the pharmacy</api:name>
 						<api:description>RDF Organization node</api:description>
 					</rdf:Description>
 				</api:doc>
@@ -1347,7 +1371,7 @@ Code=http://www.ihtsdo.org/snomed-ct/concepts/235719002, Title="food intolerance
                 <api:doc>
 					<rdf:Description>
 						<api:name>Person acting as provider</api:name>
-						<api:description>RDF Person node (see below)</api:description>
+						<api:description>RDF Person node</api:description>
 					</rdf:Description>
 				</api:doc>
 
@@ -1361,7 +1385,7 @@ Code=http://www.ihtsdo.org/snomed-ct/concepts/235719002, Title="food intolerance
                 <api:doc>
 					<rdf:Description>
 						<api:name>Organization acting as provider</api:name>
-						<api:description>RDF Organization node (see below)</api:description>
+						<api:description>RDF Organization node</api:description>
 					</rdf:Description>
 				</api:doc>
             </owl:Restriction>
@@ -1419,7 +1443,7 @@ Code=http://www.ihtsdo.org/snomed-ct/concepts/235719002, Title="food intolerance
                 <api:doc>
 					<rdf:Description>
 						<api:name>An individual result belonging to this panel</api:name>
-						<api:description>RDF QualitativeResult node</api:description>
+						<api:description>RDF LabResult node</api:description>
 					</rdf:Description>
 				</api:doc>
             </owl:Restriction>

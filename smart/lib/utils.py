@@ -300,7 +300,7 @@ def url_request_execute(req):
         path += "?%s"%data
         data = None
 
-    print "URL_REQUEST:", domain, req.method, path, data, req.headers        
+    #print "URL_REQUEST:", domain, req.method, path, data, req.headers        
     conn.request(req.method, path, data, req.headers)
     r = conn.getresponse()
 

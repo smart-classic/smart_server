@@ -88,7 +88,7 @@ def record_put_object(request, record_id, obj, above_obj=None, **kwargs):
             object=RDF.Node(literal=external_id.encode())))
 
     if above_internal_id != None:
-        print "Adding under an above", above_internal_id, above_obj.predicate_for_child(obj), new_node
+#        print "Adding under an above", above_internal_id, above_obj.predicate_for_child(obj), new_node
         g.append(RDF.Statement(
             subject=RDF.Node(uri_string=above_internal_id), 
             predicate=RDF.Node(uri_string=above_obj.predicate_for_child(obj)), 

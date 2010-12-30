@@ -40,7 +40,7 @@ class SesameConnector(object):
         
     def sparql(self, q):
         u = self.endpoint
-        print "Querying, ", q
+        #print "Querying, ", q
         data = urllib.urlencode({"query" : q})
         res = self.request(u, "POST", {"Content-type": "application/x-www-form-urlencoded", 
                                         "Accept" : "application/rdf+xml,  application/sparql-results+xml"}, data)
