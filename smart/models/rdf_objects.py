@@ -22,8 +22,7 @@ class RDFObject(object):
         self.type = intype
         self.path=path
         self.parent = None
-        self.properties = [RDFProperty(predicate=str(NS['rdf']['type'].uri)), 
-                           RDFProperty(predicate=str(NS['sp']['external_id'].uri))]
+        self.properties = []
         self.children = {}
         self.get_one = record_get_object
         self.get_all = record_get_all_objects
@@ -113,8 +112,9 @@ class RDFObject(object):
             ret = ret.replace("{"+vname+"}", vval)
 
         still_unbound = re.findall("{(.*?)}",ret)
-        assert len(still_unbound) == 1, "Can't match path closely enough: %s given %s -- got to %s"%(self.path, var_bindings, ret)
-        ret = ret.replace("{"+still_unbound[0]+"}", str(uuid.uuid4()))
+        assert len(still_unbound) <= 1, "Can't match path closely enough: %s given %s -- got to %s"%(self.path, var_bindings, ret)
+        if len(still_unbound) ==1:
+            ret = ret.replace("{"+still_unbound[0]+"}", str(uuid.uuid4()))
         
         return ret.encode()
     

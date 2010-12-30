@@ -111,8 +111,12 @@ class TypeInfo(object):
     if u not in by_type: by_type[u] = RDFObject()          
 
     by_type[u].type = self.type
+    by_type[u].properties.append(RDFProperty(predicate=str(NS['rdf']['type'].uri)))
+
     if (self.path != None):
         by_type[u].path = self.path
+        by_type[u].properties.append(RDFProperty(predicate=str(NS['sp']['external_id'].uri)))
+
      # add properties  
     for p in self.properties:
       by_type[u].properties.append(RDFProperty(p))    

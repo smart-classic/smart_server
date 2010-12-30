@@ -2,13 +2,8 @@
 
 <rdf:RDF
      xml:base="http://smartplatforms.org/"
-     xmlns:sp="http://smartplatforms.org/"
-     xmlns:spcore="http://smartplatforms.org/core#"
-     xmlns:spclin="http://smartplatforms.org/clinical#"
-     xmlns:spmed="http://smartplatforms.org/clinical/medication#"
-     xmlns:spdemo="http://smartplatforms.org/clinical/demographics#"
-     xmlns:spallergy="http://smartplatforms.org/clinical/allergy#"
-     xmlns:core="http://smartplatforms.org/core#"
+     xmlns:sp="http://smartplatforms.org/terms"
+     xmlns:code="http://smartplatforms.org/codes/"
      xmlns:api="http://smartplatforms.org/api/"
      xmlns:dc="http://purl.org/dc/elements/1.1/"
      xmlns:foaf="http://xmlns.com/foaf/0.1/"
@@ -40,17 +35,26 @@
     <owl:AnnotationProperty rdf:about="http://www.w3.org/2000/01/rdf-schema#comment"/>
 
 
-    <!-- http://smartplatforms.org/clinical#Allergy -->
+    <!-- http://smartplatforms.org/terms#Allergy -->
     
-    <owl:Class rdf:about="http://smartplatforms.org/clinical#Allergy">
+    <owl:Class rdf:about="http://smartplatforms.org/terms#Allergy">
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://smartplatforms.org/clinical#Allergy/severity"/>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#severity"/>
                 <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
+                <owl:onClass rdf:resource="http://smartplatforms.org/terms#CodedValue"/>
+          
 				<api:doc>
 					<rdf:Description>
 						<api:name>Severity of an allergy</api:name>
-						<api:description>One of:  http://smartplatforms.org/clinical#Allergy/severity/mild  http://smartplatforms.org/clinical#Allergy/severity/moderate http://smartplatforms.org/clinical#Allergy/severity/severe</api:description>
+							<api:description rdf:datatype="http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral"><![CDATA[RDF CodedValue node where code is drawn from the following:
+							Code=http://www.ihtsdo.org/snomed-ct/concepts/255604002, Title="Mild"
+							Code=http://www.ihtsdo.org/snomed-ct/concepts/371923003, Title="Mild to moderate"
+							Code=http://www.ihtsdo.org/snomed-ct/concepts/6736007, Title="Moderate"
+							Code=http://www.ihtsdo.org/snomed-ct/concepts/371924009, Title="Moderate to severe"
+							Code=http://www.ihtsdo.org/snomed-ct/concepts/24484000, Title="Severe"
+							Code=http://www.ihtsdo.org/snomed-ct/concepts/399166001, Title="Fatal"
+							]]></api:description>
 					</rdf:Description>
 				</api:doc>
             </owl:Restriction>
@@ -58,52 +62,103 @@
         <rdfs:subClassOf>
         
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://smartplatforms.org/clinical#Allergy/reaction"/>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#reaction"/>
                 <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
+                <owl:onClass rdf:resource="http://smartplatforms.org/terms#CodedValue"/>
 				<api:doc>
 					<rdf:Description>
 						<api:name>Reaction associated with an allergy</api:name>
-						<api:description>Free text.</api:description>
+						<api:description>RDF CodedValue node drawn from SNOMED-CT</api:description>
 					</rdf:Description>
 				</api:doc>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://smartplatforms.org/clinical#Allergy/allergen"/>
-                <owl:onClass rdf:resource="http://smartplatforms.org/anonymous_types/allergen"/>
-                <owl:minQualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</owl:minQualifiedCardinality>
-				<api:doc>
-					<rdf:Description>
-						<api:name>Allergen assciated with an allergy</api:name>
-						<api:description>Allergen node (see below)</api:description>
-					</rdf:Description>
-				</api:doc>                
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#category"/>
+                <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
+                <owl:onClass rdf:resource="http://smartplatforms.org/terms#CodedValue"/>
+                <api:doc>
+				  <rdf:Description>
+					<api:name>Category of an allergy</api:name>
+					<api:description rdf:datatype="http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral"><![CDATA[RDF CodedValue node where code is drawn from the following:
+Code=http://www.ihtsdo.org/snomed-ct/concepts/420134006, Title="propensity to adverse reactions"
+Code=http://www.ihtsdo.org/snomed-ct/concepts/418038007, Title="propensity to adverse reactions to substance"
+Code=http://www.ihtsdo.org/snomed-ct/concepts/419511003, Title="propensity to adverse reactions to drug"
+Code=http://www.ihtsdo.org/snomed-ct/concepts/418471000, Title="propensity to adverse reactions to food"
+Code=http://www.ihtsdo.org/snomed-ct/concepts/419199007, Title="allergy to substance"
+Code=http://www.ihtsdo.org/snomed-ct/concepts/416098002, Title="drug allergy"
+Code=http://www.ihtsdo.org/snomed-ct/concepts/414285001, Title="food allergy"
+Code=http://www.ihtsdo.org/snomed-ct/concepts/59037007, Title="drug intolerance"
+Code=http://www.ihtsdo.org/snomed-ct/concepts/235719002, Title="food intolerance"
+]]></api:description>
+				  </rdf:Description>
+				</api:doc>
+                
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#substance"/>
+                <owl:onClass rdf:resource="http://smartplatforms.org/terms#CodedValue"/>
+                <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
+                <api:doc>
+				  <rdf:Description>
+					<api:name>Substance acting as an allergen</api:name>
+					<api:description>RDF CodedValue node.  For drugs, substance is an RxNorm Concept URI:  http://link.informatics.stonybrook.edu/rxnorm/RXCUI/{RXCUI} ; 
+					For environmental and food substance is a UNII:  http://fda.gov/UNII/{UNII}</api:description>
+				  </rdf:Description>
+				</api:doc>            
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#notes"/>
+                <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
+                <api:doc>
+				  <rdf:Description>
+					<api:name>Additional information associated with this allergy</api:name>
+					<api:description>Free text</api:description>
+				  </rdf:Description>
+				</api:doc>            
             </owl:Restriction>
         </rdfs:subClassOf>
      <api:name>Allergy</api:name>
      <api:name_plural>Allergies</api:name_plural>
 	 <api:base_path>http://smartplatforms.org/records/{record_id}/allergies/{allergy_id}</api:base_path>
-     <api:description>Allergies are represented by an allergen, severity, and reaction.  Allergens, in turn, are represented by a category (food, environmental, or drug), substance (the particular allergen), and title (its human-readable name).</api:description>
+     <api:description>Allergies are represented by an category (food, drug, etc.), substance (the particular allergen), reaction, and severity.  For instance, a severe peanut allergy, resulting in anaphylaxis, looks like:</api:description>
      <api:example rdf:datatype="http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
 <rdf:RDF
   xmlns:dcterms="http://purl.org/dc/terms/"
   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-  xmlns:sp="http://smartplatforms.org/"
-  xmlns:foaf="http://xmlns.com/foaf/0.1/"
-  xmlns:spallergy="http://smartplatforms.org/clinical#Allergy/">
-  <rdf:Description>
-      <rdf:type rdf:resource="http://smartplatforms.org/clinical#Allergy"/>
-      <spallergy:severity rdf:resource="http://smartplatforms.org/clinical#Allergy/severity/mild"/>
-      <spallergy:reaction>Erythema of lower extremities</spallergy:reaction>
-      <spallergy:allergen>
-      <rdf:Description>
-        <spallergy:category rdf:resource="http://smartplatforms.org/clinical#Allergy/category/food" />
-        <spallergy:substance rdf:resource="http://fda.gov/UNII/QE1QX6B99R"/>
-        <dcterms:title>Peanut</dcterms:title>
-      </rdf:Description>
-      </spallergy:allergen>
-   </rdf:Description>
+  xmlns:sp="http://smartplatforms.org/terms#">
+  <sp:Allergy>
+      <sp:severity>
+        <sp:CodedValue>
+          <sp:code resource="http://www.ihtsdo.org/snomed-ct/concepts/24484000" />
+          <dcterms:title>Severe</dcterms:title>
+        </sp:CodedValue>
+      </sp:severity>
+      <sp:reaction>
+        <sp:CodedValue>
+          <sp:code resource="http://www.ihtsdo.org/snomed-ct/concepts/39579001" />
+          <dcterms:title>Anaphylaxis</dcterms:title>
+        </sp:CodedValue>
+      </sp:reaction>
+      <sp:category>
+        <sp:CodedValue>
+          <sp:code resource="http://www.ihtsdo.org/snomed-ct/concepts/414285001" />
+          <dcterms:title>Food allergy</dcterms:title>
+        </sp:CodedValue>
+      </sp:category>
+      <sp:substance>
+        <sp:CodedValue>
+          <sp:code resource="http://fda.gov/UNII/QE1QX6B99R" />
+          <dcterms:title>Peanut</dcterms:title>
+        </sp:CodedValue>
+      </sp:substance>
+      <sp:notes>Carries Epipen since 2004.</sp:notes>
+   </sp:Allergy>
 </rdf:RDF>]]></api:example>
     </owl:Class>
 
@@ -111,7 +166,7 @@
   <api:description>Get a single allergy</api:description>
   <api:method>GET</api:method>
   <api:path>http://smartplatforms.org/records/{record_id}/allergies/{allergy_id}</api:path>
-  <api:target rdf:resource="http://smartplatforms.org/clinical#Allergy"/>
+  <api:target rdf:resource="http://smartplatforms.org/terms#Allergy"/>
   <api:by_internal_id>true</api:by_internal_id>
   <api:category>record_item</api:category>
 </api:call>
@@ -120,7 +175,7 @@
   <api:description>Delete a single allergy</api:description>
   <api:method>DELETE</api:method>
   <api:path>http://smartplatforms.org/records/{record_id}/allergies/{allergy_id}</api:path>
-  <api:target rdf:resource="http://smartplatforms.org/clinical#Allergy"/>
+  <api:target rdf:resource="http://smartplatforms.org/terms#Allergy"/>
   <api:by_internal_id>true</api:by_internal_id>
   <api:category>record_item</api:category>
 </api:call>
@@ -129,7 +184,7 @@
   <api:description>GET all allergies for a record</api:description>
   <api:method>GET</api:method>
   <api:path>http://smartplatforms.org/records/{record_id}/allergies/</api:path>
-  <api:target rdf:resource="http://smartplatforms.org/clinical#Allergy"/>
+  <api:target rdf:resource="http://smartplatforms.org/terms#Allergy"/>
   <api:by_internal_id>true</api:by_internal_id>
   <api:category>record_items</api:category>
 </api:call>
@@ -138,7 +193,7 @@
   <api:description>Delete all allergies from a record</api:description>
   <api:method>DELETE</api:method>
   <api:path>http://smartplatforms.org/records/{record_id}/allergies/</api:path>
-  <api:target rdf:resource="http://smartplatforms.org/clinical#Allergy"/>
+  <api:target rdf:resource="http://smartplatforms.org/terms#Allergy"/>
   <api:by_internal_id>true</api:by_internal_id>
   <api:category>record_items</api:category>
 </api:call>
@@ -147,7 +202,7 @@
   <api:description>Add new allergies to a record</api:description>
   <api:method>POST</api:method>
   <api:path>http://smartplatforms.org/records/{record_id}/allergies/</api:path>
-  <api:target rdf:resource="http://smartplatforms.org/clinical#Allergy"/>
+  <api:target rdf:resource="http://smartplatforms.org/terms#Allergy"/>
   <api:by_internal_id>true</api:by_internal_id>
   <api:category>record_items</api:category>
 </api:call>
@@ -156,7 +211,7 @@
   <api:description>Get a single allergy</api:description>
   <api:method>GET</api:method>
   <api:path>http://smartplatforms.org/records/{record_id}/allergies/external_id/{external_id}</api:path>
-  <api:target rdf:resource="http://smartplatforms.org/clinical#Allergy"/>
+  <api:target rdf:resource="http://smartplatforms.org/terms#Allergy"/>
   <api:by_internal_id>false</api:by_internal_id>
   <api:category>record_item</api:category>
 </api:call>
@@ -165,7 +220,7 @@
   <api:description>Add a single allergy by external key</api:description>
   <api:method>PUT</api:method>
   <api:path>http://smartplatforms.org/records/{record_id}/allergies/external_id/{external_id}</api:path>
-  <api:target rdf:resource="http://smartplatforms.org/clinical#Allergy"/>
+  <api:target rdf:resource="http://smartplatforms.org/terms#Allergy"/>
   <api:by_internal_id>false</api:by_internal_id>
   <api:category>record_item</api:category>
 </api:call>
@@ -174,31 +229,31 @@
   <api:description>Delete a single allergy</api:description>
   <api:method>DELETE</api:method>
   <api:path>http://smartplatforms.org/records/{record_id}/allergies/external_id/{external_id}</api:path>
-  <api:target rdf:resource="http://smartplatforms.org/clinical#Allergy"/>
+  <api:target rdf:resource="http://smartplatforms.org/terms#Allergy"/>
   <api:by_internal_id>false</api:by_internal_id>
   <api:category>record_item</api:category>
 </api:call>
 
 
-    <!-- http://smartplatforms.org/clinical#Fulfillment -->
+    <!-- http://smartplatforms.org/terms#Fulfillment -->
 
-    <owl:Class rdf:about="http://smartplatforms.org/clinical#Fulfillment">
+    <owl:Class rdf:about="http://smartplatforms.org/terms#Fulfillment">
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://smartplatforms.org/clinical/medication#prescriber"/>
-                <owl:onClass rdf:resource="http://smartplatforms.org/anonymous_types/prescriber"/>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#provider"/>
+                <owl:onClass rdf:resource="http://smartplatforms.org/terms#Provider"/>
                 <owl:minQualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</owl:minQualifiedCardinality>
                 <api:doc>
 					<rdf:Description>
 						<api:name>Clinician who prescribed the medication</api:name>
-						<api:description>Prescriber RDF node (see below)</api:description>
+						<api:description>Provider RDF node (see below)</api:description>
 					</rdf:Description>
 				</api:doc>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://smartplatforms.org/clinical/medication#PBM"/>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#pbm"/>
                 <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
                  <api:doc>
 					<rdf:Description>
@@ -222,7 +277,7 @@
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://smartplatforms.org/clinical/medication#dispenseQuantity"/>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#dispenseQuantity"/>
                 <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
                 <api:doc>
 					<rdf:Description>
@@ -234,8 +289,8 @@
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://smartplatforms.org/clinical/medication#pharmacy"/>
-                <owl:onClass rdf:resource="http://smartplatforms.org/anonymous_types/pharmacy"/>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#pharmacy"/>
+                <owl:onClass rdf:resource="http://smartplatforms.org/terms#Pharmacy"/>
                 <owl:minQualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</owl:minQualifiedCardinality>
                 <api:doc>
 					<rdf:Description>
@@ -247,7 +302,7 @@
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://smartplatforms.org/clinical/medication#dispenseDaysSupply"/>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#dispenseDaysSupply"/>
                 <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>                
                 <api:doc>
 					<rdf:Description>
@@ -259,7 +314,7 @@
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://smartplatforms.org/clinical/medication#dispenseUnits"/>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#dispenseUnits"/>
                 <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
                 <api:doc>
 					<rdf:Description>
@@ -275,40 +330,46 @@
      <api:description>Each medication may include zero or more sp:fullfillment events, each describing a time when the medication was dispensed by a pharmacy. For example: </api:description>
      <api:example rdf:datatype="http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
 <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-  xmlns:sp="http://smartplatforms.org/"
-  xmlns:core="http://smartplatforms.org/core#"
-  xmlns:clin="http://smartplatforms.org/clinical#"
-  xmlns:med="http://smartplatforms.org/clinical/medication#"
+  xmlns:sp="http://smartplatforms.org/terms#"
+  xmlns:foaf="http://xmlns.com/foaf/0.1/"
   xmlns:dc="http://purl.org/dc/elements/1.1/"
   xmlns:dcterms="http://purl.org/dc/terms/"
   xmlns:v="http://www.w3.org/2006/vcard/ns#">
-         <rdf:Description>
-            <rdf:type rdf:resource="http://smartplatforms.org/clinical#Fulfillment"/>
-            <dc:date>2010-05-12T04:00:00Z</dc:date>
-            <med:prescriber>
-              <rdf:Description>
-                <dcterms:title>Josh Mandel</dcterms:title>
-                <clin:NPI>5235235</clin:NPI>
-                <clin:DEA>325555555</clin:DEA>
-              </rdf:Description>
-            </med:prescriber>
-            <med:pharmacy>
-              <rdf:Description>
-                <dcterms:title>CVS #588</dcterms:title>
-                <med:NCPDPID>5235235</med:NCPDPID>
-                <v:adr>
-                  <rdf:Description>
-                    <v:street-address>111 Lake Drive</v:street-address>
-                    <v:locality>WonderCity</v:locality>
-                    <v:postal-code>5555</v:postal-code>
-                    <v:country-name>Australia</v:country-name>
-                  </rdf:Description>
-                </v:adr>
-              </rdf:Description>
-            </med:pharmacy>
-            <med:PBM>T00000000001011</med:PBM>
-            <med:dispenseQuantity>30</med:dispenseQuantity>
-         </rdf:Description>
+ <sp:Fulfillment>
+    <dc:date>2010-05-12T04:00:00Z</dc:date>
+    <sp:provider>
+      <sp:Provider>
+        <sp:person>
+          <sp:Person>
+            <foaf:name>Joshua Mandel</foaf:name>
+          </sp:Person>				
+        </sp:person>
+        <sp:npi>5235235</sp:npi>
+        <sp:dea>325555555</sp:dea>
+      </sp:Provider>
+    </sp:provider>
+    <sp:pharmacy>
+      <sp:Pharmacy>
+        <sp:ncpdpid>5235235</sp:ncpdpid>
+        <sp:organization>
+          <sp:Organization>
+            <foaf:name>CVS #588</foaf:name>
+            <sp:address>
+              <sp:Address>
+                <v:street-address>111 Lake Drive</v:street-address>
+                <v:locality>WonderCity</v:locality>
+                <v:postal-code>5555</v:postal-code>
+                <v:country-name>Australia</v:country-name>
+              </sp:Address>
+            </sp:address>                
+          </sp:Organization>
+        </sp:organization>
+      </sp:Pharmacy>
+    </sp:pharmacy>
+    <sp:pbm>T00000000001011</sp:pbm>
+    <sp:dispenseQuantity>60</sp:dispenseQuantity>
+    <sp:dispenseDaysSupply>30</sp:dispenseDaysSupply>
+ </sp:Fulfillment>
 </rdf:RDF>]]>
     </api:example>
     </owl:Class>
@@ -317,7 +378,7 @@
   <api:description>Get a single fulfillment</api:description>
   <api:method>GET</api:method>
   <api:path>http://smartplatforms.org/records/{record_id}/fulfillments/{fulfillment_id}</api:path>
-  <api:target rdf:resource="http://smartplatforms.org/clinical#Fulfillment"/>
+  <api:target rdf:resource="http://smartplatforms.org/terms#Fulfillment"/>
   <api:by_internal_id>true</api:by_internal_id>
   <api:category>record_item</api:category>
 </api:call>
@@ -326,7 +387,7 @@
   <api:description>Delete a single fulfillment</api:description>
   <api:method>DELETE</api:method>
   <api:path>http://smartplatforms.org/records/{record_id}/fulfillments/{fulfillment_id}</api:path>
-  <api:target rdf:resource="http://smartplatforms.org/clinical#Fulfillment"/>
+  <api:target rdf:resource="http://smartplatforms.org/terms#Fulfillment"/>
   <api:by_internal_id>true</api:by_internal_id>
   <api:category>record_item</api:category>
 </api:call>
@@ -335,7 +396,7 @@
   <api:description>Get a single fulfillment</api:description>
   <api:method>GET</api:method>
   <api:path>http://smartplatforms.org/records/{record_id}/fulfillments/external_id/{external_id}</api:path>
-  <api:target rdf:resource="http://smartplatforms.org/clinical#Fulfillment"/>
+  <api:target rdf:resource="http://smartplatforms.org/terms#Fulfillment"/>
   <api:by_internal_id>false</api:by_internal_id>
   <api:category>record_item</api:category>
 </api:call>
@@ -344,7 +405,7 @@
   <api:description>Delete a single fulfillment</api:description>
   <api:method>DELETE</api:method>
   <api:path>http://smartplatforms.org/records/{record_id}/fulfillments/external_id/{external_id}</api:path>
-  <api:target rdf:resource="http://smartplatforms.org/clinical#Fulfillment"/>
+  <api:target rdf:resource="http://smartplatforms.org/terms#Fulfillment"/>
   <api:by_internal_id>false</api:by_internal_id>
   <api:category>record_item</api:category>
 </api:call>
@@ -354,7 +415,7 @@
   <api:description>Put a single fulfillment by its external key</api:description>
   <api:method>PUT</api:method>
   <api:path>http://smartplatforms.org/records/{record_id}/fulfillments/external_id/{external_id}</api:path>
-  <api:target rdf:resource="http://smartplatforms.org/clinical#Fulfillment"/>
+  <api:target rdf:resource="http://smartplatforms.org/terms#Fulfillment"/>
   <api:by_internal_id>false</api:by_internal_id>
   <api:category>record_item</api:category>
 </api:call>
@@ -363,7 +424,7 @@
   <api:description>Get all fulfillments in the record.</api:description>
   <api:method>GET</api:method>
   <api:path>http://smartplatforms.org/records/{record_id}/fulfillments/</api:path>
-  <api:target rdf:resource="http://smartplatforms.org/clinical#Fulfillment"/>
+  <api:target rdf:resource="http://smartplatforms.org/terms#Fulfillment"/>
   <api:by_internal_id>true</api:by_internal_id>
   <api:category>record_items</api:category>
 </api:call>
@@ -372,7 +433,7 @@
   <api:description>Delete all fulfillments in the record.</api:description>
   <api:method>DELETE</api:method>
   <api:path>http://smartplatforms.org/records/{record_id}/fulfillments/</api:path>
-  <api:target rdf:resource="http://smartplatforms.org/clinical#Fulfillment"/>
+  <api:target rdf:resource="http://smartplatforms.org/terms#Fulfillment"/>
   <api:by_internal_id>true</api:by_internal_id>
   <api:category>record_items</api:category>
 </api:call>
@@ -381,7 +442,7 @@
   <api:description>Add fulfillments in the absence of a medication</api:description>
   <api:method>POST</api:method>
   <api:path>http://smartplatforms.org/records/{record_id}/fulfillments/</api:path>
-  <api:target rdf:resource="http://smartplatforms.org/clinical#Fulfillment"/>
+  <api:target rdf:resource="http://smartplatforms.org/terms#Fulfillment"/>
   <api:by_internal_id>true</api:by_internal_id>
   <api:category>record_items</api:category>
 </api:call>
@@ -391,8 +452,8 @@
   <api:description>View fulfillments for a given medication</api:description>
   <api:method>GET</api:method>
   <api:path>http://smartplatforms.org/records/{record_id}/medications/{medication_id}/fulfillments/</api:path>
-  <api:above rdf:resource="http://smartplatforms.org/clinical#Medication"/>
-  <api:target rdf:resource="http://smartplatforms.org/clinical#Fulfillment"/>
+  <api:above rdf:resource="http://smartplatforms.org/terms#Medication"/>
+  <api:target rdf:resource="http://smartplatforms.org/terms#Fulfillment"/>
   <api:by_internal_id>true</api:by_internal_id>
   <api:category>record_items</api:category>
 </api:call>
@@ -401,8 +462,8 @@
   <api:description>View fulfillments for a given medication</api:description>
   <api:method>DELETE</api:method>
   <api:path>http://smartplatforms.org/records/{record_id}/medications/{medication_id}/fulfillments/</api:path>
-  <api:above rdf:resource="http://smartplatforms.org/clinical#Medication"/>
-  <api:target rdf:resource="http://smartplatforms.org/clinical#Fulfillment"/>
+  <api:above rdf:resource="http://smartplatforms.org/terms#Medication"/>
+  <api:target rdf:resource="http://smartplatforms.org/terms#Fulfillment"/>
   <api:by_internal_id>true</api:by_internal_id>
   <api:category>record_items</api:category>
 </api:call>
@@ -411,8 +472,8 @@
   <api:description>GET fulfillment for a given medication by external key</api:description>
   <api:method>GET</api:method>
   <api:path>http://smartplatforms.org/records/{record_id}/medications/external_id/{med_external_id}/fulfillments/external_id/{external_id}</api:path>
-  <api:above rdf:resource="http://smartplatforms.org/clinical#Medication"/>
-  <api:target rdf:resource="http://smartplatforms.org/clinical#Fulfillment"/>
+  <api:above rdf:resource="http://smartplatforms.org/terms#Medication"/>
+  <api:target rdf:resource="http://smartplatforms.org/terms#Fulfillment"/>
   <api:by_internal_id>false</api:by_internal_id>
   <api:category>record_item</api:category>
 </api:call>
@@ -421,8 +482,8 @@
   <api:description>PUT fulfillment for a given medication by external key</api:description>
   <api:method>PUT</api:method>
   <api:path>http://smartplatforms.org/records/{record_id}/medications/external_id/{med_external_id}/fulfillments/external_id/{external_id}</api:path>
-  <api:above rdf:resource="http://smartplatforms.org/clinical#Medication"/>
-  <api:target rdf:resource="http://smartplatforms.org/clinical#Fulfillment"/>
+  <api:above rdf:resource="http://smartplatforms.org/terms#Medication"/>
+  <api:target rdf:resource="http://smartplatforms.org/terms#Fulfillment"/>
   <api:by_internal_id>false</api:by_internal_id>
   <api:category>record_item</api:category>
 </api:call>
@@ -431,22 +492,24 @@
   <api:description>Add fulfillments for a given medication</api:description>
   <api:method>POST</api:method>
   <api:path>http://smartplatforms.org/records/{record_id}/medications/{medication_id}/fulfillments/</api:path>
-  <api:above rdf:resource="http://smartplatforms.org/clinical#Medication"/>
-  <api:target rdf:resource="http://smartplatforms.org/clinical#Fulfillment"/>
+  <api:above rdf:resource="http://smartplatforms.org/terms#Medication"/>
+  <api:target rdf:resource="http://smartplatforms.org/terms#Fulfillment"/>
   <api:by_internal_id>true</api:by_internal_id>
   <api:category>record_items</api:category>
 </api:call>
-    <!-- http://smartplatforms.org/clinical#Medication -->
+    <!-- http://smartplatforms.org/terms#Medication -->
 
-    <owl:Class rdf:about="http://smartplatforms.org/clinical#Medication">
+    <owl:Class rdf:about="http://smartplatforms.org/terms#Medication">
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://smartplatforms.org/clinical/medication#drug"/>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#code"/>
                 <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
+                <owl:onClass rdf:resource="http://smartplatforms.org/terms#CodedValue"/>
+                <owl:minQualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</owl:minQualifiedCardinality>
                 <api:doc>
 					<rdf:Description>
-						<api:name>branded or clinical drug form (RxNorm tty=SCDF or tty=SBDF) concept ID in the RxNorm database. </api:name>
-						<api:description>http://link.informatics.stonybrook.edu/rxnorm/RXCUI/{RXCUI}</api:description>
+						<api:name>RxNorm code(tty=SCDF or tty=SBDF) for the this medication.</api:name>
+						<api:description>RDF CodedValue node with code drawn from http://link.informatics.stonybrook.edu/rxnorm/RXCUI/{RXCUI}</api:description>
 					</rdf:Description>
 				</api:doc>                
             </owl:Restriction>
@@ -465,7 +528,7 @@
         </rdfs:subClassOf> 
        <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://smartplatforms.org/clinical/medication#route"/>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#route"/>
                 <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
                 <api:doc>
 					<rdf:Description>
@@ -477,7 +540,7 @@
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://smartplatforms.org/clinical/medication#instructions"/>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#instructions"/>
                 <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
                 <api:doc>
 					<rdf:Description>
@@ -489,7 +552,7 @@
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://smartplatforms.org/clinical/medication#startDate"/>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#startDate"/>
                 <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
                 <api:doc>
 					<rdf:Description>
@@ -501,7 +564,7 @@
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://smartplatforms.org/clinical/medication#endDate"/>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#endDate"/>
                 <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
                 <api:doc>
 					<rdf:Description>
@@ -513,7 +576,7 @@
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://smartplatforms.org/clinical/medication#doseUnit"/>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#doseUnit"/>
                 <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
                 <api:doc>
 					<rdf:Description>
@@ -525,7 +588,7 @@
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://smartplatforms.org/clinical/medication#strength"/>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#strength"/>
                 <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
                 <api:doc>
 					<rdf:Description>
@@ -537,7 +600,7 @@
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://smartplatforms.org/clinical/medication#strengthUnit"/>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#strengthUnit"/>
                 <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
                 <api:doc>
 					<rdf:Description>
@@ -549,7 +612,7 @@
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://smartplatforms.org/clinical/medication#frequency"/>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#frequency"/>
                 <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
                 <api:doc>
 					<rdf:Description>
@@ -561,7 +624,7 @@
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://smartplatforms.org/clinical/medication#dose"/>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#dose"/>
                 <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
                 <api:doc>
 					<rdf:Description>
@@ -573,8 +636,8 @@
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://smartplatforms.org/clinical/medication#fulfillment"/>
-                <owl:onClass rdf:resource="http://smartplatforms.org/clinical#Fulfillment"/>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#fulfillment"/>
+                <owl:onClass rdf:resource="http://smartplatforms.org/terms#Fulfillment"/>
                 <owl:minQualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</owl:minQualifiedCardinality>
                 <api:doc>
 					<rdf:Description>
@@ -591,18 +654,25 @@
 
         <api:example rdf:datatype="http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
 <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-  xmlns:med="http://smartplatforms.org/clinical/medication#"
-  xmlns:dcterms="http://purl.org/dc/terms/"
-  xmlns:rxcui="http://link.informatics.stonybrook.edu/rxnorm/RXCUI/">
-   <rdf:Description>
-      <rdf:type rdf:resource="http://smartplatforms.org/clinical#Medication"/>
-      <med:drug rdf:resource="http://link.informatics.stonybrook.edu/rxnorm/RXCUI/856845"/>
+  xmlns:sp="http://smartplatforms.org/terms#"
+  xmlns:dcterms="http://purl.org/dc/terms/">
+   <sp:Medication>
+      <sp:code>
+        <sp:CodedValue>
+          <sp:code rdf:resource="http://link.informatics.stonybrook.edu/rxnorm/RXCUI/856845"/>
+          <dcterms:title>AMITRIPTYLINE HCL 50 MG TAB</dcterms:title>
+        </sp:CodedValue>
+      </sp:code>
+      <sp:drug rdf:resource="http://link.informatics.stonybrook.edu/rxnorm/RXCUI/856845"/>
       <dcterms:title>AMITRIPTYLINE HCL 50 MG TAB</dcterms:title>
-      <med:strength>50</med:strength>
-      <med:strengthUnits>mg</med:strengthUnits>
-      <med:startDate>2007-03-14</med:startDate>
-      <med:endDate>2007-08-14</med:endDate>
-   </rdf:Description>
+      <sp:strength>50</sp:strength>
+      <sp:strengthUnit>mg</sp:strengthUnit>
+      <sp:dose>2</sp:dose>
+      <sp:doseUnit>{tbl}</sp:doseUnit>
+      <sp:startDate>2007-03-14</sp:startDate>
+      <sp:endDate>2007-08-14</sp:endDate>
+      <sp:instructions>Take two tablets twice daily as needed for pain</sp:instructions>
+   </sp:Medication>
 </rdf:RDF>]]>
     </api:example>
     </owl:Class>
@@ -611,7 +681,7 @@
   <api:description>Get a single medication</api:description>
   <api:method>GET</api:method>
   <api:path>http://smartplatforms.org/records/{record_id}/medications/{medication_id}</api:path>
-  <api:target rdf:resource="http://smartplatforms.org/clinical#Medication"/>
+  <api:target rdf:resource="http://smartplatforms.org/terms#Medication"/>
   <api:by_internal_id>true</api:by_internal_id>
   <api:category>record_item</api:category>
 </api:call>
@@ -620,7 +690,7 @@
   <api:description>Delete a single medication</api:description>
   <api:method>DELETE</api:method>
   <api:path>http://smartplatforms.org/records/{record_id}/medications/{medication_id}</api:path>
-  <api:target rdf:resource="http://smartplatforms.org/clinical#Medication"/>
+  <api:target rdf:resource="http://smartplatforms.org/terms#Medication"/>
   <api:by_internal_id>true</api:by_internal_id>
   <api:category>record_item</api:category>
 </api:call>
@@ -629,7 +699,7 @@
   <api:description>Get a single medication</api:description>
   <api:method>GET</api:method>
   <api:path>http://smartplatforms.org/records/{record_id}/medications/external_id/{external_id}</api:path>
-  <api:target rdf:resource="http://smartplatforms.org/clinical#Medication"/>
+  <api:target rdf:resource="http://smartplatforms.org/terms#Medication"/>
   <api:by_internal_id>false</api:by_internal_id>
   <api:category>record_item</api:category>
 </api:call>
@@ -638,7 +708,7 @@
   <api:description>Delete a single medication</api:description>
   <api:method>DELETE</api:method>
   <api:path>http://smartplatforms.org/records/{record_id}/medications/external_id/{external_id}</api:path>
-  <api:target rdf:resource="http://smartplatforms.org/clinical#Medication"/>
+  <api:target rdf:resource="http://smartplatforms.org/terms#Medication"/>
   <api:by_internal_id>false</api:by_internal_id>
   <api:category>record_item</api:category>
 </api:call>
@@ -648,7 +718,7 @@
   <api:description>Put a single medication by its external key</api:description>
   <api:method>PUT</api:method>
   <api:path>http://smartplatforms.org/records/{record_id}/medications/external_id/{external_id}</api:path>
-  <api:target rdf:resource="http://smartplatforms.org/clinical#Medication"/>
+  <api:target rdf:resource="http://smartplatforms.org/terms#Medication"/>
   <api:by_internal_id>false</api:by_internal_id>
   <api:category>record_item</api:category>
 </api:call>
@@ -658,7 +728,7 @@
   <api:description>Get all medications for a given record</api:description>
   <api:method>GET</api:method>
   <api:path>http://smartplatforms.org/records/{record_id}/medications/</api:path>
-  <api:target rdf:resource="http://smartplatforms.org/clinical#Medication"/>
+  <api:target rdf:resource="http://smartplatforms.org/terms#Medication"/>
   <api:by_internal_id>true</api:by_internal_id>
   <api:category>record_items</api:category>
 </api:call>
@@ -668,7 +738,7 @@
   <api:description>Delete all medications from a given record</api:description>
   <api:method>DELETE</api:method>
   <api:path>http://smartplatforms.org/records/{record_id}/medications/</api:path>
-  <api:target rdf:resource="http://smartplatforms.org/clinical#Medication"/>
+  <api:target rdf:resource="http://smartplatforms.org/terms#Medication"/>
   <api:by_internal_id>true</api:by_internal_id>
   <api:category>record_items</api:category>
 </api:call>
@@ -678,18 +748,18 @@
   <api:description>Add medications to a given record</api:description>
   <api:method>POST</api:method>
   <api:path>http://smartplatforms.org/records/{record_id}/medications/</api:path>
-  <api:target rdf:resource="http://smartplatforms.org/clinical#Medication"/>
+  <api:target rdf:resource="http://smartplatforms.org/terms#Medication"/>
   <api:by_internal_id>true</api:by_internal_id>
   <api:category>record_items</api:category>
 </api:call>
 
 
-    <!-- http://smartplatforms.org/clinical#Note -->
+    <!-- http://smartplatforms.org/terms#Note -->
 
-    <owl:Class rdf:about="http://smartplatforms.org/clinical#Note">
+    <owl:Class rdf:about="http://smartplatforms.org/terms#Note">
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://smartplatforms.org/clinical#notes"/>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#notes"/>
                 <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
                 <api:doc>
 					<rdf:Description>
@@ -701,8 +771,8 @@
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://smartplatforms.org/provider"/>
-                <owl:onClass rdf:resource="http://smartplatforms.org/anonymous_types/provider"/>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#provider"/>
+                <owl:onClass rdf:resource="http://smartplatforms.org/terms#Provider"/>
                 <owl:minQualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</owl:minQualifiedCardinality>
                 <api:doc>
 					<rdf:Description>
@@ -714,11 +784,11 @@
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://smartplatforms.org/clinical#dayOfVisit"/>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#timeOfVisit"/>
                 <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
                 <api:doc>
 					<rdf:Description>
-						<api:name>Date of visit to which the note refers</api:name>
+						<api:name>Time of visit to which the note refers</api:name>
 						<api:description>ISO-8601 string </api:description>
 					</rdf:Description>
 				</api:doc>
@@ -733,21 +803,25 @@
 <rdf:RDF
   xmlns:dcterms="http://purl.org/dc/terms/"
   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-  xmlns:sp="http://smartplatforms.org/"
+  xmlns:sp="http://smartplatforms.org/terms#"
   xmlns:foaf="http://xmlns.com/foaf/0.1/">
-	<rdf:Description>
-	   <rdf:type rdf:resource="http://smartplatforms.org/clinical#Note"/>
-           <sp:dateOfVisit>2010-08-01</sp:dateOfVisit>
+	<sp:Note>
+       <sp:timeOfVisit>2010-08-01</sp:timeOfVisit>
 	   <sp:provider>
-	   	  <rdf:Description>
-             <foaf:Person><rdf:Description><foaf:name>Joshua Mandel</foaf:name></rdf:Description></foaf:Person>
-             <foaf:Organization><rdf:Description><foaf:name>Children's Hospital Boston</foaf:name></rdf:Description></foaf:Organization>
-	   	  </rdf:Description>
+	     <sp:Provider>
+          <sp:npi>5235235</sp:npi>
+          <sp:dea>325555555</sp:dea>
+          <sp:person>
+            <sp:Person>
+              <foaf:name>Joshua Mandel</foaf:name>
+            </sp:Person>				
+          </sp:person>
+         </sp:Provider>
   	   </sp:provider>
 	   <sp:notes>
                 Patient presented to the clinic with one week history of increasing left knee pain.  The pain started after an unusually long jog, one week prior to today's visit.  At that time ibuprofen and tylenol provided moderate relief.  Naproxen was not tried.
 	   </sp:notes>
-	</rdf:Description>
+	</sp:Note>
 </rdf:RDF>]]>
     </api:example>
  </owl:Class>
@@ -756,7 +830,7 @@
   <api:description>Get a single note</api:description>
   <api:method>GET</api:method>
   <api:path>http://smartplatforms.org/records/{record_id}/notes/{note_id}</api:path>
-  <api:target rdf:resource="http://smartplatforms.org/clinical#Note"/>
+  <api:target rdf:resource="http://smartplatforms.org/terms#Note"/>
   <api:by_internal_id>true</api:by_internal_id>
   <api:category>record_item</api:category>
 </api:call>
@@ -765,7 +839,7 @@
   <api:description>Delete a single note</api:description>
   <api:method>DELETE</api:method>
   <api:path>http://smartplatforms.org/records/{record_id}/notes/{note_id}</api:path>
-  <api:target rdf:resource="http://smartplatforms.org/clinical#Note"/>
+  <api:target rdf:resource="http://smartplatforms.org/terms#Note"/>
   <api:by_internal_id>true</api:by_internal_id>
   <api:category>record_item</api:category>
 </api:call>
@@ -774,7 +848,7 @@
   <api:description>Get a single note</api:description>
   <api:method>GET</api:method>
   <api:path>http://smartplatforms.org/records/{record_id}/notes/external_id/{external_id}</api:path>
-  <api:target rdf:resource="http://smartplatforms.org/clinical#Note"/>
+  <api:target rdf:resource="http://smartplatforms.org/terms#Note"/>
   <api:by_internal_id>false</api:by_internal_id>
   <api:category>record_item</api:category>
 </api:call>
@@ -783,7 +857,7 @@
   <api:description>Delete a single note</api:description>
   <api:method>DELETE</api:method>
   <api:path>http://smartplatforms.org/records/{record_id}/notes/external_id/{external_id}</api:path>
-  <api:target rdf:resource="http://smartplatforms.org/clinical#Note"/>
+  <api:target rdf:resource="http://smartplatforms.org/terms#Note"/>
   <api:by_internal_id>false</api:by_internal_id>
   <api:category>record_item</api:category>
 </api:call>
@@ -793,7 +867,7 @@
   <api:description>Put a single note by its external key</api:description>
   <api:method>PUT</api:method>
   <api:path>http://smartplatforms.org/records/{record_id}/notes/external_id/{external_id}</api:path>
-  <api:target rdf:resource="http://smartplatforms.org/clinical#Note"/>
+  <api:target rdf:resource="http://smartplatforms.org/terms#Note"/>
   <api:by_internal_id>false</api:by_internal_id>
   <api:category>record_item</api:category>
 </api:call>
@@ -803,7 +877,7 @@
   <api:description>Get all notes for a given record</api:description>
   <api:method>GET</api:method>
   <api:path>http://smartplatforms.org/records/{record_id}/notes/</api:path>
-  <api:target rdf:resource="http://smartplatforms.org/clinical#Note"/>
+  <api:target rdf:resource="http://smartplatforms.org/terms#Note"/>
   <api:by_internal_id>true</api:by_internal_id>
   <api:category>record_items</api:category>
 </api:call>
@@ -813,7 +887,7 @@
   <api:description>Delete all notes from a given record</api:description>
   <api:method>DELETE</api:method>
   <api:path>http://smartplatforms.org/records/{record_id}/notes/</api:path>
-  <api:target rdf:resource="http://smartplatforms.org/clinical#Note"/>
+  <api:target rdf:resource="http://smartplatforms.org/terms#Note"/>
   <api:by_internal_id>true</api:by_internal_id>
   <api:category>record_items</api:category>
 </api:call>
@@ -823,18 +897,18 @@
   <api:description>Add notes to a given record</api:description>
   <api:method>POST</api:method>
   <api:path>http://smartplatforms.org/records/{record_id}/notes/</api:path>
-  <api:target rdf:resource="http://smartplatforms.org/clinical#Note"/>
+  <api:target rdf:resource="http://smartplatforms.org/terms#Note"/>
   <api:by_internal_id>true</api:by_internal_id>
   <api:category>record_items</api:category>
 </api:call>
 
 
-    <!-- http://smartplatforms.org/clinical#Problem -->
+    <!-- http://smartplatforms.org/terms#Problem -->
 
-    <owl:Class rdf:about="http://smartplatforms.org/clinical#Problem">
+    <owl:Class rdf:about="http://smartplatforms.org/terms#Problem">
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://smartplatforms.org/clinical#notes"/>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#notes"/>
                 <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
                 <api:doc>
 					<rdf:Description>
@@ -846,19 +920,20 @@
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://smartplatforms.org/clinical/problem#code"/>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#code"/>
                 <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
+                <owl:onClass rdf:resource="http://smartplatforms.org/terms#CodedValue"/>                
                 <api:doc>
 					<rdf:Description>
 						<api:name>SNOMED-CT Concept for the problem</api:name>
-						<api:description>http://www.ihtsdo.org/snomed-ct/concepts/{concept_id}</api:description>
+						<api:description>CodedValue node referencing http://www.ihtsdo.org/snomed-ct/concepts/{concept_id}</api:description>
 					</rdf:Description>
 				</api:doc>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://smartplatforms.org/clinical/problem#resolution"/>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#resolution"/>
                 <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
                 <api:doc>
 					<rdf:Description>
@@ -882,7 +957,7 @@
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://smartplatforms.org/clinical/problem#onset"/>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#onset"/>
                 <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
                 <api:doc>
 					<rdf:Description>
@@ -900,15 +975,17 @@
 <rdf:RDF
   xmlns:dcterms="http://purl.org/dc/terms/"
   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-  xmlns:sp="http://smartplatforms.org/"
-  xmlns:snomedct="http://www.ihtsdo.org/snomed-ct/">
-	<rdf:Description>
-      <rdf:type rdf:resource="http://smartplatforms.org/clinical#Problem"/>
-      <dcterms:title>Backache (finding)</dcterms:title>
-      <snomedct:concept rdf:resource="http://www.ihtsdo.org/snomed-ct/concepts/161891005"/>
+  xmlns:sp="http://smartplatforms.org/terms#" >
+    <sp:Problem>
+      <sp:code>
+        <sp:CodedValue>
+          <sp:code rdf:resource="http://www.ihtsdo.org/snomed-ct/concepts/161891005"/>
+          <dcterms:title>Backache (finding)</dcterms:title>      
+        </sp:CodedValue>
+      </sp:code>
       <sp:onset>2007-06-12</sp:onset>
       <sp:resolution>2007-08-01</sp:resolution>
-	</rdf:Description>
+    </sp:Problem>
 </rdf:RDF>]]>
     </api:example>
 </owl:Class>
@@ -918,7 +995,7 @@
   <api:description>Get a single problem</api:description>
   <api:method>GET</api:method>
   <api:path>http://smartplatforms.org/records/{record_id}/problems/{problem_id}</api:path>
-  <api:target rdf:resource="http://smartplatforms.org/clinical#Problem"/>
+  <api:target rdf:resource="http://smartplatforms.org/terms#Problem"/>
   <api:by_internal_id>true</api:by_internal_id>
   <api:category>record_item</api:category>
 </api:call>
@@ -927,7 +1004,7 @@
   <api:description>Delete a single problem</api:description>
   <api:method>DELETE</api:method>
   <api:path>http://smartplatforms.org/records/{record_id}/problems/{problem_id}</api:path>
-  <api:target rdf:resource="http://smartplatforms.org/clinical#Problem"/>
+  <api:target rdf:resource="http://smartplatforms.org/terms#Problem"/>
   <api:by_internal_id>true</api:by_internal_id>
   <api:category>record_item</api:category>
 </api:call>
@@ -936,7 +1013,7 @@
   <api:description>Get a single problem</api:description>
   <api:method>GET</api:method>
   <api:path>http://smartplatforms.org/records/{record_id}/problems/external_id/{external_id}</api:path>
-  <api:target rdf:resource="http://smartplatforms.org/clinical#Problem"/>
+  <api:target rdf:resource="http://smartplatforms.org/terms#Problem"/>
   <api:by_internal_id>false</api:by_internal_id>
   <api:category>record_item</api:category>
 </api:call>
@@ -945,7 +1022,7 @@
   <api:description>Delete a single problem</api:description>
   <api:method>DELETE</api:method>
   <api:path>http://smartplatforms.org/records/{record_id}/problems/external_id/{external_id}</api:path>
-  <api:target rdf:resource="http://smartplatforms.org/clinical#Problem"/>
+  <api:target rdf:resource="http://smartplatforms.org/terms#Problem"/>
   <api:by_internal_id>false</api:by_internal_id>
   <api:category>record_item</api:category>
 </api:call>
@@ -955,7 +1032,7 @@
   <api:description>Put a single problem by its external key</api:description>
   <api:method>PUT</api:method>
   <api:path>http://smartplatforms.org/records/{record_id}/problems/external_id/{external_id}</api:path>
-  <api:target rdf:resource="http://smartplatforms.org/clinical#Problem"/>
+  <api:target rdf:resource="http://smartplatforms.org/terms#Problem"/>
   <api:by_internal_id>false</api:by_internal_id>
   <api:category>record_item</api:category>
 </api:call>
@@ -965,7 +1042,7 @@
   <api:description>Get all problems for a given record</api:description>
   <api:method>GET</api:method>
   <api:path>http://smartplatforms.org/records/{record_id}/problems/</api:path>
-  <api:target rdf:resource="http://smartplatforms.org/clinical#Problem"/>
+  <api:target rdf:resource="http://smartplatforms.org/terms#Problem"/>
   <api:by_internal_id>true</api:by_internal_id>
   <api:category>record_items</api:category>
 </api:call>
@@ -975,7 +1052,7 @@
   <api:description>Delete all problems from a given record</api:description>
   <api:method>DELETE</api:method>
   <api:path>http://smartplatforms.org/records/{record_id}/problems/</api:path>
-  <api:target rdf:resource="http://smartplatforms.org/clinical#Problem"/>
+  <api:target rdf:resource="http://smartplatforms.org/terms#Problem"/>
   <api:by_internal_id>true</api:by_internal_id>
   <api:category>record_items</api:category>
 </api:call>
@@ -985,12 +1062,10 @@
   <api:description>Add problems to a given record</api:description>
   <api:method>POST</api:method>
   <api:path>http://smartplatforms.org/records/{record_id}/problems/</api:path>
-  <api:target rdf:resource="http://smartplatforms.org/clinical#Problem"/>
+  <api:target rdf:resource="http://smartplatforms.org/terms#Problem"/>
   <api:by_internal_id>true</api:by_internal_id>
   <api:category>record_items</api:category>
 </api:call>
-
-
 
     <!-- http://smartplatforms.org/demographics -->
     <owl:Class rdf:about="http://xmlns.com/foaf/0.1/Person">
@@ -1026,7 +1101,7 @@
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://smartplatforms.org/clinical/demographics#zipcode"/>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#zipcode"/>
                 <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
                 <api:doc>
 					<rdf:Description>
@@ -1038,7 +1113,7 @@
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://smartplatforms.org/clinical/demographics#birthday"/>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#birthday"/>
                 <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
                 <api:doc>
 					<rdf:Description>
@@ -1055,16 +1130,15 @@
         <api:example rdf:datatype="http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
 <rdf:RDF
   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-  xmlns:sp="http://smartplatforms.org/"
-  xmlns:spdemo="http://smartplatforms.org/demographics/"
+  xmlns:sp="http://smartplatforms.org/terms#"
   xmlns:foaf="http://xmlns.com/foaf/0.1/">
    <rdf:Description rdf:about="http://smartplatforms.org/records/2000000008/demographics">
      <rdf:type rdf:resource="http://xmlns.com/foaf/0.1/Person"/>
      <foaf:givenName>Bob</foaf:givenName>
      <foaf:familyName>Odenkirk</foaf:familyName>
      <foaf:gender>male</foaf:gender>
-     <spdemo:zipcode>90001</spdemo:zipcode>
-     <spdemo:birthday>1959-12-25</spdemo:birthday>
+     <sp:zipcode>90001</sp:zipcode>
+     <sp:birthday>1959-12-25</sp:birthday>
    </rdf:Description>
 </rdf:RDF>]]>
     </api:example>
@@ -1088,17 +1162,18 @@
   <api:category>record_items</api:category>
 </api:call>
 
-    <!-- http://smartplatforms.org/user -->
+    <!-- http://smartplatforms.org/terms#User -->
 
-  <owl:Class rdf:about="http://smartplatforms.org/user">
+  <owl:Class rdf:about="http://smartplatforms.org/terms#User">
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://xmlns.com/foaf/0.1/givenName"/>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#person"/>
+                <owl:onClass rdf:resource="http://smartplatforms.org/terms#Person"/>
                 <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
                 <api:doc>
 					<rdf:Description>
-						<api:name>A user's given, or first, name</api:name>
-						<api:description>Free text</api:description>
+						<api:name>Person represented by this user</api:name>
+						<api:description>RDF Person node</api:description>
 					</rdf:Description>
 				</api:doc>
             </owl:Restriction>
@@ -1106,33 +1181,7 @@
 
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://xmlns.com/foaf/0.1/familyName"/>
-                <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
-                <api:doc>
-					<rdf:Description>
-						<api:name>A user's family, or last, name</api:name>
-						<api:description>Free text</api:description>
-					</rdf:Description>
-				</api:doc>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://xmlns.com/foaf/0.1/mbox"/>
-                <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
-                <api:doc>
-					<rdf:Description>
-						<api:name>A user's email address</api:name>
-						<api:description>mailto:{address}</api:description>
-					</rdf:Description>
-				</api:doc>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://smartplatforms.org/core#department"/>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#department"/>
                 <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
                 <api:doc>
 					<rdf:Description>
@@ -1145,7 +1194,7 @@
 
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://smartplatforms.org/core#role"/>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#role"/>
                 <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
                 <api:doc>
 					<rdf:Description>
@@ -1161,12 +1210,16 @@
      <api:base_path>http://smartplatforms.org/users/{user_id}</api:base_path>
         <api:example rdf:datatype="http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
 <rdf:Description rdf:about="http://smartplatforms.org/users/{record_id}">
-      <rdf:type rdf:resource="http://smartplatforms.org/user"/>
-      <foaf:givenName>Joshua</foaf:givenName>
-      <foaf:familyName>Mandel</foaf:familyName>
+      <rdf:type rdf:resource="http://smartplatforms.org/terms#User"/>
+      <sp:person>
+       <sp:Person>      
+        <foaf:givenName>Joshua</foaf:givenName>
+        <foaf:familyName>Mandel</foaf:familyName>
+        <foaf:mbox>mailto:joshua._nospam_mandel@childrens.harvard.edu</foaf:mbox>
+	   </sp:Person>
+	  </sp:person>
       <sp:department>Emergency Medicine</sp:department>
       <sp:role>Staff Scientist</sp:role>
-      <foaf:mbox>mailto:joshua.mandel@childrens.harvard.edu</foaf:mbox>
    </rdf:Description>
 ]]></api:example>
   </owl:Class>
@@ -1175,7 +1228,7 @@
   <api:description>Find users by name (or all users if blank)</api:description>
   <api:method>GET</api:method>
   <api:path>http://smartplatforms.org/users/search?givenName={givenName}&amp;familyName={familyName}</api:path>
-  <api:target rdf:resource="http://smartplatforms.org/user"/>
+  <api:target rdf:resource="http://smartplatforms.org/terms#User"/>
   <api:category>container_items</api:category>
 </api:call>
 
@@ -1183,17 +1236,17 @@
   <api:description>Get a single user by internal ID</api:description>
   <api:method>GET</api:method>
   <api:path>http://smartplatforms.org/users/{user_id}</api:path>
-  <api:target rdf:resource="http://smartplatforms.org/user"/>
+  <api:target rdf:resource="http://smartplatforms.org/terms#User"/>
   <api:category>container_item</api:category>
 </api:call>
 
 
-    <!-- http://smartplatforms.org/core#Container -->
+    <!-- http://smartplatforms.org/terms#Container -->
 
-  <owl:Class rdf:about="http://smartplatforms.org/core#Container">
+  <owl:Class rdf:about="http://smartplatforms.org/terms#Container">
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://smartplatforms.org/core#capability"/>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#capability"/>
                 <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
                 <api:doc>
 					<rdf:Description>
@@ -1214,9 +1267,9 @@
 <api:base_path>http://smartplatforms.org/capabilities/</api:base_path>        
         <api:example rdf:datatype="http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
 <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-         xmlns:sp="http://smartplatforms.org/">
+         xmlns:sp="http://smartplatforms.org/terms#">
   <rdf:Description rdf:about="http://localhost:7000">
-    <rdf:type rdf:resource="http://smartplatforms.org/container"/>
+    <rdf:type rdf:resource="http://smartplatforms.org/terms#Container"/>
     <sp:capability rdf:resource="http://smartplatforms.org/capability/SNOMED/lookup"/>
     <sp:capability rdf:resource="http://smartplatforms.org/capability/SPL/lookup"/>
     <sp:capability rdf:resource="http://smartplatforms.org/capability/Pillbox/lookup"/>
@@ -1229,143 +1282,47 @@
   <api:description>Get a list of all auxiliiary container capabilities</api:description>
   <api:method>GET</api:method>
   <api:path>http://smartplatforms.org/capabilities/</api:path>
-  <api:target rdf:resource="http://smartplatforms.org/core#Container"/>
+  <api:target rdf:resource="http://smartplatforms.org/terms#Container"/>
   <api:category>container_items</api:category>
 </api:call>
 
 
     <!-- http://smartplatforms.org/ontology -->
 
-  <owl:Class rdf:about="http://smartplatforms.org/core#Ontology">
+  <owl:Class rdf:about="http://smartplatforms.org/terms#Ontology">
      <api:name>Ontology</api:name>
      <api:name_plural>Ontologies</api:name_plural>
      <api:description>An OWL ontology representing SMArt data types + API calls</api:description>
      <api:base_path>http://smartplatforms.org/ontology</api:base_path>
-     <api:example rdf:datatype="http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral">(Not Provided.)</api:example>
+     <api:example rdf:datatype="http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral">See: http://sandbox-api.smartplatforms.org/ontology</api:example>
   </owl:Class>
 
 <api:call>
   <api:description>Retrieve ontology used by a SMArt container</api:description>
   <api:method>GET</api:method>
   <api:path>http://smartplatforms.org/ontology</api:path>
-  <api:target rdf:resource="http://smartplatforms.org/core#Ontology"/>
+  <api:target rdf:resource="http://smartplatforms.org/terms#Ontology"/>
   <api:category>container_item</api:category>
 </api:call>
+    <!-- http://smartplatforms.org/terms#Pharmacy -->
 
-    <!-- http://smartplatforms.org/anonymous_types/allergen -->
-
-    <owl:Class rdf:about="http://smartplatforms.org/anonymous_types/allergen">
+    <owl:Class rdf:about="http://smartplatforms.org/terms#Pharmacy">
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://smartplatforms.org/clinical/allergy#category"/>
-                <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
-                <api:doc>
-				  <rdf:Description>
-					<api:name>Category of an allergy</api:name>
-					<api:description>One of:  http://smartplatforms.org/clinical#Allergy/category/food  http://smartplatforms.org/clinical#Allergy/category/drug  http://smartplatforms.org/clinical#Allergy/category/environmental</api:description>
-				  </rdf:Description>
-				</api:doc>
-                
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://smartplatforms.org/clinical/allergy#substance"/>
-                <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
-                <api:doc>
-				  <rdf:Description>
-					<api:name>Substance acting as an allergen</api:name>
-					<api:description>For drugs, substance is an RxNorm Concept URI:  http://link.informatics.stonybrook.edu/rxnorm/RXCUI/{RXCUI} ; 
-					For environmental and food substance is a UNII:  http://fda.gov/UNII/{UNII}</api:description>
-				  </rdf:Description>
-				</api:doc>            
-                	
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://purl.org/dc/terms/title"/>
-                <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
-                <api:doc>
-				  <rdf:Description>
-					<api:name>Display name of an allergen</api:name>
-					<api:description>Free text</api:description>
-				  </rdf:Description>
-				</api:doc>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-    </owl:Class>
-
-
-    <!-- http://smartplatforms.org/anonymous_types/foafOrganization -->
-
-    <owl:Class rdf:about="http://smartplatforms.org/anonymous_types/foafOrganization">
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://xmlns.com/foaf/0.1/name"/>
-                <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
-                <api:doc>
-					<rdf:Description>
-						<api:name>Name of the organization</api:name>
-						<api:description>Free text</api:description>
-					</rdf:Description>
-				</api:doc>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-    </owl:Class>
-    
-
-
-    <!-- http://smartplatforms.org/anonymous_types/foafPerson -->
-
-    <owl:Class rdf:about="http://smartplatforms.org/anonymous_types/foafPerson">
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://xmlns.com/foaf/0.1/name"/>
-                <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
-                <api:doc>
-					<rdf:Description>
-						<api:name>Name of the person</api:name>
-						<api:description>Free text</api:description>
-					</rdf:Description>
-				</api:doc>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-    </owl:Class>
-    
-
-
-    <!-- http://smartplatforms.org/anonymous_types/pharmacy -->
-
-    <owl:Class rdf:about="http://smartplatforms.org/anonymous_types/pharmacy">
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://www.w3.org/2006/vcard/ns#adr"/>
-                <owl:onClass rdf:resource="http://smartplatforms.org/anonymous_types/vcard"/>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#organization"/>
+                <owl:onClass rdf:resource="http://smartplatforms.org/terms#Organization"/>
                 <owl:minQualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</owl:minQualifiedCardinality>
                 <api:doc>
 					<rdf:Description>
-						<api:name>Street address of the pharmacy</api:name>
-						<api:description>RDF vcard node (see below)</api:description>
+						<api:name>Organization represented by teh pharmacy</api:name>
+						<api:description>RDF Organization node</api:description>
 					</rdf:Description>
 				</api:doc>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://purl.org/dc/terms/title"/>
-                <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
-                <api:doc>
-					<rdf:Description>
-						<api:name>Name of the pharmacy</api:name>
-						<api:description>Free text</api:description>
-					</rdf:Description>
-				</api:doc>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://smartplatforms.org/clinical/medication#NCPDPID"/>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#ncpdpid"/>
                 <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
                 <api:doc>
 					<rdf:Description>
@@ -1379,56 +1336,13 @@
     
 
 
-    <!-- http://smartplatforms.org/anonymous_types/prescriber -->
+    <!-- http://smartplatforms.org/terms#Provider -->
 
-    <owl:Class rdf:about="http://smartplatforms.org/anonymous_types/prescriber">
+    <owl:Class rdf:about="http://smartplatforms.org/terms#Provider">
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://smartplatforms.org/clinical#NPI"/>
-                <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
-                <api:doc>
-					<rdf:Description>
-						<api:name>NPI of the provider</api:name>
-						<api:description>Free text</api:description>
-					</rdf:Description>
-				</api:doc>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://purl.org/dc/terms/title"/>
-                <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
-                <api:doc>
-					<rdf:Description>
-						<api:name>Name of the provider</api:name>
-						<api:description>Free text</api:description>
-					</rdf:Description>
-				</api:doc>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://smartplatforms.org/clinical#DEA"/>
-                <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
-                <api:doc>
-					<rdf:Description>
-						<api:name>DEA number of the provider</api:name>
-						<api:description>Free text</api:description>
-					</rdf:Description>
-				</api:doc>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-    </owl:Class>
-    
-
-
-    <!-- http://smartplatforms.org/anonymous_types/provider -->
-
-    <owl:Class rdf:about="http://smartplatforms.org/anonymous_types/provider">
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://xmlns.com/foaf/0.1/Person"/>
-                <owl:onClass rdf:resource="http://smartplatforms.org/anonymous_types/foafPerson"/>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#person"/>
+                <owl:onClass rdf:resource="http://smartplatforms.org/terms#Person"/>
                 <owl:minQualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</owl:minQualifiedCardinality>
                 <api:doc>
 					<rdf:Description>
@@ -1442,7 +1356,7 @@
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://xmlns.com/foaf/0.1/Organization"/>
-                <owl:onClass rdf:resource="http://smartplatforms.org/anonymous_types/foafOrganization"/>
+                <owl:onClass rdf:resource="http://smartplatforms.org/terms#Organization"/>
                 <owl:minQualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</owl:minQualifiedCardinality>
                 <api:doc>
 					<rdf:Description>
@@ -1450,76 +1364,45 @@
 						<api:description>RDF Organization node (see below)</api:description>
 					</rdf:Description>
 				</api:doc>
-
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#dea"/>
+                <api:doc>
+					<rdf:Description>
+						<api:name>DEA Number of provider</api:name>
+						<api:description>Free text</api:description>
+					</rdf:Description>
+				</api:doc>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#npi"/>
+                <api:doc>
+					<rdf:Description>
+						<api:name>NPI Number of provider</api:name>
+						<api:description>Free text</api:description>
+					</rdf:Description>
+				</api:doc>
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
     
 
 
-    <!-- http://smartplatforms.org/anonymous_types/vcard -->
-
-    <owl:Class rdf:about="http://smartplatforms.org/anonymous_types/vcard">
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://www.w3.org/2006/vcard/ns#street-address"/>
-                <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
-                <api:doc>
-					<rdf:Description>
-						<api:name>Street address</api:name>
-						<api:description>Free text</api:description>
-					</rdf:Description>
-				</api:doc>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://www.w3.org/2006/vcard/ns#postal-code"/>
-                <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
-                <api:doc>
-					<rdf:Description>
-						<api:name>Postal code</api:name>
-						<api:description>Free text</api:description>
-					</rdf:Description>
-				</api:doc>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://www.w3.org/2006/vcard/ns#country-name"/>
-                <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
-                <api:doc>
-					<rdf:Description>
-						<api:name>Country name</api:name>
-						<api:description>Free text</api:description>
-					</rdf:Description>
-				</api:doc>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://www.w3.org/2006/vcard/ns#locality"/>
-                <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
-                <api:doc>
-					<rdf:Description>
-						<api:name>City name</api:name>
-						<api:description>Free text</api:description>
-					</rdf:Description>
-				</api:doc>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-    </owl:Class>
     
 <!-- NEW LAB TYPES BELOW -->
 
-    <!-- http://smartplatforms.org/clinical#LabResultPanel -->
+    <!-- http://smartplatforms.org/terms#LabResultPanel -->
 
-    <owl:Class rdf:about="http://smartplatforms.org/clinical#LabResultPanel">
+    <owl:Class rdf:about="http://smartplatforms.org/terms#LabResultPanel">
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://smartplatforms.org/clinical/lab#loincCode"/>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#loincCode"/>
                 <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
-                <owl:onClass rdf:resource="http://smartplatforms.org/core#CodedValue"/>
+                <owl:onClass rdf:resource="http://smartplatforms.org/terms#CodedValue"/>
                 <api:doc>
 					<rdf:Description>
 						<api:name>LOINC Coded Value for the result panel, if any</api:name>
@@ -1530,9 +1413,9 @@
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://smartplatforms.org/clinical/lab#labResult"/>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#labResult"/>
                 <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
-                <owl:onClass rdf:resource="http://smartplatforms.org/clinical#LabResult"/>
+                <owl:onClass rdf:resource="http://smartplatforms.org/terms#LabResult"/>
                 <api:doc>
 					<rdf:Description>
 						<api:name>An individual result belonging to this panel</api:name>
@@ -1546,19 +1429,18 @@
      <api:base_path>http://smartplatforms.org/records/{record_id}/lab_result_panels/{lab_result_panel_id}</api:base_path>
      <api:description>In RDF/XML, a CBC looks like this: </api:description>
         <api:example rdf:datatype="http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
-No example yet.]]>
-    </api:example>
+No example yet.]]></api:example>
 
     </owl:Class>
 
-    <!-- http://smartplatforms.org/clinical#LabResult -->
+    <!-- http://smartplatforms.org/terms#LabResult -->
 
-    <owl:Class rdf:about="http://smartplatforms.org/clinical#LabResult">
+    <owl:Class rdf:about="http://smartplatforms.org/terms#LabResult">
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://smartplatforms.org/clinical/lab#loincCode"/>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#loincCode"/>
                 <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
-                <owl:onClass rdf:resource="http://smartplatforms.org/core#CodedValue"/>
+                <owl:onClass rdf:resource="http://smartplatforms.org/terms#CodedValue"/>
                 <api:doc>
 					<rdf:Description>
 						<api:name>LOINC Coded Value for result (e.g. with title='Serum Sodium' and code=http://loinc.org/codes/2951-2 </api:name>
@@ -1569,9 +1451,9 @@ No example yet.]]>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://smartplatforms.org/clinical/lab#qualitativeResult"/>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#qualitativeResult"/>
                 <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
-                <owl:onClass rdf:resource="http://smartplatforms.org/clinical#QualitativeResult"/>
+                <owl:onClass rdf:resource="http://smartplatforms.org/terms#QualitativeResult"/>
                 <api:doc>
 					<rdf:Description>
 						<api:name>Qualitative result, if any</api:name>
@@ -1582,9 +1464,9 @@ No example yet.]]>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://smartplatforms.org/clinical/lab#quantitativeResult"/>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#quantitativeResult"/>
                 <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
-                <owl:onClass rdf:resource="http://smartplatforms.org/clinical#QuantitativeResult"/>
+                <owl:onClass rdf:resource="http://smartplatforms.org/terms#QuantitativeResult"/>
                 <api:doc>
 					<rdf:Description>
 						<api:name>Qualitative result, if any</api:name>
@@ -1595,7 +1477,7 @@ No example yet.]]>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://smartplatforms.org/clinical/lab#externalID"/>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#externalID"/>
                 <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
                 <api:doc>
 					<rdf:Description>
@@ -1607,35 +1489,35 @@ No example yet.]]>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://smartplatforms.org/clinical/lab#status"/>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#status"/>
                 <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
-                <owl:onClass rdf:resource="http://smartplatforms.org/core#CodedValue"/>
+                <owl:onClass rdf:resource="http://smartplatforms.org/terms#CodedValue"/>
                 <api:doc>
 					<rdf:Description>
 						<api:name>Status of this lab</api:name>
-						<api:description>RDF CodedValue node, drawn from http://smartplatforms.org/core/code/LabResultStatus#</api:description>
+						<api:description>RDF CodedValue node, drawn from http://smartplatforms.org/terms/code/LabResultStatus#</api:description>
 					</rdf:Description>
 				</api:doc>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://smartplatforms.org/clinical/lab#abnormalInterpretation"/>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#abnormalInterpretation"/>
                 <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
-                <owl:onClass rdf:resource="http://smartplatforms.org/core#CodedValue"/>
+                <owl:onClass rdf:resource="http://smartplatforms.org/terms#CodedValue"/>
                 <api:doc>
 					<rdf:Description>
 						<api:name>Abnormal interpretation status for this lab</api:name>
-						<api:description>RDF CodedValue node, drawn from http://smartplatforms.org/core/code/LabResultInterpretation#</api:description>
+						<api:description>RDF CodedValue node, drawn from http://smartplatforms.org/terms/code/LabResultInterpretation#</api:description>
 					</rdf:Description>
 				</api:doc>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://smartplatforms.org/clinical/lab#specimenCollected"/>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#specimenCollected"/>
                 <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
-                <owl:onClass rdf:resource="http://smartplatforms.org/core#Attribution"/>
+                <owl:onClass rdf:resource="http://smartplatforms.org/terms#Attribution"/>
                 <api:doc>
 					<rdf:Description>
 						<api:name>Attribution for who collected the specimen for this result, and when</api:name>
@@ -1646,9 +1528,9 @@ No example yet.]]>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://smartplatforms.org/clinical/lab#specimenReceived"/>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#specimenReceived"/>
                 <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
-                <owl:onClass rdf:resource="http://smartplatforms.org/core#Attribution"/>
+                <owl:onClass rdf:resource="http://smartplatforms.org/terms#Attribution"/>
                 <api:doc>
 					<rdf:Description>
 						<api:name>Attribution for who received the specimen for this result, and when</api:name>
@@ -1659,9 +1541,9 @@ No example yet.]]>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://smartplatforms.org/clinical/lab#resulted"/>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#resulted"/>
                 <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
-                <owl:onClass rdf:resource="http://smartplatforms.org/core#Attribution"/>
+                <owl:onClass rdf:resource="http://smartplatforms.org/terms#Attribution"/>
                 <api:doc>
 					<rdf:Description>
 						<api:name>Attribution for who determined this result from the specimen, and when</api:name>
@@ -1672,7 +1554,7 @@ No example yet.]]>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://smartplatforms.org/clinical/lab#comments"/>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#comments"/>
                 <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
                 <api:doc>
 					<rdf:Description>
@@ -1687,176 +1569,176 @@ No example yet.]]>
      <api:base_path>http://smartplatforms.org/records/{record_id}/lab_results/{lab_result_id}</api:base_path>
      <api:description>In RDF/XML, a serum sodium result looks like this: </api:description>
         <api:example rdf:datatype="http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
-<rdf:RDF xmlns:sp="http://smartplatforms.org/" 
+<rdf:RDF xmlns:sp="http://smartplatforms.org/terms#" 
   xmlns:dcterms="http://purl.org/dc/terms/" 
   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" 
   xmlns:foaf="http://xmlns.com/foaf/0.1/"
   xmlns:v="http://www.w3.org/2006/vcard/ns#"
-  xmlns:clin="http://smartplatforms.org/clinical#"
-  xmlns:lab="http://smartplatforms.org/clinical/lab#"
-  xmlns:core="http://smartplatforms.org/core#" >
-  <clin:LabResult>
-      <lab:loincCode>
-        <core:CodedValue>
-          <lab:loincCode rdf:resource="http://loinc.org/codes/2951-2"/>
+  xmlns:clin="http://smartplatforms.org/terms#"
+  xmlns:lab="http://smartplatforms.org/terms#"
+  xmlns:core="http://smartplatforms.org/terms#" >
+  <sp:LabResult>
+      <sp:loincCode>
+        <sp:CodedValue>
+          <sp:code rdf:resource="http://loinc.org/codes/2951-2"/>
           <dcterms:title>Serum sodium</dcterms:title>
-          <core:codeProvenance>
-              <core:CodeProvenance>
-                <core:sourceCode rdf:resource="http://my.local.coding.system/01234" />
+          <sp:codeProvenance>
+              <sp:CodeProvenance>
+                <sp:sourceCode rdf:resource="http://my.local.coding.system/01234" />
                 <dcterms:title>Random blood sodium level</dcterms:title>
-                <core:translationFidelity rdf:resource="http://smartplatforms.org/core/code/fidelity#verified" />
-              </core:CodeProvenance>
-          </core:codeProvenance>
-        </core:CodedValue>
-      </lab:loincCode>
-      <lab:quantitativeResult>
-        <lab:QuantitativeResult>
-          <lab:valueAndUnit>
-            <core:ValueAndUnit>
-              <core:value>140</core:value>
-              <core:unit>mg/dL</core:unit>
-            </core:ValueAndUnit>
-          </lab:valueAndUnit>
-          <lab:normalRange>
-             <lab:ResultRange>
-              <lab:minimum>
-                <core:ValueAndUnit>
-                   <core:value>135</core:value>
-                   <core:unit>mg/dL</core:unit>
-                </core:ValueAndUnit>
-              </lab:minimum>
-              <lab:maximum>
-                <core:ValueAndUnit>
-                   <core:value>145</core:value>
-                   <core:unit>mg/dL</core:unit>
-                </core:ValueAndUnit>
-              </lab:maximum>
-             </lab:ResultRange>
-          </lab:normalRange>
-          <lab:nonCriticalRange>
-             <lab:ResultRange>
-              <lab:minimum>
-                <core:ValueAndUnit>
-                   <core:value>120</core:value>
-                   <core:unit>mg/dL</core:unit>
-                </core:ValueAndUnit>
-              </lab:minimum>
-              <lab:maximum>
-                <core:ValueAndUnit>
-                   <core:value>155</core:value>
-                   <core:unit>mg/dL</core:unit>
-                </core:ValueAndUnit>
-              </lab:maximum>
-             </lab:ResultRange>
-          </lab:nonCriticalRange>
-        </lab:QuantitativeResult>
-      </lab:quantitativeResult>
-      <lab:externalID>AC09205823577</lab:externalID>
-      <lab:status>
-        <core:CodedValue>
-          <core:code rdf:resource="http://smartplatforms.org/core/code/labStatus#final"/>
+                <sp:translationFidelity rdf:resource="http://smartplatforms.org/terms/code/fidelity#verified" />
+              </sp:CodeProvenance>
+          </sp:codeProvenance>
+        </sp:CodedValue>
+      </sp:loincCode>
+      <sp:quantitativeResult>
+        <sp:QuantitativeResult>
+          <sp:valueAndUnit>
+            <sp:ValueAndUnit>
+              <sp:value>140</sp:value>
+              <sp:unit>mg/dL</sp:unit>
+            </sp:ValueAndUnit>
+          </sp:valueAndUnit>
+          <sp:normalRange>
+             <sp:ResultRange>
+              <sp:minimum>
+                <sp:ValueAndUnit>
+                   <sp:value>135</sp:value>
+                   <sp:unit>mg/dL</sp:unit>
+                </sp:ValueAndUnit>
+              </sp:minimum>
+              <sp:maximum>
+                <sp:ValueAndUnit>
+                   <sp:value>145</sp:value>
+                   <sp:unit>mg/dL</sp:unit>
+                </sp:ValueAndUnit>
+              </sp:maximum>
+             </sp:ResultRange>
+          </sp:normalRange>
+          <sp:nonCriticalRange>
+             <sp:ResultRange>
+              <sp:minimum>
+                <sp:ValueAndUnit>
+                   <sp:value>120</sp:value>
+                   <sp:unit>mg/dL</sp:unit>
+                </sp:ValueAndUnit>
+              </sp:minimum>
+              <sp:maximum>
+                <sp:ValueAndUnit>
+                   <sp:value>155</sp:value>
+                   <sp:unit>mg/dL</sp:unit>
+                </sp:ValueAndUnit>
+              </sp:maximum>
+             </sp:ResultRange>
+          </sp:nonCriticalRange>
+        </sp:QuantitativeResult>
+      </sp:quantitativeResult>
+      <sp:externalID>AC09205823577</sp:externalID>
+      <sp:status>
+        <sp:CodedValue>
+          <sp:code rdf:resource="http://smartplatforms.org/terms/code/labStatus#final"/>
           <dcterms:title>Final results: complete and verified</dcterms:title>      
-        </core:CodedValue>
-      </lab:status>
-      <lab:abnormalInterpretation>
-        <core:CodedValue>
-          <core:code rdf:resource="http://smartplatforms.org/core/code/labInterpretation#normal"/>
+        </sp:CodedValue>
+      </sp:status>
+      <sp:abnormalInterpretation>
+        <sp:CodedValue>
+          <sp:code rdf:resource="http://smartplatforms.org/terms/code/labInterpretation#normal"/>
           <dcterms:title>Normal</dcterms:title>      
-        </core:CodedValue>
-      </lab:abnormalInterpretation>
+        </sp:CodedValue>
+      </sp:abnormalInterpretation>
 
-      <lab:specimenCollected>
-        <core:Attribution>
-          <core:startTime>2010-12-26T16:33:01</core:startTime>
-          <core:participant>
-            <core:Participant>
-              <core:person>
-                <core:Person><foaf:name>Jane Bellister</foaf:name></core:Person>
-              </core:person>
-              <core:organization>
-                <core:Organization>
+      <sp:specimenCollected>
+        <sp:Attribution>
+          <sp:startTime>2010-12-26T16:33:01</sp:startTime>
+          <sp:participant>
+            <sp:Participant>
+              <sp:person>
+                <sp:Person><foaf:name>Jane Bellister</foaf:name></sp:Person>
+              </sp:person>
+              <sp:organization>
+                <sp:Organization>
                   <foaf:name>City Hospital</foaf:name>
-                  <core:address>
-                    <core:Address>
+                  <sp:address>
+                    <sp:Address>
                       <v:street-address>10 Main St</v:street-address>
                       <v:locality>Springfield</v:locality>
                       <v:postal-code>11111</v:postal-code>
                       <v:country-name>USA</v:country-name>
-                    </core:Address>
-                  </core:address>
-                </core:Organization>
-              </core:organization>
-              <core:role>Phlebotomist</core:role>
-            </core:Participant>
-          </core:participant>
-        </core:Attribution>
-      </lab:specimenCollected>
-      <lab:specimenReceived>
-        <core:Attribution>
-          <core:startTime>2010-12-27T12:27:00</core:startTime>
-          <core:participant>
-            <core:Participant>
-              <core:person>
-                <core:Person><foaf:name>Tad Finnialispi</foaf:name></core:Person>
-              </core:person>
-              <core:organization>
-                <core:Organization>
+                    </sp:Address>
+                  </sp:address>
+                </sp:Organization>
+              </sp:organization>
+              <sp:role>Phlebotomist</sp:role>
+            </sp:Participant>
+          </sp:participant>
+        </sp:Attribution>
+      </sp:specimenCollected>
+      <sp:specimenReceived>
+        <sp:Attribution>
+          <sp:startTime>2010-12-27T12:27:00</sp:startTime>
+          <sp:participant>
+            <sp:Participant>
+              <sp:person>
+                <sp:Person><foaf:name>Tad Finnialispi</foaf:name></sp:Person>
+              </sp:person>
+              <sp:organization>
+                <sp:Organization>
                   <foaf:name>City Lab</foaf:name>
-                  <core:address>
-                    <core:Address>
+                  <sp:address>
+                    <sp:Address>
                       <v:street-address>20 Elm St</v:street-address>
                       <v:locality>Springfield</v:locality>
                       <v:postal-code>11111</v:postal-code>
                       <v:country-name>USA</v:country-name>
-                    </core:Address>
-                  </core:address>
-                </core:Organization>
-              </core:organization>
-              <core:role>Laboratory Technologist</core:role>
-            </core:Participant>
-          </core:participant>
-        </core:Attribution>
-      </lab:specimenReceived>
-      <lab:resulted>
-        <core:Attribution>
-          <core:startTime>2010-12-27T17:00:00</core:startTime>
-          <core:participant>
-            <core:Participant>
-              <core:person>
-                <core:Person><foaf:name>Tad Finnialispi</foaf:name></core:Person>
-              </core:person>
-              <core:organization>
-                <core:Organization>
+                    </sp:Address>
+                  </sp:address>
+                </sp:Organization>
+              </sp:organization>
+              <sp:role>Laboratory Technologist</sp:role>
+            </sp:Participant>
+          </sp:participant>
+        </sp:Attribution>
+      </sp:specimenReceived>
+      <sp:resulted>
+        <sp:Attribution>
+          <sp:startTime>2010-12-27T17:00:00</sp:startTime>
+          <sp:participant>
+            <sp:Participant>
+              <sp:person>
+                <sp:Person><foaf:name>Tad Finnialispi</foaf:name></sp:Person>
+              </sp:person>
+              <sp:organization>
+                <sp:Organization>
                   <foaf:name>City Lab</foaf:name>
-                  <core:address>
-                    <core:Address>
+                  <sp:address>
+                    <sp:Address>
                       <v:street-address>20 Elm St</v:street-address>
                       <v:locality>Springfield</v:locality>
                       <v:postal-code>11111</v:postal-code>
                       <v:country-name>USA</v:country-name>
-                    </core:Address>
-                  </core:address>
-                </core:Organization>
-              </core:organization>
-              <core:role>Laboratory Technologist</core:role>
-            </core:Participant>
-          </core:participant>
-        </core:Attribution>
-      </lab:resulted>
-      <lab:comments>Blood sample appears to have hemolyzed</lab:comments>
-   </clin:LabResult>
+                    </sp:Address>
+                  </sp:address>
+                </sp:Organization>
+              </sp:organization>
+              <sp:role>Laboratory Technologist</sp:role>
+            </sp:Participant>
+          </sp:participant>
+        </sp:Attribution>
+      </sp:resulted>
+      <sp:comments>Blood sample appears to have hemolyzed</sp:comments>
+   </sp:LabResult>
 </rdf:RDF>]]>
     </api:example>
 
     </owl:Class>
 
 
-    <!-- http://smartplatforms.org/core#QuantitativeResult -->
+    <!-- http://smartplatforms.org/terms#QuantitativeResult -->
 
-    <owl:Class rdf:about="http://smartplatforms.org/clinical/lab#QualitativeResult">
+    <owl:Class rdf:about="http://smartplatforms.org/terms#QualitativeResult">
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://smartplatforms.org/clinical/lab#value"/>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#value"/>
                 <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
                 <api:doc>
 					<rdf:Description>
@@ -1868,7 +1750,7 @@ No example yet.]]>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://smartplatforms.org/clinical/lab#enumerationOption"/>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#enumerationOption"/>
                 <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
                 <api:doc>
 					<rdf:Description>
@@ -1881,14 +1763,14 @@ No example yet.]]>
     </owl:Class>
 
 
-    <!-- http://smartplatforms.org/core#QuantitativeResult -->
+    <!-- http://smartplatforms.org/terms#QuantitativeResult -->
 
-    <owl:Class rdf:about="http://smartplatforms.org/clinical/lab#QuantitativeResult">
+    <owl:Class rdf:about="http://smartplatforms.org/terms#QuantitativeResult">
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://smartplatforms.org/clinical/lab#valueAndUnit"/>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#valueAndUnit"/>
                 <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
-                <owl:onClass rdf:resource="http://smartplatforms.org/core#ValueAndUnit"/>
+                <owl:onClass rdf:resource="http://smartplatforms.org/terms#ValueAndUnit"/>
                 <api:doc>
 					<rdf:Description>
 						<api:name>Value and unit</api:name>
@@ -1899,9 +1781,9 @@ No example yet.]]>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://smartplatforms.org/clinical/lab#normalRange"/>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#normalRange"/>
                 <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
-                <owl:onClass rdf:resource="http://smartplatforms.org/clinical/lab#ResultRange"/>
+                <owl:onClass rdf:resource="http://smartplatforms.org/terms#ResultRange"/>
                 <api:doc>
 					<rdf:Description>
 						<api:name>Normal range for result</api:name>
@@ -1912,9 +1794,9 @@ No example yet.]]>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://smartplatforms.org/clinical/lab#nonCriticalRange"/>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#nonCriticalRange"/>
                 <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
-                <owl:onClass rdf:resource="http://smartplatforms.org/clinical/lab#ResultRange"/>
+                <owl:onClass rdf:resource="http://smartplatforms.org/terms#ResultRange"/>
                 <api:doc>
 					<rdf:Description>
 						<api:name>Non-critical range for result</api:name>
@@ -1925,12 +1807,12 @@ No example yet.]]>
         </rdfs:subClassOf>
     </owl:Class>
 
-    <!-- http://smartplatforms.org/core#ValueAndUnit -->
+    <!-- http://smartplatforms.org/terms#ValueAndUnit -->
 
-    <owl:Class rdf:about="http://smartplatforms.org/core#ValueAndUnit">
+    <owl:Class rdf:about="http://smartplatforms.org/terms#ValueAndUnit">
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://smartplatforms.org/core#value"/>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#value"/>
                 <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
                 <api:doc>
 					<rdf:Description>
@@ -1942,7 +1824,7 @@ No example yet.]]>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://smartplatforms.org/core#unit"/>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#unit"/>
                 <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
                 <api:doc>
 					<rdf:Description>
@@ -1954,14 +1836,14 @@ No example yet.]]>
         </rdfs:subClassOf>
     </owl:Class>
 
-    <!-- http://smartplatforms.org/clinical/lab#ResultRange -->
+    <!-- http://smartplatforms.org/terms#ResultRange -->
 
-    <owl:Class rdf:about="http://smartplatforms.org/clinical/lab#ResultRange">
+    <owl:Class rdf:about="http://smartplatforms.org/terms#ResultRange">
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://smartplatforms.org/core#minimum"/>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#minimum"/>
                 <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
-                <owl:onClass rdf:resource="http://smartplatforms.org/core#ValueAndUnit"/>
+                <owl:onClass rdf:resource="http://smartplatforms.org/terms#ValueAndUnit"/>
                 <api:doc>
 					<rdf:Description>
 						<api:name>Minimum value in range (inclusive)</api:name>
@@ -1972,9 +1854,9 @@ No example yet.]]>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://smartplatforms.org/core#maximum"/>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#maximum"/>
                 <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
-                <owl:onClass rdf:resource="http://smartplatforms.org/core#ValueAndUnit"/>
+                <owl:onClass rdf:resource="http://smartplatforms.org/terms#ValueAndUnit"/>
                 <api:doc>
 					<rdf:Description>
 						<api:name>Maximum value in range (not inclusive)</api:name>
@@ -1985,12 +1867,12 @@ No example yet.]]>
         </rdfs:subClassOf>
     </owl:Class>
 
-    <!-- http://smartplatforms.org/core#Attribution -->
+    <!-- http://smartplatforms.org/terms#Attribution -->
 
-    <owl:Class rdf:about="http://smartplatforms.org/core#Attribution">
+    <owl:Class rdf:about="http://smartplatforms.org/terms#Attribution">
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://smartplatforms.org/core#startTime"/>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#startTime"/>
                 <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
                 <api:doc>
 					<rdf:Description>
@@ -2002,7 +1884,7 @@ No example yet.]]>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://smartplatforms.org/core#endTime"/>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#endTime"/>
                 <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
                 <api:doc>
 					<rdf:Description>
@@ -2014,9 +1896,9 @@ No example yet.]]>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://smartplatforms.org/core#participant"/>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#participant"/>
                 <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
-                <owl:onClass rdf:resource="http://smartplatforms.org/core#Participant"/>
+                <owl:onClass rdf:resource="http://smartplatforms.org/terms#Participant"/>
                 <api:doc>
 					<rdf:Description>
 						<api:name>Participant in attribution</api:name>
@@ -2027,14 +1909,14 @@ No example yet.]]>
         </rdfs:subClassOf>
     </owl:Class>
 
-    <!-- http://smartplatforms.org/core#Participant -->
+    <!-- http://smartplatforms.org/terms#Participant -->
 
-    <owl:Class rdf:about="http://smartplatforms.org/core#Participant">
+    <owl:Class rdf:about="http://smartplatforms.org/terms#Participant">
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://smartplatforms.org/core#person"/>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#person"/>
                 <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
-                <owl:onClass rdf:resource="http://smartplatforms.org/core#Person"/>
+                <owl:onClass rdf:resource="http://smartplatforms.org/terms#Person"/>
                 <api:doc>
 					<rdf:Description>
 						<api:name>Person who participated</api:name>
@@ -2045,7 +1927,7 @@ No example yet.]]>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://smartplatforms.org/core#role"/>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#role"/>
                 <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
                 <api:doc>
 					<rdf:Description>
@@ -2057,9 +1939,9 @@ No example yet.]]>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://smartplatforms.org/core#organization"/>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#organization"/>
                 <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
-                <owl:onClass rdf:resource="http://smartplatforms.org/core#Organization"/>
+                <owl:onClass rdf:resource="http://smartplatforms.org/terms#Organization"/>
                 <api:doc>
 					<rdf:Description>
 						<api:name>Organization of participant</api:name>
@@ -2071,9 +1953,9 @@ No example yet.]]>
     </owl:Class>
 
 
-    <!-- http://smartplatforms.org/core#Person -->
+    <!-- http://smartplatforms.org/terms#Person -->
 
-    <owl:Class rdf:about="http://smartplatforms.org/core#Person">
+    <owl:Class rdf:about="http://smartplatforms.org/terms#Person">
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://xmlns.com/foaf/0.1/name"/>
@@ -2086,11 +1968,47 @@ No example yet.]]>
 				</api:doc>
             </owl:Restriction>
         </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://xmlns.com/foaf/0.1/giveName"/>
+                <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
+                <api:doc>
+					<rdf:Description>
+						<api:name>Given of the person</api:name>
+						<api:description>Free text</api:description>
+					</rdf:Description>
+				</api:doc>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://xmlns.com/foaf/0.1/familyName"/>
+                <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
+                <api:doc>
+					<rdf:Description>
+						<api:name>Family name of the person</api:name>
+						<api:description>Free text</api:description>
+					</rdf:Description>
+				</api:doc>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://xmlns.com/foaf/0.1/mbox"/>
+                <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
+                <api:doc>
+					<rdf:Description>
+						<api:name>E-mail address of the person</api:name>
+						<api:description>Free text</api:description>
+					</rdf:Description>
+				</api:doc>
+            </owl:Restriction>
+        </rdfs:subClassOf>        
     </owl:Class>
 
-    <!-- http://smartplatforms.org/core#Organization -->
+    <!-- http://smartplatforms.org/terms#Organization -->
 
-    <owl:Class rdf:about="http://smartplatforms.org/core#Organization">
+    <owl:Class rdf:about="http://smartplatforms.org/terms#Organization">
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://xmlns.com/foaf/0.1/name"/>
@@ -2106,8 +2024,8 @@ No example yet.]]>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://smartplatforms.org/core#address"/>
-                <owl:onClass rdf:resource="http://smartplatforms.org/core#Address"/>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#address"/>
+                <owl:onClass rdf:resource="http://smartplatforms.org/terms#Address"/>
                 <owl:minQualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</owl:minQualifiedCardinality>
                 <api:doc>
 					<rdf:Description>
@@ -2120,7 +2038,7 @@ No example yet.]]>
     </owl:Class>
 
 
-    <owl:Class rdf:about="http://smartplatforms.org/core#Address">
+    <owl:Class rdf:about="http://smartplatforms.org/terms#Address">
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://www.w3.org/2006/vcard/ns#street-address"/>
@@ -2172,10 +2090,10 @@ No example yet.]]>
     </owl:Class>
 
 
-    <owl:Class rdf:about="http://smartplatforms.org/core#CodedValue">
+    <owl:Class rdf:about="http://smartplatforms.org/terms#CodedValue">
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://smartplatforms.org/core#code"/>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#code"/>
                 <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
                 <api:doc>
 					<rdf:Description>
@@ -2199,9 +2117,9 @@ No example yet.]]>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://smartplatforms.org/core#codeProvenance"/>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#codeProvenance"/>
                 <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
-                <owl:onClass rdf:resource="http://smartplatforms.org/core#CodeProvenance"/>
+                <owl:onClass rdf:resource="http://smartplatforms.org/terms#CodeProvenance"/>
                 <api:doc>
 					<rdf:Description>
 						<api:name>Coded Value provenance</api:name>
@@ -2212,10 +2130,10 @@ No example yet.]]>
         </rdfs:subClassOf>
     </owl:Class>
 
-    <owl:Class rdf:about="http://smartplatforms.org/core#CodeProvenance">
+    <owl:Class rdf:about="http://smartplatforms.org/terms#CodeProvenance">
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://smartplatforms.org/core#sourceCode"/>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#sourceCode"/>
                 <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
                 <api:doc>
 					<rdf:Description>
@@ -2239,12 +2157,12 @@ No example yet.]]>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://smartplatforms.org/core#translationFidelity"/>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#translationFidelity"/>
                 <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
                 <api:doc>
 					<rdf:Description>
 						<api:name>Translation fidelity</api:name>
-						<api:description>One of:  http://smartplatforms.org/core/code/fidelity#unknown http://smartplatforms.org/core/code/fidelity#automated http://smartplatforms.org/core/code/fidelity#verified</api:description>
+						<api:description>One of:  http://smartplatforms.org/terms/code/fidelity#unknown http://smartplatforms.org/terms/code/fidelity#automated http://smartplatforms.org/terms/code/fidelity#verified</api:description>
 					</rdf:Description>
 				</api:doc>
             </owl:Restriction>
@@ -2255,7 +2173,7 @@ No example yet.]]>
   <api:description>Get a single lab result</api:description>
   <api:method>GET</api:method>
   <api:path>http://smartplatforms.org/records/{record_id}/lab_results/{lab_result_id}</api:path>
-  <api:target rdf:resource="http://smartplatforms.org/clinical#LabResult"/>
+  <api:target rdf:resource="http://smartplatforms.org/terms#LabResult"/>
   <api:by_internal_id>true</api:by_internal_id>
   <api:category>record_item</api:category>
 </api:call>
@@ -2264,7 +2182,7 @@ No example yet.]]>
   <api:description>Delete a single lab result</api:description>
   <api:method>DELETE</api:method>
   <api:path>http://smartplatforms.org/records/{record_id}/lab_results/{lab_result_id}</api:path>
-  <api:target rdf:resource="http://smartplatforms.org/clinical#LabResult"/>
+  <api:target rdf:resource="http://smartplatforms.org/terms#LabResult"/>
   <api:by_internal_id>true</api:by_internal_id>
   <api:category>record_item</api:category>
 </api:call>
@@ -2273,7 +2191,7 @@ No example yet.]]>
   <api:description>Get all lab results for a given record</api:description>
   <api:method>GET</api:method>
   <api:path>http://smartplatforms.org/records/{record_id}/lab_results/</api:path>
-  <api:target rdf:resource="http://smartplatforms.org/clinical#LabResult"/>
+  <api:target rdf:resource="http://smartplatforms.org/terms#LabResult"/>
   <api:by_internal_id>true</api:by_internal_id>
   <api:category>record_items</api:category>
 </api:call>
@@ -2283,7 +2201,7 @@ No example yet.]]>
   <api:description>Delete all lab results from a given record</api:description>
   <api:method>DELETE</api:method>
   <api:path>http://smartplatforms.org/records/{record_id}/lab_results/</api:path>
-  <api:target rdf:resource="http://smartplatforms.org/clinical#LabResult"/>
+  <api:target rdf:resource="http://smartplatforms.org/terms#LabResult"/>
   <api:by_internal_id>true</api:by_internal_id>
   <api:category>record_items</api:category>
 </api:call>
@@ -2292,7 +2210,7 @@ No example yet.]]>
   <api:description>Add lab results to a given record</api:description>
   <api:method>POST</api:method>
   <api:path>http://smartplatforms.org/records/{record_id}/lab_results/</api:path>
-  <api:target rdf:resource="http://smartplatforms.org/clinical#LabResult"/>
+  <api:target rdf:resource="http://smartplatforms.org/terms#LabResult"/>
   <api:by_internal_id>true</api:by_internal_id>
   <api:category>record_items</api:category>
 </api:call>
@@ -2302,7 +2220,7 @@ No example yet.]]>
   <api:description>Get a single lab result panel</api:description>
   <api:method>GET</api:method>
   <api:path>http://smartplatforms.org/records/{record_id}/lab_result_panels/{lab_result_panel_id}</api:path>
-  <api:target rdf:resource="http://smartplatforms.org/clinical#LabResultPanel"/>
+  <api:target rdf:resource="http://smartplatforms.org/terms#LabResultPanel"/>
   <api:by_internal_id>true</api:by_internal_id>
   <api:category>record_item</api:category>
 </api:call>
@@ -2311,7 +2229,7 @@ No example yet.]]>
   <api:description>Delete a single lab result panel</api:description>
   <api:method>DELETE</api:method>
   <api:path>http://smartplatforms.org/records/{record_id}/lab_result_panels/{lab_result_panel_id}</api:path>
-  <api:target rdf:resource="http://smartplatforms.org/clinical#LabResultPanel"/>
+  <api:target rdf:resource="http://smartplatforms.org/terms#LabResultPanel"/>
   <api:by_internal_id>true</api:by_internal_id>
   <api:category>record_item</api:category>
 </api:call>
@@ -2320,7 +2238,7 @@ No example yet.]]>
   <api:description>Get all lab result panels for a given record</api:description>
   <api:method>GET</api:method>
   <api:path>http://smartplatforms.org/records/{record_id}/lab_result_panels/</api:path>
-  <api:target rdf:resource="http://smartplatforms.org/clinical#LabResultPanel"/>
+  <api:target rdf:resource="http://smartplatforms.org/terms#LabResultPanel"/>
   <api:by_internal_id>true</api:by_internal_id>
   <api:category>record_items</api:category>
 </api:call>
@@ -2330,7 +2248,7 @@ No example yet.]]>
   <api:description>Delete all lab result panels from a given record</api:description>
   <api:method>DELETE</api:method>
   <api:path>http://smartplatforms.org/records/{record_id}/lab_result_panels/</api:path>
-  <api:target rdf:resource="http://smartplatforms.org/clinical#LabResultPanel"/>
+  <api:target rdf:resource="http://smartplatforms.org/terms#LabResultPanel"/>
   <api:by_internal_id>true</api:by_internal_id>
   <api:category>record_items</api:category>
 </api:call>
@@ -2339,7 +2257,7 @@ No example yet.]]>
   <api:description>Add lab result panels to a given record</api:description>
   <api:method>POST</api:method>
   <api:path>http://smartplatforms.org/records/{record_id}/lab_result_panels/</api:path>
-  <api:target rdf:resource="http://smartplatforms.org/clinical#LabResultPanel"/>
+  <api:target rdf:resource="http://smartplatforms.org/terms#LabResultPanel"/>
   <api:by_internal_id>true</api:by_internal_id>
   <api:category>record_items</api:category>
 </api:call>

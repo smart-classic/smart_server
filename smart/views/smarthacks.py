@@ -29,15 +29,15 @@ def container_capabilities(request, **kwargs):
     m = RDF.Model()
     m.append(RDF.Statement(RDF.Node(uri_string=settings.SITE_URL_PREFIX),
              ns['rdf']['type'],
-             ns['core']['Container']))
+             ns['sp']['Container']))
     m.append(RDF.Statement(RDF.Node(uri_string=settings.SITE_URL_PREFIX),
-             ns['core']['capability'],
+             ns['sp']['capability'],
              ns['sp']['capability/SNOMED/lookup']))
     m.append(RDF.Statement(RDF.Node(uri_string=settings.SITE_URL_PREFIX),
-             ns['core']['capability'],
+             ns['sp']['capability'],
              ns['sp']['capability/SPL/lookup']))
     m.append(RDF.Statement(RDF.Node(uri_string=settings.SITE_URL_PREFIX),
-             ns['core']['capability'],
+             ns['sp']['capability'],
              ns['sp']['capability/Pillbox/lookup']))
     
     return utils.x_domain(HttpResponse(utils.serialize_rdf(m), "application/rdf+xml"))

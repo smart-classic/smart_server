@@ -9,8 +9,8 @@ bios.append("""
   <foaf:familyName>Bach</foaf:familyName>
   <foaf:givenName>Hiram</foaf:givenName>
   <foaf:gender>male</foaf:gender>
-  <spdemo:zipcode>02543</spdemo:zipcode>
-  <spdemo:birthday>1963-12-15</spdemo:birthday>
+  <sp:zipcode>02543</sp:zipcode>
+  <sp:birthday>1963-12-15</sp:birthday>
 </rdf:Description>
 """)
 bios.append("""
@@ -19,8 +19,8 @@ bios.append("""
   <foaf:familyName>Schnur</foaf:familyName>
   <foaf:givenName>Bert</foaf:givenName>
   <foaf:gender>male</foaf:gender>
-  <spdemo:zipcode>63050</spdemo:zipcode>
-  <spdemo:birthday>1945-04-19</spdemo:birthday>
+  <sp:zipcode>63050</sp:zipcode>
+  <sp:birthday>1945-04-19</sp:birthday>
 </rdf:Description>
 """)
 bios.append("""
@@ -29,8 +29,8 @@ bios.append("""
   <foaf:familyName>Paltrow</foaf:familyName>
   <foaf:givenName>Bruce</foaf:givenName>
   <foaf:gender>male</foaf:gender>
-  <spdemo:zipcode>54360</spdemo:zipcode>
-  <spdemo:birthday>1945-02-01</spdemo:birthday>
+  <sp:zipcode>54360</sp:zipcode>
+  <sp:birthday>1945-02-01</sp:birthday>
 </rdf:Description>
 """)
 bios.append("""
@@ -39,8 +39,8 @@ bios.append("""
   <foaf:familyName>Cross</foaf:familyName>
   <foaf:givenName>David</foaf:givenName>
   <foaf:gender>male</foaf:gender>
-  <spdemo:zipcode>08608</spdemo:zipcode>
-  <spdemo:birthday>1972-09-10</spdemo:birthday>
+  <sp:zipcode>08608</sp:zipcode>
+  <sp:birthday>1972-09-10</sp:birthday>
 </rdf:Description>
 """)
 bios.append("""
@@ -49,8 +49,8 @@ bios.append("""
   <foaf:familyName>Bergermeister</foaf:familyName>
   <foaf:givenName>Hans</foaf:givenName>
   <foaf:gender>male</foaf:gender>
-  <spdemo:zipcode>19013</spdemo:zipcode>
-  <spdemo:birthday>1963-12-01</spdemo:birthday>
+  <sp:zipcode>19013</sp:zipcode>
+  <sp:birthday>1963-12-01</sp:birthday>
 </rdf:Description>
 """)
 bios.append("""
@@ -59,8 +59,8 @@ bios.append("""
   <foaf:familyName>Paltrow</foaf:familyName>
   <foaf:givenName>Mary</foaf:givenName>
   <foaf:gender>female</foaf:gender>
-  <spdemo:zipcode>54360</spdemo:zipcode>
-  <spdemo:birthday>1951-06-18</spdemo:birthday>
+  <sp:zipcode>54360</sp:zipcode>
+  <sp:birthday>1951-06-18</sp:birthday>
 </rdf:Description>
 """)
 bios.append("""
@@ -69,8 +69,8 @@ bios.append("""
   <foaf:familyName>Dockendorf</foaf:familyName>
   <foaf:givenName>Tad</foaf:givenName>
   <foaf:gender>male</foaf:gender>
-  <spdemo:zipcode>82001</spdemo:zipcode>
-  <spdemo:birthday>1975-07-05</spdemo:birthday>
+  <sp:zipcode>82001</sp:zipcode>
+  <sp:birthday>1975-07-05</sp:birthday>
 </rdf:Description>
 """)
 bios.append("""
@@ -79,8 +79,8 @@ bios.append("""
   <foaf:familyName>Bergermeister</foaf:familyName>
   <foaf:givenName>Nora</foaf:givenName>
   <foaf:gender>female</foaf:gender>
-  <spdemo:zipcode>19013</spdemo:zipcode>
-  <spdemo:birthday>1964-10-09</spdemo:birthday>
+  <sp:zipcode>19013</sp:zipcode>
+  <sp:birthday>1964-10-09</sp:birthday>
 </rdf:Description>
 """)
 bios.append("""
@@ -89,8 +89,8 @@ bios.append("""
   <foaf:familyName>Odenkirk</foaf:familyName>
   <foaf:givenName>Bob</foaf:givenName>
   <foaf:gender>male</foaf:gender>
-  <spdemo:zipcode>90001</spdemo:zipcode>
-  <spdemo:birthday>1959-12-25</spdemo:birthday>
+  <sp:zipcode>90001</sp:zipcode>
+  <sp:birthday>1959-12-25</sp:birthday>
 </rdf:Description>
 """)
 bios.append("""
@@ -99,8 +99,8 @@ bios.append("""
   <foaf:familyName>Richardson</foaf:familyName>
   <foaf:givenName>Douglas</foaf:givenName>
   <foaf:gender>male</foaf:gender>
-  <spdemo:zipcode>01040</spdemo:zipcode>
-  <spdemo:birthday>1968-09-01</spdemo:birthday>
+  <sp:zipcode>01040</sp:zipcode>
+  <sp:birthday>1968-09-01</sp:birthday>
 </rdf:Description>
 """)
 print "Appending bios"
@@ -125,7 +125,7 @@ for b in bios:
   req.raw_post_data = """<?xml version="1.0"?>
    <rdf:RDF
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-     xmlns:spdemo="http://smartplatforms.org/clinical/demographics#"
+     xmlns:sp="http://smartplatforms.org/terms#"
      xmlns:foaf="http://xmlns.com/foaf/0.1/"
      xmlns:dc="http://purl.org/dc/elements/1.1/"
      xmlns:dcterms="http://purl.org/dc/terms/"
