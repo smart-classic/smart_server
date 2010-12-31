@@ -1,195 +1,149 @@
-from rdf_objects import *
+import os, itertools, RDF
+from django.conf import settings
+from smart.lib.utils import default_ns
 
-class CallInfo(object):
-  def __init__(self, m, c):
-    self.model = m
+ns = default_ns()
+rdf = ns['rdf']
+rdfs = ns['rdfs']
+owl = ns['owl']
+api  = ns['api']
+anyuri = RDF.Node(uri_string="http://www.w3.org/2001/XMLSchema#anyURI")
 
-    try: self.target = [str(x.object.uri) for x in m.find_statements(RDF.Statement(c, sp['api/target'], None))][0]
-    except: self.target = None
+class OwlAttr(object):
+    def __init__(self, name, predicate, object=anyuri, max_cardinality=1, min_cardinality=0):
+        self.name = name
+        self.predicate = predicate
+        self.object = object
+        self.min_cardinality=min_cardinality
+        self.max_cardinality=max_cardinality
 
-    try: self.above = [str(x.object.uri) for x in m.find_statements(RDF.Statement(c, sp['api/above'], None))][0]
-    except: self.above = None
+class OwlObject(object):
+    def __init__(self, model, node):
+        self.model = model
+        self.node = node
+        if (not hasattr(self, 'attributes')):
+            self.attributes = []
 
-    try: self.description = [str(x.object.literal_value['string']) for x in m.find_statements(RDF.Statement(c, sp['api/description'], None))][0]
-    except: self.description = None
+class SMArtOwlObject(OwlObject):
+    def __init__(self, model, node):
+        super(SMArtOwlObject, self).__init__(model, node)
+        for a in self.attributes:
+            try: 
+                v =  [x.object for x in model.find_statements(RDF.Statement(node, a.predicate, None))]
+                if a.max_cardinality==1: 
+                    assert len(v) < 2, "Attribute %s has max cardinality 1, but length %s"%(a.name, len(v))
+                    if len(v) == 1: v = v[0]
+                setattr(self, a.name, v) 
+            except: setattr(self, a.name, None)
+        return
+            
+"""Represent calls like GET /records/{rid}/medications/"""
+class SMArtCall(SMArtOwlObject):
+    attributes =  [OwlAttr("target", api['target']),
+              OwlAttr("above", api['above']),
+              OwlAttr("description", api['description']),
+              OwlAttr("path", api['path']),
+              OwlAttr("method", api['method']),
+              OwlAttr("by_internal_id", api['by_internal_id']),
+              OwlAttr("category", api['category'])]
 
-    try: self.path = [str(x.object.literal_value['string']) for x in m.find_statements(RDF.Statement(c, sp['api/path'], None))][0]
-    except: self.path = None
+    @classmethod
+    def find_all(cls, m):
+        def get_api_calls(m):
+            q = RDF.Statement(None, rdf['type'], api['call'])
+            r = list(m.find_statements(q))
+            return r
 
-    try: self.method = [str(x.object.literal_value['string']) for x in m.find_statements(RDF.Statement(c, sp['api/method'], None))][0]
-    except: self.method = None
-
-    try: self.by_internal_id = [str(x.object.literal_value['string']) for x in m.find_statements(RDF.Statement(c, sp['api/by_internal_id'], None))][0]
-    except: self.by_internal_id = None
-
-    try: self.category = [str(x.object.literal_value['string']) for x in m.find_statements(RDF.Statement(c, sp['api/category'], None))][0]
-    except: self.category = None
-
-    return
-
-  @property
-  def sort_order(self):
-      m = {"GET" : 10, "POST":20,"PUT":30,"DELETE":40}    
-      ret =  m[self.method]
-      if ("items" in self.category): ret -= 1
-      return ret
-  
-  @classmethod
-  def find_all_calls(cls, m):
-    def get_api_calls(m):
-      q = RDF.Statement(None, rdf['type'], sp['api/call'])
-      r = list(m.find_statements(q))
-      return r
-
-    calls = []
-    for c in get_api_calls(m):
-      i = CallInfo(m, c.subject)
-      calls.append(i)
-    return calls
-
-  def sorted_methods(self):
-      ret = []
-      if "GET" in self.methods: ret.append("GET")
-      for m in self.methods:
-          if m not in ret: ret.append(m)
-      return ret
-
-class TypeInfo(object):
-  def __init__(self, m, t, calls):
-    self.model = m
-
-    supers = [x.object for x in m.find_statements(RDF.Statement(t, rdfs['subClassOf'], None))]
-
-    properties = []
-    children = {}
-    for s in supers:
-      prop = [str(x.object.uri) for x in m.find_statements(RDF.Statement(s, owl['onProperty'], None))][0]
-      kids = [str(x.object.uri) for x in m.find_statements(RDF.Statement(s, owl['onClass'], None))]
-
-      # Is this a property (no kids) or a child (with kids)?
-      if len(kids) == 0: properties.append(prop)
-      else: children[prop] = kids[0]
-
-    self.properties = properties
-    self.children = children
+        calls = []
+        for c in get_api_calls(m):
+            i = SMArtCall(m, c.subject)
+            calls.append(i)
         
-    self.type = str(t.uri)
+        cls.all = calls
+        return calls
 
-    try:
-        self.example = [str(x.object.literal_value['string']) for x in m.find_statements(RDF.Statement(t, sp['api/example'], None))][0]
-    except: self.example = None
+
+class SMArtRestriction(SMArtOwlObject):
+    attributes =  [OwlAttr("property", owl['onProperty']),
+                   OwlAttr("on_class", owl['onClass']),
+                   OwlAttr("min_cardinality", owl['minCardinality']),
+                   OwlAttr("all_values_from", owl['allValuesFrom'])]
+  
+"""Represent types like sp:Medication"""
+class SMArtType(SMArtOwlObject):
+    attributes =  [OwlAttr("example", api['example']),
+                   OwlAttr("name", api['name']),
+                   OwlAttr("name_plural", api['name_plural']),
+                   OwlAttr("description", api['description']),
+                   OwlAttr("base_path", api['base_path'])]        
+
+
+    def __init__(self, model, node, calls):
+        super(SMArtType, self).__init__(model, node)
+
+        supers = [x.object for x in model.find_statements(RDF.Statement(node, rdfs['subClassOf'], None))]
     
-    try:
-        self.name = [str(x.object.literal_value['string']) for x in m.find_statements(RDF.Statement(t, sp['api/name'], None))][0]
-    except: self.name = None
-    try:
-        self.name_plural = [str(x.object.literal_value['string']) for x in m.find_statements(RDF.Statement(t, sp['api/name_plural'], None))][0]
-    except: self.name_plural = None
-    try:
-        self.description = [str(x.object.literal_value['string']) for x in m.find_statements(RDF.Statement(t, sp['api/description'], None))][0]
-    except: self.description = None
+        self.restrictions = []
+        for s in supers:
+            self.restrictions.append(SMArtRestriction(model, s))
+            
+        self.calls = filter(lambda c:  c.target == self.node, calls)
+        self.children = {}
+        self.properties = []
+        
+        for r in self.restrictions:
+            if r.on_class:
+                self.children[r.property] = r.on_class
+            else:
+                self.properties.append(r)
     
-    try:
-        self.path = [str(x.object.literal_value['string']) for x in m.find_statements(RDF.Statement(t, sp['api/base_path'], None))][0]
-    except:
-        self.path = None
-
-    
-    self.calls = []
-    for c in calls:
-        if  self.type == c.target:
-            self.calls.append(c)
-    
-    return
-
-  @property
-  def sort_order(self):
-      return self.calls[0].category.split("_")[0].capitalize()
-
-  def populate_rdfobject(self, by_type):
-    u = self.type
-    if u not in by_type: by_type[u] = RDFObject()          
-
-    by_type[u].type = self.type
-    by_type[u].properties.append(RDFProperty(predicate=str(NS['rdf']['type'].uri)))
-
-    if (self.path != None):
-        by_type[u].path = self.path
-        by_type[u].properties.append(RDFProperty(predicate=str(NS['sp']['external_id'].uri)))
-
-     # add properties  
-    for p in self.properties:
-      by_type[u].properties.append(RDFProperty(p))    
-    
-    # add children
-    for (cname, cval) in self.children.iteritems():
-      if cval not in by_type:
-        by_type[cval] = RDFObject()
-      by_type[cval].parent = by_type[u]
-      by_type[u].children[cname] = by_type[cval]
-
-  def property_description(self, p):
-      q = RDF.SPARQLQuery("""
-        BASE <http://smartplatforms.org/>
-        PREFIX sp:<http://smartplatforms.org/>
-        PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-        PREFIX owl:<http://www.w3.org/2002/07/owl#>
-        PREFIX api:<http://smartplatforms.org/api/>
-        PREFIX rdfs:<http://www.w3.org/2000/01/rdf-schema#>
-        SELECT ?name ?desc
-        WHERE {
-        <%s>  rdfs:subClassOf ?super.
-        ?super owl:onProperty <%s>.
-        ?super api:doc ?d.
-        ?d api:name ?name.
-        ?d api:description ?desc.
-        }
-        """ % (self.type, p))
-
-      vals = list(q.execute(self.model))
+                        
+    @classmethod
+    def find_all(cls, m, calls):
+        def get_types(m):
+            q = RDF.Statement(None, rdf['type'], owl['Class'])
+            r = list(m.find_statements(q))
+            return r
       
-      assert len(vals) <= 1, "expect at most one api:doc element for a given property"
-      return vals[0]['name'].literal_value['string'], vals[0]['desc'].literal_value['string']
-
-  @classmethod
-  def find_all_types(cls, m):
-    def get_types(m):
-      q = RDF.Statement(None, rdf['type'], owl['Class'])
-      r = filter(lambda x: str(x.subject.uri), list(m.find_statements(q)))
-      return [v.subject for v in r]
-
-    calls = CallInfo.find_all_calls(m)
-    types = {}
-
-    for t in get_types(m):
-      types[str(t.uri)] = TypeInfo(m, t, calls)
-
-    return types
-
-  @classmethod
-  def populate_ontology(cls, api_types):
-    by_type = {}
-    for tn, t in api_types.iteritems():
-        t.populate_rdfobject(by_type)
-    SMArtOntology.set(by_type)
-    return SMArtOntology()
+        types = []
+        for t in get_types(m):
+            i = SMArtType(m, t.subject, calls)
+            types.append(i)
+        return types
 
 class SMArtOntology(object):
-  @classmethod
-  def set(cls, by_type):
-    cls.by_type = by_type
+    @classmethod
+    def load(cls): 
+        cls.store = {}
+        for t in api_types:
+            cls.store[t.node] = t
 
-  def __getitem__(self, v):
-    if v == None: return None
-    return self.by_type[v]
+    def __init__(self):
+        if not hasattr(SMArtOntology, "store"): SMArtOntology.load()
+                
+    def __getitem__(self, aname):
+        try:
+            return self.store[aname]
+        except:
+            return self.store[RDF.Node(uri_string=aname.encode())]
+
+def parse_ontology(f):
+    print "PARSING ONTOLOGY"
+    m = RDF.Model()
+    p = RDF.Parser()
+    p.parse_string_into_model(m, f, "nodefault")
+    
+    global api_calls 
+    global api_types
+    global ontology
+    
+    api_calls = SMArtCall.find_all(m)  
+    api_types = SMArtType.find_all(m, api_calls)
+    ontology = SMArtOntology()
+
+api_calls = None  
+api_types = None 
+ontology = None 
 
 f = open(os.path.join(settings.APP_HOME, "smart/document_processing/schema/smart.owl")).read()
-m = RDF.Model()
-p = RDF.Parser()
-p.parse_string_into_model(m, f, "nodefault")
-
-api_types = TypeInfo.find_all_types(m)
-ontology = TypeInfo.populate_ontology(api_types)
-RDFObject.ontology = ontology
-api_calls = CallInfo.find_all_calls(m)
-
+parse_ontology(f)

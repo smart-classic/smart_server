@@ -1,6 +1,5 @@
-from rdf_rest_operations import *
-from rdf_ontology import *
-
+import re
+from record_object import api_calls, ontology, RecordObject
 
 class OntologyURLMapper():
   def __init__(self):
@@ -9,11 +8,7 @@ class OntologyURLMapper():
   def calls_by_path(self):
       ret = {}
       for c in api_calls:
-          if c.path not in ret:
-              ret[c.path] = []
-          if c not in ret[c.path]:
-              ret[c.path].append(c)
-              
+          ret.setdefault(c.path, set()).add(c)              
       return ret.iteritems()
     
   def django_param_regex(self, v):
@@ -30,13 +25,12 @@ class OntologyURLMapper():
 
   def getArguments(self, calls):
       r = {}
-      r['ontology'] = ontology      
-      GetCallMapper(calls[0]).arguments(r)
+      GetCallMapper(list(calls)[0]).arguments(r)
       return r
       
   # get from an absolute OWL path to a relative django-friendly URL match
   def django_path(self, calls):
-    ret = calls[0].path
+    ret = str(list(calls)[0].path)
     ret  = ret.split("?")[0]
     to_replace = re.findall("{(.*?)}", ret)
     for r in to_replace:
@@ -47,9 +41,10 @@ class OntologyURLMapper():
 
 def GetCallMapper(c):
     ret = None
-    if c.category.endswith("items"):
+    cat = str(c.category)
+    if cat.endswith("items"):
         ret= MultipleItemCallMapper(c)
-    elif c.category.endswith("item"):
+    elif cat.endswith("item"):
         ret= SingleItemCallMapper(c) 
     else:
         ret= CallMapper(c)
@@ -61,19 +56,18 @@ class CallMapper(object):
         self.call = c
         
     def arguments(self, r):
-      t = ontology[self.call.target]
-      r['obj'] = t
+      r['obj'] = RecordObject[self.call.target]
       if self.call.above:
-          r['above_obj'] = ontology[self.call.above]
+          r['above_obj'] = RecordObject[self.call.above]
 
       return r
       
       
     def map_call(self, hash):        
-        if "GET" == self.call.method:
+        if "GET" == str(self.call.method):
           hash["GET"] = self.get
     
-        if "PUT" == self.call.method:
+        if "PUT" == str(self.call.method):
           hash["PUT"] = self.put
           # A cheap hack to support wget-driven "PUT" of 
           # resources during the initialization of the reference container.
@@ -81,14 +75,14 @@ class CallMapper(object):
           # and curl barfs on PUT urls ending with /) 
           hash["POST"] = self.put
           
-        if "POST" == self.call.method:
+        if "POST" == str(self.call.method):
           hash["POST"] = self.post
     
-        if  "DELETE" == self.call.method:
+        if  "DELETE" == str(self.call.method):
           hash["DELETE"] =self.delete    
 
     @property
-    def obj(self): return ontology[self.call.target]
+    def obj(self): return RecordObject[self.call.target]
 
     
 class SingleItemCallMapper(CallMapper):

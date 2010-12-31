@@ -276,7 +276,7 @@ http://fda.gov/UNII/{UNII}]]></api:description>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://smartplatforms.org/terms#provider"/>
                 <owl:onClass rdf:resource="http://smartplatforms.org/terms#Provider"/>
-                <owl:minQualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</owl:minQualifiedCardinality>
+                <owl:minCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</owl:minCardinality>
                 <api:doc>
 					<rdf:Description>
 						<api:name>Clinician who prescribed the medication</api:name>
@@ -325,7 +325,7 @@ http://fda.gov/UNII/{UNII}]]></api:description>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://smartplatforms.org/terms#pharmacy"/>
                 <owl:onClass rdf:resource="http://smartplatforms.org/terms#Pharmacy"/>
-                <owl:minQualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</owl:minQualifiedCardinality>
+                <owl:minCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</owl:minCardinality>
                 <api:doc>
 					<rdf:Description>
 						<api:name>The pharmacy that dispensed the medication</api:name>
@@ -529,7 +529,7 @@ http://fda.gov/UNII/{UNII}]]></api:description>
                 <owl:onProperty rdf:resource="http://smartplatforms.org/terms#code"/>
                 <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
                 <owl:onClass rdf:resource="http://smartplatforms.org/terms#CodedValue"/>
-                <owl:minQualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</owl:minQualifiedCardinality>
+                <owl:minCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</owl:minCardinality>
                 <api:doc>
 					<rdf:Description>
 						<api:name>RxNorm code(tty=SCDF or tty=SBDF) for the this medication.</api:name>
@@ -662,7 +662,7 @@ http://fda.gov/UNII/{UNII}]]></api:description>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://smartplatforms.org/terms#fulfillment"/>
                 <owl:onClass rdf:resource="http://smartplatforms.org/terms#Fulfillment"/>
-                <owl:minQualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</owl:minQualifiedCardinality>
+                <owl:minCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</owl:minCardinality>
                 <api:doc>
 					<rdf:Description>
 						<api:name>A single fulfillment event (that is, the medication was dispensed to the patient by a pharmacy) </api:name>
@@ -797,7 +797,7 @@ http://fda.gov/UNII/{UNII}]]></api:description>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://smartplatforms.org/terms#provider"/>
                 <owl:onClass rdf:resource="http://smartplatforms.org/terms#Provider"/>
-                <owl:minQualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</owl:minQualifiedCardinality>
+                <owl:minCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</owl:minCardinality>
                 <api:doc>
 					<rdf:Description>
 						<api:name>Provider responsible for a clinical note</api:name>
@@ -1335,7 +1335,7 @@ http://fda.gov/UNII/{UNII}]]></api:description>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://smartplatforms.org/terms#organization"/>
                 <owl:onClass rdf:resource="http://smartplatforms.org/terms#Organization"/>
-                <owl:minQualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</owl:minQualifiedCardinality>
+                <owl:minCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</owl:minCardinality>
                 <api:doc>
 					<rdf:Description>
 						<api:name>Organization represented by the pharmacy</api:name>
@@ -1367,7 +1367,7 @@ http://fda.gov/UNII/{UNII}]]></api:description>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://smartplatforms.org/terms#person"/>
                 <owl:onClass rdf:resource="http://smartplatforms.org/terms#Person"/>
-                <owl:minQualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</owl:minQualifiedCardinality>
+                <owl:minCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</owl:minCardinality>
                 <api:doc>
 					<rdf:Description>
 						<api:name>Person acting as provider</api:name>
@@ -1381,7 +1381,7 @@ http://fda.gov/UNII/{UNII}]]></api:description>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://xmlns.com/foaf/0.1/Organization"/>
                 <owl:onClass rdf:resource="http://smartplatforms.org/terms#Organization"/>
-                <owl:minQualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</owl:minQualifiedCardinality>
+                <owl:minCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</owl:minCardinality>
                 <api:doc>
 					<rdf:Description>
 						<api:name>Organization acting as provider</api:name>
@@ -2050,7 +2050,7 @@ No example yet.]]></api:example>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://smartplatforms.org/terms#address"/>
                 <owl:onClass rdf:resource="http://smartplatforms.org/terms#Address"/>
-                <owl:minQualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</owl:minQualifiedCardinality>
+                <owl:minCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</owl:minCardinality>
                 <api:doc>
 					<rdf:Description>
 						<api:name>Street address of the Organization</api:name>

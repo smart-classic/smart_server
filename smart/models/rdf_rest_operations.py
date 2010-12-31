@@ -50,7 +50,7 @@ def record_post_objects(request, record_id, obj, above_obj=None, **kwargs):
             above_node = RDF.Node(uri_string=smart_parent(path))
             g.append(RDF.Statement(
                      subject=above_node, 
-                     predicate=RDF.Node(uri_string=pred), 
+                     predicate=pred, 
                      object=new_node))
 
     c = RecordStoreConnector(Record.objects.get(id=record_id))

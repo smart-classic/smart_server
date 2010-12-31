@@ -39,6 +39,10 @@ class MethodDispatcher(object):
   def __call__(self, request, *args, **kwargs):
     view_func = self.resolve(request)
     if view_func:
+      print view_func
+      print "Calling the vf with"
+      print args
+      print kwargs
       return view_func(request, *args, **kwargs)
     return http.HttpResponseNotAllowed(self.methods.keys())
 
@@ -157,6 +161,9 @@ def default_ns():
     d['sp'] = RDF.NS('http://smartplatforms.org/terms#')
     d['foaf']=RDF.NS('http://xmlns.com/foaf/0.1/')
     d['rdf'] = RDF.NS('http://www.w3.org/1999/02/22-rdf-syntax-ns#')
+    d['rdfs'] = RDF.NS('http://www.w3.org/2000/01/rdf-schema#')
+    d['owl'] = RDF.NS('http://www.w3.org/2002/07/owl#')
+    d['api'] = RDF.NS('http://smartplatforms.org/api/')
     d['rxn'] = RDF.NS('http://link.informatics.stonybrook.edu/rxnorm/')
     d['rxcui'] = RDF.NS('http://link.informatics.stonybrook.edu/rxnorm/RXCUI/')
     d['rxaui'] = RDF.NS('http://link.informatics.stonybrook.edu/rxnorm/RXAUI/')

@@ -1,6 +1,7 @@
 from django.conf.urls.defaults import include, patterns
 from smart.views import *
 from smart.models.ontology_url_patterns import OntologyURLMapper
+from smart.models.record_object import RecordObject
 
 urlpatterns = patterns('')
 
@@ -72,11 +73,11 @@ handlers for all the relevant paths (e.g. /records/{record_id}/medications/)
 and specified methods (GET, POST, PUT, DELETE).
 """
 
-ontology["http://xmlns.com/foaf/0.1/Person"].put = put_demographics
-ontology["http://smartplatforms.org/terms#User"].get_one = user_get
-ontology["http://smartplatforms.org/terms#User"].get_all = user_search
-ontology["http://smartplatforms.org/terms#Container"].get_all = container_capabilities
-ontology["http://smartplatforms.org/terms#Ontology"].get_one = download_ontology
+RecordObject["http://xmlns.com/foaf/0.1/Person"].put = put_demographics
+RecordObject["http://smartplatforms.org/terms#User"].get_one = user_get
+RecordObject["http://smartplatforms.org/terms#User"].get_all = user_search
+RecordObject["http://smartplatforms.org/terms#Container"].get_all = container_capabilities
+RecordObject["http://smartplatforms.org/terms#Ontology"].get_one = download_ontology
 
 m =  OntologyURLMapper() 
 for p, calls in m.calls_by_path():

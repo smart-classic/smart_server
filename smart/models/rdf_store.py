@@ -74,7 +74,7 @@ class SesameConnector(object):
             t += "<remove>%s</remove>"%self.serialize_statement(d)
         
         t += "</transaction>"
-
+        print "Executing tx", t
         u = "%s/statements"%self.endpoint
         success =  self.request(u, "POST", {"Content-Type" : "application/x-rdftransaction"}, t)
         if (success):
