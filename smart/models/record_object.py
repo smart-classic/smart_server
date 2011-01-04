@@ -1,13 +1,9 @@
 import re, RDF, uuid
-from smart.lib.utils import  parse_rdf
+from smart.lib.utils import  parse_rdf, LookupType
 from django.conf import settings
 from smart.models.rdf_ontology import api_types, api_calls, ontology
 from rdf_rest_operations import *
 from query_builder import QueryBuilder
-
-class LookupType(type):
-    def __getitem__(self, key):
-        return self.__getitem__(key)
 
 class RecordObject(object):
     __metaclass__ = LookupType
@@ -35,7 +31,7 @@ class RecordObject(object):
         
     @property
     def children(self):
-        return [RecordObject[x]  for x in self.smart_type.children.values()]
+        return [RecordObject[x.node]  for x in self.smart_type.contained_types.values()]
         
     @property
     def properties(self):
@@ -44,8 +40,8 @@ class RecordObject(object):
     @property
     def children_by_predicate(self):
         ret = {}
-        for c, t in self.smart_type.children.iteritems():
-            ret[c] = RecordObject[t]
+        for c, t in self.smart_type.contained_types.iteritems():
+            ret[c] = RecordObject[t.node]
         return ret.iteritems()
     
     @property
@@ -140,7 +136,7 @@ class RecordObject(object):
         for s in g.find_statements(qs):
             # If this is a typed object with no externally-accessible path, it's fine
             # (stays as a blank node, doesn't trigger a PUT error)
-            t = ontology[s.object]
+            t = RecordObject[s.object]
             if (t.path == None): continue
             typed_object_count += 1
             errors.append(str(s.object))
@@ -195,5 +191,4 @@ class RecordObject(object):
         return ret
 
 for t in api_types:
-    print "Supporting record type", str(t.node)
     RecordObject(t)

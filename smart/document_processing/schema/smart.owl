@@ -385,8 +385,6 @@ http://fda.gov/UNII/{UNII}]]></api:description>
     <sp:pharmacy>
       <sp:Pharmacy>
         <sp:ncpdpid>5235235</sp:ncpdpid>
-        <sp:organization>
-          <sp:Organization>
             <foaf:name>CVS #588</foaf:name>
             <sp:address>
               <sp:Address>
@@ -395,8 +393,6 @@ http://fda.gov/UNII/{UNII}]]></api:description>
                 <v:postal-code>5555</v:postal-code>
                 <v:country-name>Australia</v:country-name>
               </sp:Address>
-            </sp:address>                
-          </sp:Organization>
         </sp:organization>
       </sp:Pharmacy>
     </sp:pharmacy>
@@ -1121,6 +1117,12 @@ http://fda.gov/UNII/{UNII}]]></api:description>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://xmlns.com/foaf/0.1/gender"/>
                 <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
+                <api:doc>
+					<rdf:Description>
+						<api:name>A person's gender</api:name>
+						<api:description>'male' or 'female'</api:description>
+					</rdf:Description>
+				</api:doc>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
@@ -1129,8 +1131,8 @@ http://fda.gov/UNII/{UNII}]]></api:description>
                 <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
                 <api:doc>
 					<rdf:Description>
-						<api:name>A person's gender</api:name>
-						<api:description>'male' or 'female'</api:description>
+						<api:name>A person's zip code</api:name>
+						<api:description>Free text</api:description>
 					</rdf:Description>
 				</api:doc>
             </owl:Restriction>
@@ -1189,20 +1191,7 @@ http://fda.gov/UNII/{UNII}]]></api:description>
     <!-- http://smartplatforms.org/terms#User -->
 
   <owl:Class rdf:about="http://smartplatforms.org/terms#User">
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#person"/>
-                <owl:onClass rdf:resource="http://smartplatforms.org/terms#Person"/>
-                <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
-                <api:doc>
-					<rdf:Description>
-						<api:name>Person represented by this user</api:name>
-						<api:description>RDF Person node</api:description>
-					</rdf:Description>
-				</api:doc>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-
+        <rdfs:subClassOf  rdf:resource="http://smartplatforms.org/terms#Person"/>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://smartplatforms.org/terms#department"/>
@@ -1235,13 +1224,9 @@ http://fda.gov/UNII/{UNII}]]></api:description>
         <api:example rdf:datatype="http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
 <rdf:Description rdf:about="http://smartplatforms.org/users/{record_id}">
       <rdf:type rdf:resource="http://smartplatforms.org/terms#User"/>
-      <sp:person>
-       <sp:Person>      
-        <foaf:givenName>Joshua</foaf:givenName>
-        <foaf:familyName>Mandel</foaf:familyName>
-        <foaf:mbox>mailto:joshua._nospam_mandel@childrens.harvard.edu</foaf:mbox>
-	   </sp:Person>
-	  </sp:person>
+      <foaf:givenName>Joshua</foaf:givenName>
+      <foaf:familyName>Mandel</foaf:familyName>
+      <foaf:mbox>mailto:joshua._nospam_mandel@childrens.harvard.edu</foaf:mbox>
       <sp:department>Emergency Medicine</sp:department>
       <sp:role>Staff Scientist</sp:role>
    </rdf:Description>
@@ -1328,22 +1313,12 @@ http://fda.gov/UNII/{UNII}]]></api:description>
   <api:target rdf:resource="http://smartplatforms.org/terms#Ontology"/>
   <api:category>container_item</api:category>
 </api:call>
+
     <!-- http://smartplatforms.org/terms#Pharmacy -->
 
     <owl:Class rdf:about="http://smartplatforms.org/terms#Pharmacy">
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#organization"/>
-                <owl:onClass rdf:resource="http://smartplatforms.org/terms#Organization"/>
-                <owl:minCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</owl:minCardinality>
-                <api:doc>
-					<rdf:Description>
-						<api:name>Organization represented by the pharmacy</api:name>
-						<api:description>RDF Organization node</api:description>
-					</rdf:Description>
-				</api:doc>
-            </owl:Restriction>
-        </rdfs:subClassOf>
+        <rdfs:subClassOf rdf:resource="http://smartplatforms.org/terms#Organization"/>
+
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://smartplatforms.org/terms#ncpdpid"/>
@@ -1986,7 +1961,7 @@ No example yet.]]></api:example>
                 <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
                 <api:doc>
 					<rdf:Description>
-						<api:name>Name of the person</api:name>
+						<api:name>Full name of the person</api:name>
 						<api:description>Free text</api:description>
 					</rdf:Description>
 				</api:doc>
@@ -1998,7 +1973,7 @@ No example yet.]]></api:example>
                 <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
                 <api:doc>
 					<rdf:Description>
-						<api:name>Given of the person</api:name>
+						<api:name>Given name of the person</api:name>
 						<api:description>Free text</api:description>
 					</rdf:Description>
 				</api:doc>
@@ -2237,6 +2212,15 @@ No example yet.]]></api:example>
   <api:target rdf:resource="http://smartplatforms.org/terms#LabResult"/>
   <api:by_internal_id>true</api:by_internal_id>
   <api:category>record_items</api:category>
+</api:call>
+
+<api:call>
+  <api:description>Add lab results to a given record by external key</api:description>
+  <api:method>PUT</api:method>
+  <api:path>http://smartplatforms.org/records/{record_id}/lab_results/external_id/{external_id}</api:path>
+  <api:target rdf:resource="http://smartplatforms.org/terms#LabResult"/>
+  <api:by_internal_id>false</api:by_internal_id>
+  <api:category>record_item</api:category>
 </api:call>
 
 

@@ -18,15 +18,13 @@ import RDF
 class PHA_RDFStore(Object): 
   Meta = BaseMeta()
   PHA = models.ForeignKey(PHA, unique=True)
-  triples = models.XMLField(schema_path=
-    "%s../schema/%s"%(settings.XSLT_STYLESHEET_LOC, "rdf.xsd"))
+  triples = models.XMLField(schema_path="%s../schema/%s"%(settings.XSLT_STYLESHEET_LOC, "rdf.xsd"))
 
   def __unicode__(self):
     try:
         return 'RDF Store %s, for %s' % (self.id, self.principal)
     except:
         return 'RDF Store %s, for ?' % (self.id)
-
 
 class SesameConnector(object):
     def __init__(self, endpoint):
@@ -74,7 +72,6 @@ class SesameConnector(object):
             t += "<remove>%s</remove>"%self.serialize_statement(d)
         
         t += "</transaction>"
-        print "Executing tx", t
         u = "%s/statements"%self.endpoint
         success =  self.request(u, "POST", {"Content-Type" : "application/x-rdftransaction"}, t)
         if (success):
@@ -84,8 +81,6 @@ class SesameConnector(object):
             return True
         raise Exception("Failed to execute sesame transaction: %s"%t)
     
-
-
 class ContextSesameConnector(SesameConnector):
     def __init__(self, endpoint, context):
         super(ContextSesameConnector, self).__init__(endpoint)

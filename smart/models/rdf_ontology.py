@@ -1,6 +1,6 @@
 import os, itertools, RDF
 from django.conf import settings
-from smart.lib.utils import default_ns
+from smart.lib.utils import default_ns, LookupType
 
 ns = default_ns()
 rdf = ns['rdf']
@@ -18,13 +18,18 @@ class OwlAttr(object):
         self.max_cardinality=max_cardinality
 
 class OwlObject(object):
+    attributes = []
     def __init__(self, model, node):
         self.model = model
         self.node = node
-        if (not hasattr(self, 'attributes')):
-            self.attributes = []
-
+        
+    def __repr__(self):
+        return "("+", ".join(["%s:%s"%(a.name, getattr(self, a.name)) for a in self.attributes])+")"
+    
 class SMArtOwlObject(OwlObject):
+    __metaclass__ = LookupType
+    store = {}
+
     def __init__(self, model, node):
         super(SMArtOwlObject, self).__init__(model, node)
         for a in self.attributes:
@@ -33,12 +38,38 @@ class SMArtOwlObject(OwlObject):
                 if a.max_cardinality==1: 
                     assert len(v) < 2, "Attribute %s has max cardinality 1, but length %s"%(a.name, len(v))
                     if len(v) == 1: v = v[0]
+                    else: v = None
                 setattr(self, a.name, v) 
             except: setattr(self, a.name, None)
         return
+    
+    @classmethod
+    def get_or_create(cls, model, node, *args, **kwargs):
+        if cls.store.has_key(node): return cls.store[node]
+        n = cls(model, node, *args, **kwargs)
+        cls.store[node] = n
+        return n
+
+    @classmethod
+    def find_all(cls, m, *args, **kwargs):
+        def get_nodes(m):
+            q = RDF.Statement(None, rdf['type'], cls.rdf_type)
+            r = list(m.find_statements(q))
+            return r
+
+        for n in get_nodes(m):
+            cls.get_or_create(m, n.subject, *args, **kwargs)
+        return cls.store.values()
+    
+    @classmethod
+    def __getitem__(cls, key):
+        try: return cls.store[key]
+        except: return cls.store[RDF.Node(uri_string=key.encode())]
             
 """Represent calls like GET /records/{rid}/medications/"""
 class SMArtCall(SMArtOwlObject):
+    rdf_type = api['call']
+    store = {}
     attributes =  [OwlAttr("target", api['target']),
               OwlAttr("above", api['above']),
               OwlAttr("description", api['description']),
@@ -47,103 +78,83 @@ class SMArtCall(SMArtOwlObject):
               OwlAttr("by_internal_id", api['by_internal_id']),
               OwlAttr("category", api['category'])]
 
-    @classmethod
-    def find_all(cls, m):
-        def get_api_calls(m):
-            q = RDF.Statement(None, rdf['type'], api['call'])
-            r = list(m.find_statements(q))
-            return r
-
-        calls = []
-        for c in get_api_calls(m):
-            i = SMArtCall(m, c.subject)
-            calls.append(i)
-        
-        cls.all = calls
-        return calls
+class SMArtDocs(SMArtOwlObject):
+    attributes =  [OwlAttr("name", api['name']),
+                   OwlAttr("description", api['description'])]
 
 
 class SMArtRestriction(SMArtOwlObject):
     attributes =  [OwlAttr("property", owl['onProperty']),
                    OwlAttr("on_class", owl['onClass']),
                    OwlAttr("min_cardinality", owl['minCardinality']),
-                   OwlAttr("all_values_from", owl['allValuesFrom'])]
+                   OwlAttr("all_values_from", owl['allValuesFrom']),
+                   OwlAttr("doc", api['doc']),
+                   OwlAttr("type", rdf['type'])]
+
+    def __init__(self, model, node):
+        super(SMArtRestriction, self).__init__(model, node)
+        self.doc = SMArtDocs(model, self.doc)
   
 """Represent types like sp:Medication"""
 class SMArtType(SMArtOwlObject):
+    rdf_type = owl['Class']
     attributes =  [OwlAttr("example", api['example']),
                    OwlAttr("name", api['name']),
                    OwlAttr("name_plural", api['name_plural']),
                    OwlAttr("description", api['description']),
-                   OwlAttr("base_path", api['base_path'])]        
-
-
+                   OwlAttr("base_path", api['base_path']),
+                   OwlAttr("supers_classes", rdfs['subClassOf'], max_cardinality=0)]        
+    
+    store = {}
     def __init__(self, model, node, calls):
         super(SMArtType, self).__init__(model, node)
-
-        supers = [x.object for x in model.find_statements(RDF.Statement(node, rdfs['subClassOf'], None))]
     
         self.restrictions = []
-        for s in supers:
-            self.restrictions.append(SMArtRestriction(model, s))
-            
+        self.parents = []
+        for s in self.supers_classes:
+            r = SMArtRestriction(model, s)
+            if (r.type == owl['Restriction']):
+                self.restrictions.append(r)
+            else:
+                r = SMArtType.get_or_create(model, s, calls)
+                self.parents.append(r)
+
         self.calls = filter(lambda c:  c.target == self.node, calls)
-        self.children = {}
+        print self.name, "has ", len(self.calls), "Calls."
+        self.contained_types = {}
         self.properties = []
-        
+ 
+        # Add properties and contained types based on our own restrictions.       
+        for p in self.parents:
+            self.restrictions.extend(p.restrictions)
+
         for r in self.restrictions:
             if r.on_class:
-                self.children[r.property] = r.on_class
+                self.contained_types[r.property] = SMArtType.get_or_create(model, r.on_class, calls)
             else:
                 self.properties.append(r)
-    
-                        
-    @classmethod
-    def find_all(cls, m, calls):
-        def get_types(m):
-            q = RDF.Statement(None, rdf['type'], owl['Class'])
-            r = list(m.find_statements(q))
-            return r
-      
-        types = []
-        for t in get_types(m):
-            i = SMArtType(m, t.subject, calls)
-            types.append(i)
-        return types
+        
+        # And then pull in any from our parents.
 
-class SMArtOntology(object):
-    @classmethod
-    def load(cls): 
-        cls.store = {}
-        for t in api_types:
-            cls.store[t.node] = t
-
-    def __init__(self):
-        if not hasattr(SMArtOntology, "store"): SMArtOntology.load()
-                
-    def __getitem__(self, aname):
-        try:
-            return self.store[aname]
-        except:
-            return self.store[RDF.Node(uri_string=aname.encode())]
-
+    def __repr__(self):
+        return "SMArtType:" + str(self.node)
+                 
 def parse_ontology(f):
-    print "PARSING ONTOLOGY"
     m = RDF.Model()
     p = RDF.Parser()
     p.parse_string_into_model(m, f, "nodefault")
     
     global api_calls 
     global api_types
-    global ontology
     
     api_calls = SMArtCall.find_all(m)  
     api_types = SMArtType.find_all(m, api_calls)
-    ontology = SMArtOntology()
-
+    
 api_calls = None  
 api_types = None 
-ontology = None 
-
 f = open(os.path.join(settings.APP_HOME, "smart/document_processing/schema/smart.owl")).read()
 parse_ontology(f)
+
+ontology = SMArtType
+for t in api_types:
+   print "Supporting record type", str(t.node)

@@ -59,7 +59,6 @@ class CallMapper(object):
       r['obj'] = RecordObject[self.call.target]
       if self.call.above:
           r['above_obj'] = RecordObject[self.call.above]
-
       return r
       
       
