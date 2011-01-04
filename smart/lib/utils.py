@@ -27,6 +27,12 @@ import time
 
 smart_base = "http://smartplatforms.org"
 
+
+# metaclass to allow class-based dictionary look-up
+class LookupType(type):
+    def __getitem__(self, key):
+        return self.__getitem__(key)
+
 # taken from pointy-stick.com with some modifications
 class MethodDispatcher(object):
   def __init__(self, method_map):

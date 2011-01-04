@@ -17,6 +17,9 @@ from utils import *
 
 
 ns = default_ns()
+sp = ns['sp']
+loinc = RDF.NS("http://loinc.org/codes/")
+
 conn=psycopg2.connect("dbname='%s' user='%s' password='%s'"%
                              ("i2b2demo",
                               settings.DATABASE_USER, 
@@ -65,8 +68,61 @@ def get_problems(p):
        p.onset = row['start_date']
        p.resolution = row['end_date']
        p.external_id="%s"%len(problems)
-
+       
    return problems
+
+def get_labs(p):
+   q = """select f.encounter_num, f.start_date, 
+   f.valtype_cd, f.tval_char, f.nval_num, f.units_cd,
+   f.concept_cd, cd.name_char, i.c_metadataxml
+   from observation_fact f 
+   join concept_dimension cd on cd.concept_cd=f.concept_cd 
+   join i2b2 i on i.c_fullname=cd.concept_path
+where f.concept_cd like 'LOINC:%%' and
+patient_num=%s and cd.concept_path like '%%LOINC%%';"""
+   cur.execute(q, (p,))
+   rows = cur.fetchall()
+   
+   def xval(d, vname):
+       try:
+          return  d.getElementsByTagName(vname)[0].childNodes[0].data.encode()
+       except: 
+          return None
+   def xvals(d, vname):
+       return  [x.childNodes[0].data.encode() for x in d.getElementsByTagName(vname)]
+
+   labs = []
+   for row in rows: 
+       l = i2lab()
+       labs.append(l)
+       l.external_id="%s"%len(labs)
+       
+       l.type = row['valtype_cd'] == 'N' and "quantitative" or "qualitative"
+       l.tval = row['tval_char'].encode()
+       l.nval = row['nval_num']
+       l.unit = row['units_cd'].encode()
+       l.code = row['concept_cd'].split("LOINC:",1)[1].encode()
+       l.title= row['name_char'].encode().split(" (LOINC",1)[0]
+       l.startTime = row['start_date']
+       
+       try:
+           d = minidom.parseString(row['c_metadataxml'])
+       except: pass #print "couldn't parse for", len(labs), row
+       l.dataType = xval(d, "DataType")
+       l.normalUnit = xval(d, "NormalUnits")
+       l.normalRangeLower = xval(d, "HighofLowValue")
+       l.normalRangeUpper = xval(d, "LowofHighValue")
+       l.nonCriticalRangeLower = xval(d, "LowofLowValue")
+       l.nonCriticalRangeLower = xval(d, "HighofHighValue")
+       l.enumVals = xvals(d, "Val")
+   
+       l.row = row
+       if l.unit == "@" and l.type=="quantitative" and l.normalUnit:
+           l.unit = l.normalUnit
+           print "bum units now", l.unit
+       
+   return labs
+
 
 
 frequency_map = {"QD" : "daily", "QHS" : "at bed", "BID": "twice daily"}
@@ -205,6 +261,9 @@ class  i2problem(object):
 class  i2demographic(object):
     pass
 
+class  i2lab(object):
+    pass
+
 
 class i2b2Patient():
     def __init__(self, patient_id):
@@ -212,6 +271,7 @@ class i2b2Patient():
         self.get_problems()
         self.get_meds()
         self.get_demographics()
+        self.get_labs()
         
     def get_problems(self):
         self.problems = get_problems(self.id)
@@ -219,42 +279,111 @@ class i2b2Patient():
         self.meds = get_meds(self.id)
     def get_demographics(self):
         self.demographics = get_demographics(self.id)
+    def get_labs(self):
+        self.labs = get_labs(self.id)
     
     def rdf_med(self, med):
         m = RDF.Model()
         om = RDF.Node(blank="one_med")
-        m.append(RDF.Statement(om, ns['rdf']['type'], ns['sp']['medication']))
-        m.append(RDF.Statement(om, ns['dcterms']['title'], RDF.Node(literal=med.title.encode() )))
-        m.append(RDF.Statement(om, ns['med']['drug'], ns['rxcui'][med.rxcui.encode()]))
-        #m.append(RDF.Statement(om, ns['med']['ndc'], RDF.Node(literal=med.ndc.encode())))
+        m.append(RDF.Statement(om, ns['rdf']['type'], sp['Medication']))
+
+        rxnormCode = RDF.Node()
+        m.append(RDF.Statement(rxnormCode, ns['rdf']['type'], sp['CodedValue']))
+        m.append(RDF.Statement(rxnormCode, sp['code'], ns['rxcui'][med.rxcui.encode()]))
+        m.append(RDF.Statement(rxnormCode, ns['dcterms']['title'], RDF.Node(literal=med.title.encode())))
+        m.append(RDF.Statement(om, sp['code'], rxnormCode))
+
+        
+        #m.append(RDF.Statement(om, sp['ndc'], RDF.Node(literal=med.ndc.encode())))
         if med.dose:
-            m.append(RDF.Statement(om, ns['med']['dose'], RDF.Node(literal=med.dose.encode())))
+            m.append(RDF.Statement(om, sp['dose'], RDF.Node(literal=med.dose.encode())))
         if med.doseUnit:
-            m.append(RDF.Statement(om, ns['med']['doseUnit'], RDF.Node(literal=med.doseUnit.encode())))
+            m.append(RDF.Statement(om, sp['doseUnit'], RDF.Node(literal=med.doseUnit.encode())))
         if med.strength:
-            m.append(RDF.Statement(om, ns['med']['strength'], RDF.Node(literal=med.strength.encode())))
+            m.append(RDF.Statement(om, sp['strength'], RDF.Node(literal=med.strength.encode())))
         if (med.strengthUnit):
-            m.append(RDF.Statement(om, ns['med']['strengthUnit'], RDF.Node(literal=med.strengthUnit.encode())))
+            m.append(RDF.Statement(om, sp['strengthUnit'], RDF.Node(literal=med.strengthUnit.encode())))
         if (med.route):
-            m.append(RDF.Statement(om, ns['med']['route'], RDF.Node(literal=med.route.encode())))
+            m.append(RDF.Statement(om, sp['route'], RDF.Node(literal=med.route.encode())))
         if (med.frequency):
-            m.append(RDF.Statement(om, ns['med']['frequency'], RDF.Node(literal=med.frequency.encode())))
-        m.append(RDF.Statement(om, ns['med']['startDate'], RDF.Node(literal=med.startDate.isoformat()[:10].encode())))
+            m.append(RDF.Statement(om, sp['frequency'], RDF.Node(literal=med.frequency.encode())))
+        m.append(RDF.Statement(om, sp['startDate'], RDF.Node(literal=med.startDate.isoformat()[:10].encode())))
         if (med.endDate):
-            m.append(RDF.Statement(om, ns['med']['endDate'], RDF.Node(literal=med.endDate.isoformat()[:10].encode())))
+            m.append(RDF.Statement(om, sp['endDate'], RDF.Node(literal=med.endDate.isoformat()[:10].encode())))
         return m
 
 
     def rdf_problem(self, problem):
         m = RDF.Model()
         o = RDF.Node(blank="one_problem")
-        m.append(RDF.Statement(o, ns['rdf']['type'], ns['sp']['problem']))
-        m.append(RDF.Statement(o, ns['dcterms']['title'], RDF.Node(literal=problem.title.encode())))
-#        m.append(RDF.Statement(o, ns['umls']['cui'], RDF.Node(literal=problem.umlsCui.encode())))
-        m.append(RDF.Statement(o, ns['snomed-ct']['concept'], ns['snomed-ct']['concepts/'+problem.snomedCID.encode()]))
-        m.append(RDF.Statement(o, ns['sp']['onset'], RDF.Node(literal=problem.onset.isoformat()[:10].encode())))
+        m.append(RDF.Statement(o, ns['rdf']['type'], sp['Problem']))
+        
+        snomedCode = RDF.Node()
+        m.append(RDF.Statement(snomedCode, ns['rdf']['type'], sp['CodedValue']))
+        m.append(RDF.Statement(snomedCode, sp['code'], ns['snomed-ct']['concepts/'+problem.snomedCID.encode()]))
+        m.append(RDF.Statement(snomedCode, ns['dcterms']['title'], RDF.Node(literal=problem.title.encode())))
+        m.append(RDF.Statement(o, sp['code'], snomedCode))
+
+        m.append(RDF.Statement(o, sp['onset'], RDF.Node(literal=problem.onset.isoformat()[:10].encode())))
         if (problem.resolution):    
-                m.append(RDF.Statement(o, ns['sp']['resolution'], RDF.Node(literal=problem.resolution.isoformat()[:10].encode())))
+                m.append(RDF.Statement(o, sp['resolution'], RDF.Node(literal=problem.resolution.isoformat()[:10].encode())))
+        return m
+    
+    def rdf_lab(self, lab):
+        m = RDF.Model()
+        o = RDF.Node(blank="one_lab")
+        
+        m.append(RDF.Statement(o, ns['rdf']['type'], sp['LabResult']))
+        
+        loincCode = RDF.Node()
+        m.append(RDF.Statement(loincCode, ns['rdf']['type'], sp['CodedValue']))
+        m.append(RDF.Statement(loincCode, sp['code'], loinc[lab.code]))
+        m.append(RDF.Statement(loincCode, ns['dcterms']['title'], RDF.Node(literal=lab.title)))
+        m.append(RDF.Statement(o, sp['loincCode'], loincCode))
+
+        resulted = RDF.Node()
+        m.append(RDF.Statement(resulted, ns['rdf']['type'], sp['Attribution']))
+        m.append(RDF.Statement(resulted, ns['sp']['startTime'], RDF.Node(literal=lab.startTime.isoformat())))
+        m.append(RDF.Statement(o, sp['resulted'], resulted))
+
+        res = RDF.Node()
+        if lab.type == 'quantitative':
+            m.append(RDF.Statement(res, ns['rdf']['type'], sp['QuantitativeResult']))
+            m.append(RDF.Statement(o, sp['quantitativeResult'], res))
+
+            vau = RDF.Node()
+            m.append(RDF.Statement(vau, ns['rdf']['type'], sp['ValueAndUnit']))
+            m.append(RDF.Statement(res, sp['valueAndUnit'], vau))
+            m.append(RDF.Statement(vau,sp['value'], RDF.Node(literal=str(lab.nval).encode())))
+            m.append(RDF.Statement(vau,sp['unit'], RDF.Node(literal=lab.unit)))
+
+            if lab.normalRangeLower  and lab.normalRangeLower :
+                nlRange = RDF.Node()
+                m.append(RDF.Statement(nlRange, ns['rdf']['type'], sp['ResultRange']))
+                m.append(RDF.Statement(res,sp['normalRange'], nlRange))
+                
+                nlMin = RDF.Node()
+                m.append(RDF.Statement(nlMin, ns['rdf']['type'], sp['ValueAndUnit']))
+                m.append(RDF.Statement(nlRange, sp['minimum'], nlMin))
+                m.append(RDF.Statement(nlMin,sp['value'], RDF.Node(literal=lab.normalRangeLower)))
+                m.append(RDF.Statement(nlMin,sp['unit'], RDF.Node(literal=lab.unit)))
+                
+                nlMax = RDF.Node()
+                m.append(RDF.Statement(nlMax, ns['rdf']['type'], sp['ValueAndUnit']))
+                m.append(RDF.Statement(nlRange, sp['maximum'], nlMax))
+                m.append(RDF.Statement(nlMax,sp['value'], RDF.Node(literal=lab.normalRangeUpper)))
+                m.append(RDF.Statement(nlMax,sp['unit'], RDF.Node(literal=lab.unit)))
+                
+            
+            
+
+        else:
+            m.append(RDF.Statement(res, ns['rdf']['type'], sp['QualitativeResult']))
+            m.append(RDF.Statement(o, sp['qualitativeResult'], res))
+            m.append(RDF.Statement(res, sp['value'], RDF.Node(literal=lab.tval.encode())))
+            for v in lab.enumVals:
+                m.append(RDF.Statement(res, sp['enumerationOption'], RDF.Node(literal=v.encode())))                
+        
         return m
     
 
@@ -267,16 +396,16 @@ class i2b2Patient():
         m.append(RDF.Statement(o, ns['foaf']['familyName'], RDF.Node(literal=d.familyName.encode())))
         m.append(RDF.Statement(o, ns['foaf']['gender'], RDF.Node(literal=d.gender.encode())))
         if (d.zip):
-            m.append(RDF.Statement(o, ns['spdemo']['zipcode'], RDF.Node(literal=d.zip.encode())))
+            m.append(RDF.Statement(o, sp['zipcode'], RDF.Node(literal=d.zip.encode())))
         if (d.deathday):
-            m.append(RDF.Statement(o, ns['spdemo']['deathday'], RDF.Node(literal=d.deathday.isoformat()[:10].encode())))
+            m.append(RDF.Statement(o, sp['deathday'], RDF.Node(literal=d.deathday.isoformat()[:10].encode())))
         if (d.birthday):
-            m.append(RDF.Statement(o, ns['spdemo']['birthday'], RDF.Node(literal=d.birthday.isoformat()[:10].encode())))
-        m.append(RDF.Statement(o, ns['spdemo']['language'], RDF.Node(literal=d.language.encode())))
-        m.append(RDF.Statement(o, ns['spdemo']['race'], RDF.Node(literal=d.race.encode())))
-        m.append(RDF.Statement(o, ns['spdemo']['maritalStatus'], RDF.Node(literal=d.maritalStatus.encode())))
-        m.append(RDF.Statement(o, ns['spdemo']['religion'], RDF.Node(literal=d.religion.encode())))
-        m.append(RDF.Statement(o, ns['spdemo']['income'], RDF.Node(literal=d.income.encode())))
+            m.append(RDF.Statement(o, sp['birthday'], RDF.Node(literal=d.birthday.isoformat()[:10].encode())))
+        m.append(RDF.Statement(o, sp['language'], RDF.Node(literal=d.language.encode())))
+        m.append(RDF.Statement(o, sp['race'], RDF.Node(literal=d.race.encode())))
+        m.append(RDF.Statement(o, sp['maritalStatus'], RDF.Node(literal=d.maritalStatus.encode())))
+        m.append(RDF.Statement(o, sp['religion'], RDF.Node(literal=d.religion.encode())))
+        m.append(RDF.Statement(o, sp['income'], RDF.Node(literal=d.income.encode())))
         
         return m
 
@@ -292,9 +421,11 @@ class i2b2Patient():
         os.mkdir(os.path.join(base, "medications"))
         os.mkdir(os.path.join(base, "problems"))
         os.mkdir(os.path.join(base, "demographics"))
+        os.mkdir(os.path.join(base, "lab_results"))
 
         os.mkdir(os.path.join(base, "medications", "external_id"))
         os.mkdir(os.path.join(base, "problems", "external_id"))
+        os.mkdir(os.path.join(base, "lab_results", "external_id"))
         
         for m in self.meds:
             os.mkdir(os.path.join(base, "medications", "external_id",m.external_id))
@@ -306,6 +437,12 @@ class i2b2Patient():
             os.mkdir(os.path.join(base, "problems", "external_id", p.external_id))
             f = open(os.path.join(base, "problems/external_id/%s/data.rdf"%p.external_id), "w")
             f.write(serialize_rdf(self.rdf_problem(p)))
+            f.close()
+
+        for l in self.labs:
+            os.mkdir(os.path.join(base, "lab_results", "external_id", l.external_id))
+            f = open(os.path.join(base, "lab_results/external_id/%s/data.rdf"%l.external_id), "w")
+            f.write(serialize_rdf(self.rdf_lab(l)))
             f.close()
             
         f = open(os.path.join(base, "demographics/data.rdf"), "w")
@@ -324,6 +461,12 @@ class i2b2Patient():
             patients[-1].write_to_files()
             
         return patients
+    
+if __name__ == "__main__":
+    ps = i2b2Patient.initialize_all()
+    for p in ps:            
+        p.write_to_files()
+     
 """
 from smart.lib.i2b2_export import *
 ps = i2b2Patient.initialize_all()
