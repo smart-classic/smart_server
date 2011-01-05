@@ -22,8 +22,7 @@ a=PHA.objects.create(description = 'Points to a locally-hosted app for developme
                    icon_url="http://sandbox.smartplatforms.org/static/resources/images/app_icons_32/developers_sandbox.png"
                      )
 
-AppActivity.objects.create(app=a, name='main', url='http://localhost:8000/index.html?record_id={record_id}')
-AppActivity.objects.create(app=a, name='after_auth', url='http://localhost:8000/after_auth.html')
+AppActivity.objects.create(app=a, name='main', url='http://localhost:8000/bootstrap.html')
 
 print "BOOTSTRAP helpers"
 # then add additional apps by manifest
