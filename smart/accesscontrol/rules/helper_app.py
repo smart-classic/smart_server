@@ -11,3 +11,5 @@ def grant(happ, permset):
     permset.grant(get_first_record_tokens, None)
     permset.grant(get_next_record_tokens, None)
     permset.grant(get_record_tokens, None)
+    
+    permset.grant(download_ontology, None)

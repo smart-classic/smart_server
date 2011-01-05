@@ -20,6 +20,7 @@ class Authorization(object):
   def process_view(self, request, view_func, view_args, view_kwargs):
     """ The process_view() hook allows us to examine the request before view_func is called"""
     # Url exception(s)
+    
     for exc_pattern in settings.SMART_ACCESS_CONTROL_EXCEPTIONS:
       if re.match(exc_pattern, request.path):
         return None

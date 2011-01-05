@@ -20,15 +20,15 @@ class UserDataStore(oauth.OAuthStore):
   for user applications (PHAs)
   """
 
-  def __get_pha(self, consumer_key):
+  def _get_app(self, consumer_key):
     try:
       return models.PHA.objects.get(consumer_key = consumer_key)
     except models.PHA.DoesNotExist:
       return None
 
-  def __get_token(self, token_str, pha=None):
+  def _get_token(self, token_str, app=None):
     kwargs = {'token': token_str}
-    if pha: kwargs['share__with_app'] = pha
+    if app: kwargs['share__with_app'] = app
 
     try:
       return models.AccessToken.objects.get(**kwargs)
@@ -46,7 +46,7 @@ class UserDataStore(oauth.OAuthStore):
     """
     looks up a consumer
     """
-    return self.__get_pha(consumer_key)
+    return self._get_app(consumer_key)
 
   def create_request_token(self,  consumer, 
                            request_token_str, 
@@ -152,7 +152,6 @@ class UserDataStore(oauth.OAuthStore):
     share = request_token.share
     
     # create an access token for this share
-    print "Creating new token with ", access_token_str, access_token_secret
     t =  share.new_access_token(access_token_str, 
                                   access_token_secret)
     return t
@@ -162,7 +161,7 @@ class UserDataStore(oauth.OAuthStore):
     token is the token string
     returns a OAuthAccessToken
     """
-    return self.__get_token(token_str = access_token_str, pha = consumer)
+    return self._get_token(token_str = access_token_str, app = consumer)
 
   def check_and_store_nonce(self, nonce_str):
     """
@@ -183,7 +182,7 @@ class MachineDataStore(oauth.OAuthStore):
   def __init__(self, type = None):
     self.type = type
 
-  def __get_machine_app(self, consumer_key):
+  def _get_machine_app(self, consumer_key):
     try:
       if self.type:
         return models.MachineApp.objects.get(app_type = self.type, consumer_key = consumer_key)
@@ -194,7 +193,7 @@ class MachineDataStore(oauth.OAuthStore):
       return None
 
   def lookup_consumer(self, consumer_key):
-    return self.__get_machine_app(consumer_key)
+    return self._get_machine_app(consumer_key)
 
   def lookup_request_token(self, consumer, request_token_str):
     return None
@@ -213,13 +212,24 @@ class MachineDataStore(oauth.OAuthStore):
       raise oauth.OAuthError("Nonce already exists")
 
 class HelperAppDataStore(UserDataStore):
-  def __get_token(self, token_str, app=None):
+  def __init__(self, *args, **kwargs):
+      super(HelperAppDataStore, self).__init__(*args, **kwargs)
+  def _get_app(self, consumer_key):
+    try:
+      ret = models.HelperApp.objects.get(consumer_key = consumer_key)
+      return ret
+    except models.HelperApp.DoesNotExist:
+      return None
+
+  def _get_token(self, token_str, app=None):
     kwargs = {'token': token_str}
     if app: kwargs['share__with_app'] = app
     try:
       return models.AccessToken.objects.get(**kwargs)
     except models.AccessToken.DoesNotExist:
       return None
+
+
 
 class SessionDataStore(oauth.OAuthStore):
   """
@@ -228,19 +238,19 @@ class SessionDataStore(oauth.OAuthStore):
   An oauth-server for in-RAM chrome-app user-specific tokens
   """
 
-  def __get_chrome_app(self, consumer_key):
+  def _get_chrome_app(self, consumer_key):
     try:
       return models.MachineApp.objects.get(consumer_key = consumer_key, app_type='chrome')
     except models.MachineApp.DoesNotExist:
       return None
 
-  def __get_request_token(self, token_str, type=None, pha=None):
+  def _get_request_token(self, token_str, type=None, pha=None):
     try:
       return models.SessionRequestToken.objects.get(token = token_str)
     except models.SessionRequestToken.DoesNotExist:
       return None
 
-  def __get_token(self, token_str, type=None, pha=None):
+  def _get_token(self, token_str, type=None, pha=None):
     try:
       return models.SessionToken.objects.get(token = token_str)
     except models.SessionToken.DoesNotExist:
@@ -250,7 +260,7 @@ class SessionDataStore(oauth.OAuthStore):
     """
     looks up a consumer
     """
-    return self.__get_chrome_app(consumer_key)
+    return self._get_chrome_app(consumer_key)
 
   def create_request_token(self, consumer, request_token_str, request_token_secret, verifier, oauth_callback):
     """
@@ -270,7 +280,7 @@ class SessionDataStore(oauth.OAuthStore):
 
     consumer may be null.
     """
-    return self.__get_request_token(token_str = request_token_str)
+    return self._get_request_token(token_str = request_token_str)
 
   def authorize_request_token(self, request_token, user=None):
     """
@@ -313,7 +323,7 @@ class SessionDataStore(oauth.OAuthStore):
     token is the token string
     returns a OAuthAccessToken
     """
-    return self.__get_token(access_token_str)
+    return self._get_token(access_token_str)
 
   def check_and_store_nonce(self, nonce_str):
     """

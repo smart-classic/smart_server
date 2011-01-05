@@ -42,11 +42,12 @@ class OntologyURLMapper():
 def GetCallMapper(c):
     ret = None
     cat = str(c.category)
-    if cat.endswith("items"):
+    if cat.endswith("_items"):
         ret= MultipleItemCallMapper(c)
-    elif cat.endswith("item"):
+    elif cat.endswith("_item"):
         ret= SingleItemCallMapper(c) 
     else:
+        print "plain old call mapper for", cat, c.path
         ret= CallMapper(c)
     return ret
 
@@ -56,11 +57,17 @@ class CallMapper(object):
         self.call = c
         
     def arguments(self, r):
-      r['obj'] = RecordObject[self.call.target]
-      if self.call.above:
-          r['above_obj'] = RecordObject[self.call.above]
-      return r
-      
+        return {}  
+
+    @property
+    def get(self): return None 
+    @property
+    def post(self): return None
+    @property
+    def put(self): return None
+    @property
+    def delete(self): return None
+
       
     def map_call(self, hash):        
         if "GET" == str(self.call.method):
@@ -80,11 +87,17 @@ class CallMapper(object):
         if  "DELETE" == str(self.call.method):
           hash["DELETE"] =self.delete    
 
+class RecordCallMapper(CallMapper):
     @property
     def obj(self): return RecordObject[self.call.target]
 
-    
-class SingleItemCallMapper(CallMapper):
+    def arguments(self, r):
+      r['obj'] = self.obj
+      if self.call.above:
+          r['above_obj'] = RecordObject[self.call.above]
+      return r
+
+class SingleItemCallMapper(RecordCallMapper):
     @property
     def get(self): return self.obj.get_one
     @property
@@ -94,7 +107,7 @@ class SingleItemCallMapper(CallMapper):
     @property
     def delete(self): return self.obj.delete_one
     
-class MultipleItemCallMapper(CallMapper):
+class MultipleItemCallMapper(RecordCallMapper):
     @property
     def get(self): return self.obj.get_all
     @property

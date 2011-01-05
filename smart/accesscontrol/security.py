@@ -26,7 +26,7 @@ def get_oauth_info(request, server):
     oauth_request = server.extract_oauth_request(djangoutils.extract_request(request))
     consumer, token, parameters = server.check_resource_access(oauth_request)
     return consumer, token, parameters, oauth_request
-  except oauth.OAuthError:
+  except oauth.OAuthError as e:
     return None, None, None, None
 
 def get_principal(request):
@@ -52,6 +52,7 @@ def get_principal(request):
       return pha, oauth_request
 
   ha, token, parameters, oauth_request = get_oauth_info(request, HELPER_APP_SERVER)
+
   if ha:
     if token:
       return token, oauth_request

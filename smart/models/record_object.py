@@ -1,9 +1,10 @@
 import re, RDF, uuid
 from smart.lib.utils import  parse_rdf, LookupType
 from django.conf import settings
-from smart.models.rdf_ontology import api_types, api_calls, ontology
+from smart.common.rdf_ontology import api_types, api_calls, ontology
 from rdf_rest_operations import *
-from query_builder import QueryBuilder
+from smart.common.query_builder import QueryBuilder
+from smart.common.util import remap_node
 
 class RecordObject(object):
     __metaclass__ = LookupType
@@ -23,7 +24,10 @@ class RecordObject(object):
     @classmethod
     def __getitem__(cls, key):
         try: return cls.known_types_dict[key]
-        except: return cls.known_types_dict[RDF.Node(uri_string=key.encode())]
+        except: 
+            try: return cls.known_types_dict[key.node]
+            except: 
+                return cls.known_types_dict[RDF.Node(uri_string=key.encode())]
 
     @classmethod
     def register_type(cls, smart_type, robj):
@@ -36,13 +40,6 @@ class RecordObject(object):
     @property
     def properties(self):
         return [x.property for x in self.smart_type.properties]
-
-    @property
-    def children_by_predicate(self):
-        ret = {}
-        for c, t in self.smart_type.contained_types.iteritems():
-            ret[c] = RecordObject[t.node]
-        return ret.iteritems()
     
     @property
     def uri(self):
@@ -57,14 +54,7 @@ class RecordObject(object):
         v = self.smart_type.base_path
         if v: return str(v)
         return None    
-     
-    def predicate_for_child(self, child):
-        print "finding predicate for ", str(self.node), str(child.node)
-        for p,c in self.children_by_predicate:
-            if c == child:
-                return p
-        return None
-    
+         
     def internal_id(self, record_connector, external_id):
         id_graph = parse_rdf(record_connector.sparql("""
             PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
@@ -85,16 +75,7 @@ class RecordObject(object):
             return str(s.uri).encode()
         except: 
             return None
-    
-    def remap_node(self, model, old_node, new_node):
-        for s in list(model.find_statements(RDF.Statement(old_node, None, None))):
-            del model[s]
-            model.append(RDF.Statement(new_node, s.predicate, s.object))
-        for s in list(model.find_statements(RDF.Statement(None, None, old_node))):
-            del model[s]
-            model.append(RDF.Statement(s.subject, s.predicate, new_node))            
-        return
-    
+        
     def path_var_bindings(self, request_path):
         var_names =  re.findall("{(.*?)}",self.path)
         
@@ -104,7 +85,6 @@ class RecordObject(object):
             # (which can be a new GUID, substituted in on-the-fly.)
             repl = i+1 < len(var_names) and "([^\/]+).*" or "([^\/]*?)"
             match_string = re.sub("{"+v+"}", repl, match_string)
-        print "re.search", match_string, request_path,re.search(match_string, request_path).groups()
         matches = re.search(match_string, request_path).groups()
         var_values = {}
   
@@ -158,7 +138,7 @@ class RecordObject(object):
                 node_map[s.subject] = RDF.Node(uri_string=full_path)
 
         for (old_node, new_node) in node_map.iteritems():
-            self.remap_node(g, old_node, new_node)
+            remap_node(g, old_node, new_node)
 
         for c in self.children:
             c.generate_uris(g, var_bindings)
@@ -166,29 +146,12 @@ class RecordObject(object):
         return node_map.values()
     
     def query_one(self, id):
-        return self.query(one_name=id)
+        return self.smart_type.query(one_name=id)
 
     def query_all(self, above_type=None, above_uri=None):
-        return self.query(above_type=above_type, above_uri=above_uri)
+        atype = above_type and above_type.smart_type or None
+        return self.smart_type.query(above_type=atype, above_uri=above_uri)
 
-    def query(self, one_name="?root_subject", above_type=None, above_uri=None):
-        ret = """
-        BASE <http://smartplatforms.org/>
-        PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-        CONSTRUCT { $construct_triples }
-        FROM $context
-        WHERE {
-           { $query_triples } 
-        }
-        """
-
-        q = QueryBuilder(self, one_name)
-        q.require_above(above_type, above_uri)
-        b = q.build()
-
-        ret = ret.replace("$construct_triples", q.construct_triples())
-        ret = ret.replace("$query_triples", b)        
-        return ret
-
+    
 for t in api_types:
     RecordObject(t)

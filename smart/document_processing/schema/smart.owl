@@ -373,11 +373,7 @@ http://fda.gov/UNII/{UNII}]]></api:description>
     <dc:date>2010-05-12T04:00:00Z</dc:date>
     <sp:provider>
       <sp:Provider>
-        <sp:person>
-          <sp:Person>
-            <foaf:name>Joshua Mandel</foaf:name>
-          </sp:Person>				
-        </sp:person>
+        <foaf:name>Joshua Mandel</foaf:name>
         <sp:npi>5235235</sp:npi>
         <sp:dea>325555555</sp:dea>
       </sp:Provider>
@@ -393,7 +389,7 @@ http://fda.gov/UNII/{UNII}]]></api:description>
                 <v:postal-code>5555</v:postal-code>
                 <v:country-name>Australia</v:country-name>
               </sp:Address>
-        </sp:organization>
+              </sp:address>
       </sp:Pharmacy>
     </sp:pharmacy>
     <sp:pbm>T00000000001011</sp:pbm>
@@ -1338,20 +1334,7 @@ http://fda.gov/UNII/{UNII}]]></api:description>
     <!-- http://smartplatforms.org/terms#Provider -->
 
     <owl:Class rdf:about="http://smartplatforms.org/terms#Provider">
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#person"/>
-                <owl:onClass rdf:resource="http://smartplatforms.org/terms#Person"/>
-                <owl:minCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</owl:minCardinality>
-                <api:doc>
-					<rdf:Description>
-						<api:name>Person acting as provider</api:name>
-						<api:description>RDF Person node</api:description>
-					</rdf:Description>
-				</api:doc>
-
-            </owl:Restriction>
-        </rdfs:subClassOf>
+        <rdfs:subClassOf rdf:resource="http://smartplatforms.org/terms#Person"/>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://xmlns.com/foaf/0.1/Organization"/>

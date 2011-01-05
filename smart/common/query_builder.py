@@ -13,12 +13,12 @@ class QueryBuilder(object):
         
     def require_above(self, above_type=None, above_uri=None):
         if (above_uri == None): return
-        predicate = above_type.predicate_for_child(self.root_type)
+        predicate = above_type.predicate_for_contained_type(self.root_type)
         predicate = str(predicate.uri)
         self.required_triple("<"+above_uri+">", "<"+predicate+">", self.root_name )
         
     def get_identifier(self, id_base, role="predicate"):
-        if id_base[0] == "<": return id_base
+        if id_base[0] == "<" or id_base.startswith("_:"): return id_base
         
         start = id_base[0] == "?" and "?" or ""
 
@@ -49,7 +49,6 @@ class QueryBuilder(object):
         ret = ret.replace("$insertion", repl)
         return ret
 
-
     def build(self, root_name=None, root_type=None):
         ret = ""
         # Recursion starting off:  set initial conditions (if any).
@@ -58,20 +57,19 @@ class QueryBuilder(object):
             root_type = self.root_type            
             ret = " ".join(self.triples_created)
             
-        if (root_type.uri != None):
-            if (root_type.path != None):
-                ret += self.required_triple(root_name, "rdf:type", "<"+root_type.uri+">")
-            else:
-                ret += self.optional_triple(root_name, "rdf:type", "<"+root_type.uri+">")
+        if (root_type.base_path != None):
+            ret += self.required_triple(root_name, "rdf:type", "<"+str(root_type.node.uri)+">")
+        else:
+            ret += self.optional_triple(root_name, "rdf:type", "<"+str(root_type.node.uri)+">")
 
         for p in root_type.properties:
-            p = str(p.uri)
+            p = str(p.property.uri)
             oid = self.get_identifier("?"+p, "object")
             ret  += self.optional_triple(root_name, "<"+p+">", oid)
 
-        for p, child in root_type.children_by_predicate:
+        for p, c in root_type.contained_types.iteritems():
             p = str(p.uri)
             oid = self.get_identifier("?"+p, "object")
-            ret += self.optional_child(root_name, child, "<"+p+">", oid)
+            ret += self.optional_child(root_name, c, "<"+p+">", oid)
 
         return ret

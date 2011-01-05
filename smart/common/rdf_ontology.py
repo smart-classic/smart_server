@@ -1,13 +1,6 @@
-import os, itertools, RDF
 from django.conf import settings
-from smart.lib.utils import default_ns, LookupType
-
-ns = default_ns()
-rdf = ns['rdf']
-rdfs = ns['rdfs']
-owl = ns['owl']
-api  = ns['api']
-anyuri = RDF.Node(uri_string="http://www.w3.org/2001/XMLSchema#anyURI")
+from query_builder import QueryBuilder
+from util import *
 
 class OwlAttr(object):
     def __init__(self, name, predicate, object=anyuri, max_cardinality=1, min_cardinality=0):
@@ -120,7 +113,6 @@ class SMArtType(SMArtOwlObject):
                 self.parents.append(r)
 
         self.calls = filter(lambda c:  c.target == self.node, calls)
-        print self.name, "has ", len(self.calls), "Calls."
         self.contained_types = {}
         self.properties = []
  
@@ -136,9 +128,43 @@ class SMArtType(SMArtOwlObject):
         
         # And then pull in any from our parents.
 
+    def predicate_for_contained_type(self, contained_type):
+        for p, c in self.contained_types.iteritems():
+            if c == contained_type: return p
+        return None
+
     def __repr__(self):
         return "SMArtType:" + str(self.node)
+
+    def query_one(self, id):
+        return self.query(one_name=id)
+
+    def query_all(self, above_type=None, above_uri=None):
+        return self.query(above_type=above_type, above_uri=above_uri)
+
+    def query(self, one_name="?root_subject", above_type=None, above_uri=None):
+        ret = """
+        BASE <http://smartplatforms.org/>
+        PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+        CONSTRUCT { $construct_triples }
+        FROM $context
+        WHERE {
+           { $query_triples } 
+        }
+        """
+
+        q = QueryBuilder(self, one_name)
+        
+        if (above_type and above_uri):
+            q.require_above(above_type, above_uri)
+        b = q.build()
+
+        ret = ret.replace("$construct_triples", q.construct_triples())
+        ret = ret.replace("$query_triples", b)        
+        return ret
                  
+parsed = False
+                
 def parse_ontology(f):
     m = RDF.Model()
     p = RDF.Parser()
@@ -146,15 +172,18 @@ def parse_ontology(f):
     
     global api_calls 
     global api_types
+    global parsed
     
     api_calls = SMArtCall.find_all(m)  
     api_types = SMArtType.find_all(m, api_calls)
+    parsed = True
     
 api_calls = None  
 api_types = None 
-f = open(os.path.join(settings.APP_HOME, "smart/document_processing/schema/smart.owl")).read()
-parse_ontology(f)
-
 ontology = SMArtType
-for t in api_types:
-   print "Supporting record type", str(t.node)
+
+try:
+    f = open(settings.ONTOLOGY_FILE).read()
+    parse_ontology(f)
+except AttributeError: pass
+

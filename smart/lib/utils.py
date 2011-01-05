@@ -27,7 +27,6 @@ import time
 
 smart_base = "http://smartplatforms.org"
 
-
 # metaclass to allow class-based dictionary look-up
 class LookupType(type):
     def __getitem__(self, key):
@@ -45,10 +44,6 @@ class MethodDispatcher(object):
   def __call__(self, request, *args, **kwargs):
     view_func = self.resolve(request)
     if view_func:
-      print view_func
-      print "Calling the vf with"
-      print args
-      print kwargs
       return view_func(request, *args, **kwargs)
     return http.HttpResponseNotAllowed(self.methods.keys())
 

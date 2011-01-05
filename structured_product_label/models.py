@@ -47,8 +47,6 @@ class SPL(JSONObject):
 
         if (spl_id == None):
             path = "%s/*.xml"%self.dir
-            print "path", path
-            print glob.glob(path)
             spl_id = os.path.split(glob.glob(path)[0])[1].split(".xml")[0]
                     
         self.xml = os.path.join(self.dir, "%s.xml"%spl_id)
@@ -98,7 +96,6 @@ class IngredientPillBox(JSONObject):
 
 
     def addPill(self, pill):
-        print "Adding ", pill.toxml()
         product_code =   pill.getElementsByTagName("PRODUCT_CODE")[0].childNodes[0].nodeValue.encode()
         image_id = pill.getElementsByTagName("image_id")[0].childNodes[0].nodeValue.encode()
         label = pill.getElementsByTagName("RXSTRING")[0].childNodes[0].nodeValue.encode()
@@ -133,7 +130,6 @@ class IngredientPillBox(JSONObject):
        q = """select distinct(lower(split_part(str, ' ' ,1))) 
                    from rxnconso where rxcui=%s LIMIT 1;"""
        
-       print q%self.rxcui_id
        cur.execute(q, (self.rxcui_id,))
        rows = cur.fetchall()
        name = rows[0][0]
@@ -143,7 +139,6 @@ class IngredientPillBox(JSONObject):
     def getPillboxData(self):
        print "FETCHING", "%s?has_image=1&key=%s&ingredient=%s"%(pillbox_url, pillbox_api_key, self.ingredient)
        pillbox_xml = urllib.urlopen("%s?has_image=1&key=%s&ingredient=%s"%(pillbox_url, pillbox_api_key, self.ingredient)).read()
-       print "PB XML: ", pillbox_xml
        
        d = parseString(pillbox_xml)
        self.data = d
@@ -190,7 +185,6 @@ def SPL_from_rxn_concept(concept_id):
        except:
            continue
        
-       print concept_id, set_id
        ret.append(one_spl)
               
        one_spl.model.append(RDF.Statement(

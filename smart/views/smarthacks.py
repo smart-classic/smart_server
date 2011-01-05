@@ -24,6 +24,7 @@ SAMPLE_NOTIFICATION = {
     'content' : 'a sample notification',
     }
 
+sporg = RDF.NS("http://smartplatforms.org/")
 def container_capabilities(request, **kwargs):
     ns = utils.default_ns()
     m = RDF.Model()
@@ -32,13 +33,13 @@ def container_capabilities(request, **kwargs):
              ns['sp']['Container']))
     m.append(RDF.Statement(RDF.Node(uri_string=settings.SITE_URL_PREFIX),
              ns['sp']['capability'],
-             ns['sp']['capability/SNOMED/lookup']))
+             sporg['capability/SNOMED/lookup']))
     m.append(RDF.Statement(RDF.Node(uri_string=settings.SITE_URL_PREFIX),
              ns['sp']['capability'],
-             ns['sp']['capability/SPL/lookup']))
+             sporg['capability/SPL/lookup']))
     m.append(RDF.Statement(RDF.Node(uri_string=settings.SITE_URL_PREFIX),
              ns['sp']['capability'],
-             ns['sp']['capability/Pillbox/lookup']))
+             sporg['capability/Pillbox/lookup']))
     
     return utils.x_domain(HttpResponse(utils.serialize_rdf(m), "application/rdf+xml"))
 

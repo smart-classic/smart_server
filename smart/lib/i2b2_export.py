@@ -466,7 +466,7 @@ if __name__ == "__main__":
     ps = i2b2Patient.initialize_all()
     for p in ps:            
         p.write_to_files()
-     
+        
 """
 from smart.lib.i2b2_export import *
 ps = i2b2Patient.initialize_all()

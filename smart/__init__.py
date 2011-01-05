@@ -1,4 +1,3 @@
-
 AUTHORIZATION_MODULE_LOADED = False
 
 def check_safety():

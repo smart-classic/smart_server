@@ -44,7 +44,7 @@ def record_post_objects(request, record_id, obj, above_obj=None, **kwargs):
     new_uris = obj.generate_uris(g, var_bindings)
 
     if (above_obj != None):
-        pred = above_obj.predicate_for_child(obj)
+        pred = above_obj.smart_type.predicate_for_contained_type(obj.smart_type)
         assert pred != None, "Can't derive the predicate for adding %s below %s."%(obj.type, above_obj.type)
         for new_node in new_uris:
             above_node = RDF.Node(uri_string=smart_parent(path))
@@ -75,6 +75,7 @@ def record_put_object(request, record_id, obj, above_obj=None, **kwargs):
         above_internal_id = above_obj.internal_id(c, above_external_id)
         assert (above_internal_id != None), "No containing object exists with external_id %s"%above_external_id
 
+    # 1.
     obj.ensure_only_one_put(g)
     var_bindings = obj.path_var_bindings(smart_path(request))
     new_nodes = obj.generate_uris(g, var_bindings)
@@ -82,20 +83,23 @@ def record_put_object(request, record_id, obj, above_obj=None, **kwargs):
     assert len(new_nodes) == 1, "Expected exactly one new node in %s ; %s"%(new_nodes, request.raw_post_data)
     new_node = new_nodes[0]
     
+    # 2.
     g.append(RDF.Statement(
             subject=new_node, 
             predicate=RDF.Node(uri_string='http://smartplatforms.org/external_id'), 
             object=RDF.Node(literal=external_id.encode())))
 
+    # 3.
     if above_internal_id != None:
-#        print "Adding under an above", above_internal_id, above_obj.predicate_for_child(obj), new_node
         g.append(RDF.Statement(
             subject=RDF.Node(uri_string=above_internal_id), 
-            predicate=above_obj.predicate_for_child(obj), 
+            predicate=above_obj.smart_type.predicate_for_contained_type(obj.smart_type), 
             object=new_node))
 
+    # 4. 
     id = obj.internal_id(c, external_id)  
     if (id):
         rdf_delete(c, obj.query_one("<%s>"%(id)), save=False)
+    
+    # 5.
     return rdf_post(c, g)
-
