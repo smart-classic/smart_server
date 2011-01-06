@@ -6,6 +6,7 @@ Ben Adida
 
 from base import *
 from django.utils import simplejson
+from smart.common.util import rdf, foaf, sp, serialize_rdf, parse_rdf
 from smart.lib import utils
 from smart.models.apps import *
 from smart.models.accounts import *
@@ -41,22 +42,19 @@ class Record(Object):
     c = DemographicConnector()
     res = c.sparql(query)
     
-    m = utils.parse_rdf(res)
-    d = utils.default_ns()
+    m = parse_rdf(res)
     
     print "Got", res
-    people = m.find_statements(RDF.Statement(None, d['rdf']['type'], d['foaf']['Person']))
-    print "got all people ", utils.serialize_rdf(people)
+    people = m.find_statements(RDF.Statement(None, rdf['type'], foaf['Person']))
     record_list = []
     for p in people:
         record = Record()
         print "working with person ", p
         record.id = re.search("\/records\/(.*?)\/", str(p.subject)).group(1)
-        record.fn = list(m.find_statements(RDF.Statement(p.subject, d['foaf']['givenName'], None)))[0].object.literal_value['string']
-        record.ln = list(m.find_statements(RDF.Statement(p.subject, d['foaf']['familyName'], None)))[0].object.literal_value['string']
+        record.fn = list(m.find_statements(RDF.Statement(p.subject, foaf['givenName'], None)))[0].object.literal_value['string']
+        record.ln = list(m.find_statements(RDF.Statement(p.subject, foaf['familyName'], None)))[0].object.literal_value['string']
         print "found the snames ", record.fn, record.ln, record.id
-        print "demobirth", d['sp']['birthday']
-        dob = list(m.find_statements(RDF.Statement(p.subject, d['sp']['birthday'], None)))[0].object.literal_value['string']
+        dob = list(m.find_statements(RDF.Statement(p.subject, sp['birthday'], None)))[0].object.literal_value['string']
         record.dob = dob
         record_list.append(record)
 

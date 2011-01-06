@@ -8,10 +8,10 @@ Josh Mandel
 from base import *
 from smart.lib import utils
 from smart.lib.utils import *
+from smart.common.util import rdf, sp
 from django.http import HttpResponse
 from django.conf import settings
 from smart.models import *
-from smart.models import rdf_ontology 
 from smart.models.rdf_rest_operations import *
 from oauth.oauth import OAuthRequest
 import RDF
@@ -26,19 +26,18 @@ SAMPLE_NOTIFICATION = {
 
 sporg = RDF.NS("http://smartplatforms.org/")
 def container_capabilities(request, **kwargs):
-    ns = utils.default_ns()
     m = RDF.Model()
     m.append(RDF.Statement(RDF.Node(uri_string=settings.SITE_URL_PREFIX),
-             ns['rdf']['type'],
-             ns['sp']['Container']))
+             rdf['type'],
+             sp['Container']))
     m.append(RDF.Statement(RDF.Node(uri_string=settings.SITE_URL_PREFIX),
-             ns['sp']['capability'],
+             sp['capability'],
              sporg['capability/SNOMED/lookup']))
     m.append(RDF.Statement(RDF.Node(uri_string=settings.SITE_URL_PREFIX),
-             ns['sp']['capability'],
+             sp['capability'],
              sporg['capability/SPL/lookup']))
     m.append(RDF.Statement(RDF.Node(uri_string=settings.SITE_URL_PREFIX),
-             ns['sp']['capability'],
+             sp['capability'],
              sporg['capability/Pillbox/lookup']))
     
     return utils.x_domain(HttpResponse(utils.serialize_rdf(m), "application/rdf+xml"))

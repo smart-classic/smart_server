@@ -1206,6 +1206,9 @@ http://fda.gov/UNII/{UNII}]]></api:description>
      <api:description>In RDF/XML, a user of the SMArt container looks like this:</api:description>
      <api:base_path>http://smartplatforms.org/users/{user_id}</api:base_path>
         <api:example rdf:datatype="http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+         xmlns:foaf="http://xmlns.com/foaf/0.1/"
+         xmlns:sp="http://smartplatforms.org/terms#">
 <rdf:Description rdf:about="http://smartplatforms.org/users/{record_id}">
       <rdf:type rdf:resource="http://smartplatforms.org/terms#User"/>
       <foaf:givenName>Joshua</foaf:givenName>
@@ -1214,7 +1217,7 @@ http://fda.gov/UNII/{UNII}]]></api:description>
       <sp:department>Emergency Medicine</sp:department>
       <sp:role>Staff Scientist</sp:role>
    </rdf:Description>
-]]></api:example>
+</rdf:RDF>]]></api:example>
   </owl:Class>
 
 <api:call>

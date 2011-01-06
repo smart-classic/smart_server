@@ -4,7 +4,6 @@ Josh Mandel
 """
 
 from base import utils, PHAConnector, urllib
-from smart.models.rdf_ontology import *
 from smart.lib.utils import rdf_response
 
 """ 

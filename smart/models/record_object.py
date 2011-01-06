@@ -1,10 +1,8 @@
 import re, RDF, uuid
-from smart.lib.utils import  parse_rdf, LookupType
 from django.conf import settings
 from smart.common.rdf_ontology import api_types, api_calls, ontology
 from rdf_rest_operations import *
-from smart.common.query_builder import QueryBuilder
-from smart.common.util import remap_node
+from smart.common.util import remap_node, parse_rdf, LookupType
 
 class RecordObject(object):
     __metaclass__ = LookupType
@@ -151,7 +149,6 @@ class RecordObject(object):
     def query_all(self, above_type=None, above_uri=None):
         atype = above_type and above_type.smart_type or None
         return self.smart_type.query(above_type=atype, above_uri=above_uri)
-
     
 for t in api_types:
     RecordObject(t)

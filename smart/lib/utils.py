@@ -14,11 +14,11 @@ from xml.dom import minidom
 import libxml2, libxslt
 from oauth.oauth import HTTPRequest
 from django.forms.fields import email_re
+from smart.common.util import parse_rdf, serialize_rdf
 import django.core.mail as mail
 import logging
 import string, random
 import functools
-
 import psycopg2
 import psycopg2.extras
 import RDF
@@ -26,11 +26,6 @@ import httplib
 import time
 
 smart_base = "http://smartplatforms.org"
-
-# metaclass to allow class-based dictionary look-up
-class LookupType(type):
-    def __getitem__(self, key):
-        return self.__getitem__(key)
 
 # taken from pointy-stick.com with some modifications
 class MethodDispatcher(object):
@@ -129,15 +124,6 @@ def apply_xslt(sourceDOM, stylesheetDOM):
 def bound_graph():
     return RDF.Model(storage=RDF.HashStorage("", options="hash-type='memory'"))
 
-def bound_serializer(format):
-    s = RDF.NTriplesSerializer()
-    if (format == "xml"):
-        s = RDF.RDFXMLSerializer()
-        
-    bind_ns(s)
-    return s 
-
-
 def smart_path(request):
     ret = smart_base + request.path
     return ret.encode()
@@ -152,60 +138,6 @@ def smart_external_path(request):
 def smart_parent(path):
     ret = path.split("/")
     return "/".join(ret[:-2])
-
-
-def default_ns():
-    d = {}
-    d['dc'] = RDF.NS('http://purl.org/dc/elements/1.1/')
-    d['dcterms'] = RDF.NS('http://purl.org/dc/terms/')
-    d['umls'] = RDF.NS('http://www.nlm.nih.gov/research/umls/')
-    d['sp'] = RDF.NS('http://smartplatforms.org/terms#')
-    d['foaf']=RDF.NS('http://xmlns.com/foaf/0.1/')
-    d['rdf'] = RDF.NS('http://www.w3.org/1999/02/22-rdf-syntax-ns#')
-    d['rdfs'] = RDF.NS('http://www.w3.org/2000/01/rdf-schema#')
-    d['owl'] = RDF.NS('http://www.w3.org/2002/07/owl#')
-    d['api'] = RDF.NS('http://smartplatforms.org/api/')
-    d['rxn'] = RDF.NS('http://link.informatics.stonybrook.edu/rxnorm/')
-    d['rxcui'] = RDF.NS('http://link.informatics.stonybrook.edu/rxnorm/RXCUI/')
-    d['rxaui'] = RDF.NS('http://link.informatics.stonybrook.edu/rxnorm/RXAUI/')
-    d['rxatn'] = RDF.NS('http://link.informatics.stonybrook.edu/rxnorm/RXATN#')
-    d['rxrel'] = RDF.NS('http://link.informatics.stonybrook.edu/rxnorm/REL#')
-    d['snomed-ct'] = RDF.NS('http://www.ihtsdo.org/snomed-ct/')
-    d['ccr'] = RDF.NS('urn:astm-org:CCR')
-    d['v'] = RDF.NS('http://www.w3.org/2006/vcard/ns#')
-    return d
-
-def bind_ns(serializer, ns=None):
-    if (ns == None):
-        ns = default_ns()
-    for k in ns.keys():
-        v = ns[k]
-        serializer.set_namespace(k, RDF.Uri(v._prefix))
-
-def parse_rdf(string, model=None, context="none"):
-#    print "PSIM: STRING=", string
-#    print "PSIM: MODEL = ", model
-    if model == None:
-        model = RDF.Model()
-    else:
-        print "We already had a model passed in." 
-    parser = RDF.Parser()
-#    print "Parsing into model: ", string.encode()
-    parser.parse_string_into_model(model, string.encode(), context)        
-    return model
-        
-"""Serializes a Redland model or CONSTRUCT query result with namespaces pre-set"""
-def serialize_rdf(model, format="xml"):
-    serializer = bound_serializer(format)
-
-    try: return serializer.serialize_model_to_string(model)
-    except AttributeError:
-        try:
-            tmpmodel = RDF.Model(storage=RDF.HashStorage("", options="hash-type='memory'"))
-            tmpmodel.add_statements(model.as_stream())
-            return serializer.serialize_model_to_string(tmpmodel)
-        except AttributeError:
-            return '<?xml version="1.0" encoding="UTF-8"?>'
 
 
 def xslt_ccr_to_rdf(source, stylesheet="ccr_to_med_rdf"):
