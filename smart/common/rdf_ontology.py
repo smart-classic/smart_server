@@ -189,5 +189,5 @@ try:
     from django.conf import settings
     f = open(settings.ONTOLOGY_FILE).read()
     parse_ontology(f)
-except ImportError, AttributeError: pass
+except (ImportError, AttributeError): pass
 

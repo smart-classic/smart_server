@@ -17,12 +17,12 @@ MachineApp.objects.create(name='chrome',
 a=PHA.objects.create(description = 'Points to a locally-hosted app for development.',
                    consumer_key = 'developer-sandbox@apps.smartplatforms.org',
                    secret = 'smartapp-secret',
-                   name ='Developers Sandbox',
+                   name ='My App',
                    email='developer-sandbox@apps.smartplatforms.org',
                    icon_url="http://sandbox.smartplatforms.org/static/resources/images/app_icons_32/developers_sandbox.png"
                      )
 
-AppActivity.objects.create(app=a, name='main', url='http://localhost:8000/bootstrap.html')
+AppActivity.objects.create(app=a, name='main', url='http://localhost:8000/smartapp/bootstrap.html')
 
 print "BOOTSTRAP helpers"
 # then add additional apps by manifest

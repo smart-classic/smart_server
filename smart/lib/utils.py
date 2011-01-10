@@ -13,7 +13,10 @@ from django.utils import simplejson
 from xml.dom import minidom
 import libxml2, libxslt
 from oauth.oauth import HTTPRequest
-from django.forms.fields import email_re
+try:
+  from django.forms.fields import email_re
+except:
+  from django.core.validators import email_re
 from smart.common.util import parse_rdf, serialize_rdf
 import django.core.mail as mail
 import logging
