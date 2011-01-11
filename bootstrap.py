@@ -15,10 +15,10 @@ MachineApp.objects.create(name='chrome',
 
 
 a=PHA.objects.create(description = 'Points to a locally-hosted app for development.',
-                   consumer_key = 'developer-sandbox@apps.smartplatforms.org',
+                   consumer_key = 'my-app@apps.smartplatforms.org',
                    secret = 'smartapp-secret',
                    name ='My App',
-                   email='developer-sandbox@apps.smartplatforms.org',
+                   email='my-app@apps.smartplatforms.org',
                    icon_url="http://sandbox.smartplatforms.org/static/resources/images/app_icons_32/developers_sandbox.png"
                      )
 
