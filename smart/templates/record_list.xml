@@ -6,6 +6,8 @@
   <firstname>{{record.fn}}</firstname>
   <lastname>{{record.ln}}</lastname>
   <dob>{{record.dob}}</dob>
+  <gender>{{record.gender}}</gender>
+  <zipcode>{{record.zipcode}}</zipcode>
   </demographics>
   </Record>
 {% endfor %}

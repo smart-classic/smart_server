@@ -22,8 +22,7 @@ class Record(Object):
   def __unicode__(self):
     return 'Record %s' % self.id
 
-  def get_demographic_rdf(self):
-    c = DemographicConnector()
+  def query(self):
 
     q = Template("""
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
@@ -35,6 +34,11 @@ class Record(Object):
         <http://smartplatforms.org/records/$who/demographics> ?p ?o.
     }""").substitute(who=self.id)
 
+    return q
+
+  def get_demographic_rdf(self):
+    c = DemographicConnector()
+    q = self.query()
     return c.sparql(q)
 
   @classmethod
@@ -56,6 +60,13 @@ class Record(Object):
         print "found the snames ", record.fn, record.ln, record.id
         dob = list(m.find_statements(RDF.Statement(p.subject, sp['birthday'], None)))[0].object.literal_value['string']
         record.dob = dob
+
+        gender = list(m.find_statements(RDF.Statement(p.subject, foaf['gender'], None)))[0].object.literal_value['string']
+        record.gender = gender
+
+        zipcode = list(m.find_statements(RDF.Statement(p.subject, sp['zipcode'], None)))[0].object.literal_value['string']
+        record.zipcode = zipcode
+       
         record_list.append(record)
 
     return record_list

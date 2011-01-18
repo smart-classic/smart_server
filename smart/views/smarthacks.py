@@ -54,7 +54,9 @@ def record_by_token(request):
 
 @paramloader()
 def record_info(request, record):
-    return render_template('record', {'record': record})
+    q = record.query()
+    l = Record.search_records(q)
+    return render_template('record_list', {'records': l}, type='xml')
 
 @paramloader()
 def apps_for_account(request, account):

@@ -667,8 +667,6 @@ http://fda.gov/UNII/{UNII}]]></api:description>
           <dcterms:title>AMITRIPTYLINE HCL 50 MG TAB</dcterms:title>
         </sp:CodedValue>
       </sp:drugName>
-      <sp:drug rdf:resource="http://link.informatics.stonybrook.edu/rxnorm/RXCUI/856845"/>
-      <dcterms:title>AMITRIPTYLINE HCL 50 MG TAB</dcterms:title>
       <sp:strength>50</sp:strength>
       <sp:strengthUnit>mg</sp:strengthUnit>
       <sp:dose>2</sp:dose>
