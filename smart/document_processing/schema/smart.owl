@@ -518,7 +518,7 @@ http://fda.gov/UNII/{UNII}]]></api:description>
     <owl:Class rdf:about="http://smartplatforms.org/terms#Medication">
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#code"/>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#drugName"/>
                 <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
                 <owl:onClass rdf:resource="http://smartplatforms.org/terms#CodedValue"/>
                 <owl:minCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</owl:minCardinality>
@@ -661,12 +661,12 @@ http://fda.gov/UNII/{UNII}]]></api:description>
   xmlns:sp="http://smartplatforms.org/terms#"
   xmlns:dcterms="http://purl.org/dc/terms/">
    <sp:Medication>
-      <sp:code>
+      <sp:drugName>
         <sp:CodedValue>
           <sp:code rdf:resource="http://link.informatics.stonybrook.edu/rxnorm/RXCUI/856845"/>
           <dcterms:title>AMITRIPTYLINE HCL 50 MG TAB</dcterms:title>
         </sp:CodedValue>
-      </sp:code>
+      </sp:drugName>
       <sp:drug rdf:resource="http://link.informatics.stonybrook.edu/rxnorm/RXCUI/856845"/>
       <dcterms:title>AMITRIPTYLINE HCL 50 MG TAB</dcterms:title>
       <sp:strength>50</sp:strength>
@@ -924,7 +924,7 @@ http://fda.gov/UNII/{UNII}]]></api:description>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#code"/>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#problemName"/>
                 <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
                 <owl:onClass rdf:resource="http://smartplatforms.org/terms#CodedValue"/>                
                 <api:doc>
@@ -981,12 +981,12 @@ http://fda.gov/UNII/{UNII}]]></api:description>
   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
   xmlns:sp="http://smartplatforms.org/terms#" >
     <sp:Problem>
-      <sp:code>
+      <sp:problemName>
         <sp:CodedValue>
           <sp:code rdf:resource="http://www.ihtsdo.org/snomed-ct/concepts/161891005"/>
           <dcterms:title>Backache (finding)</dcterms:title>      
         </sp:CodedValue>
-      </sp:code>
+      </sp:problemName>
       <sp:onset>2007-06-12</sp:onset>
       <sp:resolution>2007-08-01</sp:resolution>
     </sp:Problem>
@@ -1373,7 +1373,7 @@ http://fda.gov/UNII/{UNII}]]></api:description>
     <owl:Class rdf:about="http://smartplatforms.org/terms#LabResultPanel">
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#loincCode"/>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#labName"/>
                 <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
                 <owl:onClass rdf:resource="http://smartplatforms.org/terms#CodedValue"/>
                 <api:doc>
@@ -1411,7 +1411,7 @@ No example yet.]]></api:example>
     <owl:Class rdf:about="http://smartplatforms.org/terms#LabResult">
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#loincCode"/>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#labName"/>
                 <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
                 <owl:onClass rdf:resource="http://smartplatforms.org/terms#CodedValue"/>
                 <api:doc>
@@ -1546,12 +1546,9 @@ No example yet.]]></api:example>
   xmlns:dcterms="http://purl.org/dc/terms/" 
   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" 
   xmlns:foaf="http://xmlns.com/foaf/0.1/"
-  xmlns:v="http://www.w3.org/2006/vcard/ns#"
-  xmlns:clin="http://smartplatforms.org/terms#"
-  xmlns:lab="http://smartplatforms.org/terms#"
-  xmlns:core="http://smartplatforms.org/terms#" >
+  xmlns:v="http://www.w3.org/2006/vcard/ns#" >
   <sp:LabResult>
-      <sp:loincCode>
+      <sp:labName>
         <sp:CodedValue>
           <sp:code rdf:resource="http://loinc.org/codes/2951-2"/>
           <dcterms:title>Serum sodium</dcterms:title>
@@ -1563,7 +1560,7 @@ No example yet.]]></api:example>
               </sp:CodeProvenance>
           </sp:codeProvenance>
         </sp:CodedValue>
-      </sp:loincCode>
+      </sp:labName>
       <sp:quantitativeResult>
         <sp:QuantitativeResult>
           <sp:valueAndUnit>
@@ -1943,7 +1940,7 @@ No example yet.]]></api:example>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://xmlns.com/foaf/0.1/giveName"/>
+                <owl:onProperty rdf:resource="http://xmlns.com/foaf/0.1/givenName"/>
                 <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
                 <api:doc>
 					<rdf:Description>

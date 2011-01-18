@@ -64,6 +64,9 @@ class PHA(OAuthApp):
 
   # short description of the app
   description = models.CharField(max_length=2000, null=True)
+  
+  # is app enabled by default on new accounts?
+  enabled_by_default = models.BooleanField(default=False)
 
 class HelperApp(OAuthApp):
   """

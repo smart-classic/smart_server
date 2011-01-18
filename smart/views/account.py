@@ -173,6 +173,9 @@ def user_create(request):
       new_account.generate_secrets(secondary_secret_p = secondary_secret_p)
       new_account.send_secret()
 
+    for app in PHA.objects.filter(enabled_by_default=True):
+        AccountApp.objects.create(account = new_account, app = app)
+
   return render_template('account', {'account' : new_account}, type='xml')
 
 def user_reset_password_request(request):

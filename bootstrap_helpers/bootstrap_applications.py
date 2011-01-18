@@ -16,12 +16,13 @@ def sub(str, var, val):
 apps = simplejson.loads(open(os.path.join(settings.APP_HOME, 
                                           "bootstrap_helpers/application_list.json")).read())
 apps = apps["app_list"]
-
-for app in apps:
+for app,app_params in apps.iteritems():
   print app
   base_url = re.search("https?://.*?[/$]", app).group()[:-1]
   s = urllib2.urlopen(app)
   r = simplejson.loads(s.read())
+
+  enabled_by_default = app_params["enabled_by_default"] 
 
   if ('base_url' not in locals()):
     base_url = r["base_url"]
@@ -41,9 +42,10 @@ for app in apps:
                        secret = 'smartapp-secret',
                        name =r["name"],
                        email=r["id"],
-                       icon_url=sub(r["icon"], "base_url", base_url))
+                       icon_url=sub(r["icon"], "base_url", base_url),
+                       enabled_by_default=enabled_by_default)
   else: a = None
-  
+
   try:
     for (act_name, act_url) in r["activities"].iteritems():
       act_url = sub(act_url, "base_url", base_url)

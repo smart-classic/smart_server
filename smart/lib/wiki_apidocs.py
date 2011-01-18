@@ -1,7 +1,7 @@
 import sys
 stdout = sys.stdout
 sys.stdout = sys.stderr
-from smart.models.rdf_ontology import *
+from smart.common.rdf_ontology import *
 sys.stdout = stdout
 
 def strip_smart(s):
