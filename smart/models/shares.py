@@ -98,6 +98,7 @@ class AccessToken(Principal, Token):
   @property
   def passalong_params(self):
     c = {}
+    c['smart_container_api_base'] = settings.SITE_URL_PREFIX
     c['smart_oauth_token'] = self.token
     c['smart_oauth_token_secret'] = self.secret
     c['smart_record_id'] = self.share.record.id

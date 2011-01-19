@@ -14,6 +14,7 @@ from smart import models
 import datetime, logging
 
 
+
 class UserDataStore(oauth.OAuthStore):
   """
   Layer between Python OAuth and Django database
@@ -31,7 +32,9 @@ class UserDataStore(oauth.OAuthStore):
     if app: kwargs['share__with_app'] = app
 
     try:
-      return models.AccessToken.objects.get(**kwargs)
+      ret = models.AccessToken.objects.get(**kwargs)
+      if ret.smart_connect_p == True: oauth.report_error("Not a SMArt Connect Request -- don't treat as one!")
+      return ret
     except models.AccessToken.DoesNotExist:
       return None
     
@@ -174,6 +177,69 @@ class UserDataStore(oauth.OAuthStore):
       raise oauth.OAuthError("Nonce already exists")
 
 
+"""
+Thin wrapper around OAuthServer to handle the case where a SMArt Connect
+app has made a SMArt Connect request.  In this case, we should verify 
+the signature as though the consumer's secret were blank ("") -- but
+when asked to return the consumer, we should return the real thing. 
+"""
+class SMArtConnectOAuthServer(oauth.OAuthServer):
+  def check_resource_access(self, oauth_request):
+    print "Coming from: ", dir(oauth_request.http_request)
+      
+    # verify it
+    if not oauth_request.verify(self.store):
+      oauth.report_error("signature mismatch")
+
+    # grant access
+    true_consumer = models.PHA.objects.get(consumer_key=oauth_request.consumer.consumer_key)
+    oauth_request.consumer = true_consumer
+    return oauth_request.consumer, oauth_request.token, oauth_request.oauth_parameters
+
+class SMArtConnectAppDataStore(UserDataStore):  
+  def _get_app(self, consumer_key):
+    try:
+      real_app =  models.PHA.objects.get(consumer_key = consumer_key)
+      fake_consumer = oauth.OAuthConsumer(real_app.consumer_key, "")
+      return fake_consumer
+    except models.PHA.DoesNotExist:
+      return None
+  
+  def _get_token(self, token_str, app):
+    app = models.PHA.objects.get(consumer_key = app.consumer_key)
+    kwargs = {'token': token_str, 'share__with_app': app}
+
+    try:
+      ret =  models.AccessToken.objects.get(**kwargs)
+      if ret.smart_connect_p == False: oauth.report_error("Not a SMArt Connect Request -- don't treat as one!")
+      return ret
+    except models.AccessToken.DoesNotExist:
+      return None
+
+  def lookup_request_token(self, consumer, request_token_str):
+    """ SMArt Connect Requests never use request tokens..."""
+    return None
+  
+
+class HelperAppDataStore(UserDataStore):
+  def __init__(self, *args, **kwargs):
+      super(HelperAppDataStore, self).__init__(*args, **kwargs)
+  def _get_app(self, consumer_key):
+    try:
+      ret = models.HelperApp.objects.get(consumer_key = consumer_key)
+      return ret
+    except models.HelperApp.DoesNotExist:
+      return None
+
+  def _get_token(self, token_str, app=None):
+    kwargs = {'token': token_str}
+    if app: kwargs['share__with_app'] = app
+    try:
+      return models.AccessToken.objects.get(**kwargs)
+    except models.AccessToken.DoesNotExist:
+      return None
+
+
 class MachineDataStore(oauth.OAuthStore):
   """
   Layer between Python OAuth and Django database.
@@ -210,25 +276,6 @@ class MachineDataStore(oauth.OAuthStore):
     nonce, created = models.Nonce.objects.get_or_create(nonce = nonce_str)
     if not created:
       raise oauth.OAuthError("Nonce already exists")
-
-class HelperAppDataStore(UserDataStore):
-  def __init__(self, *args, **kwargs):
-      super(HelperAppDataStore, self).__init__(*args, **kwargs)
-  def _get_app(self, consumer_key):
-    try:
-      ret = models.HelperApp.objects.get(consumer_key = consumer_key)
-      return ret
-    except models.HelperApp.DoesNotExist:
-      return None
-
-  def _get_token(self, token_str, app=None):
-    kwargs = {'token': token_str}
-    if app: kwargs['share__with_app'] = app
-    try:
-      return models.AccessToken.objects.get(**kwargs)
-    except models.AccessToken.DoesNotExist:
-      return None
-
 
 
 class SessionDataStore(oauth.OAuthStore):
@@ -338,4 +385,5 @@ ADMIN_OAUTH_SERVER = oauth.OAuthServer(store = MachineDataStore())
 SESSION_OAUTH_SERVER = oauth.OAuthServer(store = SessionDataStore())
 
 OAUTH_SERVER = oauth.OAuthServer(store = UserDataStore())
+SMART_CONNECT_OAUTH_SERVER = SMArtConnectOAuthServer(store = SMArtConnectAppDataStore())
 HELPER_APP_SERVER = oauth.OAuthServer(store = HelperAppDataStore())

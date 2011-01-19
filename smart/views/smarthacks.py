@@ -76,9 +76,9 @@ def add_app(request, account, app):
     AccountApp.objects.create(account = account, app = app)
     return DONE
 
-def immediate_tokens_for_browser_auth(record, account, app):
+def immediate_tokens_for_browser_auth(record, account, app, smart_connect_p = True):
     ret = OAUTH_SERVER.generate_and_preauthorize_access_token(app, record=record, account=account)
-    ret.smart_connect_p = True
+    ret.smart_connect_p = smart_connect_p
     ret.save()
     return ret
   
@@ -105,11 +105,14 @@ def launch_app(request, record, account, app):
     AccountApp.objects.get_or_create(account = account, app = app)
     print "Added AccountApp"
 
-    t = immediate_tokens_for_browser_auth(record, account, app)
-    cookie = cookie_for_token(t)
-    
+    ct = immediate_tokens_for_browser_auth(record, account, app)
+
+    rt = immediate_tokens_for_browser_auth(record, account, app, False)
+    cookie = cookie_for_token(rt)
+
     return render_template('token', 
-                             {'token':          t, 
+                             {'connect_token':          ct,
+                              'rest_token':          rt, 
                               'app_email':      app.email, 
                               'account_email':  account.email,
                               'oauth_cookie': cookie}, 

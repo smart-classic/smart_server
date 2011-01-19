@@ -5,7 +5,5 @@
   <url>{{a.url}}</url>
   <app>{{a.app.email}}</app>
   <consumer_key>{{a.app.consumer_key}}</consumer_key>
-  <secret>{{a.app.secret}}</secret>
-
 </Activity>
 

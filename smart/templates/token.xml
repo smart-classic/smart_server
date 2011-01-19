@@ -3,8 +3,10 @@
   <App id="{{app_email}}" />{% if account_email %}
   <Account id="{{account_email}}" />{% endif %}{% if record_id %}
   <Record id="{{record_id}}" />{% endif %}
-  <Token>{{token.token}}</Token>
-  <Secret>{{token.secret}}</Secret>{% if oauth_cookie %}  
+  <SMArtConnectToken>{{connect_token.token}}</SMArtConnectToken>
+  <SMArtConnectSecret>{{connect_token.secret}}</SMArtConnectSecret>
+  <RESTToken>{{rest_token.token}}</RESTToken>
+  <RESTSecret>{{rest_token.secret}}</RESTSecret>{% if oauth_cookie %}  
   <OAuthCookie>{{oauth_cookie.oauth_cookie}}</OAuthCookie>{% endif %}
 </AccessToken>
 

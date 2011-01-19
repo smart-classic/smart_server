@@ -15,7 +15,7 @@ import functools, copy, logging
 from oauth import oauth, djangoutils
 
 from smart import models
-from smart.accesscontrol.oauth_servers import ADMIN_OAUTH_SERVER, OAUTH_SERVER, SESSION_OAUTH_SERVER, HELPER_APP_SERVER
+from smart.accesscontrol.oauth_servers import ADMIN_OAUTH_SERVER, OAUTH_SERVER, SMART_CONNECT_OAUTH_SERVER, SESSION_OAUTH_SERVER, HELPER_APP_SERVER
 
 ##
 ## Gather information about the request
@@ -45,6 +45,14 @@ def get_principal(request):
   # IMPORTANT: the principal is the token, not the PHA itself
   # TODO: is this really the right thing, is the token the principal?
   pha, token, parameters, oauth_request = get_oauth_info(request, OAUTH_SERVER)
+  if pha:
+    if token:
+      return token, oauth_request
+    else:
+      return pha, oauth_request
+  
+  # Look for a SMArt Connect Request, which comes signed with an empty "consumer secret"
+  pha, token, parameters, oauth_request = get_oauth_info(request, SMART_CONNECT_OAUTH_SERVER)
   if pha:
     if token:
       return token, oauth_request
