@@ -184,9 +184,7 @@ the signature as though the consumer's secret were blank ("") -- but
 when asked to return the consumer, we should return the real thing. 
 """
 class SMArtConnectOAuthServer(oauth.OAuthServer):
-  def check_resource_access(self, oauth_request):
-    print "Coming from: ", dir(oauth_request.http_request)
-      
+  def check_resource_access(self, oauth_request):      
     # verify it
     if not oauth_request.verify(self.store):
       oauth.report_error("signature mismatch")
