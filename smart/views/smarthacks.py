@@ -113,6 +113,7 @@ def launch_app(request, record, account, app):
     return render_template('token', 
                              {'connect_token':          ct,
                               'rest_token':          rt, 
+                              'api_base':       settings.SITE_URL_PREFIX,
                               'app_email':      app.email, 
                               'account_email':  account.email,
                               'oauth_cookie': cookie}, 

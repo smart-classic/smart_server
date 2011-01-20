@@ -5,8 +5,10 @@
   <Record id="{{record_id}}" />{% endif %}
   <SMArtConnectToken>{{connect_token.token}}</SMArtConnectToken>
   <SMArtConnectSecret>{{connect_token.secret}}</SMArtConnectSecret>
+  <SMArtContainerAPIBase>{{api_base}}</SMArtContainerAPIBase>
   <RESTToken>{{rest_token.token}}</RESTToken>
   <RESTSecret>{{rest_token.secret}}</RESTSecret>{% if oauth_cookie %}  
+
   <OAuthCookie>{{oauth_cookie.oauth_cookie}}</OAuthCookie>{% endif %}
 </AccessToken>
 

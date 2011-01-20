@@ -8,7 +8,7 @@ ben.adida@childrens.harvard.edu
 import oauth.oauth as oauth
 
 from django.db import transaction
-
+from django.conf import settings
 from smart import models
 
 import datetime, logging
@@ -181,44 +181,53 @@ class UserDataStore(oauth.OAuthStore):
 Thin wrapper around OAuthServer to handle the case where a SMArt Connect
 app has made a SMArt Connect request.  In this case, we should verify 
 the signature as though the consumer's secret were blank ("") -- but
-when asked to return the consumer, we should return the real thing. 
+whenasked to return the consumer, we should return the real thing. 
 """
 class SMArtConnectOAuthServer(oauth.OAuthServer):
   def check_resource_access(self, oauth_request):      
-    # verify it
+    # First, make sure the request is valid for consumer=ChromeApp, token=SMArtUser
+#    print "verifying scr", oauth_request.consumer.secret, oauth_request.token.secret
     if not oauth_request.verify(self.store):
       oauth.report_error("signature mismatch")
 
-    # grant access
-    true_consumer = models.PHA.objects.get(consumer_key=oauth_request.consumer.consumer_key)
-    oauth_request.consumer = true_consumer
-    return oauth_request.consumer, oauth_request.token, oauth_request.oauth_parameters
-
-class SMArtConnectAppDataStore(UserDataStore):  
-  def _get_app(self, consumer_key):
-    try:
-      real_app =  models.PHA.objects.get(consumer_key = consumer_key)
-      fake_consumer = oauth.OAuthConsumer(real_app.consumer_key, "")
-      return fake_consumer
-    except models.PHA.DoesNotExist:
-      return None
-  
-  def _get_token(self, token_str, app):
-    app = models.PHA.objects.get(consumer_key = app.consumer_key)
-    kwargs = {'token': token_str, 'share__with_app': app}
-
-    try:
-      ret =  models.AccessToken.objects.get(**kwargs)
-      if ret.smart_connect_p == False: oauth.report_error("Not a SMArt Connect Request -- don't treat as one!")
-      return ret
-    except models.AccessToken.DoesNotExist:
-      return None
-
-  def lookup_request_token(self, consumer, request_token_str):
-    """ SMArt Connect Requests never use request tokens..."""
-    return None
-  
-
+    try:    
+        # Then, make sure the access scope matches what we expect from the existing shares.
+        c = oauth_request.oauth_parameters
+        
+        api_base = c['smart_container_api_base']
+        assert api_base == settings.SITE_URL_PREFIX, "Received a SMArt Connect Request for %s, not %s"%(
+                                                        api_base, settings.SITE_URL_PREFIX)
+    
+        app_email = c['smart_app_id']
+        app = models.PHA.objects.get(email=app_email)
+        
+        access_token_string = c['smart_oauth_token']    
+        access_token =  models.AccessToken.objects.get(token=access_token_string, share__with_app=app)
+        
+        access_token_secret_string = c['smart_oauth_token_secret']
+        
+        assert access_token_secret_string == access_token.secret, "access token secret %s doesn't match expected %s"%(
+                                                                        access_token_secret_string, access_token.secret)
+                
+        user_id = c['smart_user_id']
+        assert user_id == oauth_request.token.user.email, "smart user id %s doesn't match session user %s"%(
+                                                                        user_id, oauth_request.token.user.email)
+        
+        assert user_id == access_token.share.authorized_by.email, "smart user_id %s to match share's user %s"%(
+                                                                        user_id, access_token.share.authorized_by.email)
+        
+        record_id = c['smart_record_id']
+        assert record_id == access_token.share.record_id, "Expected record_id %s to match share's user %s"%(
+                                                                        record_id, access_token.share.record_id)
+    
+        assert access_token.smart_connect_p == True, "%s Not a SMArt Connect Request -- don't treat as one!"%access_token
+        
+        # grant access
+        oauth_request.consumer = app
+        oauth_request.token = access_token
+        return oauth_request.consumer, oauth_request.token, oauth_request.oauth_parameters
+    except: raise oauth.OAuthError("Not a valid SMArt Connect request")
+    
 class HelperAppDataStore(UserDataStore):
   def __init__(self, *args, **kwargs):
       super(HelperAppDataStore, self).__init__(*args, **kwargs)
@@ -381,7 +390,6 @@ class SessionDataStore(oauth.OAuthStore):
 
 ADMIN_OAUTH_SERVER = oauth.OAuthServer(store = MachineDataStore())
 SESSION_OAUTH_SERVER = oauth.OAuthServer(store = SessionDataStore())
-
 OAUTH_SERVER = oauth.OAuthServer(store = UserDataStore())
-SMART_CONNECT_OAUTH_SERVER = SMArtConnectOAuthServer(store = SMArtConnectAppDataStore())
+SMART_CONNECT_OAUTH_SERVER = SMArtConnectOAuthServer(store = SessionDataStore())
 HELPER_APP_SERVER = oauth.OAuthServer(store = HelperAppDataStore())

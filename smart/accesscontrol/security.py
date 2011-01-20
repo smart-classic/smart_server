@@ -32,9 +32,14 @@ def get_oauth_info(request, server):
 def get_principal(request):
   """Figure out the principal making the request.
 
-  First web user, then PHA, then Chrome App sudo'ing.
+  First SMArt connect app (via web user); then web user; then PHA; then Helper app; then Chrome App sudo'ing.
 
   """
+
+  # Look for a SMArt Connect Request, which comes signed with an empty "consumer secret"
+  pha, token, parameters, oauth_request = get_oauth_info(request, SMART_CONNECT_OAUTH_SERVER)
+  if pha and token:
+      return token, oauth_request
 
   # is this a chrome app with a user session token?
   chrome_app, token, parameters, oauth_request = get_oauth_info(request, SESSION_OAUTH_SERVER)
@@ -51,14 +56,6 @@ def get_principal(request):
     else:
       return pha, oauth_request
   
-  # Look for a SMArt Connect Request, which comes signed with an empty "consumer secret"
-  pha, token, parameters, oauth_request = get_oauth_info(request, SMART_CONNECT_OAUTH_SERVER)
-  if pha:
-    if token:
-      return token, oauth_request
-    else:
-      return pha, oauth_request
-
   ha, token, parameters, oauth_request = get_oauth_info(request, HELPER_APP_SERVER)
 
   if ha:
@@ -74,4 +71,3 @@ def get_principal(request):
     return admin_app, oauth_request
 
   return None, None
-
