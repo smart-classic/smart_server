@@ -41,10 +41,12 @@ def get_principal(request):
   if pha and token:
       return token, oauth_request
 
+
   # is this a chrome app with a user session token?
   chrome_app, token, parameters, oauth_request = get_oauth_info(request, SESSION_OAUTH_SERVER)
   if token:
     return token.user, oauth_request
+
   
   # check oauth
   # IMPORTANT: the principal is the token, not the PHA itself
@@ -69,5 +71,6 @@ def get_principal(request):
 
   if admin_app:
     return admin_app, oauth_request
+
 
   return None, None

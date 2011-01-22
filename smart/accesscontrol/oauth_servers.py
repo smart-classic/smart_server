@@ -33,7 +33,7 @@ class UserDataStore(oauth.OAuthStore):
 
     try:
       ret = models.AccessToken.objects.get(**kwargs)
-      if ret.smart_connect_p == True: oauth.report_error("Not a SMArt Connect Request -- don't treat as one!")
+      if ret.smart_connect_p == True: oauth.report_error("Got a SMArt Connect Request -- should be a REST request")
       return ret
     except models.AccessToken.DoesNotExist:
       return None
@@ -175,58 +175,6 @@ class UserDataStore(oauth.OAuthStore):
     nonce, created = models.Nonce.objects.get_or_create(nonce = nonce_str)
     if not created:
       raise oauth.OAuthError("Nonce already exists")
-
-
-"""
-Thin wrapper around OAuthServer to handle the case where a SMArt Connect
-app has made a SMArt Connect request.  In this case, we should verify 
-the signature as though the consumer's secret were blank ("") -- but
-whenasked to return the consumer, we should return the real thing. 
-"""
-class SMArtConnectOAuthServer(oauth.OAuthServer):
-  def check_resource_access(self, oauth_request):      
-    # First, make sure the request is valid for consumer=ChromeApp, token=SMArtUser
-#    print "verifying scr", oauth_request.consumer.secret, oauth_request.token.secret
-    if not oauth_request.verify(self.store):
-      oauth.report_error("signature mismatch")
-
-    try:    
-        # Then, make sure the access scope matches what we expect from the existing shares.
-        c = oauth_request.oauth_parameters
-        
-        api_base = c['smart_container_api_base']
-        assert api_base == settings.SITE_URL_PREFIX, "Received a SMArt Connect Request for %s, not %s"%(
-                                                        api_base, settings.SITE_URL_PREFIX)
-    
-        app_email = c['smart_app_id']
-        app = models.PHA.objects.get(email=app_email)
-        
-        access_token_string = c['smart_oauth_token']    
-        access_token =  models.AccessToken.objects.get(token=access_token_string, share__with_app=app)
-        
-        access_token_secret_string = c['smart_oauth_token_secret']
-        
-        assert access_token_secret_string == access_token.secret, "access token secret %s doesn't match expected %s"%(
-                                                                        access_token_secret_string, access_token.secret)
-                
-        user_id = c['smart_user_id']
-        assert user_id == oauth_request.token.user.email, "smart user id %s doesn't match session user %s"%(
-                                                                        user_id, oauth_request.token.user.email)
-        
-        assert user_id == access_token.share.authorized_by.email, "smart user_id %s to match share's user %s"%(
-                                                                        user_id, access_token.share.authorized_by.email)
-        
-        record_id = c['smart_record_id']
-        assert record_id == access_token.share.record_id, "Expected record_id %s to match share's user %s"%(
-                                                                        record_id, access_token.share.record_id)
-    
-        assert access_token.smart_connect_p == True, "%s Not a SMArt Connect Request -- don't treat as one!"%access_token
-        
-        # grant access
-        oauth_request.consumer = app
-        oauth_request.token = access_token
-        return oauth_request.consumer, oauth_request.token, oauth_request.oauth_parameters
-    except: raise oauth.OAuthError("Not a valid SMArt Connect request")
     
 class HelperAppDataStore(UserDataStore):
   def __init__(self, *args, **kwargs):
@@ -294,19 +242,22 @@ class SessionDataStore(oauth.OAuthStore):
 
   def _get_chrome_app(self, consumer_key):
     try:
-      return models.MachineApp.objects.get(consumer_key = consumer_key, app_type='chrome')
+      ret = models.MachineApp.objects.get(consumer_key = consumer_key, app_type='chrome')
+      return ret
     except models.MachineApp.DoesNotExist:
       return None
 
   def _get_request_token(self, token_str, type=None, pha=None):
     try:
-      return models.SessionRequestToken.objects.get(token = token_str)
+      ret = models.SessionRequestToken.objects.get(token = token_str)
+      return ret
     except models.SessionRequestToken.DoesNotExist:
       return None
 
   def _get_token(self, token_str, type=None, pha=None):
     try:
-      return models.SessionToken.objects.get(token = token_str)
+      ret = models.SessionToken.objects.get(token = token_str)
+      return ret
     except models.SessionToken.DoesNotExist:
       return None
 
@@ -388,8 +339,32 @@ class SessionDataStore(oauth.OAuthStore):
     pass
 
 
+class SMArtConnectDataStore(SessionDataStore):
+  """
+  Hybrid datastore that looks for 
+    * a chrome app consumer
+    * a smart connect access token.
+  """
+
+  def _get_chrome_app(self, consumer_key):
+    try:
+      return models.MachineApp.objects.get(consumer_key = consumer_key, app_type='chrome')
+    except models.MachineApp.DoesNotExist:
+      return None
+
+  def _get_token(self, token_str, app=None):
+    kwargs = {'token': token_str}
+    print "evaluating as SC, lookin gor", token_str
+    try:
+
+      ret = models.AccessToken.objects.get(**kwargs)
+      if ret.smart_connect_p == False: oauth.report_error("Not a SMArt Connect Request -- don't treat as one!")
+      return ret
+    except models.AccessToken.DoesNotExist:
+      oauth.report_error("No token means this isn't a SMArt Connect Request!")
+
 ADMIN_OAUTH_SERVER = oauth.OAuthServer(store = MachineDataStore())
 SESSION_OAUTH_SERVER = oauth.OAuthServer(store = SessionDataStore())
 OAUTH_SERVER = oauth.OAuthServer(store = UserDataStore())
-SMART_CONNECT_OAUTH_SERVER = SMArtConnectOAuthServer(store = SessionDataStore())
+SMART_CONNECT_OAUTH_SERVER = oauth.OAuthServer(store = SMArtConnectDataStore())
 HELPER_APP_SERVER = oauth.OAuthServer(store = HelperAppDataStore())
