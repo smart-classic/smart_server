@@ -5,7 +5,7 @@ from string import Template
 import re
 import sys
 import os
-import simplejson
+from django.utils import simplejson
 import urllib2
 
 def sub(str, var, val):

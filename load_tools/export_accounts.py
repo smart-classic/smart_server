@@ -1,7 +1,7 @@
 import os
 os.system("python manage.py dumpdata smart.account smart.AuthSystem smart.AccountAuthSystem smart.Principal > accounts.json")
 
-import simplejson
+from django.utils import simplejson
 f = open("accounts.json")
 r = simplejson.load(f)
 f.close()
