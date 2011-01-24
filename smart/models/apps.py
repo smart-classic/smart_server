@@ -132,7 +132,16 @@ class AppActivity(Object):
     class Meta:
         app_label = APP_LABEL
         unique_together = (('app', 'name'),)
-    
+
+class PrincipalActivityRemaps(Object):
+    class Meta:
+        app_label = APP_LABEL
+        unique_together = (('activity', 'principal'),)
+
+    principal = models.ForeignKey('Principal', related_name='activity_remaps', null=False)
+    activity = models.ForeignKey('AppActivity', related_name='principal_remaps', null=False)
+    url = models.TextField(max_length=200, null=False)
+
 ##
 ## session tokens
 ##

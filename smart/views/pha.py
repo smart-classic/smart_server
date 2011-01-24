@@ -19,7 +19,6 @@ def all_phas(request):
   phas = [PHA.objects.get(id=x.app.id) for x in AppActivity.objects.filter(name="main")]
   return render_template('phas', {'phas': phas}, type="xml")
 
-
 def resolve_activity(request, activity_name):
     return resolve_activity_with_app(request, activity_name, None)
 
@@ -32,9 +31,17 @@ def resolve_activity_with_app(request, activity_name, app_id):
   else:
       act = AppActivity.objects.filter(name=activity_name)[0]
       
-  print "mapped ", activity_name, app_id, " to: ", act
   if (act.url == None):
     act.url = PHA.objects.get(id=act.app.id).start_url_template
+    
+  try:
+      r = PrincipalActivityRemaps.objects.get(activity=act, principal=request.principal).url
+      act.url = r.url
+      print "remapping for principal %s: %s", (request.principal, act.url) 
+
+  except: pass
+
+  print "mapped ", request.principal, activity_name, app_id, " to: ", act
     
   return render_template('activity', {'a': act}, type="xml")
 

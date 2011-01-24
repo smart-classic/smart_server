@@ -6,14 +6,14 @@ import traceback
 print "DONE BOOTSTRAP imports"
 
 # Create the chrome app and a single 'localhost' development app
-
+print "Creating ma"
 MachineApp.objects.create(name='chrome',
                           consumer_key='chrome',
                           secret='chrome',
                           app_type='chrome',
                           email='chrome@apps.smart-project.org')
 
-
+print "Creating deva"
 a=PHA.objects.create(description = 'Points to a locally-hosted app for development.',
                    consumer_key = 'my-app@apps.smartplatforms.org',
                    secret = 'smartapp-secret',

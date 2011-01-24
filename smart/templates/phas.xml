@@ -3,14 +3,11 @@
 <Apps>
 {% for pha in phas %}
 <App id="{{pha.email}}">
-  <startURLTemplate>{{pha.activity.main}}</startURLTemplate>
   <name>{{pha.name}}</name>
   <description>{{pha.description}}</description>
   <frameable>{{pha.frameable}}</frameable>
   <ui>{{pha.has_ui}}</ui>
   {%if not pha.background_p%}
-  <consumer_key>{{pha.consumer_key}}</consumer_key>
-  <secret>{{pha.secret}}</secret>
   <iconURL>{{pha.icon_url}}</iconURL>
   {%endif%}
 </App>
