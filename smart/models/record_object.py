@@ -3,6 +3,7 @@ from django.conf import settings
 from smart.common.rdf_ontology import api_types, api_calls, ontology
 from rdf_rest_operations import *
 from smart.common.util import remap_node, parse_rdf, LookupType
+from ontology_url_patterns import CallMapper
 
 class RecordObject(object):
     __metaclass__ = LookupType
@@ -152,3 +153,64 @@ class RecordObject(object):
     
 for t in api_types:
     RecordObject(t)
+
+class RecordCallMapper(object):
+    def __init__(self, call):
+        self.call = call
+        self.obj = RecordObject[self.call.target]
+
+    @property
+    def get(self): return None
+    @property
+    def delete(self): return None
+    @property
+    def post(self): return self.obj.post
+    @property
+    def put(self): return self.obj.put
+
+    @property
+    def map_score(self):
+        cat = str(self.call.category)
+        
+        if cat.startswith("record") and cat.endswith(self.ending):
+            return 1
+        return 0
+
+    @property
+    def arguments(self):
+      r = {'obj': self.obj}      
+      if self.call.above:
+          r['above_obj'] = RecordObject[self.call.above]
+      return r
+
+    @property
+    def maps_to(self):
+        m = str(self.call.method)
+
+        if "GET" == m:
+            return self.get
+        if "PUT" == m:
+            return self.put
+        if "POST" == m:
+            return self.post
+        if  "DELETE" == m:
+            return self.delete    
+
+        assert False, "Method not in GET, PUT, POST, or DELETE"
+
+
+@CallMapper.register
+class RecordItemsCallMapper(RecordCallMapper):
+    @property
+    def get(self): return self.obj.get_all
+    @property
+    def delete(self): return self.obj.delete_all
+    ending = "_items"
+
+@CallMapper.register
+class RecordItemCallMapper(RecordCallMapper):
+    @property
+    def get(self): return self.obj.get_one
+    @property
+    def delete(self): return self.obj.delete_one
+    ending = "_item"

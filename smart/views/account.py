@@ -8,6 +8,7 @@ import urllib
 from smart.lib import utils
 from smart.lib.utils import smart_base
 from django.http import HttpResponseBadRequest, HttpResponseNotFound
+from smart.models.ontology_url_patterns import CallMapper, BasicCallMapper
 
 ACTIVE_STATE, UNINITIALIZED_STATE = 'active', 'uninitialized'
 HTTP_METHOD_GET = 'GET'
@@ -203,8 +204,12 @@ def user_reset_password(request):
         return render_template('account', {'account' : a}, type='xml')
 
     except: return HttpResponseBadRequest()
-  
+
+@CallMapper.register(method="GET",
+                     category="container_item",
+                     target="http://smartplatforms.org/terms#User")
 def user_get(request, user_id, **kwargs):
+    print "user_get", user_id, kwargs
     try:
         a = Account.objects.get(email=user_id)
         m = a.to_rdf()
@@ -212,6 +217,10 @@ def user_get(request, user_id, **kwargs):
     
     return utils.x_domain(HttpResponse(utils.serialize_rdf(m), "application/rdf+xml"))
 
+
+@CallMapper.register(method="GET",
+                     category="container_items",
+                     target="http://smartplatforms.org/terms#User")
 def user_search(request, **kwargs):
     aa = Account.objects.all()
 
@@ -232,3 +241,4 @@ def user_search(request, **kwargs):
         a.to_rdf(m)
     
     return utils.x_domain(HttpResponse(utils.serialize_rdf(m), "application/rdf+xml"))
+

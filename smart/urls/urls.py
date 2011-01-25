@@ -73,15 +73,4 @@ handlers for all the relevant paths (e.g. /records/{record_id}/medications/)
 and specified methods (GET, POST, PUT, DELETE).
 """
 
-RecordObject["http://xmlns.com/foaf/0.1/Person"].put = put_demographics
-RecordObject["http://smartplatforms.org/terms#User"].get_one = user_get
-RecordObject["http://smartplatforms.org/terms#User"].get_all = user_search
-RecordObject["http://smartplatforms.org/terms#Container"].get_all = container_capabilities
-RecordObject["http://smartplatforms.org/terms#Ontology"].get_one = download_ontology
-
-m =  OntologyURLMapper() 
-for p, calls in m.calls_by_path():
-    urlpatterns += patterns( '',
-                             (m.django_path(calls),  
-                              MethodDispatcher(m.getMethods(calls)), 
-                              m.getArguments(calls)))
+OntologyURLMapper(urlpatterns) 

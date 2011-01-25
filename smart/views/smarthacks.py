@@ -14,6 +14,7 @@ from django.conf import settings
 from smart.models import *
 from smart.models.rdf_rest_operations import *
 from oauth.oauth import OAuthRequest
+from smart.models.ontology_url_patterns import CallMapper
 import RDF
 import datetime
 
@@ -25,6 +26,11 @@ SAMPLE_NOTIFICATION = {
     }
 
 sporg = RDF.NS("http://smartplatforms.org/")
+
+
+@CallMapper.register(method="GET",
+                     category="container_items",
+                     target="http://smartplatforms.org/terms#Container")
 def container_capabilities(request, **kwargs):
     m = RDF.Model()
     m.append(RDF.Statement(RDF.Node(uri_string=settings.SITE_URL_PREFIX),
@@ -208,6 +214,9 @@ def do_webhook(request, webhook_name):
     print "GOT,", response
     return utils.x_domain(HttpResponse(response, mimetype='application/rdf+xml'))
 
+@CallMapper.register(method="GET",
+                     category="container_item",
+                     target="http://smartplatforms.org/terms#Ontology")
 def download_ontology(request, **kwargs):
     import os
     f = open(os.path.join(settings.APP_HOME, "smart/document_processing/schema/smart.owl")).read()
@@ -216,6 +225,9 @@ def download_ontology(request, **kwargs):
 # hook to build in demographics-specific behavior: 
 # if a record doesn't exist, create it before adding
 # demographic data
+@CallMapper.register(method="PUT",
+                     category="record_items",
+                     target="http://xmlns.com/foaf/0.1/Person")
 def put_demographics(request, record_id, obj, **kwargs):
   try:
     Record.objects.get(id=record_id)

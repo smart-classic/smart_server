@@ -207,23 +207,23 @@ class Account(Principal):
     utils.send_mail(subject,body, settings.EMAIL_FROM_ADDRESS, [self.contact_email])
 
   def to_rdf(self, model = None):
-    ns = utils.default_ns()
-    
+    from smart.common.util import sp, foaf, rdf
+
     if model == None:  m = RDF.Model()
     else: m = model
     
     n = RDF.Node(uri_string="%s/users/%s" % (utils.smart_base, self.email.encode()))
-    m.append(RDF.Statement(n, ns['rdf']['type'], ns['sp']['user']))    
+    m.append(RDF.Statement(n, rdf['type'], sp['user']))    
 
     try:
         gn = self.given_name or "?"
         fn = self.family_name or "?"
         
-        m.append(RDF.Statement(n, ns['foaf']['givenName'], RDF.Node(literal=gn.encode())))    
-        m.append(RDF.Statement(n, ns['foaf']['familyName'], RDF.Node(literal=fn.encode())))    
-        m.append(RDF.Statement(n, ns['sp']['department'], RDF.Node(literal=self.department.encode())))    
-        m.append(RDF.Statement(n, ns['sp']['role'], RDF.Node(literal=self.role.encode())))    
-        m.append(RDF.Statement(n, ns['foaf']['mbox'], RDF.Node(literal="mailto:%s"%self.email.encode())))    
+        m.append(RDF.Statement(n, foaf['givenName'], RDF.Node(literal=gn.encode())))    
+        m.append(RDF.Statement(n, foaf['familyName'], RDF.Node(literal=fn.encode())))    
+        m.append(RDF.Statement(n, sp['department'], RDF.Node(literal=self.department.encode())))    
+        m.append(RDF.Statement(n, sp['role'], RDF.Node(literal=self.role.encode())))    
+        m.append(RDF.Statement(n, foaf['mbox'], RDF.Node(literal="mailto:%s"%self.email.encode())))    
     except: pass
     
     return m
