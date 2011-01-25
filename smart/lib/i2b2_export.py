@@ -36,8 +36,8 @@ rxnconn=psycopg2.connect("dbname='%s' user='%s' password='%s'"%
 rxncur = rxnconn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
 
-def get_i2b2_patients():   
-   q = """select distinct patient_num from patient_dimension order by patient_num;"""
+def get_i2b2_patients(offset=0):   
+   q = """select distinct patient_num from patient_dimension order by patient_num offset %s;"""%offset
    cur.execute(q)
    rows = cur.fetchall()
    
@@ -108,19 +108,21 @@ patient_num=%s and cd.concept_path like '%%LOINC%%';"""
        
        try:
            d = minidom.parseString(row['c_metadataxml'])
+           l.dataType = xval(d, "DataType")
+           l.normalUnit = xval(d, "NormalUnits")
+           l.normalRangeLower = xval(d, "HighofLowValue")
+           l.normalRangeUpper = xval(d, "LowofHighValue")
+           l.nonCriticalRangeLower = xval(d, "LowofLowValue")
+           l.nonCriticalRangeLower = xval(d, "HighofHighValue")
+           l.enumVals = xvals(d, "Val")
+           l.row = row
+           if l.unit == "@" and l.type=="quantitative" and l.normalUnit:
+               l.unit = l.normalUnit
+               print "bum units now", l.unit
+
        except: pass #print "couldn't parse for", len(labs), row
-       l.dataType = xval(d, "DataType")
-       l.normalUnit = xval(d, "NormalUnits")
-       l.normalRangeLower = xval(d, "HighofLowValue")
-       l.normalRangeUpper = xval(d, "LowofHighValue")
-       l.nonCriticalRangeLower = xval(d, "LowofLowValue")
-       l.nonCriticalRangeLower = xval(d, "HighofHighValue")
-       l.enumVals = xvals(d, "Val")
+
    
-       l.row = row
-       if l.unit == "@" and l.type=="quantitative" and l.normalUnit:
-           l.unit = l.normalUnit
-           print "bum units now", l.unit
        
    return labs
 
@@ -285,7 +287,7 @@ class i2b2Patient():
     
     def rdf_med(self, med):
         m = RDF.Model()
-        om = RDF.Node(blank="one_med")
+        om = RDF.Node()
         m.append(RDF.Statement(om, rdf['type'], sp['Medication']))
 
         rxnormCode = RDF.Node()
@@ -316,7 +318,7 @@ class i2b2Patient():
 
     def rdf_problem(self, problem):
         m = RDF.Model()
-        o = RDF.Node(blank="one_problem")
+        o = RDF.Node()
         m.append(RDF.Statement(o, rdf['type'], sp['Problem']))
         
         snomedCode = RDF.Node()
@@ -332,7 +334,7 @@ class i2b2Patient():
     
     def rdf_lab(self, lab):
         m = RDF.Model()
-        o = RDF.Node(blank="one_lab")
+        o = RDF.Node()
         
         m.append(RDF.Statement(o, rdf['type'], sp['LabResult']))
         
@@ -391,7 +393,7 @@ class i2b2Patient():
     def rdf_demographics(self):
         d = self.demographics
         m = RDF.Model()
-        o = RDF.Node(blank="one_demographic")
+        o = RDF.Node()
         m.append(RDF.Statement(o, rdf['type'], foaf['Person']))
         m.append(RDF.Statement(o, foaf['givenName'], RDF.Node(literal=d.givenName.encode())))
         m.append(RDF.Statement(o, foaf['familyName'], RDF.Node(literal=d.familyName.encode())))
@@ -410,51 +412,44 @@ class i2b2Patient():
         
         return m
 
+    def add_all(self, model):
+        for a in model.find_statements(RDF.Statement(None,None,None)):
+            if a not in self.model:
+                self.model.add_statement(a)
+
     def write_to_files(self, base="."):
         
         base = os.path.join(base, "records")
+        
         try:
             os.mkdir(base)
         except OSError: pass        
         
-        base = os.path.join(base, "%s"%self.id)
-        os.mkdir(base)
-        os.mkdir(os.path.join(base, "medications"))
-        os.mkdir(os.path.join(base, "problems"))
-        os.mkdir(os.path.join(base, "demographics"))
-        os.mkdir(os.path.join(base, "lab_results"))
+        f = open(os.path.join(base, "%s"%self.id), "w")
 
-        os.mkdir(os.path.join(base, "medications", "external_id"))
-        os.mkdir(os.path.join(base, "problems", "external_id"))
-        os.mkdir(os.path.join(base, "lab_results", "external_id"))
+        self.model = RDF.Model()
         
         for m in self.meds:
-            os.mkdir(os.path.join(base, "medications", "external_id",m.external_id))
-            f = open(os.path.join(base, "medications/external_id/%s/data.rdf"%m.external_id), "w")
-            f.write(serialize_rdf(self.rdf_med(m)))
-            f.close()
+            self.add_all(self.rdf_med(m))
             
         for p in self.problems:
-            os.mkdir(os.path.join(base, "problems", "external_id", p.external_id))
-            f = open(os.path.join(base, "problems/external_id/%s/data.rdf"%p.external_id), "w")
-            f.write(serialize_rdf(self.rdf_problem(p)))
-            f.close()
+            self.add_all(self.rdf_problem(p))
 
         for l in self.labs:
-            os.mkdir(os.path.join(base, "lab_results", "external_id", l.external_id))
-            f = open(os.path.join(base, "lab_results/external_id/%s/data.rdf"%l.external_id), "w")
-            f.write(serialize_rdf(self.rdf_lab(l)))
-            f.close()
-            
-        f = open(os.path.join(base, "demographics/data.rdf"), "w")
-        f.write(serialize_rdf(self.rdf_demographics()))
+            try:
+                self.add_all(self.rdf_lab(l))
+            except: pass
+
+        self.add_all(self.rdf_demographics())
+
+        f.write(serialize_rdf(self.model))
         f.close()
             
         
         
     @classmethod
-    def initialize_all(cls):
-        patient_ids = get_i2b2_patients()
+    def initialize_all(cls, offset=0):
+        patient_ids = get_i2b2_patients(offset)
         patients = []
         for p in patient_ids:
             patients.append(i2b2Patient(p))

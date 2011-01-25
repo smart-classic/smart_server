@@ -23,7 +23,7 @@ EMAIL_SUPPORT_NAME = "E-mail Support"
 EMAIL_SUPPORT_ADDRESS = "e-mail-support-address@host.com"
 
 RECORD_SPARQL_ENDPOINT = 'http://localhost:8080/openrdf-sesame/repositories/record_rdf'
-DEMOGRAPHIC_SPARQL_ENDPOINT = 'http://localhost:8080/openrdf-sesame/repositories/demographic_rdf'
+TEMP_SPARQL_ENDPOINT = 'http://localhost:8080/openrdf-sesame/repositories/temp_rdf'
 PHA_SPARQL_ENDPOINT = 'http://localhost:8080/openrdf-sesame/repositories/pha_rdf'
 
 DATABASE_ENGINE = 'postgresql_psycopg2'           # 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.

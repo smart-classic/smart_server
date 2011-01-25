@@ -12,8 +12,7 @@ from smart.models.accounts import *
 from smart.models import PHA
 from django.conf import settings
 from string import Template
-import urllib
-import RDF
+import urllib, uuid, RDF
 
 class PHA_RDFStore(Object): 
   Meta = BaseMeta()
@@ -50,7 +49,7 @@ class SesameConnector(object):
         elif (node.is_blank()):
             return "<bnode>%s</bnode>"%node.blank_identifier
         elif (node.is_literal()):
-            return "<literal>%s</literal>"%node.literal_value['string']
+            return "<literal><![CDATA[%s]]></literal>"%node.literal_value['string']
     
         raise Exception("Unknown node type for %s"%node)
 
@@ -64,23 +63,23 @@ class SesameConnector(object):
     
     def execute_transaction(self):
         t = '<?xml version="1.0"?>'
-        t += "<transaction>"
+        t += "<transaction>\n"
         for a in self.pending_adds:
-            t += "<add>%s</add>"%self.serialize_statement(a)
+            t += "<add>%s</add>\n"%self.serialize_statement(a)
 
         for d in self.pending_removes:
-            t += "<remove>%s</remove>"%self.serialize_statement(d)
+            t += "<remove>%s</remove>\n"%self.serialize_statement(d)
         
         t += "</transaction>"
         u = "%s/statements"%self.endpoint
+        
         success =  self.request(u, "POST", {"Content-Type" : "application/x-rdftransaction"}, t)
         if (success):
-#            print "Succeeded with transaction: \n%s"%t
             self.pending_adds = []
             self.pending_removes = []
             return True
         raise Exception("Failed to execute sesame transaction: %s"%t)
-    
+   
 class ContextSesameConnector(SesameConnector):
     def __init__(self, endpoint, context):
         super(ContextSesameConnector, self).__init__(endpoint)
@@ -99,6 +98,14 @@ class ContextSesameConnector(SesameConnector):
         q = Template(q).substitute(context="<%s>"%self.context)
         return super(ContextSesameConnector, self).sparql(q)
 
+    def destroy_triples(self):
+        all_triples = self.sparql("""CONSTRUCT {?s ?p ?o} from $context where {?s ?p ?o.}""")
+        ts = utils.parse_rdf(all_triples)
+        for t in ts:
+            self.pending_removes.append(t)
+        self.execute_transaction()
+
+
 class DemographicConnector(SesameConnector):
     def __init__(self):
         super(DemographicConnector, self).__init__(settings.RECORD_SPARQL_ENDPOINT)
@@ -108,6 +115,17 @@ class RecordStoreConnector(ContextSesameConnector):
         super(RecordStoreConnector, self).__init__(settings.RECORD_SPARQL_ENDPOINT, 
                                                    "http://smartplatforms.org/records/%s"%record.id)
 
+class TemporaryStoreConnector(ContextSesameConnector):
+    def __init__(self):
+        self.temp_id =str(uuid.uuid4()) 
+        super(TemporaryStoreConnector, self).__init__(settings.TEMP_SPARQL_ENDPOINT, 
+                                                   "http://smartplatforms.org/records/%s"%self.temp_id)
+    def __enter__(self):
+        return self
+    
+    def __exit__(self, type, value, traceback):
+        self.destroy_triples()
+    
 class PHAConnector(ContextSesameConnector):
     def __init__(self, request):
         pha = request.principal
