@@ -126,6 +126,21 @@ def launch_app(request, record, account, app):
                               'oauth_cookie': cookie}, 
                             type='xml')
 
+
+def create_proxied_record(request):
+    record_id = request.POST['record_id']
+    record_name = request.POST['record_name']
+
+    print "ASKED to create proxied record: ", record_id, record_name
+
+    r, created = Record.objects.get_or_create(id=record_id, defaults={'full_name':record_name})
+    print "GOT: ", r, created
+    if not created and r.full_name != record_name:
+        r.full_name = record_name
+        r.save()
+
+    return DONE
+
 @paramloader()
 def get_record_tokens(request, record, app):
     return get_record_tokens_helper(record, app)

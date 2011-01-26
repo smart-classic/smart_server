@@ -16,3 +16,4 @@ def grant(machineapp, permset):
     permset.grant(user_reset_password, None)
     permset.grant(user_reset_password_request, None)
     
+    permset.grant(create_proxied_record, None)

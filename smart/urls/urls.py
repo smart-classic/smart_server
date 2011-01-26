@@ -64,6 +64,8 @@ urlpatterns += patterns(
     (r'^accounts/(?P<account_email>[^/]+)$', account_info),
     (r'^accounts/(?P<account_email>[^/]+)/recent_records/$', account_recent_records),
     (r'^accounts/(?P<account_email>[^/]+)/', include('smart.urls.account')),    
+
+    (r'^records/create/proxied', MethodDispatcher({ 'POST': create_proxied_record}))
   )
 
 """
@@ -72,7 +74,6 @@ in an ontology-driven way:  rdfobjects loads the ontology, registers
 handlers for all the relevant paths (e.g. /records/{record_id}/medications/)
 and specified methods (GET, POST, PUT, DELETE).
 """
-if settings.PROXY_CONTAINER:
-    import smart.models.record_proxy_backend
 
+from smart.plugins import *
 OntologyURLMapper(urlpatterns) 
