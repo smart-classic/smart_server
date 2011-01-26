@@ -172,7 +172,6 @@ class RecordCallMapper(object):
     @property
     def map_score(self):
         cat = str(self.call.category)
-        
         if cat.startswith("record") and cat.endswith(self.ending):
             return 1
         return 0
@@ -198,7 +197,6 @@ class RecordCallMapper(object):
             return self.delete    
 
         assert False, "Method not in GET, PUT, POST, or DELETE"
-
 
 @CallMapper.register
 class RecordItemsCallMapper(RecordCallMapper):

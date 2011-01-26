@@ -72,5 +72,7 @@ in an ontology-driven way:  rdfobjects loads the ontology, registers
 handlers for all the relevant paths (e.g. /records/{record_id}/medications/)
 and specified methods (GET, POST, PUT, DELETE).
 """
+if settings.PROXY_CONTAINER:
+    import smart.models.record_proxy_backend
 
 OntologyURLMapper(urlpatterns) 
