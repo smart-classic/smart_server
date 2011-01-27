@@ -5,7 +5,7 @@ import re
 
 def record_get_object(request, record_id, obj,  **kwargs):
     c = RecordStoreConnector(Record.objects.get(id=record_id))
-    id = smart_base + request.path                
+    id = smart_path(request.path)                
     if ('external_id' in kwargs):
         id = obj.internal_id(c, kwargs['external_id'])
         assert (id != None), "No %s was found with external_id %s"%(obj.type, kwargs['external_id'])
@@ -14,7 +14,7 @@ def record_get_object(request, record_id, obj,  **kwargs):
 
 def record_delete_object(request,  record_id, obj, **kwargs):
     c = RecordStoreConnector(Record.objects.get(id=record_id))
-    id = smart_base + request.path                
+    id = smart_path(request.path)                
     if ('external_id' in kwargs):            
         id = obj.internal_id(c, kwargs['external_id'])
         assert (id != None), "No %s was found with external_id %s"%(obj.type, kwargs['external_id'])
@@ -23,7 +23,7 @@ def record_delete_object(request,  record_id, obj, **kwargs):
 def record_get_all_objects(request, record_id, obj, above_obj=None, **kwargs):
     above_uri = None
     if (above_obj != None):
-        above_uri = smart_base+trim(request.path, 2)
+        above_uri = smart_path(smart_parent(request.path))
 
     c = RecordStoreConnector(Record.objects.get(id=record_id))
     return rdf_get(c, obj.query_all(above_type=above_obj, above_uri=above_uri))
@@ -31,23 +31,23 @@ def record_get_all_objects(request, record_id, obj, above_obj=None, **kwargs):
 def record_delete_all_objects(request, record_id, obj,  above_obj=None, **kwargs):
     above_uri = None
     if (above_obj != None):
-        above_uri = smart_base+trim(request.path, 2)
+        above_uri = smart_path(smart_parent(request.path))
 
     
     c = RecordStoreConnector(Record.objects.get(id=record_id))
     return rdf_delete(c, obj.query_all(above_type=above_obj, above_uri=above_uri))
 
 def record_post_objects(request, record_id, obj, above_obj=None, **kwargs):
-    path = smart_path(request)
+    path = smart_path(request.path)
     g = parse_rdf(request.raw_post_data)
-    var_bindings = obj.path_var_bindings(smart_path(request))
+    var_bindings = obj.path_var_bindings(path)
     new_uris = obj.generate_uris(g, var_bindings)
 
     if (above_obj != None):
         pred = above_obj.smart_type.predicate_for_contained_type(obj.smart_type)
         assert pred != None, "Can't derive the predicate for adding %s below %s."%(obj.type, above_obj.type)
         for new_node in new_uris:
-            above_node = RDF.Node(uri_string=smart_parent(path))
+            above_node = RDF.Node(uri_string=smart_path(smart_parent(request.path)))
             g.append(RDF.Statement(
                      subject=above_node, 
                      predicate=pred, 
@@ -77,7 +77,7 @@ def record_put_object(request, record_id, obj, above_obj=None, **kwargs):
 
     # 1.
     obj.ensure_only_one_put(g)
-    var_bindings = obj.path_var_bindings(smart_path(request))
+    var_bindings = obj.path_var_bindings(smart_path(request.path))
     new_nodes = obj.generate_uris(g, var_bindings)
     
     assert len(new_nodes) == 1, "Expected exactly one new node in %s ; %s"%(new_nodes, request.raw_post_data)

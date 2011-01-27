@@ -127,89 +127,13 @@ def apply_xslt(sourceDOM, stylesheetDOM):
 def bound_graph():
     return RDF.Model(storage=RDF.HashStorage("", options="hash-type='memory'"))
 
-def smart_path(request):
-    ret = smart_base + request.path
-    return ret.encode()
-
-def smart_external_path(request):
-    ret = smart_base + request.path
-    split_point = ret.rfind("external_id")
-    assert (split_point >= 0), "Expected external_id in %s"%ret
-    ret = ret[:split_point]
+def smart_path(path):
+    ret = settings.SITE_URL_PREFIX + path
     return ret.encode()
 
 def smart_parent(path):
     ret = path.split("/")
     return "/".join(ret[:-2])
-
-
-def xslt_ccr_to_rdf(source, stylesheet="ccr_to_med_rdf"):
-    sourceDOM = libxml2.parseDoc(source)
-    ss = "%s%s"%(settings.XSLT_STYLESHEET_LOC, "%s.xslt"%stylesheet)
-    ssDOM = libxml2.parseFile(ss)
-    return apply_xslt(sourceDOM, ssDOM)
-
-def rxn_related(rxcui_id, graph):
-   rxcui_id = str(rxcui_id)
-   ns = default_ns()
-   literal = RDF.Node
-   
-   conn=psycopg2.connect("dbname='%s' user='%s' password='%s'"%
-                             (settings.DATABASE_RXN, 
-                              settings.DATABASE_USER, 
-                              settings.DATABASE_PASSWORD))
-   
-   cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-   
-   q = """select distinct rxcui, rxaui, atn, atv from 
-       rxnsat where rxcui=%s and suppress='N' and 
-       atn != 'NDC' order by rxaui, atn;"""
-  
-   cur.execute(q, (rxcui_id,))
-   rows = cur.fetchall()
-   
-   graph.append(RDF.Statement(
-                    ns['rxcui'][rxcui_id], 
-                    ns['rdf']['type'], 
-                    ns['rxcui']['']))
-   
-#   for row in rows:
-#       atn = row['atn'].replace(" ", "_").encode()
-#       
-#       graph.append(RDF.Statement(
-#                    ns['rxcui']['%s'%row['rxcui'].encode()], 
-#                    ns['rxn']['has_RXAUI'], 
-#                    ns['rxaui'][row['rxaui'].encode()] ))
-#       
-#       graph.append(RDF.Statement(
-#                    ns['rxaui'][row['rxaui'].encode()], 
-#                    ns['rxatn'][atn], 
-#                    literal(row['atv'].encode()) ))
-
-   q = """select min(rela) as rela, min(str) as str from 
-           rxnrel r join rxnconso c on r.rxcui1=c.rxcui 
-           where rxcui2=%s group by rela;"""
-   
-   cur.execute(q, (rxcui_id,))
-   
-   rows = cur.fetchall()
-   for row in rows:
-       graph.append(RDF.Statement(
-                        ns['rxcui'][rxcui_id], 
-                        ns['rxrel'][row['rela'].encode()], 
-                        literal(row['str'].encode()) ))
-
-   return
-
-def strip_ns(target, ns):
-    print target, ns
-    return str(target.uri).split(ns)[1]
-
-def update_store(permanent_store, new_data):
-    for s in new_data:
-        print s
-        if not permanent_store.contains_statement(s):
-            permanent_store.append(s)
 
 def x_domain(r):
   ui = settings.SMART_UI_SERVER_LOCATION
@@ -257,8 +181,6 @@ def url_request_execute(req):
     
     
     else: raise Exception("Unexpected HTTP status %s"%r.status)
-
-
 
 def rdf_response(s):
     return x_domain(HttpResponse(s, mimetype="application/rdf+xml"))

@@ -212,7 +212,7 @@ class Account(Principal):
     if model == None:  m = RDF.Model()
     else: m = model
     
-    n = RDF.Node(uri_string="%s/users/%s" % (utils.smart_base, self.email.encode()))
+    n = RDF.Node(uri_string="%s/users/%s" % (settings.SITE_URL_PREFIX, self.email.encode()))
     m.append(RDF.Statement(n, rdf['type'], sp['user']))    
 
     try:

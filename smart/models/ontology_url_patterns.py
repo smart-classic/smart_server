@@ -39,9 +39,10 @@ class OntologyURLMapper():
     to_replace = re.findall("{(.*?)}", ret)
     for r in to_replace:
       ret = ret.replace("{%s}"%r, self.django_param_regex(r))
+    assert ret[0]=="/", "Expect smart.owl to provide absolute paths"
     
-    ret = ret.replace("http://smartplatforms.org/", "^")
-    ret += "$"
+    ret = "^" + ret[1:] + "$"
+    print "\n\n",ret
     return ret
 
 class CallMapper(object):

@@ -93,7 +93,7 @@ class RecordObject(object):
         return var_values
     
     def determine_full_path(self, var_bindings=None):
-        ret  = self.path
+        ret = settings.SITE_URL_PREFIX + self.path
         for vname, vval in var_bindings.iteritems():
             if vval == "": vval="{new_id}"
             ret = ret.replace("{"+vname+"}", vval)
@@ -145,7 +145,9 @@ class RecordObject(object):
         return node_map.values()
     
     def query_one(self, id):
-        return self.smart_type.query(one_name=id)
+        ret = self.smart_type.query(one_name=id)
+        print "QUERYING BY", id
+        return ret
 
     def query_all(self, above_type=None, above_uri=None):
         atype = above_type and above_type.smart_type or None
