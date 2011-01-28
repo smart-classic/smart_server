@@ -4,6 +4,7 @@ Rules for Accounts
 
 from smart.views import *
 from smart.models.rdf_rest_operations import *
+from smart.models.record_object import record_get_filtered_labs
 
 def check_token_for_record_wrapper(token):
         def check_token_for_record(request, view_func, view_args, view_kwargs):
@@ -28,6 +29,7 @@ def grant(accesstoken, permset):
     permset.grant(record_post_objects, [check_token_for_record])
     permset.grant(record_get_all_objects, [check_token_for_record])
     permset.grant(record_get_object, [check_token_for_record])
+    permset.grant(record_get_filtered_labs, [check_token_for_record])
     
     permset.grant(put_demographics, [check_token_for_record])
     permset.grant(user_search)

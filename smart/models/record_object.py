@@ -217,18 +217,11 @@ class RecordItemCallMapper(RecordCallMapper):
     ending = "_item"
 
 
-@CallMapper.register
-class FilteredLabsMapper(BasicCallMapper):
-  @property
-  def maps_p(self):
-      r = ((str(self.call.path).find("loinc") > -1) and 
-             str(self.call.method) == "GET" and
-             str(self.call.category) == "record_items" and
-             str(self.call.target.uri) == "http://smartplatforms.org/terms#LabResult")
-      return r
-
-  @staticmethod
-  def maps_to(request, *args, **kwargs):
+@CallMapper.register(category="record_items",
+                     method="GET",
+                     target="http://smartplatforms.org/terms#LabResult",
+                     filter_func=lambda c: str(c.path).find("loinc")>-1)
+def record_get_filtered_labs(request, *args, **kwargs):
       record_id = kwargs['record_id']
       loincs = kwargs['comma_separated_loincs'].split(",")
 
