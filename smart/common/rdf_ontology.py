@@ -139,13 +139,16 @@ class SMArtType(SMArtOwlObject):
     def __repr__(self):
         return "SMArtType:" + str(self.node)
 
-    def query_one(self, id):
-        return self.query(one_name=id)
+    def query_one(self, id,filter_clause=""):
+        return self.query(one_name=id,filter_clause=filter_clause)
 
-    def query_all(self, above_type=None, above_uri=None):
-        return self.query(above_type=above_type, above_uri=above_uri)
+    def query_all(self, above_type=None, above_uri=None,filter_clause=""):
+        return self.query(above_type=above_type, above_uri=above_uri,filter_clause=filter_clause)
 
-    def query(self, one_name="?root_subject", above_type=None, above_uri=None):
+    def query(self, one_name="?root_subject", 
+                    above_type=None, 
+                    above_uri=None, 
+                    filter_clause=""):
         ret = """
         BASE <http://smartplatforms.org/>
         PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
@@ -153,6 +156,7 @@ class SMArtType(SMArtOwlObject):
         FROM $context
         WHERE {
            { $query_triples } 
+           $filter_clause
         }
         """
 
@@ -164,6 +168,7 @@ class SMArtType(SMArtOwlObject):
 
         ret = ret.replace("$construct_triples", q.construct_triples())
         ret = ret.replace("$query_triples", b)        
+        ret = ret.replace("$filter_clause", filter_clause)        
         return ret
                  
 parsed = False

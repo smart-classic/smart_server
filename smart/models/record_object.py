@@ -3,7 +3,7 @@ from django.conf import settings
 from smart.common.rdf_ontology import api_types, api_calls, ontology
 from rdf_rest_operations import *
 from smart.common.util import remap_node, parse_rdf, LookupType
-from ontology_url_patterns import CallMapper
+from ontology_url_patterns import CallMapper, BasicCallMapper
 
 class RecordObject(object):
     __metaclass__ = LookupType
@@ -144,14 +144,13 @@ class RecordObject(object):
 
         return node_map.values()
     
-    def query_one(self, id):
-        ret = self.smart_type.query(one_name=id)
-        print "QUERYING BY", id
+    def query_one(self, id,filter_clause=""):
+        ret = self.smart_type.query(one_name=id,filter_clause=filter_clause)
         return ret
 
-    def query_all(self, above_type=None, above_uri=None):
+    def query_all(self, above_type=None, above_uri=None,filter_clause=""):
         atype = above_type and above_type.smart_type or None
-        return self.smart_type.query(above_type=atype, above_uri=above_uri)
+        return self.smart_type.query(above_type=atype, above_uri=above_uri,filter_clause=filter_clause)
     
 for t in api_types:
     RecordObject(t)
@@ -216,3 +215,33 @@ class RecordItemCallMapper(RecordCallMapper):
     @property
     def delete(self): return self.obj.delete_one
     ending = "_item"
+
+
+@CallMapper.register
+class FilteredLabsMapper(BasicCallMapper):
+  @property
+  def maps_p(self):
+      r = ((str(self.call.path).find("loinc") > -1) and 
+             str(self.call.method) == "GET" and
+             str(self.call.category) == "record_items" and
+             str(self.call.target.uri) == "http://smartplatforms.org/terms#LabResult")
+      return r
+
+  @staticmethod
+  def maps_to(request, *args, **kwargs):
+      record_id = kwargs['record_id']
+      loincs = kwargs['comma_separated_loincs'].split(",")
+
+      filters = " || ".join (["?filteredLoinc = <http://loinc.org/codes/%s>"%s 
+                              for s in loincs])
+
+      l = RecordObject["http://smartplatforms.org/terms#LabResult"]
+      c = RecordStoreConnector(Record.objects.get(id=record_id))
+      q =  l.query_all(filter_clause="""
+        {
+          ?root_subject <http://smartplatforms.org/terms#labName> ?filteredLab.
+          ?filteredLab <http://smartplatforms.org/terms#code> ?filteredLoinc.
+        }  FILTER (%s)"""%filters
+           )
+      return rdf_response(c.sparql(q))
+

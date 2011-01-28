@@ -5,7 +5,6 @@ class QueryBuilder(object):
         self.root_type = root_type
         self.triples_created = []
         self.identifier_count = {}
-        
         self.root_name = self.get_identifier(root_name)
 
     def construct_triples(self):
@@ -17,7 +16,7 @@ class QueryBuilder(object):
         predicate = str(predicate.uri)
         self.required_triple("<"+above_uri+">", "<"+predicate+">", self.root_name )
         
-    def get_identifier(self, id_base, role="predicate"):
+    def get_identifier(self, id_base, role=""):
         if id_base[0] == "<" or id_base.startswith("_:"): return id_base
         
         start = id_base[0] == "?" and "?" or ""
@@ -28,11 +27,17 @@ class QueryBuilder(object):
           id_base = id_base.rsplit("#", 1)[1]
 
         id_base = re.sub(r'\W+', '', id_base)
-        id_base = start + id_base + "_" + role
+        id_base = start + id_base
+        if role != "":
+            id_base = id_base + "_" + role
 
         self.identifier_count.setdefault(id_base, 0)
         self.identifier_count[id_base] += 1
-        return "%s_%s"%(id_base, self.identifier_count[id_base])
+        ret = "%s"%id_base
+        c = self.identifier_count[id_base]
+        if c > 1:
+            ret += "_%s"%c
+        return ret
 
     def required_triple(self, root_name, pred, obj):
         self.triples_created.append("%s %s %s. " % (root_name, pred, obj))

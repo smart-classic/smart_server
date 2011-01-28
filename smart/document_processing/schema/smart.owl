@@ -2164,6 +2164,15 @@ No example yet.]]></api:example>
   <api:category>record_items</api:category>
 </api:call>
 
+<api:call>
+  <api:description>Get all lab results for a given record, filtered by a set of loinc codes</api:description>
+  <api:method>GET</api:method>
+  <api:path>/records/{record_id}/lab_results/filter/loinc/{comma_separated_loincs}</api:path>
+  <api:target rdf:resource="http://smartplatforms.org/terms#LabResult"/>
+  <api:by_internal_id>true</api:by_internal_id>
+  <api:category>record_items</api:category>
+</api:call>
+
 
 <api:call>
   <api:description>Delete all lab results from a given record</api:description>

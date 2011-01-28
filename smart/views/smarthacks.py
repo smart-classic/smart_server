@@ -12,6 +12,7 @@ from smart.common.util import rdf, sp
 from django.http import HttpResponse
 from django.conf import settings
 from smart.models import *
+from smart.models.record_object import RecordObject
 from smart.models.rdf_rest_operations import *
 from oauth.oauth import OAuthRequest
 from smart.models.ontology_url_patterns import CallMapper
@@ -235,3 +236,5 @@ def put_demographics(request, record_id, obj, **kwargs):
     Record.objects.create(id=record_id)
   record_delete_object(request, record_id, obj, **kwargs)
   return record_post_objects(request, record_id, obj, **kwargs)
+
+
