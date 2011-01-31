@@ -14,7 +14,7 @@ SITE_URL_PREFIX = "http://url.of.apiserver:port"
 
 SMART_UI_SERVER_LOCATION = "http://url.of.uiserver:port"
 
-PROXY_CONTAINER = {'BASE_URL': "http://url.of.proxy.continer:port"}
+PLUGIN_USE_PROXY = False
 
 ADMINS = (
     ('Name', 'email'),
