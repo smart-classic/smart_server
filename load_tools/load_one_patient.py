@@ -68,5 +68,7 @@ class RecordImporter(object):
             connector.pending_adds.append(a)
 
 if __name__ == "__main__":
+    import string
     for v in sys.argv[1:]:
-        RecordImporter(v)
+        rid = filter(string.isalnum, v.split("/")[-1])
+        RecordImporter(v, rid)
