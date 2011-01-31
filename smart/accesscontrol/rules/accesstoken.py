@@ -6,7 +6,7 @@ from smart.views import *
 from smart.models.rdf_rest_operations import *
 from smart.models.record_object import record_get_filtered_labs
 try:
-    from smart.plugins.record_proxy_backend import proxy_get
+    from smart.plugins import *  
 except ImportError: pass
 
 def check_token_for_record_wrapper(token):
@@ -37,7 +37,7 @@ def grant(accesstoken, permset):
     permset.grant(record_get_filtered_labs, [check_token_for_record])
 
     try:
-        permset.grant(proxy_get, [check_token_for_record])
+        permset.grant(record_proxy_backend.proxy_get, [check_token_for_record])
     except: 
         pass
     
