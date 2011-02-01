@@ -70,5 +70,5 @@ class RecordImporter(object):
 if __name__ == "__main__":
     import string
     for v in sys.argv[1:]:
-        rid = filter(string.isalnum, v.split("/")[-1])
+        rid = filter(str.isalnum, v.split("/")[-1].split(".")[0])
         RecordImporter(v, rid)
