@@ -132,6 +132,10 @@ class RecordObject(object):
     
         node_map = {}    
         for s in g.find_statements(q_typed_nodes):
+            
+            # Let's just remap nodes that *lack* a URI
+            if (s.subject.is_resource()): continue
+            
             if s.subject not in node_map:
                 full_path = self.determine_full_path(var_bindings)                
                 node_map[s.subject] = RDF.Node(uri_string=full_path)

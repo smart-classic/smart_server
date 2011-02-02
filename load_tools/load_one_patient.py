@@ -51,15 +51,16 @@ class RecordImporter(object):
         
     def import_one_type(self, t):
         if t.base_path == None: return
-        
+
         ro = RecordObject[t.node]    
         var_bindings = {'record_id': self.target_id}
-        ro.generate_uris(self.data, var_bindings)
+        r = ro.generate_uris(self.data, var_bindings)
     
     def extract_one_type(self, t):
         if t.base_path == None: return
         ro = RecordObject[t.node]
         matched = self.temp_connector.sparql(ro.query_all())
+
         self.parser.parse_string_into_model(self.target_model, matched, "none")
 
     @staticmethod

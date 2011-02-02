@@ -53,8 +53,8 @@ class Record(Object):
     record_list = []
     for p in people:
         record = Record()
-        print "working with person ", p
-        record.id = re.search("\/records\/(.*?)\/", str(p.subject)).group(1)
+        print "working with person ", p, str(p.subject.uri), p.subject.is_resource() 
+        record.id = re.search("\/records\/(.*?)\/demographics", str(p.subject.uri)).group(1)
         record.fn = list(m.find_statements(RDF.Statement(p.subject, foaf['givenName'], None)))[0].object.literal_value['string']
         record.ln = list(m.find_statements(RDF.Statement(p.subject, foaf['familyName'], None)))[0].object.literal_value['string']
         print "found the snames ", record.fn, record.ln, record.id

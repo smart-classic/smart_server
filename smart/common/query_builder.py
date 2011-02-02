@@ -56,16 +56,17 @@ class QueryBuilder(object):
 
     def build(self, root_name=None, root_type=None, depth=0):
         ret = ""
+        
         # Recursion starting off:  set initial conditions (if any).
         if root_type == None:
             root_name = self.root_name
             root_type = self.root_type            
             ret = " ".join(self.triples_created)
-            
-        if (root_type.base_path != None):
-            ret += self.required_triple(root_name, "rdf:type", "<"+str(root_type.node.uri)+">")
-        else:
-            ret += self.optional_triple(root_name, "rdf:type", "<"+str(root_type.node.uri)+">")
+
+        # If there's a type, it must be the root_type
+        type_id = self.get_identifier("?rdftype", "object")
+        ret += self.optional_triple(root_name, "rdf:type", type_id)  + \
+               "FILTER (!BOUND(%s) || %s = <%s>) "% (type_id, type_id, str(root_type.node.uri))
 
         for p in root_type.properties:
             p = str(p.property.uri)
