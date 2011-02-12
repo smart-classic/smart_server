@@ -3,8 +3,11 @@
 
 # Repositories 
 These instructions are included in each if three github repositories that you'll need in order to run the SMArt Reference EMR in your own environment:
+
 * https://github.com/chb/smart_server.git
+
 * https://github.com/chb/smart_ui_server.git
+
 * https://github.com/chb/smart_sample_apps.git
 
 # System setup
@@ -12,12 +15,14 @@ These instructions are included in each if three github repositories that you'll
 * Recent Linux installation (Kernel 2.6+).  We recommend an up-to-date version of Ubuntu, and these instructions are written from that perspective.
 * Note: We recommend you do this by sudo'ing from a non-root user.  If you would like to do this as root make sure you create at least one non-root user with `useradd -m {USER}` otherwise the default locale will not be set.  This issue is most common on a new OS build.
 * PostgreSQL 8.3+
-
-      `apt-get install postgresql`
+<pre>
+     apt-get install postgresql
+</pre>
 
 * Python 2.6 with package <tt>psycopg2</tt> and <tt>libxslt1</tt>
-
-    `apt-get install python-psycopg2 python-libxslt1 python-librdf librdf-storage-postgresql librdf-storage-sqlite python-m2crypto python-simplejson`
+<pre>
+    apt-get install python-psycopg2 python-libxslt1 python-librdf librdf-storage-postgresql librdf-storage-sqlite python-m2crypto python-simplejson
+</pre>
 
 * Django 1.1
 
@@ -38,8 +43,9 @@ This should be the second uncommented line in your default config. Change <tt>id
   `local     all     all        md5`
 
 You will need to restart PostgreSQL:
-
-   `service postgresql-8.4 restart`
+<pre>
+   service postgresql-8.4 restart
+</pre>
 
 * Create a PostgreSQL user for your SMArt service, e.g. "smart" and setup a password
  <pre>
