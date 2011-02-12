@@ -35,7 +35,7 @@ def resolve_activity_with_app(request, activity_name, app_id):
     act.url = PHA.objects.get(id=act.app.id).start_url_template
     
   try:
-      r = PrincipalActivityRemaps.objects.get(activity=act, principal=request.principal).url
+      r = PrincipalActivityRemaps.objects.get(activity=act, principal=request.principal)
       act.url = r.url
       print "remapping for principal %s: %s", (request.principal, act.url) 
 
