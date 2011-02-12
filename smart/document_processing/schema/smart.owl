@@ -524,8 +524,8 @@ http://fda.gov/UNII/{UNII}]]></api:description>
                 <owl:minCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</owl:minCardinality>
                 <api:doc>
 					<rdf:Description>
-						<api:name>RxNorm code(tty=SCDF or tty=SBDF) for the this medication.</api:name>
-						<api:description>RDF CodedValue node with code drawn from http://link.informatics.stonybrook.edu/rxnorm/RXCUI/{RXCUI}</api:description>
+					  <api:name>RxNorm code(tty in {SCD,SBD,BPCK,GPCK} for the this medication.</api:name>
+					  <api:description>RDF CodedValue node with code drawn from http://link.informatics.stonybrook.edu/rxnorm/RXCUI/{RXCUI}</api:description>
 					</rdf:Description>
 				</api:doc>                
             </owl:Restriction>
