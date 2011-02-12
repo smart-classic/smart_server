@@ -2,7 +2,7 @@
 ###http://groups.google.com/group/smart-app-developers
 
 # Repositories 
-These instructions are included in each if three github repositories that you'll need in order to run the SMArt Reference EMR in your own environment:
+These instructions apply to each of three github repositories that you'll need in order to run the SMArt Reference EMR in your own environment:
 
 * https://github.com/chb/smart_server.git
 
@@ -21,7 +21,8 @@ These instructions are included in each if three github repositories that you'll
 
 * Python 2.6 with package <tt>psycopg2</tt> and <tt>libxslt1</tt>
 <pre>
-    apt-get install python-psycopg2 python-libxslt1 python-librdf librdf-storage-postgresql librdf-storage-sqlite python-m2crypto python-simplejson
+    apt-get install python-psycopg2 python-libxslt1 python-librdf librdf-storage-postgresql \
+                    librdf-storage-sqlite python-m2crypto python-simplejson
 </pre>
 
 * Django 1.1
