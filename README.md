@@ -55,9 +55,10 @@ You will need to restart PostgreSQL:
  psql
  postgres=# \password smart
  </pre>
-* Create the Database and make the smart user its owner.
+* Create the Databases and make the smart user their owner.
 
   `createdb -O smart smart`
+  `createdb -O smart rxnorm`
 
 # Install openrdf-sesame (and tomcat)  
 <pre>
@@ -89,6 +90,16 @@ You will need to restart PostgreSQL:
 
 * set things up (supplying the smart db password when prompted)
    `./reset.sh`
+
+   NOTE: Because of a garbage collection issue in the librdf Python
+   bindings, you may see the following output as reset.sh finishes.
+   Nothing has in fact gone wrong.
+
+   <pre>
+   ...
+   No fixtures found.
+   Exception TypeError: "'NoneType' object is not callable" in <bound method RDFXMLSerializer.__del__ of <RDF.RDFXMLSerializer object at 0x3031c90>> ignored
+   </pre>
 
 # Download, Install, and Configure SMArt UI Server
 
