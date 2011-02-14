@@ -16,10 +16,9 @@ def proxy_get(request, *args, **kwargs):
 
 @CallMapper.register
 class RecordItemProxy(BasicCallMapper):
-    @property
-    def map_score(self):
-        cat = str(self.call.category)
-        if cat.startswith("record_item") and str(self.call.method)=="GET":
-            return 2
-        return 0
     maps_to = staticmethod(proxy_get)
+    
+    @property
+    def maps_p(self):
+        cat = str(self.call.category)
+        return cat.startswith("record_item") and str(self.call.method)=="GET"
