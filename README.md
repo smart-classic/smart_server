@@ -71,6 +71,19 @@ You will need to restart PostgreSQL:
  sudo /etc/init.d/tomcat6 restart
 </pre>
 
+openrdf-workbench doesn't support access control.  To limit servlet
+access to localhost, make two tomcat configuration changes:
+
+<pre>
+    /var/lib/tomcat6/conf/context.xml
+    <Context>
+    +  <Valve className="org.apache.catalina.valves.RemoteHostValve" allow="localhost"/>
+
+    /var/lib/tomcat6/conf/server.xml
+    <Connector port="8080" protocol="HTTP/1.1"
+    +          enableLookups="true"
+</pre>
+
 # Download, Install, and Configure SMArt Backend Server 
 
 * get the code
