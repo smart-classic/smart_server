@@ -530,18 +530,6 @@ http://fda.gov/UNII/{UNII}]]></api:description>
 				</api:doc>                
             </owl:Restriction>
         </rdfs:subClassOf>
-       <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#route"/>
-                <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
-                <api:doc>
-					<rdf:Description>
-						<api:name>Route of delivery</api:name>
-						<api:description>Free text</api:description>
-					</rdf:Description>
-				</api:doc>            
-            </owl:Restriction>
-        </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://smartplatforms.org/terms#instructions"/>
