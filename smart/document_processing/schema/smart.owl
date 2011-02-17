@@ -35,6 +35,74 @@
     <owl:AnnotationProperty rdf:about="http://www.w3.org/2000/01/rdf-schema#comment"/>
 
 
+
+    <!-- http://smartplatforms.org/terms#AllergyException -->
+    
+    <owl:Class rdf:about="http://smartplatforms.org/terms#AllergyException">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#exception"/>
+                <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
+                <owl:onClass rdf:resource="http://smartplatforms.org/terms#CodedValue"/>
+				<api:doc>
+					<rdf:Description>
+						<api:name>Nature of the allergy exception</api:name>
+							<api:description rdf:datatype="http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral"><![CDATA[RDF CodedValue node where code is drawn from the following:
+
+							Code=http://www.ihtsdo.org/snomed-ct/concepts/160244002, Title="No known allergies"
+
+							Code=http://www.ihtsdo.org/snomed-ct/concepts/409137002, Title="No known history of drug allergy"
+
+							Code=http://www.ihtsdo.org/snomed-ct/concepts/429625007, Title="No known food allergy"
+
+							Code=http://www.ihtsdo.org/snomed-ct/concepts/428607008, Title="No known environmental allergy"
+
+							]]></api:description>
+					</rdf:Description>
+				</api:doc>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    <api:name>AllergyException</api:name>
+     <api:name_plural>AllergyExceptions</api:name_plural>
+	 <api:base_path>/records/{record_id}/allergy_exceptions/{allergy_exception_id}</api:base_path>
+     <api:description>AllergiesExceptiosn represent a patient with no known allergies (or no known allergies of a particular type).  For example, 'No known allergies' looks like:</api:description>
+     <api:example rdf:datatype="http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
+<rdf:RDF
+  xmlns:dcterms="http://purl.org/dc/terms/"
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+  xmlns:sp="http://smartplatforms.org/terms#">
+<sp:AllergyException>
+  <sp:exception>
+        <sp:CodedValue>
+          <sp:code resource="http://www.ihtsdo.org/snomed-ct/concepts/160244002" />
+          <dcterms:title>No known allergies</dcterms:title>
+        </sp:CodedValue>
+  </sp:exception>
+</sp:AllergyException>
+</rdf:RDF>]]></api:example>
+    </owl:Class>
+
+<api:call>
+  <api:description>Get all allergy_exceptions</api:description>
+  <api:method>GET</api:method>
+  <api:path>/records/{record_id}/allergy_exceptions/</api:path>
+  <api:target rdf:resource="http://smartplatforms.org/terms#AllergyException"/>
+  <api:by_internal_id>true</api:by_internal_id>
+  <api:category>record_items</api:category>
+</api:call>
+
+
+<api:call>
+  <api:description>POST a single allergy_exception</api:description>
+  <api:method>POST</api:method>
+  <api:path>/records/{record_id}/allergy_exceptions/</api:path>
+  <api:target rdf:resource="http://smartplatforms.org/terms#AllergyException"/>
+  <api:by_internal_id>true</api:by_internal_id>
+  <api:category>record_item</api:category>
+</api:call>
+
+
+
     <!-- http://smartplatforms.org/terms#Allergy -->
     
     <owl:Class rdf:about="http://smartplatforms.org/terms#Allergy">

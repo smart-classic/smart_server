@@ -240,3 +240,25 @@ def record_get_filtered_labs(request, *args, **kwargs):
            )
       return rdf_response(c.sparql(q))
 
+
+
+@CallMapper.register(category="record_items",
+                     method="GET",
+                     target="http://smartplatforms.org/terms#Allergy")
+def record_get_allergies(request, *args, **kwargs):
+      record_id = kwargs['record_id']
+      a = RecordObject["http://smartplatforms.org/terms#Allergy"]
+      ae = RecordObject["http://smartplatforms.org/terms#AllergyException"]
+      c = RecordStoreConnector(Record.objects.get(id=record_id))
+
+      m = RDF.Model()
+      p = RDF.Parser()
+
+      ma = c.sparql(a.query_all())
+      mae = c.sparql(ae.query_all())
+
+      p.parse_string_into_model(m, ma, "none")
+      p.parse_string_into_model(m, mae, "none")
+
+      return rdf_response(serialize_rdf(m))
+

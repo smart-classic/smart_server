@@ -4,7 +4,8 @@ Rules for Accounts
 
 from smart.views import *
 from smart.models.rdf_rest_operations import *
-from smart.models.record_object import record_get_filtered_labs
+from smart.models.record_object import record_get_filtered_labs, record_get_allergies
+
 try:
     from smart.plugins import *  
 except ImportError: pass
@@ -35,6 +36,7 @@ def grant(accesstoken, permset):
     permset.grant(record_get_object, [check_token_for_record])
 
     permset.grant(record_get_filtered_labs, [check_token_for_record])
+    permset.grant(record_get_allergies, [check_token_for_record])
 
     try:
         permset.grant(record_proxy_backend.proxy_get, [check_token_for_record])
