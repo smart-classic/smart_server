@@ -65,7 +65,7 @@
     <api:name>AllergyException</api:name>
      <api:name_plural>AllergyExceptions</api:name_plural>
 	 <api:base_path>/records/{record_id}/allergy_exceptions/{allergy_exception_id}</api:base_path>
-     <api:description>AllergiesExceptiosn represent a patient with no known allergies (or no known allergies of a particular type).  For example, 'No known allergies' looks like:</api:description>
+     <api:description>AllergyExceptions are used for a patient with no known allergies (or no known allergies of a particular type).  For example, 'No known allergies' looks like:</api:description>
      <api:example rdf:datatype="http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
 <rdf:RDF
   xmlns:dcterms="http://purl.org/dc/terms/"
@@ -228,13 +228,27 @@ http://fda.gov/UNII/{UNII}]]></api:description>
      <api:name>Allergy</api:name>
      <api:name_plural>Allergies</api:name_plural>
 	 <api:base_path>/records/{record_id}/allergies/{allergy_id}</api:base_path>
-     <api:description>Allergies are represented by an category (food, drug, etc.), substance (the particular allergen), reaction, and severity.  For instance, a severe peanut allergy, resulting in anaphylaxis, looks like:</api:description>
+     <api:description rdf:datatype="http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral"><![CDATA[SMArt provides structure for representing alleriges accoring to well-specified standard vocabularies.  A patient with no known allergies produces an AllergyException providing further details (see below). Otherwise, each allergy has a category (drug, food, etc.), a severity, a reaction, and a substance or class of substances.  Since we want these allergies to work as inputs to automated computations, we require specific coding systems to represent substances and classes of substances.  
+
+1.  A drug allergy to a particular drug (e.g. cephalexin) must define a "substance" field with an ingredient-type RxNorm code (tty="IN").  (This is to avoid overly-specific statements like "the patient is allergic to a 500mg cephalexin oral tablet"!) 
+
+2.  A drug allergy to an entire class of drugs (e.g. sulfonamides) must define a "class" field with an NDFRT code for the drug class.
+
+3.  A food or environmental allergy must define a "substance" field with a UNII code.
+
+For instance, below are two allergies:  first, an allergy to the entire class of sulfonamides (note the sp:class predicate and the NDFRT code provided); then, an allergy to a single cephalosporin drug, cephalexin (note the sp:substance predicate and the RxNorm Ingredient CUI provided):]]></api:description>
      <api:example rdf:datatype="http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
 <rdf:RDF
   xmlns:dcterms="http://purl.org/dc/terms/"
   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-  xmlns:sp="http://smartplatforms.org/terms#">
-  <sp:Allergy>
+  xmlns:sp="http://smartplatforms.org/terms#">;
+      <sp:Allergy>
+      <sp:class>
+        <sp:CodedValue>
+          <sp:code resource="http://rxnav.nlm.nih.gov/REST/rxcui?idtype=NUI&id=N0000175503" />
+          <dcterms:title>Sulfonamide Antibacterial</dcterms:title>
+        </sp:CodedValue>
+      </sp:class>
       <sp:severity>
         <sp:CodedValue>
           <sp:code resource="http://www.ihtsdo.org/snomed-ct/concepts/24484000" />
@@ -249,18 +263,39 @@ http://fda.gov/UNII/{UNII}]]></api:description>
       </sp:reaction>
       <sp:category>
         <sp:CodedValue>
-          <sp:code resource="http://www.ihtsdo.org/snomed-ct/concepts/414285001" />
-          <dcterms:title>Food allergy</dcterms:title>
+          <sp:code resource="http://www.ihtsdo.org/snomed-ct/concepts/416098002" />
+          <dcterms:title>Drug allergy</dcterms:title>
         </sp:CodedValue>
       </sp:category>
+   </sp:Allergy>
+
+  <sp:Allergy>
       <sp:substance>
         <sp:CodedValue>
-          <sp:code resource="http://fda.gov/UNII/QE1QX6B99R" />
-          <dcterms:title>Peanut</dcterms:title>
+          <sp:code resource="http://link.informatics.stonybrook.edu/rxnorm/RXCUI/2231" />
+          <dcterms:title>Cephalexin</dcterms:title>
         </sp:CodedValue>
       </sp:substance>
-      <sp:notes>Carries Epipen since 2004.</sp:notes>
+      <sp:severity>
+        <sp:CodedValue>
+          <sp:code resource="http://www.ihtsdo.org/snomed-ct/concepts/24484000" />
+          <dcterms:title>Severe</dcterms:title>
+        </sp:CodedValue>
+      </sp:severity>
+      <sp:reaction>
+        <sp:CodedValue>
+          <sp:code resource="http://www.ihtsdo.org/snomed-ct/concepts/39579001" />
+          <dcterms:title>Anaphylaxis</dcterms:title>
+        </sp:CodedValue>
+      </sp:reaction>
+      <sp:category>
+        <sp:CodedValue>
+          <sp:code resource="http://www.ihtsdo.org/snomed-ct/concepts/416098002" />
+          <dcterms:title>Drug allergy</dcterms:title>
+        </sp:CodedValue>
+      </sp:category>
    </sp:Allergy>
+
 </rdf:RDF>]]></api:example>
     </owl:Class>
 
@@ -592,7 +627,7 @@ http://fda.gov/UNII/{UNII}]]></api:description>
                 <owl:minCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</owl:minCardinality>
                 <api:doc>
 					<rdf:Description>
-					  <api:name>RxNorm code(tty in {SCD,SBD,BPCK,GPCK} for the this medication.</api:name>
+					  <api:name rdf:datatype="http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral">RxNorm Concept ID for this medication.  Note: the RxNorm CUI for a SMArt medication should have one of the following four types:  SCD (Semantic Clinical Drug), SBD (Semantic Branded Drug), GPCK (Generic Pack), BPCK (Brand Name Pack).   Restricting medications to these four RxNorm types can also be expressed as "TTY in ('SCD','SBD','GPCK','BPCK')" -- and this restriction ensures that SMArt medications use concepts of the appropriate specificity:  concepts like "650 mg generic acetaminophen" or "20 mg brand-name Claritin".   Please note that SMArt medications do not include explicit structured data about pill strength, concentration, or precise ingredients.  These data are available through RxNorm, including through the free [http://rxnav.nlm.nih.gov/RxNormRestAPI.html RxNav REST API].</api:name>
 					  <api:description>RDF CodedValue node with code drawn from http://link.informatics.stonybrook.edu/rxnorm/RXCUI/{RXCUI}</api:description>
 					</rdf:Description>
 				</api:doc>                
@@ -610,6 +645,37 @@ http://fda.gov/UNII/{UNII}]]></api:description>
 				</api:doc>            
             </owl:Restriction>
         </rdfs:subClassOf>
+
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#quantity"/>
+                <owl:onClass rdf:resource="http://smartplatforms.org/terms#ValueAndUnit"/>
+                <owl:minCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</owl:minCardinality>
+                <api:doc>
+					<rdf:Description>
+						<api:name rdf:datatype="http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral">For a medication with a simple dosing schedule, record the amount to take with each administration.  The quantity should be recorded as a [http://www.unitsofmeasure.org/ UCUM] expression.  For some medications, the appoporiate quantity will be a volume (e.g. "5 mL" of an oral acetaminophen solution).  For other medications, the appropriate quantity may be expresses in terms of tablets, puffs, or actuations:  UCUM call these "non-units", and they should be written inside of curly braces to avoid confusion.  For example, you would express "1 tablet" as a ValueAndUnit node with quantity="1", unit="{tablet}".</api:name>
+						<api:description>RDF ValueAndUnit node</api:description>
+					</rdf:Description>
+				</api:doc>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#frequency"/>
+                <owl:onClass rdf:resource="http://smartplatforms.org/terms#ValueAndUnit"/>
+                <owl:minCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</owl:minCardinality>
+                <api:doc>
+					<rdf:Description>
+						<api:name rdf:datatype="http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral">For a medication with a simple dosing schedule, record how often to take the medication.  The frequency should be recorded as a [http://www.unitsofmeasure.org/ UCUM] expression.  In this case we use a restricted subset of UCUM that defines the following units only:  "/d" (per day), "/wk" (per week), "/mo" (per month).  For example, you would express the concept of "TID" or "three times daily" as a ValueAndUnit node with quantity="3", unit="/d".  </api:name>
+						<api:description>RDF ValueAndUnit node</api:description>
+					</rdf:Description>
+				</api:doc>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+
+
+
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://smartplatforms.org/terms#startDate"/>
@@ -651,7 +717,9 @@ http://fda.gov/UNII/{UNII}]]></api:description>
      <api:name>Medication</api:name>
      <api:name_plural>Medications</api:name_plural>
      <api:base_path>/records/{record_id}/medications/{medication_id}</api:base_path>
-     <api:description>In RDF/XML notation, a patient on oral amitriptyline 50 mg tablets might provide the following RDF sub-graph as part of a medication list: </api:description>
+     <api:description rdf:datatype="http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral">The SMArt medication type expresses a medication at the level of an RxNorm branded or generic drug concept (e.g. "20 mg generic loratadine" or "20 mg brand-name claritin").  A medication may include start- and end-dates, as well as a free-text "instructions" field describing how it should be taken.  When the instructions are simple enough, we also represent them in a structured way, aiming to capture about 80% of outpatient medication dosing schedules.  A very simple semantic structure defines how much to take ("quantity") and how often ("frequency"). Both quantity and frequency are defined with expressions from [http://www.unitsofmeasure.org The Unified Code for Units of Measure], or UCUM (see below).
+
+In RDF/XML notation, a patient on oral amitriptyline 50 mg tablets might provide the following RDF sub-graph as part of a medication list: </api:description>
 
         <api:example rdf:datatype="http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
 <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
@@ -667,6 +735,18 @@ http://fda.gov/UNII/{UNII}]]></api:description>
       <sp:startDate>2007-03-14</sp:startDate>
       <sp:endDate>2007-08-14</sp:endDate>
       <sp:instructions>Take two tablets twice daily as needed for pain</sp:instructions>
+      <sp:quantity>
+          <sp:ValueAndUnit>
+            <sp:value>2</sp:value>
+            <sp:unit>{tablet}</sp:unit>
+          </sp:ValueAndUnit>
+      </sp:quantity>
+      <sp:frequency>
+          <sp:ValueAndUnit>
+            <sp:value>2</sp:value>
+            <sp:unit>/d</sp:unit>
+          </sp:ValueAndUnit>
+      </sp:frequency>
    </sp:Medication>
 </rdf:RDF>]]>
     </api:example>
