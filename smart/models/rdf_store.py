@@ -84,6 +84,7 @@ class SesameConnector(object):
         u = "%s/statements"%self.endpoint
         success =  self.request(u, "POST", {"Content-Type" : "application/x-rdftransaction"}, t)
         if (success):
+            self.pending_clears = []
             self.pending_adds = []
             self.pending_removes = []
             return True
