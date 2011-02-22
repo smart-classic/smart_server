@@ -71,5 +71,6 @@ class RecordImporter(object):
 if __name__ == "__main__":
     import string
     for v in sys.argv[1:]:
-        rid = filter(str.isalnum, v.split("/")[-1].split(".")[0])
+        rid = filter(str.isdigit, v.split("/")[-1].split(".")[0])
+        print "Using record id: %s"%rid
         RecordImporter(v, rid)

@@ -30,6 +30,7 @@ class SesameConnector(object):
         self.context = None
         self.pending_removes = []
         self.pending_adds = []
+        self.pending_clears = []
         self.endpoint = endpoint
 
     def request(self, url, method, headers, data=None):
@@ -45,9 +46,9 @@ class SesameConnector(object):
             
     def serialize_node(self, node):
         if (node.is_resource()):
-            return "<uri>%s</uri>"%node.uri
+            return "<uri><![CDATA[%s]]></uri>"%node.uri
         elif (node.is_blank()):
-            return "<bnode>%s</bnode>"%node.blank_identifier
+            return "<bnode><![CDATA[%s]]></bnode>"%node.blank_identifier
         elif (node.is_literal()):
             return "<literal><![CDATA[%s]]></literal>"%node.literal_value['string']
     
@@ -64,6 +65,15 @@ class SesameConnector(object):
     def execute_transaction(self):
         t = '<?xml version="1.0"?>'
         t += "<transaction>\n"
+
+        if len(self.pending_clears) > 0:
+          t += """
+          <clear>
+          <contexts>
+          %s
+          </contexts>
+          </clear>"""%"\n".join([self.serialize_node(c) for c in self.pending_clears])
+
         for a in self.pending_adds:
             t += "<add>%s</add>\n"%self.serialize_statement(a)
 
@@ -72,7 +82,6 @@ class SesameConnector(object):
         
         t += "</transaction>"
         u = "%s/statements"%self.endpoint
-        
         success =  self.request(u, "POST", {"Content-Type" : "application/x-rdftransaction"}, t)
         if (success):
             self.pending_adds = []
@@ -99,10 +108,7 @@ class ContextSesameConnector(SesameConnector):
         return super(ContextSesameConnector, self).sparql(q)
 
     def destroy_triples(self):
-        all_triples = self.sparql("""CONSTRUCT {?s ?p ?o} from $context where {?s ?p ?o.}""")
-        ts = utils.parse_rdf(all_triples)
-        for t in ts:
-            self.pending_removes.append(t)
+        self.pending_clears.append(RDF.Node(uri_string=self.context.encode()))
         self.execute_transaction()
 
 
