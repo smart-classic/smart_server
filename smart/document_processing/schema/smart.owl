@@ -92,17 +92,6 @@
 </api:call>
 
 
-<api:call>
-  <api:description>POST a single allergy_exception</api:description>
-  <api:method>POST</api:method>
-  <api:path>/records/{record_id}/allergy_exceptions/</api:path>
-  <api:target rdf:resource="http://smartplatforms.org/terms#AllergyException"/>
-  <api:by_internal_id>true</api:by_internal_id>
-  <api:category>record_item</api:category>
-</api:call>
-
-
-
     <!-- http://smartplatforms.org/terms#Allergy -->
     
     <owl:Class rdf:about="http://smartplatforms.org/terms#Allergy">
@@ -308,14 +297,6 @@ For instance, below are two allergies:  first, an allergy to the entire class of
   <api:category>record_item</api:category>
 </api:call>
 
-<api:call>
-  <api:description>Delete a single allergy</api:description>
-  <api:method>DELETE</api:method>
-  <api:path>/records/{record_id}/allergies/{allergy_id}</api:path>
-  <api:target rdf:resource="http://smartplatforms.org/terms#Allergy"/>
-  <api:by_internal_id>true</api:by_internal_id>
-  <api:category>record_item</api:category>
-</api:call>
 
 <api:call>
   <api:description>GET all allergies for a record</api:description>
@@ -327,44 +308,8 @@ For instance, below are two allergies:  first, an allergy to the entire class of
 </api:call>
 
 <api:call>
-  <api:description>Delete all allergies from a record</api:description>
-  <api:method>DELETE</api:method>
-  <api:path>/records/{record_id}/allergies/</api:path>
-  <api:target rdf:resource="http://smartplatforms.org/terms#Allergy"/>
-  <api:by_internal_id>true</api:by_internal_id>
-  <api:category>record_items</api:category>
-</api:call>
-
-<api:call>
-  <api:description>Add new allergies to a record</api:description>
-  <api:method>POST</api:method>
-  <api:path>/records/{record_id}/allergies/</api:path>
-  <api:target rdf:resource="http://smartplatforms.org/terms#Allergy"/>
-  <api:by_internal_id>true</api:by_internal_id>
-  <api:category>record_items</api:category>
-</api:call>
-
-<api:call>
   <api:description>Get a single allergy</api:description>
   <api:method>GET</api:method>
-  <api:path>/records/{record_id}/allergies/external_id/{external_id}</api:path>
-  <api:target rdf:resource="http://smartplatforms.org/terms#Allergy"/>
-  <api:by_internal_id>false</api:by_internal_id>
-  <api:category>record_item</api:category>
-</api:call>
-
-<api:call>
-  <api:description>Add a single allergy by external key</api:description>
-  <api:method>PUT</api:method>
-  <api:path>/records/{record_id}/allergies/external_id/{external_id}</api:path>
-  <api:target rdf:resource="http://smartplatforms.org/terms#Allergy"/>
-  <api:by_internal_id>false</api:by_internal_id>
-  <api:category>record_item</api:category>
-</api:call>
-
-<api:call>
-  <api:description>Delete a single allergy</api:description>
-  <api:method>DELETE</api:method>
   <api:path>/records/{record_id}/allergies/external_id/{external_id}</api:path>
   <api:target rdf:resource="http://smartplatforms.org/terms#Allergy"/>
   <api:by_internal_id>false</api:by_internal_id>
@@ -513,36 +458,8 @@ For instance, below are two allergies:  first, an allergy to the entire class of
 </api:call>
 
 <api:call>
-  <api:description>Delete a single fulfillment</api:description>
-  <api:method>DELETE</api:method>
-  <api:path>/records/{record_id}/fulfillments/{fulfillment_id}</api:path>
-  <api:target rdf:resource="http://smartplatforms.org/terms#Fulfillment"/>
-  <api:by_internal_id>true</api:by_internal_id>
-  <api:category>record_item</api:category>
-</api:call>
-
-<api:call>
   <api:description>Get a single fulfillment</api:description>
   <api:method>GET</api:method>
-  <api:path>/records/{record_id}/fulfillments/external_id/{external_id}</api:path>
-  <api:target rdf:resource="http://smartplatforms.org/terms#Fulfillment"/>
-  <api:by_internal_id>false</api:by_internal_id>
-  <api:category>record_item</api:category>
-</api:call>
-
-<api:call>
-  <api:description>Delete a single fulfillment</api:description>
-  <api:method>DELETE</api:method>
-  <api:path>/records/{record_id}/fulfillments/external_id/{external_id}</api:path>
-  <api:target rdf:resource="http://smartplatforms.org/terms#Fulfillment"/>
-  <api:by_internal_id>false</api:by_internal_id>
-  <api:category>record_item</api:category>
-</api:call>
-
-
-<api:call>
-  <api:description>Put a single fulfillment by its external key</api:description>
-  <api:method>PUT</api:method>
   <api:path>/records/{record_id}/fulfillments/external_id/{external_id}</api:path>
   <api:target rdf:resource="http://smartplatforms.org/terms#Fulfillment"/>
   <api:by_internal_id>false</api:by_internal_id>
@@ -557,26 +474,6 @@ For instance, below are two allergies:  first, an allergy to the entire class of
   <api:by_internal_id>true</api:by_internal_id>
   <api:category>record_items</api:category>
 </api:call>
-
-<api:call>
-  <api:description>Delete all fulfillments in the record.</api:description>
-  <api:method>DELETE</api:method>
-  <api:path>/records/{record_id}/fulfillments/</api:path>
-  <api:target rdf:resource="http://smartplatforms.org/terms#Fulfillment"/>
-  <api:by_internal_id>true</api:by_internal_id>
-  <api:category>record_items</api:category>
-</api:call>
-
-<api:call>
-  <api:description>Add fulfillments in the absence of a medication</api:description>
-  <api:method>POST</api:method>
-  <api:path>/records/{record_id}/fulfillments/</api:path>
-  <api:target rdf:resource="http://smartplatforms.org/terms#Fulfillment"/>
-  <api:by_internal_id>true</api:by_internal_id>
-  <api:category>record_items</api:category>
-</api:call>
-
-
 <api:call>
   <api:description>Get all fulfillments for a given medication</api:description>
   <api:method>GET</api:method>
@@ -587,35 +484,6 @@ For instance, below are two allergies:  first, an allergy to the entire class of
   <api:category>record_items</api:category>
 </api:call>
 
-<api:call>
-  <api:description>Deletefulfillments for a given medication</api:description>
-  <api:method>DELETE</api:method>
-  <api:path>/records/{record_id}/medications/{medication_id}/fulfillments/</api:path>
-  <api:above rdf:resource="http://smartplatforms.org/terms#Medication"/>
-  <api:target rdf:resource="http://smartplatforms.org/terms#Fulfillment"/>
-  <api:by_internal_id>true</api:by_internal_id>
-  <api:category>record_items</api:category>
-</api:call>
-
-<api:call>
-  <api:description>Put a single fulfillmentby its external key</api:description>
-  <api:method>PUT</api:method>
-  <api:path>/records/{record_id}/medications/external_id/{med_external_id}/fulfillments/external_id/{external_id}</api:path>
-  <api:above rdf:resource="http://smartplatforms.org/terms#Medication"/>
-  <api:target rdf:resource="http://smartplatforms.org/terms#Fulfillment"/>
-  <api:by_internal_id>false</api:by_internal_id>
-  <api:category>record_item</api:category>
-</api:call>
-
-<api:call>
-  <api:description>Add fulfillments for a given medication</api:description>
-  <api:method>POST</api:method>
-  <api:path>/records/{record_id}/medications/{medication_id}/fulfillments/</api:path>
-  <api:above rdf:resource="http://smartplatforms.org/terms#Medication"/>
-  <api:target rdf:resource="http://smartplatforms.org/terms#Fulfillment"/>
-  <api:by_internal_id>true</api:by_internal_id>
-  <api:category>record_items</api:category>
-</api:call>
     <!-- http://smartplatforms.org/terms#Medication -->
 
     <owl:Class rdf:about="http://smartplatforms.org/terms#Medication">
@@ -762,15 +630,6 @@ In RDF/XML notation, a patient on oral amitriptyline 50 mg tablets might provide
 </api:call>
 
 <api:call>
-  <api:description>Delete a single medication</api:description>
-  <api:method>DELETE</api:method>
-  <api:path>/records/{record_id}/medications/{medication_id}</api:path>
-  <api:target rdf:resource="http://smartplatforms.org/terms#Medication"/>
-  <api:by_internal_id>true</api:by_internal_id>
-  <api:category>record_item</api:category>
-</api:call>
-
-<api:call>
   <api:description>Get a single medication</api:description>
   <api:method>GET</api:method>
   <api:path>/records/{record_id}/medications/external_id/{external_id}</api:path>
@@ -780,26 +639,6 @@ In RDF/XML notation, a patient on oral amitriptyline 50 mg tablets might provide
 </api:call>
 
 <api:call>
-  <api:description>Delete a single medication</api:description>
-  <api:method>DELETE</api:method>
-  <api:path>/records/{record_id}/medications/external_id/{external_id}</api:path>
-  <api:target rdf:resource="http://smartplatforms.org/terms#Medication"/>
-  <api:by_internal_id>false</api:by_internal_id>
-  <api:category>record_item</api:category>
-</api:call>
-
-
-<api:call>
-  <api:description>Put a single medication by its external key</api:description>
-  <api:method>PUT</api:method>
-  <api:path>/records/{record_id}/medications/external_id/{external_id}</api:path>
-  <api:target rdf:resource="http://smartplatforms.org/terms#Medication"/>
-  <api:by_internal_id>false</api:by_internal_id>
-  <api:category>record_item</api:category>
-</api:call>
-
-
-<api:call>
   <api:description>Get all medications for a given record</api:description>
   <api:method>GET</api:method>
   <api:path>/records/{record_id}/medications/</api:path>
@@ -807,27 +646,6 @@ In RDF/XML notation, a patient on oral amitriptyline 50 mg tablets might provide
   <api:by_internal_id>true</api:by_internal_id>
   <api:category>record_items</api:category>
 </api:call>
-
-
-<api:call>
-  <api:description>Delete all medications from a given record</api:description>
-  <api:method>DELETE</api:method>
-  <api:path>/records/{record_id}/medications/</api:path>
-  <api:target rdf:resource="http://smartplatforms.org/terms#Medication"/>
-  <api:by_internal_id>true</api:by_internal_id>
-  <api:category>record_items</api:category>
-</api:call>
-
-
-<api:call>
-  <api:description>Add medications to a given record</api:description>
-  <api:method>POST</api:method>
-  <api:path>/records/{record_id}/medications/</api:path>
-  <api:target rdf:resource="http://smartplatforms.org/terms#Medication"/>
-  <api:by_internal_id>true</api:by_internal_id>
-  <api:category>record_items</api:category>
-</api:call>
-
 
     <!-- http://smartplatforms.org/terms#Note -->
 
@@ -911,15 +729,6 @@ In RDF/XML notation, a patient on oral amitriptyline 50 mg tablets might provide
 </api:call>
 
 <api:call>
-  <api:description>Delete a single note</api:description>
-  <api:method>DELETE</api:method>
-  <api:path>/records/{record_id}/notes/{note_id}</api:path>
-  <api:target rdf:resource="http://smartplatforms.org/terms#Note"/>
-  <api:by_internal_id>true</api:by_internal_id>
-  <api:category>record_item</api:category>
-</api:call>
-
-<api:call>
   <api:description>Get a single note</api:description>
   <api:method>GET</api:method>
   <api:path>/records/{record_id}/notes/external_id/{external_id}</api:path>
@@ -929,48 +738,8 @@ In RDF/XML notation, a patient on oral amitriptyline 50 mg tablets might provide
 </api:call>
 
 <api:call>
-  <api:description>Delete a single note</api:description>
-  <api:method>DELETE</api:method>
-  <api:path>/records/{record_id}/notes/external_id/{external_id}</api:path>
-  <api:target rdf:resource="http://smartplatforms.org/terms#Note"/>
-  <api:by_internal_id>false</api:by_internal_id>
-  <api:category>record_item</api:category>
-</api:call>
-
-
-<api:call>
-  <api:description>Put a single note by its external key</api:description>
-  <api:method>PUT</api:method>
-  <api:path>/records/{record_id}/notes/external_id/{external_id}</api:path>
-  <api:target rdf:resource="http://smartplatforms.org/terms#Note"/>
-  <api:by_internal_id>false</api:by_internal_id>
-  <api:category>record_item</api:category>
-</api:call>
-
-
-<api:call>
   <api:description>Get all notes for a given record</api:description>
   <api:method>GET</api:method>
-  <api:path>/records/{record_id}/notes/</api:path>
-  <api:target rdf:resource="http://smartplatforms.org/terms#Note"/>
-  <api:by_internal_id>true</api:by_internal_id>
-  <api:category>record_items</api:category>
-</api:call>
-
-
-<api:call>
-  <api:description>Delete all notes from a given record</api:description>
-  <api:method>DELETE</api:method>
-  <api:path>/records/{record_id}/notes/</api:path>
-  <api:target rdf:resource="http://smartplatforms.org/terms#Note"/>
-  <api:by_internal_id>true</api:by_internal_id>
-  <api:category>record_items</api:category>
-</api:call>
-
-
-<api:call>
-  <api:description>Add notes to a given record</api:description>
-  <api:method>POST</api:method>
   <api:path>/records/{record_id}/notes/</api:path>
   <api:target rdf:resource="http://smartplatforms.org/terms#Note"/>
   <api:by_internal_id>true</api:by_internal_id>
@@ -1076,15 +845,6 @@ In RDF/XML notation, a patient on oral amitriptyline 50 mg tablets might provide
 </api:call>
 
 <api:call>
-  <api:description>Delete a single problem</api:description>
-  <api:method>DELETE</api:method>
-  <api:path>/records/{record_id}/problems/{problem_id}</api:path>
-  <api:target rdf:resource="http://smartplatforms.org/terms#Problem"/>
-  <api:by_internal_id>true</api:by_internal_id>
-  <api:category>record_item</api:category>
-</api:call>
-
-<api:call>
   <api:description>Get a single problem</api:description>
   <api:method>GET</api:method>
   <api:path>/records/{record_id}/problems/external_id/{external_id}</api:path>
@@ -1092,26 +852,6 @@ In RDF/XML notation, a patient on oral amitriptyline 50 mg tablets might provide
   <api:by_internal_id>false</api:by_internal_id>
   <api:category>record_item</api:category>
 </api:call>
-
-<api:call>
-  <api:description>Delete a single problem</api:description>
-  <api:method>DELETE</api:method>
-  <api:path>/records/{record_id}/problems/external_id/{external_id}</api:path>
-  <api:target rdf:resource="http://smartplatforms.org/terms#Problem"/>
-  <api:by_internal_id>false</api:by_internal_id>
-  <api:category>record_item</api:category>
-</api:call>
-
-
-<api:call>
-  <api:description>Put a single problem by its external key</api:description>
-  <api:method>PUT</api:method>
-  <api:path>/records/{record_id}/problems/external_id/{external_id}</api:path>
-  <api:target rdf:resource="http://smartplatforms.org/terms#Problem"/>
-  <api:by_internal_id>false</api:by_internal_id>
-  <api:category>record_item</api:category>
-</api:call>
-
 
 <api:call>
   <api:description>Get all problems for a given record</api:description>
@@ -1122,25 +862,6 @@ In RDF/XML notation, a patient on oral amitriptyline 50 mg tablets might provide
   <api:category>record_items</api:category>
 </api:call>
 
-
-<api:call>
-  <api:description>Delete all problems from a given record</api:description>
-  <api:method>DELETE</api:method>
-  <api:path>/records/{record_id}/problems/</api:path>
-  <api:target rdf:resource="http://smartplatforms.org/terms#Problem"/>
-  <api:by_internal_id>true</api:by_internal_id>
-  <api:category>record_items</api:category>
-</api:call>
-
-
-<api:call>
-  <api:description>Add problems to a given record</api:description>
-  <api:method>POST</api:method>
-  <api:path>/records/{record_id}/problems/</api:path>
-  <api:target rdf:resource="http://smartplatforms.org/terms#Problem"/>
-  <api:by_internal_id>true</api:by_internal_id>
-  <api:category>record_items</api:category>
-</api:call>
 
     <!-- http://smartplatforms.org/demographics -->
     <owl:Class rdf:about="http://xmlns.com/foaf/0.1/Person">
@@ -1228,15 +949,6 @@ In RDF/XML notation, a patient on oral amitriptyline 50 mg tablets might provide
 <api:call>
   <api:description>Get all demographics for a patient</api:description>
   <api:method>GET</api:method>
-  <api:path>/records/{record_id}/demographics</api:path>
-  <api:target rdf:resource="http://xmlns.com/foaf/0.1/Person"/>
-  <api:by_internal_id>true</api:by_internal_id>
-  <api:category>record_items</api:category>
-</api:call>
-
-<api:call>
-  <api:description>Replace all demographics for a patient with a newly-supplied graph</api:description>
-  <api:method>PUT</api:method>
   <api:path>/records/{record_id}/demographics</api:path>
   <api:target rdf:resource="http://xmlns.com/foaf/0.1/Person"/>
   <api:by_internal_id>true</api:by_internal_id>
@@ -2220,15 +1932,6 @@ No example yet.]]></api:example>
 </api:call>
 
 <api:call>
-  <api:description>Delete a single lab result</api:description>
-  <api:method>DELETE</api:method>
-  <api:path>/records/{record_id}/lab_results/{lab_result_id}</api:path>
-  <api:target rdf:resource="http://smartplatforms.org/terms#LabResult"/>
-  <api:by_internal_id>true</api:by_internal_id>
-  <api:category>record_item</api:category>
-</api:call>
-
-<api:call>
   <api:description>Get all lab results for a given record</api:description>
   <api:method>GET</api:method>
   <api:path>/records/{record_id}/lab_results/</api:path>
@@ -2246,35 +1949,6 @@ No example yet.]]></api:example>
   <api:category>record_items</api:category>
 </api:call>
 
-
-<api:call>
-  <api:description>Delete all lab results from a given record</api:description>
-  <api:method>DELETE</api:method>
-  <api:path>/records/{record_id}/lab_results/</api:path>
-  <api:target rdf:resource="http://smartplatforms.org/terms#LabResult"/>
-  <api:by_internal_id>true</api:by_internal_id>
-  <api:category>record_items</api:category>
-</api:call>
-
-<api:call>
-  <api:description>Add lab results to a given record</api:description>
-  <api:method>POST</api:method>
-  <api:path>/records/{record_id}/lab_results/</api:path>
-  <api:target rdf:resource="http://smartplatforms.org/terms#LabResult"/>
-  <api:by_internal_id>true</api:by_internal_id>
-  <api:category>record_items</api:category>
-</api:call>
-
-<api:call>
-  <api:description>Add lab results to a given record by external key</api:description>
-  <api:method>PUT</api:method>
-  <api:path>/records/{record_id}/lab_results/external_id/{external_id}</api:path>
-  <api:target rdf:resource="http://smartplatforms.org/terms#LabResult"/>
-  <api:by_internal_id>false</api:by_internal_id>
-  <api:category>record_item</api:category>
-</api:call>
-
-
 <api:call>
   <api:description>Get a single lab result panel</api:description>
   <api:method>GET</api:method>
@@ -2285,36 +1959,8 @@ No example yet.]]></api:example>
 </api:call>
 
 <api:call>
-  <api:description>Delete a single lab result panel</api:description>
-  <api:method>DELETE</api:method>
-  <api:path>/records/{record_id}/lab_result_panels/{lab_result_panel_id}</api:path>
-  <api:target rdf:resource="http://smartplatforms.org/terms#LabResultPanel"/>
-  <api:by_internal_id>true</api:by_internal_id>
-  <api:category>record_item</api:category>
-</api:call>
-
-<api:call>
   <api:description>Get all lab result panels for a given record</api:description>
   <api:method>GET</api:method>
-  <api:path>/records/{record_id}/lab_result_panels/</api:path>
-  <api:target rdf:resource="http://smartplatforms.org/terms#LabResultPanel"/>
-  <api:by_internal_id>true</api:by_internal_id>
-  <api:category>record_items</api:category>
-</api:call>
-
-
-<api:call>
-  <api:description>Delete all lab result panels from a given record</api:description>
-  <api:method>DELETE</api:method>
-  <api:path>/records/{record_id}/lab_result_panels/</api:path>
-  <api:target rdf:resource="http://smartplatforms.org/terms#LabResultPanel"/>
-  <api:by_internal_id>true</api:by_internal_id>
-  <api:category>record_items</api:category>
-</api:call>
-
-<api:call>
-  <api:description>Add lab result panels to a given record</api:description>
-  <api:method>POST</api:method>
   <api:path>/records/{record_id}/lab_result_panels/</api:path>
   <api:target rdf:resource="http://smartplatforms.org/terms#LabResultPanel"/>
   <api:by_internal_id>true</api:by_internal_id>
