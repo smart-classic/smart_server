@@ -25,6 +25,20 @@ a=PHA.objects.create(description = 'Points to a locally-hosted app for developme
 
 AppActivity.objects.create(app=a, name='main', url='http://localhost:8000/smartapp/bootstrap.html')
 
+
+print "Creating devc"
+a=PHA.objects.create(description = 'Points to a cloud-hosted app for development.',
+                   consumer_key = 'my-cloud-app@apps.smartplatforms.org',
+                   secret = 'smartapp-secret',
+                   name ='My Cloud App',
+                   email='my-cloud-app@apps.smartplatforms.org',
+                   icon_url="http://sandbox.smartplatforms.org/static/resources/images/app_icons_32/developers_sandbox.png",
+                     enabled_by_default=False
+                     )
+
+AppActivity.objects.create(app=a, name='main', url='http://localhost:8000/smartapp/bootstrap.html')
+
+
 print "BOOTSTRAP helpers"
 # then add additional apps by manifest
 from bootstrap_helpers import bootstrap_codingsystems
