@@ -116,17 +116,19 @@ To limit servlet access to localhost, make two tomcat configuration changes:
 * set things up (supplying the smart db password when prompted a few times)
    `./reset.sh`
 
-   NOTE: Because of a garbage collection issue in the librdf Python
+   NOTE: On the first run of reset.sh, you will also see some 500s. Don't worry about them.
+   Because of a garbage collection issue in the librdf Python
    bindings, you may see the following output as reset.sh finishes.
-   Nothing has in fact gone wrong. On the first run of reset.sh, you will also see some 500s. Don't worry about them.
-   
-   IMPORTANT: if you've enabled apps that are part of the sample apps below, you should <em>wait</em> to run <tt>reset.sh</tt> until you've got the sample apps server running. The SMArt Reference EMR attempts to download the apps' manifest files, and if they're not available over HTTP, <tt>reset.sh</tt> won't complete successfully. If you mistakenly run <tt>reset.sh</tt> before setting up the SMArt Sample Apps, don't worry, just set up the SMArt Sample Apps server, and run <tt>reset.sh</tt> again.
 
    <pre>
    ...
    No fixtures found.
    Exception TypeError: "'NoneType' object is not callable" in <bound method RDFXMLSerializer.__del__ of <RDF.RDFXMLSerializer object at 0x3031c90>> ignored
    </pre>
+
+   Nothing has in fact gone wrong.
+   
+   IMPORTANT: if you've enabled apps that are part of the sample apps below, you should <em>wait</em> to run <tt>reset.sh</tt> until you've got the sample apps server running. The SMArt Reference EMR attempts to download the apps' manifest files, and if they're not available over HTTP, <tt>reset.sh</tt> won't complete successfully. If you mistakenly run <tt>reset.sh</tt> before setting up the SMArt Sample Apps, don't worry, just set up the SMArt Sample Apps server, and run <tt>reset.sh</tt> again.
 
 # Download, Install, and Configure SMArt UI Server
 
