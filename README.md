@@ -57,10 +57,10 @@ You will need to restart PostgreSQL:
  </pre>
 
 * Create the Databases and make the smart user their owner.
-<pre>
-  createdb -O smart smart
-  createdb -O smart rxnorm
-</pre>
+ <pre>
+ createdb -O smart smart
+ createdb -O smart rxnorm
+ </pre>
 
 # Install openrdf-sesame (and tomcat)  
 
