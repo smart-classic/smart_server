@@ -152,15 +152,12 @@ You'll need to restart Tomcat again if you make these changes
 
 # Download, Install, and Configure SMArt Sample Apps
 
-* source code
+* get the source code
 
- `git clone https://github.com/chb/smart_sample_apps.git`
-
-The sample apps can run on localhost in the configuration given above:
-
-<pre>
+ <pre>
+ git clone https://github.com/chb/smart_sample_apps.git
  cd /web/smart_sample_apps/
-</pre>
+ </pre>
 
 * copy settings.py.default to settings.py and update:
     * set <tt>APP_HOME</tt> to the complete path to the location where you've installed <tt>smart_sample_apps</tt>, e.g. <tt>/web/smart_sample_apps</tt>
