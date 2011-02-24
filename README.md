@@ -61,26 +61,38 @@ You will need to restart PostgreSQL:
   `createdb -O smart rxnorm`
 
 # Install openrdf-sesame (and tomcat)  
+
+* get Tomcat and OpenRDF-Sesame:
 <pre>
  sudo apt-get install tomcat6
  wget http://downloads.sourceforge.net/project/sesame/Sesame%202/2.3.2/openrdf-sesame-2.3.2-sdk.tar.gz
+</pre>
+
+* install OpenRDF Sesame as a Tomcat web application
+<pre>
  tar -xzvf openrdf-sesame-2.3.2-sdk.tar.gz
  sudo cp -r openrdf-sesame-2.3.2/war/* /var/lib/tomcat6/webapps/
  sudo mkdir /usr/share/tomcat6/.aduna
  sudo chown tomcat6.tomcat6 /usr/share/tomcat6/.aduna/
+</pre>
+
+* restart Tomcat
+<pre>
  sudo /etc/init.d/tomcat6 restart
 </pre>
 
-openrdf-workbench doesn't support access control.  To limit servlet
-access to localhost, make two tomcat configuration changes:
+* check that Tomcat is running by hitting <tt>http://localhost:8080</tt>. You should see a page saying "It Works!"
+
+The OpenRDF store doesn't support access control. You will probably want to limit access to just localhost.
+To limit servlet access to localhost, make two tomcat configuration changes:
 
 <pre>
     /var/lib/tomcat6/conf/context.xml
-    <Context>
-    +  <Valve className="org.apache.catalina.valves.RemoteHostValve" allow="localhost"/>
+    &lt;Context&gt;
+    +  &lt;Valve className="org.apache.catalina.valves.RemoteHostValve" allow="localhost"/&gt;
 
     /var/lib/tomcat6/conf/server.xml
-    <Connector port="8080" protocol="HTTP/1.1"
+    &lt;Connector port="8080" protocol="HTTP/1.1"
     +          enableLookups="true"
 </pre>
 
@@ -95,18 +107,18 @@ access to localhost, make two tomcat configuration changes:
 </pre>
 
 * copy <tt>settings.py.default</tt> to <tt>settings.py</tt> and update it:
-    * set <tt>DATABASE_USER</tt> to the username you chose, in this documentation <tt>web</tt>, and set <tt>DATABASE_PASSWORD</tt> accordingly.		
+    * set <tt>DATABASE_USER</tt> to the username you chose, in this documentation <tt>smart</tt>, and set <tt>DATABASE_PASSWORD</tt> accordingly.		
     * set <tt>APP_HOME</tt> to the complete path to the location where you've installed <tt>smart_server</tt>, e.g. <tt>/web/smart_server</tt>
     * set <tt>SITE_URL_PREFIX</tt> to the URL where your server is running, including port number  e.g. <tt>http://localhost:7000</tt>
 
 * copy <tt>bootstrap_helpers/application_list.json.default</tt> to <tt>bootstrap_helpers/application_list.json</tt> and customize to include the apps you want.
 
-* set things up (supplying the smart db password when prompted)
+* set things up (supplying the smart db password when prompted a few times)
    `./reset.sh`
 
-   NOTE: Because of a garbage collection issue in the librdf Python
+   NOTE: On the first run of reset.sh, you will also see some 500s. Don't worry about them.
+   Because of a garbage collection issue in the librdf Python
    bindings, you may see the following output as reset.sh finishes.
-   Nothing has in fact gone wrong.
 
    <pre>
    ...
@@ -114,20 +126,22 @@ access to localhost, make two tomcat configuration changes:
    Exception TypeError: "'NoneType' object is not callable" in <bound method RDFXMLSerializer.__del__ of <RDF.RDFXMLSerializer object at 0x3031c90>> ignored
    </pre>
 
+   Nothing has in fact gone wrong.
+   
+   IMPORTANT: if you've enabled apps that are part of the sample apps below, you should <em>wait</em> to run <tt>reset.sh</tt> until you've got the sample apps server running. The SMArt Reference EMR attempts to download the apps' manifest files, and if they're not available over HTTP, <tt>reset.sh</tt> won't complete successfully. If you mistakenly run <tt>reset.sh</tt> before setting up the SMArt Sample Apps, don't worry, just set up the SMArt Sample Apps server, and run <tt>reset.sh</tt> again.
+
 # Download, Install, and Configure SMArt UI Server
 
 * get the code
 
 <pre>
- git clone https://github.com/chb/smart_server.git/smart_ui_server.git
+ git clone https://github.com/chb/smart_ui_server.git
  cd smart_ui_server
- git submodule init
- git submodule update
 </pre>
 
 * copy settings.py.default to settings.py and update:
     * set <tt>SMART_UI_BASE</tt> to the complete path to the location where you've installed <tt>smart_ui_server</tt>, e.g. <tt>/web/smart_ui_server</tt>
-    * set <tt>SMART_SERVER_LOCATION</tt>, <tt>CONSUMER_KEY</tt>, <tt>CONSUMER_SECRET</tt> appropriately to match the SMArt Server's location and chrome credentials (check your <tt>bootstrap.py</tt> BEFORE you <tt>reset.sh</tt> on the server end).
+    * set <tt>SMART_SERVER_LOCATION</tt>, <tt>CONSUMER_KEY</tt>, <tt>CONSUMER_SECRET</tt> appropriately to match the SMArt Server's location and chrome credentials. (Check your <tt>bootstrap.py</tt> within <tt>smart_server</tt> for those credentials. If you change them, you'll need to run <tt>reset.sh</tt> again on the SMArt server. If you never changed <tt>bootstrap.py</tt>, then your <tt>CONSUMER_KEY</tt> and <tt>CONSUMER_SECRET</tt> are both <tt>chrome</tt>, and you don't need to change their value in the UI server default settings file.)
 
 #Running the Development Servers
 
@@ -150,12 +164,20 @@ The UI server, if you want it accessible from another machine, needs to specify 
 
 * source code
 
- `git clone https://github.com/chb/smart_server.git/smart_sample_apps.git`
+ `git clone https://github.com/chb/smart_sample_apps.git`
 
 The sample apps can run on localhost in the configuration given above:
 
 <pre>
  cd /web/smart_sample_apps/
- mkdir session
+</pre>
+
+* copy settings.py.default to settings.py and update:
+    * set <tt>APP_HOME</tt> to the complete path to the location where you've installed <tt>smart_sample_apps</tt>, e.g. <tt>/web/smart_sample_apps</tt>
+    * set <tt>SMART_SERVER_PARAMS</tt> to point to the location of the SMArt Server. If you are running the SMArt server on <tt>localhost:7000</tt> as we suggest, there's no need to change anything.
+
+* start the Sample Apps:
+
+<pre>
  python manage.py runserver 0.0.0.0:8001
 </pre>
