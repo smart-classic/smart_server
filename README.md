@@ -155,7 +155,7 @@ You'll need to restart Tomcat again if you make these changes
 
  <pre>
  git clone https://github.com/chb/smart_sample_apps.git
- cd /web/smart_sample_apps/</pre>
+ cd smart_sample_apps</pre>
 
 * copy settings.py.default to settings.py and update:
     * set <tt>APP_HOME</tt> to the complete path to the location where you've installed <tt>smart_sample_apps</tt>, e.g. <tt>/web/smart_sample_apps</tt>
