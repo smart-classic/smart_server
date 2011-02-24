@@ -98,34 +98,39 @@ To limit servlet access to localhost, make two tomcat configuration changes:
     +          enableLookups="true"
 </pre>
 
+You'll need to restart Tomcat again if you make these changes
+
 # Download, Install, and Configure SMArt Backend Server 
 
 * get the code
-<pre>
+ <pre>
  git clone https://github.com/chb/smart_server.git
  cd smart_server
  git submodule init
  git submodule update
-</pre>
+ </pre>
 
 * copy <tt>settings.py.default</tt> to <tt>settings.py</tt> and update it:
     * set <tt>DATABASE_USER</tt> to the username you chose, in this documentation <tt>smart</tt>, and set <tt>DATABASE_PASSWORD</tt> accordingly.		
     * set <tt>APP_HOME</tt> to the complete path to the location where you've installed <tt>smart_server</tt>, e.g. <tt>/web/smart_server</tt>
     * set <tt>SITE_URL_PREFIX</tt> to the URL where your server is running, including port number  e.g. <tt>http://localhost:7000</tt>
+    * set <tt>SMART_UI_SERVER_LOCATION</tt> to the URL where your UI server will be running, including port number  e.g. <tt>http://localhost:7001</tt>
 
 * copy <tt>bootstrap_helpers/application_list.json.default</tt> to <tt>bootstrap_helpers/application_list.json</tt> and customize to include the apps you want.
 
 * set things up (supplying the smart db password when prompted a few times)
-   `./reset.sh`
+ <pre>
+ ./reset.sh
+ </pre>
 
-   NOTE: On the first run of reset.sh, you will also see some 500s. Don't worry about them.
-   Because of a garbage collection issue in the librdf Python
+   NOTE: On the first run of <tt>reset.sh</tt>, you will also see some 500s. Don't worry about them.
+   Also, because of a garbage collection issue in the librdf Python
    bindings, you may see the following output as reset.sh finishes.
 
    <pre>
    ...
    No fixtures found.
-   Exception TypeError: "'NoneType' object is not callable" in <bound method RDFXMLSerializer.__del__ of <RDF.RDFXMLSerializer object at 0x3031c90>> ignored
+   Exception TypeError: "'NoneType' object is not callable" in &lt;bound method RDFXMLSerializer.__del__ of &lt;RDF.RDFXMLSerializer object at 0x3031c90&gt;&gt; ignored
    </pre>
 
    Nothing has in fact gone wrong.
@@ -136,14 +141,30 @@ To limit servlet access to localhost, make two tomcat configuration changes:
 
 * get the code
 
-<pre>
+ <pre>
  git clone https://github.com/chb/smart_ui_server.git
  cd smart_ui_server
+ </pre>
+
+* copy <tt>settings.py.default</tt> to <tt>settings.py</tt> and update:
+    * set <tt>SMART_UI_BASE</tt> to the complete path to the location where you've installed <tt>smart_ui_server</tt>, e.g. <tt>/web/smart_ui_server</tt>
+    * set <tt>SMART_SERVER_LOCATION</tt>, <tt>CONSUMER_KEY</tt>, <tt>CONSUMER_SECRET</tt> appropriately to match the SMArt Server's location and chrome credentials. (Check your <tt>bootstrap.py</tt> within <tt>smart_server</tt> for those credentials. If you change them, you'll need to run <tt>reset.sh</tt> again on the SMArt server. If you never changed <tt>bootstrap.py</tt>, then your <tt>CONSUMER_KEY</tt> and <tt>CONSUMER_SECRET</tt> are both <tt>chrome</tt>, and you don't need to change their value in the UI server default settings file.)
+
+#Installation of SMArt Sample Apps
+
+* source code
+
+ `git clone https://github.com/chb/smart_sample_apps.git`
+
+The sample apps can run on localhost in the configuration given above:
+
+<pre>
+ cd /web/smart_sample_apps/
 </pre>
 
 * copy settings.py.default to settings.py and update:
-    * set <tt>SMART_UI_BASE</tt> to the complete path to the location where you've installed <tt>smart_ui_server</tt>, e.g. <tt>/web/smart_ui_server</tt>
-    * set <tt>SMART_SERVER_LOCATION</tt>, <tt>CONSUMER_KEY</tt>, <tt>CONSUMER_SECRET</tt> appropriately to match the SMArt Server's location and chrome credentials. (Check your <tt>bootstrap.py</tt> within <tt>smart_server</tt> for those credentials. If you change them, you'll need to run <tt>reset.sh</tt> again on the SMArt server. If you never changed <tt>bootstrap.py</tt>, then your <tt>CONSUMER_KEY</tt> and <tt>CONSUMER_SECRET</tt> are both <tt>chrome</tt>, and you don't need to change their value in the UI server default settings file.)
+    * set <tt>APP_HOME</tt> to the complete path to the location where you've installed <tt>smart_sample_apps</tt>, e.g. <tt>/web/smart_sample_apps</tt>
+    * set <tt>SMART_SERVER_PARAMS</tt> to point to the location of the SMArt Server. If you are running the SMArt server on <tt>localhost:7000</tt> as we suggest, there's no need to change anything.
 
 #Running the Development Servers
 
@@ -162,24 +183,10 @@ The UI server, if you want it accessible from another machine, needs to specify 
  python manage.py runserver 0.0.0.0:7001
 </pre>
 
-#Installation of SMArt Sample Apps
-
-* source code
-
- `git clone https://github.com/chb/smart_sample_apps.git`
-
-The sample apps can run on localhost in the configuration given above:
+And finally, the Sample Apps:
 
 <pre>
  cd /web/smart_sample_apps/
-</pre>
-
-* copy settings.py.default to settings.py and update:
-    * set <tt>APP_HOME</tt> to the complete path to the location where you've installed <tt>smart_sample_apps</tt>, e.g. <tt>/web/smart_sample_apps</tt>
-    * set <tt>SMART_SERVER_PARAMS</tt> to point to the location of the SMArt Server. If you are running the SMArt server on <tt>localhost:7000</tt> as we suggest, there's no need to change anything.
-
-* start the Sample Apps:
-
-<pre>
  python manage.py runserver 0.0.0.0:8001
 </pre>
+
