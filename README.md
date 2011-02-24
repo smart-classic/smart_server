@@ -152,7 +152,6 @@ You'll need to restart Tomcat again if you make these changes
 # Download, Install, and Configure SMArt Sample Apps
 
 * get the source code
-
  <pre>
  git clone https://github.com/chb/smart_sample_apps.git
  cd smart_sample_apps</pre>
