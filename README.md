@@ -71,16 +71,16 @@ You will need to restart PostgreSQL:
  sudo /etc/init.d/tomcat6 restart
 </pre>
 
-openrdf-workbench doesn't support access control.  To limit servlet
+openrdf-workbench doesn't support access control. You will probably want to limit access to just localhost. To limit servlet
 access to localhost, make two tomcat configuration changes:
 
 <pre>
     /var/lib/tomcat6/conf/context.xml
-    <Context>
-    +  <Valve className="org.apache.catalina.valves.RemoteHostValve" allow="localhost"/>
+    &lt;Context&gt;
+    +  &lt;Valve className="org.apache.catalina.valves.RemoteHostValve" allow="localhost"/&gt;
 
     /var/lib/tomcat6/conf/server.xml
-    <Connector port="8080" protocol="HTTP/1.1"
+    &lt;Connector port="8080" protocol="HTTP/1.1"
     +          enableLookups="true"
 </pre>
 
