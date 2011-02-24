@@ -222,7 +222,7 @@ def user_get(request, user_id, **kwargs):
                      category="container_items",
                      target="http://smartplatforms.org/terms#User")
 def user_search(request, **kwargs):
-    aa = Account.objects.all()
+    aa = [] # Don't allow user searching for the challenge API.
 
     m = RDF.Model()
     

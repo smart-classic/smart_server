@@ -1004,14 +1004,6 @@ In RDF/XML notation, a patient on oral amitriptyline 50 mg tablets might provide
   </owl:Class>
 
 <api:call>
-  <api:description>Find users by name (or all users if blank)</api:description>
-  <api:method>GET</api:method>
-  <api:path>/users/search?givenName={givenName}&amp;familyName={familyName}</api:path>
-  <api:target rdf:resource="http://smartplatforms.org/terms#User"/>
-  <api:category>container_items</api:category>
-</api:call>
-
-<api:call>
   <api:description>Get a single user by internal ID</api:description>
   <api:method>GET</api:method>
   <api:path>/users/{user_id}</api:path>
