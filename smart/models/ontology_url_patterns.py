@@ -23,9 +23,14 @@ class OntologyURLMapper():
   
   def calls_by_path(self):
       ret = {}
+
       for c in api_calls:
-          ret.setdefault(c.path, set()).add(c)              
-      return ret.iteritems()
+          ret.setdefault(c.path, set()).add(c)
+
+      calls = ret.keys()
+      calls = sorted(calls, key=lambda x: -1*len(str(x)))
+      ret = zip(calls, [ret[c] for c in calls])
+      return ret
     
   def django_param_regex(self, v):
     return "(?P<%s>[^/]+)"%v
