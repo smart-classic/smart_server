@@ -141,7 +141,7 @@ To limit servlet access to localhost, make two tomcat configuration changes:
 
 * copy settings.py.default to settings.py and update:
     * set <tt>SMART_UI_BASE</tt> to the complete path to the location where you've installed <tt>smart_ui_server</tt>, e.g. <tt>/web/smart_ui_server</tt>
-    * set <tt>SMART_SERVER_LOCATION</tt>, <tt>CONSUMER_KEY</tt>, <tt>CONSUMER_SECRET</tt> appropriately to match the SMArt Server's location and chrome credentials. (Check your <tt>bootstrap.py</tt> for those credentials BEFORE you <tt>reset.sh</tt> on the SMArt server. If you didn't change <tt>bootstrap.py</tt>, then your <tt>CONSUMER_KEY</tt> and <tt>CONSUMER_SECRET</tt> are both <tt>chrome</tt>, and you don't need to change their value in the UI server default settings file.)
+    * set <tt>SMART_SERVER_LOCATION</tt>, <tt>CONSUMER_KEY</tt>, <tt>CONSUMER_SECRET</tt> appropriately to match the SMArt Server's location and chrome credentials. (Check your <tt>bootstrap.py</tt> within <tt>smart_server</tt> for those credentials. If you change them, you'll need to run <tt>reset.sh</tt> again on the SMArt server. If you never changed <tt>bootstrap.py</tt>, then your <tt>CONSUMER_KEY</tt> and <tt>CONSUMER_SECRET</tt> are both <tt>chrome</tt>, and you don't need to change their value in the UI server default settings file.)
 
 #Running the Development Servers
 
