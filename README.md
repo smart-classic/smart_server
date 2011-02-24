@@ -55,10 +55,12 @@ You will need to restart PostgreSQL:
  psql
  postgres=# \password smart
  </pre>
-* Create the Databases and make the smart user their owner.
 
-  `createdb -O smart smart`
-  `createdb -O smart rxnorm`
+* Create the Databases and make the smart user their owner.
+<pre>
+  createdb -O smart smart
+  createdb -O smart rxnorm
+</pre>
 
 # Install openrdf-sesame (and tomcat)  
 
