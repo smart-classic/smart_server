@@ -10,6 +10,8 @@ These instructions apply to each of three github repositories that you'll need i
 
 * https://github.com/chb/smart_sample_apps.git
 
+* https://github.com/chb/smart_sample_patients.git
+
 # System setup
 
 * Recent Linux installation (Kernel 2.6+).  We recommend an up-to-date version of Ubuntu, and these instructions are written from that perspective.
@@ -22,7 +24,9 @@ These instructions apply to each of three github repositories that you'll need i
 * Python 2.6 with package <tt>psycopg2</tt> and <tt>libxslt1</tt>
 <pre>
     apt-get install python-psycopg2 python-libxslt1 python-librdf librdf-storage-postgresql \
-                    librdf-storage-sqlite python-m2crypto python-simplejson
+                    librdf-storage-sqlite python-m2crypto python-simplejson python-argparse python-setuptools
+
+    easy_install -U "rdflib>=3.0.0"
 </pre>
 
 * Django 1.1
@@ -159,6 +163,23 @@ You'll need to restart Tomcat again if you make these changes
 * copy settings.py.default to settings.py and update:
     * set <tt>APP_HOME</tt> to the complete path to the location where you've installed <tt>smart_sample_apps</tt>, e.g. <tt>/web/smart_sample_apps</tt>
     * set <tt>SMART_SERVER_PARAMS</tt> to point to the location of the SMArt Server. If you are running the SMArt server on <tt>localhost:7000</tt> as we suggest, there's no need to change anything.
+
+# Generate Sample Patient Records and Load Them in the SMArt EMR
+
+* get the source code and generate sample data
+ <pre>
+ git clone https://github.com/chb/smart_sample_patients.git
+ cd smart_sample_patients/bin
+ python generate.py --write ../test-data/
+ </pre>
+
+* Load into SMArt EMR
+ <pre>
+ cd /path/to/smart_server
+ PYTHONPATH=. DJANGO_SETTINGS_MODULE=settings \ 
+    /usr/bin/python load_tools/load_one_patient.py \
+     ../smart_sample_patients/test-data/*
+ </pre>
 
 #Running the Development Servers
 
