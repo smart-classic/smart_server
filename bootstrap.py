@@ -43,7 +43,5 @@ print "BOOTSTRAP helpers"
 # then add additional apps by manifest
 from bootstrap_helpers import bootstrap_codingsystems
 print "done cs"
-from bootstrap_helpers import bootstrap_demographics
-print "done demographics"
 from bootstrap_helpers import bootstrap_applications
 print "done apps"
