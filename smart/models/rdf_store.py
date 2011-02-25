@@ -7,12 +7,13 @@ Ben Adida
 from base import *
 from django.utils import simplejson
 from smart.lib import utils
+from smart.common.util import URIRef, Literal, BNode
 from smart.models.apps import *
 from smart.models.accounts import *
 from smart.models import PHA
 from django.conf import settings
 from string import Template
-import urllib, uuid, RDF
+import urllib, uuid
 
 class PHA_RDFStore(Object): 
   Meta = BaseMeta()
@@ -45,20 +46,24 @@ class SesameConnector(object):
         return res
             
     def serialize_node(self, node):
-        if (node.is_resource()):
-            return "<uri><![CDATA[%s]]></uri>"%node.uri
-        elif (node.is_blank()):
-            return "<bnode><![CDATA[%s]]></bnode>"%node.blank_identifier
-        elif (node.is_literal()):
-            return "<literal><![CDATA[%s]]></literal>"%node.literal_value['string']
-    
-        raise Exception("Unknown node type for %s"%node)
+        t = None
+
+        if (type(node) == URIRef):
+          t = "uri"
+        elif (type(node) == BNode):
+          t = "bnode"
+        elif (type(node) == Literal):
+          t = "literal"
+        else:
+          raise Exception("Unknown node type for %s"%node)          
+        
+        return "<%s><![CDATA[%s]]></%s>"%(t,str(node),t)
 
 
     def serialize_statement(self, st):
-        return "%s %s %s"%(self.serialize_node(st.subject),
-                           self.serialize_node(st.predicate),
-                           self.serialize_node(st.object),
+        return "%s %s %s"%(self.serialize_node(st[0]),
+                           self.serialize_node(st[1]),
+                           self.serialize_node(st[2]),
                            )
 
     
@@ -97,10 +102,10 @@ class ContextSesameConnector(SesameConnector):
         
     def serialize_statement(self, st):
         return "%s %s %s %s"%(
-                              self.serialize_node(st.subject),
-                              self.serialize_node(st.predicate),
-                              self.serialize_node(st.object),
-                              self.serialize_node(RDF.Node(uri_string=self.context.encode()))
+                              self.serialize_node(st[0]),
+                              self.serialize_node(st[1]),
+                              self.serialize_node(st[2]),
+                              self.serialize_node(URIRef(self.context.encode()))
                              )
         
     def sparql(self, q):
@@ -109,7 +114,7 @@ class ContextSesameConnector(SesameConnector):
         return super(ContextSesameConnector, self).sparql(q)
 
     def destroy_triples(self):
-        self.pending_clears.append(RDF.Node(uri_string=self.context.encode()))
+        self.pending_clears.append(URIRef(self.context.encode()))
         self.execute_transaction()
 
 

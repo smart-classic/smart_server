@@ -47,11 +47,10 @@ def record_post_objects(request, record_id, obj, above_obj=None, **kwargs):
         pred = above_obj.smart_type.predicate_for_contained_type(obj.smart_type)
         assert pred != None, "Can't derive the predicate for adding %s below %s."%(obj.type, above_obj.type)
         for new_node in new_uris:
-            above_node = RDF.Node(uri_string=smart_path(smart_parent(request.path)))
-            g.append(RDF.Statement(
-                     subject=above_node, 
-                     predicate=pred, 
-                     object=new_node))
+            above_node = URIRef(smart_path(smart_parent(request.path)))
+            g.add((above_node, 
+                     pred, 
+                     new_node))
 
     c = RecordStoreConnector(Record.objects.get(id=record_id))
     return rdf_post(c, g)    
@@ -84,17 +83,15 @@ def record_put_object(request, record_id, obj, above_obj=None, **kwargs):
     new_node = new_nodes[0]
     
     # 2.
-    g.append(RDF.Statement(
-            subject=new_node, 
-            predicate=RDF.Node(uri_string='http://smartplatforms.org/external_id'), 
-            object=RDF.Node(literal=external_id.encode())))
+    g.add((new_node, 
+            URIRef('http://smartplatforms.org/external_id'), 
+            Literal(external_id.encode())))
 
     # 3.
     if above_internal_id != None:
-        g.append(RDF.Statement(
-            subject=RDF.Node(uri_string=above_internal_id), 
-            predicate=above_obj.smart_type.predicate_for_contained_type(obj.smart_type), 
-            object=new_node))
+        g.add((URIRef(above_internal_id), 
+                  above_obj.smart_type.predicate_for_contained_type(obj.smart_type), 
+                  new_node))
 
     # 4. 
     id = obj.internal_id(c, external_id)  

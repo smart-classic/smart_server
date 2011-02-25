@@ -224,7 +224,7 @@ def user_get(request, user_id, **kwargs):
 def user_search(request, **kwargs):
     aa = Account.objects.all()
 
-    m = RDF.Model()
+    m = bound_graph()
     
     f  = request.GET.get("givenName", None)
     l  = request.GET.get("familyName", None)

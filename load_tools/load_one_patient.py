@@ -1,7 +1,7 @@
 from smart.models.rdf_store import TemporaryStoreConnector, RecordStoreConnector
 from smart.models.record_object import api_types, Record, RecordObject
-from smart.common.util import parse_rdf
-import RDF, sys
+from smart.common.util import parse_rdf, bound_graph
+import sys
 
 """
 To run:
@@ -16,8 +16,7 @@ class RecordImporter(object):
     def __init__(self, filename, target_id=None):            
         # 0. Read supplied data
         self.data = parse_rdf(open(filename).read())
-        self.parser = RDF.Parser()
-        self.target_model = RDF.Model()
+        self.target_model = bound_graph()
         
         with TemporaryStoreConnector() as  temp_connector:
             self.temp_connector = temp_connector
@@ -60,12 +59,11 @@ class RecordImporter(object):
         if t.base_path == None: return
         ro = RecordObject[t.node]
         matched = self.temp_connector.sparql(ro.query_all())
-
-        self.parser.parse_string_into_model(self.target_model, matched, "none")
+        parse_rdf(matched, model=self.target_model)
 
     @staticmethod
     def add_all(connector, model):
-        for a in model.find_statements(RDF.Statement(None,None,None)):
+        for a in model:
             connector.pending_adds.append(a)
 
 if __name__ == "__main__":

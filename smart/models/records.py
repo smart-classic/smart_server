@@ -12,7 +12,7 @@ from smart.models.apps import *
 from smart.models.accounts import *
 from smart.models.rdf_store import DemographicConnector
 from string import Template
-import RDF, re
+import re
 
 class Record(Object):
   Meta = BaseMeta()
@@ -49,22 +49,22 @@ class Record(Object):
     m = parse_rdf(res)
     
     print "Got", res
-    people = m.find_statements(RDF.Statement(None, rdf['type'], foaf['Person']))
+    people = m.triples((None, rdf['type'], foaf['Person']))
     record_list = []
     for p in people:
         record = Record()
-        print "working with person ", p, str(p.subject.uri), p.subject.is_resource() 
-        record.id = re.search("\/records\/(.*?)\/demographics", str(p.subject.uri)).group(1)
-        record.fn = list(m.find_statements(RDF.Statement(p.subject, foaf['givenName'], None)))[0].object.literal_value['string']
-        record.ln = list(m.find_statements(RDF.Statement(p.subject, foaf['familyName'], None)))[0].object.literal_value['string']
+        print "working with person ", p
+        record.id = re.search("\/records\/(.*?)\/demographics", str(p[0])).group(1)
+        record.fn = str(list(m.triples((p[0], foaf['givenName'], None)))[0][2])
+        record.ln = (list(m.triples((p[0], foaf['familyName'], None)))[0][2])
         print "found the snames ", record.fn, record.ln, record.id
-        dob = list(m.find_statements(RDF.Statement(p.subject, sp['birthday'], None)))[0].object.literal_value['string']
+        dob = str(list(m.triples((p[0], sp['birthday'], None)))[0][2])
         record.dob = dob
 
-        gender = list(m.find_statements(RDF.Statement(p.subject, foaf['gender'], None)))[0].object.literal_value['string']
+        gender = str(list(m.triples((p[0], foaf['gender'], None)))[0][2])
         record.gender = gender
 
-        zipcode = list(m.find_statements(RDF.Statement(p.subject, sp['zipcode'], None)))[0].object.literal_value['string']
+        zipcode = str(list(m.triples((p[0], sp['zipcode'], None)))[0][2])
         record.zipcode = zipcode
        
         record_list.append(record)

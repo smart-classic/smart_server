@@ -7,7 +7,8 @@ Ben Adida
 from base import *
 from django.utils import simplejson
 from smart.lib import utils
-import RDF
+from smart.common import util
+from smart.common.util import Literal, URIRef
 
 ##
 ## Accounts
@@ -209,21 +210,21 @@ class Account(Principal):
   def to_rdf(self, model = None):
     from smart.common.util import sp, foaf, rdf
 
-    if model == None:  m = RDF.Model()
+    if model == None:  m = util.bound_graph()
     else: m = model
     
-    n = RDF.Node(uri_string="%s/users/%s" % (settings.SITE_URL_PREFIX, self.email.encode()))
-    m.append(RDF.Statement(n, rdf['type'], sp['user']))    
+    n = URIRef("%s/users/%s" % (settings.SITE_URL_PREFIX, self.email.encode()))
+    m.add((n, rdf['type'], sp['user']))
 
     try:
         gn = self.given_name or "?"
         fn = self.family_name or "?"
         
-        m.append(RDF.Statement(n, foaf['givenName'], RDF.Node(literal=gn.encode())))    
-        m.append(RDF.Statement(n, foaf['familyName'], RDF.Node(literal=fn.encode())))    
-        m.append(RDF.Statement(n, sp['department'], RDF.Node(literal=self.department.encode())))    
-        m.append(RDF.Statement(n, sp['role'], RDF.Node(literal=self.role.encode())))    
-        m.append(RDF.Statement(n, foaf['mbox'], RDF.Node(literal="mailto:%s"%self.email.encode())))    
+        m.add((n, foaf['givenName'], Literal(gn.encode())))    
+        m.add((n, foaf['familyName'], Literal(fn.encode())))    
+        m.add((n, sp['department'], Literal(self.department.encode())))    
+        m.add((n, sp['role'], Literal(self.role.encode())))    
+        m.add((n, foaf['mbox'], Literal("mailto:%s"%self.email.encode())))    
     except: pass
     
     return m
