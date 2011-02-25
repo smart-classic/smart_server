@@ -176,9 +176,9 @@ You'll need to restart Tomcat again if you make these changes
 * Load into SMArt EMR
  <pre>
  cd /path/to/smart_server
- PYTHONPATH=. DJANGO_SETTINGS_MODULE=settings \ 
-    /usr/bin/python load_tools/load_one_patient.py \
-     ../smart_sample_patients/test-data/*
+ PYTHONPATH=. DJANGO_SETTINGS_MODULE=settings /usr/bin/python \
+   load_tools/load_one_patient.py \
+   /path/to/smart_sample_patients/test-data/*
  </pre>
 
 #Running the Development Servers
