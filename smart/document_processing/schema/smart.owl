@@ -241,29 +241,29 @@ For instance, below are two allergies:  first, an allergy to the entire class of
 <rdf:RDF
   xmlns:dcterms="http://purl.org/dc/terms/"
   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-  xmlns:sp="http://smartplatforms.org/terms#">;
+  xmlns:sp="http://smartplatforms.org/terms#">
       <sp:Allergy>
       <sp:class>
         <sp:CodedValue>
-          <sp:code resource="http://rxnav.nlm.nih.gov/REST/rxcui?idtype=NUI&id=N0000175503" />
+          <sp:code rdf:resource="http://rxnav.nlm.nih.gov/REST/rxcui?idtype=NUI&amp;id=N0000175503" />
           <dcterms:title>Sulfonamide Antibacterial</dcterms:title>
         </sp:CodedValue>
       </sp:class>
       <sp:severity>
         <sp:CodedValue>
-          <sp:code resource="http://www.ihtsdo.org/snomed-ct/concepts/24484000" />
+          <sp:code rdf:resource="http://www.ihtsdo.org/snomed-ct/concepts/24484000" />
           <dcterms:title>Severe</dcterms:title>
         </sp:CodedValue>
       </sp:severity>
       <sp:reaction>
         <sp:CodedValue>
-          <sp:code resource="http://www.ihtsdo.org/snomed-ct/concepts/39579001" />
+          <sp:code rdf:resource="http://www.ihtsdo.org/snomed-ct/concepts/39579001" />
           <dcterms:title>Anaphylaxis</dcterms:title>
         </sp:CodedValue>
       </sp:reaction>
       <sp:category>
         <sp:CodedValue>
-          <sp:code resource="http://www.ihtsdo.org/snomed-ct/concepts/416098002" />
+          <sp:code rdf:resource="http://www.ihtsdo.org/snomed-ct/concepts/416098002" />
           <dcterms:title>Drug allergy</dcterms:title>
         </sp:CodedValue>
       </sp:category>
@@ -272,30 +272,29 @@ For instance, below are two allergies:  first, an allergy to the entire class of
   <sp:Allergy>
       <sp:substance>
         <sp:CodedValue>
-          <sp:code resource="http://link.informatics.stonybrook.edu/rxnorm/RXCUI/2231" />
+          <sp:code rdf:resource="http://link.informatics.stonybrook.edu/rxnorm/RXCUI/2231" />
           <dcterms:title>Cephalexin</dcterms:title>
         </sp:CodedValue>
       </sp:substance>
       <sp:severity>
         <sp:CodedValue>
-          <sp:code resource="http://www.ihtsdo.org/snomed-ct/concepts/24484000" />
+          <sp:code rdf:resource="http://www.ihtsdo.org/snomed-ct/concepts/24484000" />
           <dcterms:title>Severe</dcterms:title>
         </sp:CodedValue>
       </sp:severity>
       <sp:reaction>
         <sp:CodedValue>
-          <sp:code resource="http://www.ihtsdo.org/snomed-ct/concepts/39579001" />
+          <sp:code rdf:resource="http://www.ihtsdo.org/snomed-ct/concepts/39579001" />
           <dcterms:title>Anaphylaxis</dcterms:title>
         </sp:CodedValue>
       </sp:reaction>
       <sp:category>
         <sp:CodedValue>
-          <sp:code resource="http://www.ihtsdo.org/snomed-ct/concepts/416098002" />
+          <sp:code rdf:resource="http://www.ihtsdo.org/snomed-ct/concepts/416098002" />
           <dcterms:title>Drug allergy</dcterms:title>
         </sp:CodedValue>
       </sp:category>
    </sp:Allergy>
-
 </rdf:RDF>]]></api:example>
     </owl:Class>
 
