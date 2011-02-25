@@ -190,7 +190,7 @@ def rdf_delete(record_connector, query, save=True):
     deleted = bound_graph()
 
     for r in to_delete:
-       deleted.append(r)
+       deleted.add(r)
        record_connector.pending_removes.append(r)
        
     if (save): record_connector.execute_transaction()

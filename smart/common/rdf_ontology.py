@@ -191,10 +191,10 @@ api_calls = None
 api_types = None 
 ontology = SMArtType
 
-#try:
-from django.conf import settings
-f = open(settings.ONTOLOGY_FILE).read()
-parse_ontology(f)
-#except (ImportError, AttributeError): 
-#    pass
+try:
+    from django.conf import settings
+    f = open(settings.ONTOLOGY_FILE).read()
+    parse_ontology(f)
+except (ImportError, AttributeError): 
+    pass
 

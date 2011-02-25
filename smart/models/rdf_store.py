@@ -87,6 +87,7 @@ class SesameConnector(object):
         
         t += "</transaction>"
         u = "%s/statements"%self.endpoint
+#        print "Executing \n", t
         success =  self.request(u, "POST", {"Content-Type" : "application/x-rdftransaction"}, t)
         if (success):
             self.pending_clears = []
