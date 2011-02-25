@@ -180,6 +180,8 @@ You'll need to restart Tomcat again if you make these changes
    load_tools/load_one_patient.py \
    /path/to/smart_sample_patients/test-data/*
  </pre>
+ 
+ Expect this to take a few minutes.
 
 #Running the Development Servers
 
