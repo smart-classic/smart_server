@@ -100,7 +100,7 @@ def cookie_for_token(t):
     oauth_request = OAuthRequest(app, None, app_index_req, oauth_parameters=t.passalong_params)
     oauth_request.sign()
     auth = oauth_request.to_header()["Authorization"]
-    return {'oauth_cookie' : "Authorization: " + auth}
+    return {'oauth_cookie' : auth}
 
 @paramloader()
 def launch_app(request, record, account, app):
