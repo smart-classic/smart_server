@@ -8,7 +8,7 @@ Josh Mandel
 from base import *
 from smart.lib import utils
 from smart.lib.utils import *
-from smart.common.util import rdf, sp
+from smart.common.util import rdf, sp, bound_graph, URIRef, Namespace
 from django.http import HttpResponse
 from django.conf import settings
 from smart.models import *
@@ -16,7 +16,6 @@ from smart.models.record_object import RecordObject
 from smart.models.rdf_rest_operations import *
 from oauth.oauth import OAuthRequest
 from smart.models.ontology_url_patterns import CallMapper
-import RDF
 import datetime
 
 SAMPLE_NOTIFICATION = {
@@ -26,24 +25,23 @@ SAMPLE_NOTIFICATION = {
     'content' : 'a sample notification',
     }
 
-sporg = RDF.NS("http://smartplatforms.org/")
+sporg = Namespace("http://smartplatforms.org/")
 
 
 @CallMapper.register(method="GET",
                      category="container_items",
                      target="http://smartplatforms.org/terms#Container")
 def container_capabilities(request, **kwargs):
-    m = RDF.Model()
-    m.append(RDF.Statement(RDF.Node(uri_string=settings.SITE_URL_PREFIX),
-             rdf['type'],
-             sp['Container']))
-    m.append(RDF.Statement(RDF.Node(uri_string=settings.SITE_URL_PREFIX),
-             sp['capability'],
-             sporg['capability/SNOMED/lookup']))
-    m.append(RDF.Statement(RDF.Node(uri_string=settings.SITE_URL_PREFIX),
-             sp['capability'],
-             sporg['capability/SPL/lookup']))
-    m.append(RDF.Statement(RDF.Node(uri_string=settings.SITE_URL_PREFIX),
+    m = bound_graph()
+    site = URIRef(settings.SITE_URL_PREFIX)
+    print "avail", dir(m)
+    m.add((site, rdf['type'], sp['Container']))
+
+    m.add((site, sp['capability'], sporg['capability/SNOMED/lookup']))
+
+    m.add((site, sp['capability'], sporg['capability/SPL/lookup']))
+
+    m.add((site,
              sp['capability'],
              sporg['capability/Pillbox/lookup']))
     

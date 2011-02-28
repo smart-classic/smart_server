@@ -81,7 +81,7 @@ class CallMapper(object):
           def maps_p(self):
             return  ((not method or str(self.call.method) == method) and
                      (not category or str(self.call.category) == category) and
-                     (not target or str(self.call.target.uri) == target) and 
+                     (not target or str(self.call.target) == target) and 
                      (not filter_func or filter_func(self.call)))
           maps_to = staticmethod(single_func)  
         cls.__mapper_registry.add(SingleMethodMatcher)

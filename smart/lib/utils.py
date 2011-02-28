@@ -17,14 +17,13 @@ try:
   from django.forms.fields import email_re
 except:
   from django.core.validators import email_re
-from smart.common.util import parse_rdf, serialize_rdf
+from smart.common.util import parse_rdf, serialize_rdf, bound_graph
 import django.core.mail as mail
 import logging
 import string, random
 import functools
 import psycopg2
 import psycopg2.extras
-import RDF
 import httplib
 import time
 
@@ -124,9 +123,6 @@ def apply_xslt(sourceDOM, stylesheetDOM):
     style = libxslt.parseStylesheetDoc(stylesheetDOM)
     return style.applyStylesheet(sourceDOM, None).serialize()
 
-def bound_graph():
-    return RDF.Model(storage=RDF.HashStorage("", options="hash-type='memory'"))
-
 def smart_path(path):
     ret = settings.SITE_URL_PREFIX + path
     return ret.encode()
@@ -194,7 +190,7 @@ def rdf_delete(record_connector, query, save=True):
     deleted = bound_graph()
 
     for r in to_delete:
-       deleted.append(r)
+       deleted.add(r)
        record_connector.pending_removes.append(r)
        
     if (save): record_connector.execute_transaction()

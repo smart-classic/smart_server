@@ -1,8 +1,8 @@
-import re, RDF, uuid
+import re, uuid
 from django.conf import settings
 from smart.common.rdf_ontology import api_types, api_calls, ontology
 from rdf_rest_operations import *
-from smart.common.util import remap_node, parse_rdf, LookupType
+from smart.common.util import remap_node, parse_rdf, LookupType, URIRef
 from ontology_url_patterns import CallMapper, BasicCallMapper
 
 class RecordObject(object):
@@ -26,7 +26,7 @@ class RecordObject(object):
         except: 
             try: return cls.known_types_dict[key.node]
             except: 
-                return cls.known_types_dict[RDF.Node(uri_string=key.encode())]
+                return cls.known_types_dict[URIRef(key.encode())]
 
     @classmethod
     def register_type(cls, smart_type, robj):
@@ -42,7 +42,7 @@ class RecordObject(object):
     
     @property
     def uri(self):
-        return str(self.smart_type.node.uri)
+        return str(self.smart_type.node)
     
     @property
     def node(self):
@@ -66,12 +66,12 @@ class RecordObject(object):
         
         l = list(id_graph)
         if len(l) > 1:
-            raise Exception( "MORE THAN ONE ENTITY WITH EXTERNAL ID %s : %s"%(external_id, ", ".join([str(x.subject) for x in l])))
+            raise Exception( "MORE THAN ONE ENTITY WITH EXTERNAL ID %s : %s"%(external_id, ", ".join([str(x[0]) for x in l])))
     
         try:
-            s =  l[0].subject
+            s =  l[0][0]
             print "FOUND an internal id", s
-            return str(s.uri).encode()
+            return str(s).encode()
         except: 
             return None
         
@@ -106,19 +106,19 @@ class RecordObject(object):
         return ret.encode()
     
     def ensure_only_one_put(self, g):
-        qs = RDF.Statement(subject=None, 
-                   predicate=RDF.Node(uri_string='http://www.w3.org/1999/02/22-rdf-syntax-ns#type'), 
-                   object=None)
+        qs = (None, 
+              URIRef('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'), 
+              None)
     
         typed_object_count = 0
         errors = []
-        for s in g.find_statements(qs):
+        for s in g.triples(qs):
             # If this is a typed object with no externally-accessible path, it's fine
             # (stays as a blank node, doesn't trigger a PUT error)
-            t = RecordObject[s.object]
+            t = RecordObject[s[2]]
             if (t.path == None): continue
             typed_object_count += 1
-            errors.append(str(s.object))
+            errors.append(str(s[2]))
         assert typed_object_count == 1, "You must PUT exactly one typed resource at a time; you tried putting %s: %s"%(typed_object_count, ", ".join(errors))    
         return
     
@@ -126,19 +126,19 @@ class RecordObject(object):
 	# Only give URIs to objects that support externally-referenced paths.
         if (self.path == None): return 
     
-        q_typed_nodes = RDF.Statement(subject=None, 
-                                      predicate=RDF.Node(uri_string='http://www.w3.org/1999/02/22-rdf-syntax-ns#type'), 
-                                      object=self.smart_type.node)
+        q_typed_nodes = (None, 
+                         URIRef('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'), 
+                         self.smart_type.node)
     
         node_map = {}    
-        for s in g.find_statements(q_typed_nodes):
+        for s in g.triples(q_typed_nodes):
             
             # Let's just remap nodes that *lack* a URI
-            if (s.subject.is_resource()): continue
+            if (type(s[0]) == URIRef): continue
             
-            if s.subject not in node_map:
+            if s[0] not in node_map:
                 full_path = self.determine_full_path(var_bindings)                
-                node_map[s.subject] = RDF.Node(uri_string=full_path)
+                node_map[s[0]] = URIRef(full_path)
 
         for (old_node, new_node) in node_map.iteritems():
             remap_node(g, old_node, new_node)
@@ -251,14 +251,11 @@ def record_get_allergies(request, *args, **kwargs):
       ae = RecordObject["http://smartplatforms.org/terms#AllergyException"]
       c = RecordStoreConnector(Record.objects.get(id=record_id))
 
-      m = RDF.Model()
-      p = RDF.Parser()
-
       ma = c.sparql(a.query_all())
-      mae = c.sparql(ae.query_all())
+      m = parse_rdf(ma)
 
-      p.parse_string_into_model(m, ma, "none")
-      p.parse_string_into_model(m, mae, "none")
+      mae = c.sparql(ae.query_all())
+      parse_rdf(mae, model=m)
 
       return rdf_response(serialize_rdf(m))
 
