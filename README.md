@@ -23,10 +23,9 @@ These instructions apply to each of three github repositories that you'll need i
 
 * Python 2.6 with package <tt>psycopg2</tt> and <tt>libxslt1</tt>
 <pre>
-    apt-get install python-psycopg2 python-libxslt1 python-librdf librdf-storage-postgresql \
-                    librdf-storage-sqlite python-m2crypto python-simplejson python-argparse python-setuptools
+    apt-get install python-psycopg2 python-libxslt1 python-m2crypto python-simplejson python-argparse python-setuptools python-pyparsing
 
-    easy_install -U "rdflib>=3.0.0"
+    easy_install -U "rdflib>=3.0.0"  rdfextras
 </pre>
 
 * Django 1.1
@@ -127,17 +126,14 @@ You'll need to restart Tomcat again if you make these changes
  ./reset.sh
  </pre>
 
-   NOTE: On the first run of <tt>reset.sh</tt>, you will also see some 500s. Don't worry about them.
-   Also, because of a garbage collection issue in the librdf Python
-   bindings, you may see the following output as reset.sh finishes.
+   NOTE: On the first run of <tt>reset.sh</tt>, you will also see some 500s. Don't worry about them.  When the reset process completes, you should see:
 
    <pre>
    ...
    No fixtures found.
-   Exception TypeError: "'NoneType' object is not callable" in &lt;bound method RDFXMLSerializer.__del__ of &lt;RDF.RDFXMLSerializer object at 0x3031c90&gt;&gt; ignored
    </pre>
 
-   Nothing has in fact gone wrong.
+   This is normal -- nothing has gone wrong.
    
    IMPORTANT: if you've enabled apps that are part of the sample apps below, you should <em>wait</em> to run <tt>reset.sh</tt> until you've got the sample apps server running. The SMArt Reference EMR attempts to download the apps' manifest files, and if they're not available over HTTP, <tt>reset.sh</tt> won't complete successfully. If you mistakenly run <tt>reset.sh</tt> before setting up the SMArt Sample Apps, don't worry, just set up the SMArt Sample Apps server, and run <tt>reset.sh</tt> again.
 
@@ -207,3 +203,4 @@ And finally, the Sample Apps:
  python manage.py runserver 0.0.0.0:8001
 </pre>
 
+#The SMArt EMR is now at: http://localhost:7001/login
