@@ -299,7 +299,6 @@ For instance, below are two allergies:  first, an allergy to the entire class of
         </sp:CodedValue>
       </sp:category>
    </sp:Allergy>
-
 <sp:Code  rdf:about="http://rxnav.nlm.nih.gov/REST/rxcui?idtype=NUI&amp;id=N0000175503">
    <sp:system rdf:resource="http://rxnav.nlm.nih.gov/REST/rxcui?idtype=NUI" />
    <sp:identifier>N0000175503</sp:identifier>
@@ -324,22 +323,6 @@ For instance, below are two allergies:  first, an allergy to the entire class of
    <sp:system rdf:resource="http://rxnav.nlm.nih.gov/REST/rxcui/" />
    <sp:identifier>2231</sp:identifier>
 </sp:Code>
-
-<sp:Code  rdf:about="http://www.ihtsdo.org/snomed-ct/concepts/24484000">
-   <sp:system rdf:resource="http://www.ihtsdo.org/snomed-ct/concepts/" />
-   <sp:identifier>24484000</sp:identifier>
-</sp:Code>
-
-<sp:Code  rdf:about="http://www.ihtsdo.org/snomed-ct/concepts/39579001">
-   <sp:system rdf:resource="http://www.ihtsdo.org/snomed-ct/concepts/" />
-   <sp:identifier>39579001</sp:identifier>
-</sp:Code>
-
-<sp:Code  rdf:about="http://www.ihtsdo.org/snomed-ct/concepts/416098002">
-   <sp:system rdf:resource="http://www.ihtsdo.org/snomed-ct/concepts/" />
-   <sp:identifier>416098002</sp:identifier>
-</sp:Code>
-
 </rdf:RDF>]]></api:example>
     </owl:Class>
 
