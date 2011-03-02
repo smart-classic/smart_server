@@ -16,9 +16,9 @@ def type_start(t):
     if len(t.parents) == 1:
         print "%s is a subtype of and inherits properties from: [[#%s RDF| %s]]\n"%(type_name_string(t), type_name_string(t.parents[0]),type_name_string(t.parents[0]))
         
-    if description: print str(description.literal_value['string'])+"\n"
+    if description: print "%s"%description+"\n"
     if example:
-        print "<pre>%s</pre>\n"%str(example.literal_value['string'])
+        print "<pre>%s</pre>\n"%example
 
 
 def properties_start(type):
@@ -37,7 +37,7 @@ def wiki_batch_start(batch):
     print "\n=%s=\n"%batch
 
 def type_name_string(t):
-    return t.name and str(t.name) or str(t.node.uri).rsplit("#")[1]
+    return t.name and str(t.name) or str(t.node).rsplit("#")[1]
     
 def wiki_payload_for_type(t):
     type_start(t)    
@@ -47,13 +47,13 @@ def wiki_properties_for_type(t):
     if len(t.restrictions) == 0:
         return
 
-    properties_start(t.node.uri)
+    properties_start(t.node)
     for c in sorted(t.restrictions, key=lambda r: str(r.node)):
-        name = c.doc.name and c.doc.name.literal_value['string'] or ""
-        desc = c.doc.description and c.doc.description.literal_value['string'] or ""
+        name = c.doc.name and c.doc.name or ""
+        desc = c.doc.description and c.doc.description or ""
         if c.on_class != None:
             desc = desc + "[[#%s RDF | (details...)]]"%(type_name_string(ontology[c.on_class]))
-        properties_row(str(c.property.uri), name, desc)
+        properties_row(str(c.property), name, desc)
     properties_end()
     
 def wiki_api_for_type(t):
