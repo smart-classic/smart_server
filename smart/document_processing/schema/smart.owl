@@ -81,7 +81,7 @@
 </sp:AllergyException>
 <sp:Code  rdf:about="http://www.ihtsdo.org/snomed-ct/concepts/160244002">
    <sp:system rdf:resource="http://www.ihtsdo.org/snomed-ct/concepts/" />
-   <sp:identifier>160244002</sp:identifier>
+   <dcterms:identifier>160244002</dcterms:identifier>
 </sp:Code>
 </rdf:RDF>]]></api:example>
     </owl:Class>
@@ -301,27 +301,27 @@ For instance, below are two allergies:  first, an allergy to the entire class of
    </sp:Allergy>
 <sp:Code  rdf:about="http://rxnav.nlm.nih.gov/REST/rxcui?idtype=NUI&amp;id=N0000175503">
    <sp:system rdf:resource="http://rxnav.nlm.nih.gov/REST/rxcui?idtype=NUI" />
-   <sp:identifier>N0000175503</sp:identifier>
+   <dcterms:identifier>N0000175503</dcterms:identifier>
 </sp:Code>
 
 <sp:Code rdf:about="http://www.ihtsdo.org/snomed-ct/concepts/24484000">
    <sp:system rdf:resource="http://www.ihtsdo.org/snomed-ct/concepts/" />
-   <sp:identifier>24484000</sp:identifier>
+   <dcterms:identifier>24484000</dcterms:identifier>
 </sp:Code>
 
 <sp:Code  rdf:about="http://www.ihtsdo.org/snomed-ct/concepts/39579001">
    <sp:system rdf:resource="http://www.ihtsdo.org/snomed-ct/concepts/" />
-   <sp:identifier>39579001</sp:identifier>
+   <dcterms:identifier>39579001</dcterms:identifier>
 </sp:Code>
 
 <sp:Code  rdf:about="http://www.ihtsdo.org/snomed-ct/concepts/416098002">
    <sp:system rdf:resource="http://www.ihtsdo.org/snomed-ct/concepts/" />
-   <sp:identifier>416098002</sp:identifier>
+   <dcterms:identifier>416098002</dcterms:identifier>
 </sp:Code>
 
 <sp:Code  rdf:about="http://rxnav.nlm.nih.gov/REST/rxcui/2231">
    <sp:system rdf:resource="http://rxnav.nlm.nih.gov/REST/rxcui/" />
-   <sp:identifier>2231</sp:identifier>
+   <dcterms:identifier>2231</dcterms:identifier>
 </sp:Code>
 </rdf:RDF>]]></api:example>
     </owl:Class>
@@ -777,7 +777,7 @@ In RDF/XML notation, a patient on oral amitriptyline 50 mg tablets might provide
    </sp:Medication>
 <sp:Code  rdf:about="http://rxnav.nlm.nih.gov/REST/rxcui/856845">
    <sp:system rdf:resource="http://rxnav.nlm.nih.gov/REST/rxcui/" />
-   <sp:identifier>856845</sp:identifier>
+   <dcterms:identifier>856845</dcterms:identifier>
 </sp:Code>
 </rdf:RDF>]]>
     </api:example>
@@ -1094,7 +1094,7 @@ In RDF/XML notation, a patient on oral amitriptyline 50 mg tablets might provide
     </sp:Problem>
 <sp:Code  rdf:about="http://www.ihtsdo.org/snomed-ct/concepts/161891005">
    <sp:system rdf:resource="http://www.ihtsdo.org/snomed-ct/concepts/" />
-   <sp:identifier>161891005</sp:identifier>
+   <dcterms:identifier>161891005</dcterms:identifier>
 </sp:Code>
 
 </rdf:RDF>]]>
@@ -1807,7 +1807,7 @@ No example yet.]]></api:example>
 
 <sp:Code  rdf:about="http://loinc.org/codes/2951-2">
    <sp:system rdf:resource="http://loinc.org/codes/" />
-   <sp:identifier>2951-2</sp:identifier>
+   <dcterms:identifier>2951-2</dcterms:identifier>
 </sp:Code>
 <sp:Code rdf:about="http://smartplatforms.org/terms/code/labStatus#final" />
 <sp:Code rdf:about="http://smartplatforms.org/terms/code/labInterpretation#normal" />
@@ -2173,11 +2173,10 @@ No example yet.]]></api:example>
         </rdfs:subClassOf>
     </owl:Class>
 
-
     <owl:Class rdf:about="http://smartplatforms.org/terms#Code">
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#identifier"/>
+                <owl:onProperty rdf:resource="http://purl.org/dc/terms/identifier"/>
                 <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
                 <api:doc>
 					<rdf:Description>
