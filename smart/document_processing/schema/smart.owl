@@ -1377,7 +1377,7 @@ No example yet.]]></api:example>
           <sp:valueAndUnit>
             <sp:ValueAndUnit>
               <sp:value>140</sp:value>
-              <sp:unit>mg/dL</sp:unit>
+              <sp:unit>mEq/L</sp:unit>
             </sp:ValueAndUnit>
           </sp:valueAndUnit>
           <sp:normalRange>
@@ -1385,13 +1385,13 @@ No example yet.]]></api:example>
               <sp:minimum>
                 <sp:ValueAndUnit>
                    <sp:value>135</sp:value>
-                   <sp:unit>mg/dL</sp:unit>
+                   <sp:unit>mEq/L</sp:unit>
                 </sp:ValueAndUnit>
               </sp:minimum>
               <sp:maximum>
                 <sp:ValueAndUnit>
                    <sp:value>145</sp:value>
-                   <sp:unit>mg/dL</sp:unit>
+                   <sp:unit>mEq/L</sp:unit>
                 </sp:ValueAndUnit>
               </sp:maximum>
              </sp:ResultRange>
@@ -1401,13 +1401,13 @@ No example yet.]]></api:example>
               <sp:minimum>
                 <sp:ValueAndUnit>
                    <sp:value>120</sp:value>
-                   <sp:unit>mg/dL</sp:unit>
+                   <sp:unit>mEq/L</sp:unit>
                 </sp:ValueAndUnit>
               </sp:minimum>
               <sp:maximum>
                 <sp:ValueAndUnit>
                    <sp:value>155</sp:value>
-                   <sp:unit>mg/dL</sp:unit>
+                   <sp:unit>mEq/L</sp:unit>
                 </sp:ValueAndUnit>
               </sp:maximum>
              </sp:ResultRange>
