@@ -21,6 +21,7 @@ spl = Namespace("http://www.accessdata.fda.gov/spl/data/")
 pillbox = Namespace("http://pillbox.nlm.nih.gov/")
 dcterms = Namespace('http://purl.org/dc/terms/')
 host = Namespace(settings.SITE_URL_PREFIX+"/spl/data/")
+rxnorm = Namespace("http://rxnav.nlm.nih.gov/REST/rxcui/")
 
 
 
@@ -103,7 +104,7 @@ class IngredientPillBox(JSONObject):
         this_pill_node = URIRef("%s?prodcode=%s"%(pillbox_url, product_code))
         
         self.model.add((
-                                      URIRef("http://link.informatics.stonybrook.edu/rxnorm/RXCUI/%s"%self.rxcui_id), 
+                                      rxnorm[self.rxcui_id], 
                                       pillbox["pill"], 
                                       this_pill_node))
         
@@ -185,7 +186,7 @@ def SPL_from_rxn_concept(concept_id):
        ret.append(one_spl)
               
        one_spl.model.add((
-                                      URIRef("http://link.informatics.stonybrook.edu/rxnorm/RXCUI/%s"%concept_id), 
+                                      rxnorm[concept_id], 
                                       SPL.spl_type, 
                                       one_spl.node))
     
