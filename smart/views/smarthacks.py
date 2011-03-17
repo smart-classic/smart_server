@@ -253,7 +253,18 @@ def put_demographics(request, record_id, obj, **kwargs):
 
 def debug_oauth(request, **kwargs):
     from smart.accesscontrol.oauth_servers import OAUTH_SERVER
-    ret = ""
+    ret = "Details of your request: \n\n"
+
+    ret += "Method: %s\n"%request.method
+    ret += "URL: %s\n"%request.build_absolute_uri()
+
+    ret += "Headers:\n"
+    for k,v in request.META.iteritems():
+        if k.startswith("HTTP"):
+                ret += "%s: %s"%(k,v)
+
+    ret += "\n"
+
     try:
       oauth_request = OAUTH_SERVER.extract_oauth_request(djangoutils.extract_request(request))
       ret += "OAuth Debugging: \n\n"
