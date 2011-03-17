@@ -266,7 +266,7 @@ def debug_oauth(request, **kwargs):
       ret += oauth_request.signature
     except oauth.OAuthError as e:
       import traceback
-      ret += "An error cocurred:\n"
+      ret += "An error occurred:\n"
       ret += traceback.format_exc()
     return HttpResponse(ret, "text/plain")
 
