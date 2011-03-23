@@ -179,9 +179,17 @@ def remove_app(request, account, app):
 
 def record_search(request):
     q = request.GET.get('sparql', None)
+    record_list = Record.search_records(q)
+    return HttpResponse(record_list, mimetype="application/rdf+xml")
+
+def record_search_xml(request):
+    q = request.GET.get('sparql', None)
     print "Query for pts", q
     record_list = Record.search_records(q)
+    record_list = Record.rdf_to_objects(record_list)
+
     return render_template('record_list', {'records': record_list}, type='xml')
+
 
 def allow_options(request, **kwargs):
     r =  utils.x_domain(HttpResponse())

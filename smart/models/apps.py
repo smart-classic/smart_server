@@ -77,6 +77,7 @@ class HelperApp(OAuthApp):
   Meta = BaseMeta()
   # short description of the app
   description = models.CharField(max_length=2000, null=True)
+  admin_p= models.BooleanField(default=False)
 
 ##
 ## App Tokens are implemented separately, since they require access to record and docs

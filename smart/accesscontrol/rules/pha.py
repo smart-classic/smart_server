@@ -21,4 +21,4 @@ def grant(pha, permset):
     permset.grant(pha_storage_get, [check_my_app])
     permset.grant(pha_storage_post, [check_my_app])
     permset.grant(pha_storage_delete, [check_my_app])
-    
+

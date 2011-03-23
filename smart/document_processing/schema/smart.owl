@@ -1377,6 +1377,7 @@ In RDF/XML notation, a patient on oral amitriptyline 50 mg tablets might provide
 				</api:doc>
             </owl:Restriction>
         </rdfs:subClassOf>
+
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://smartplatforms.org/terms#birthday"/>
@@ -1389,6 +1390,20 @@ In RDF/XML notation, a patient on oral amitriptyline 50 mg tablets might provide
 				</api:doc>
             </owl:Restriction>
         </rdfs:subClassOf>
+
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#externalID"/>
+                <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
+                <api:doc>
+					<rdf:Description>
+						<api:name>A person's external identifier, e.g. from another EMR system</api:name>
+						<api:description>RDF URI</api:description>
+					</rdf:Description>
+				</api:doc>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+
      <api:name>Demographics</api:name>
      <api:name_plural>Demographics</api:name_plural>
      <api:base_path>/records/{record_id}/demographics</api:base_path>
@@ -1419,9 +1434,20 @@ In RDF/XML notation, a patient on oral amitriptyline 50 mg tablets might provide
   <api:category>record_items</api:category>
 </api:call>
 
+<!--
 <api:call>
   <api:description>Replace all demographics for a patient with a newly-supplied graph</api:description>
   <api:method>PUT</api:method>
+  <api:path>/records/{record_id}/demographics</api:path>
+  <api:target rdf:resource="http://xmlns.com/foaf/0.1/Person"/>
+  <api:by_internal_id>true</api:by_internal_id>
+  <api:category>record_items</api:category>
+</api:call>
+-->
+
+<api:call>
+  <api:description>Add to demographics for a patient with a newly-supplied graph</api:description>
+  <api:method>POST</api:method>
   <api:path>/records/{record_id}/demographics</api:path>
   <api:target rdf:resource="http://xmlns.com/foaf/0.1/Person"/>
   <api:by_internal_id>true</api:by_internal_id>

@@ -2,7 +2,8 @@ import re, uuid
 from django.conf import settings
 from smart.common.rdf_ontology import api_types, api_calls, ontology
 from rdf_rest_operations import *
-from smart.common.util import remap_node, parse_rdf, LookupType, URIRef
+from smart.common.util import remap_node, parse_rdf, get_property, LookupType, URIRef, sp, rdf, default_ns
+from graph_augmenter import augment_data
 from ontology_url_patterns import CallMapper, BasicCallMapper
 
 class RecordObject(object):
@@ -55,23 +56,25 @@ class RecordObject(object):
         return None    
          
     def internal_id(self, record_connector, external_id):
-        id_graph = parse_rdf(record_connector.sparql("""
+        idquery = """
             PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-            CONSTRUCT {?s <http://smartplatforms.org/external_id> "%s".}
+            CONSTRUCT {%s <http://smartplatforms.org/terms#externalIDFor> ?o.}
             FROM $context
-            WHERE {?s <http://smartplatforms.org/external_id> "%s".
-                   ?s rdf:type %s.
-                  }
-        """%(external_id, external_id, "<"+(self.uri)+">")))
-        
+            WHERE {
+                    %s <http://smartplatforms.org/terms#externalIDFor> ?o.
+                  }  """%(external_id.n3(), external_id.n3())
+        print "querying", idquery
+        id_graph = parse_rdf(record_connector.sparql(idquery))
+
+
         l = list(id_graph)
         if len(l) > 1:
             raise Exception( "MORE THAN ONE ENTITY WITH EXTERNAL ID %s : %s"%(external_id, ", ".join([str(x[0]) for x in l])))
-    
+
         try:
-            s =  l[0][0]
+            s =  l[0][2]
             print "FOUND an internal id", s
-            return str(s).encode()
+            return s
         except: 
             return None
         
@@ -103,50 +106,61 @@ class RecordObject(object):
         if len(still_unbound) ==1:
             ret = ret.replace("{"+still_unbound[0]+"}", str(uuid.uuid4()))
         
-        return ret.encode()
-    
-    def ensure_only_one_put(self, g):
-        qs = (None, 
-              URIRef('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'), 
-              None)
-    
-        typed_object_count = 0
-        errors = []
-        for s in g.triples(qs):
-            # If this is a typed object with no externally-accessible path, it's fine
-            # (stays as a blank node, doesn't trigger a PUT error)
-            t = RecordObject[s[2]]
-            if (t.path == None): continue
-            typed_object_count += 1
-            errors.append(str(s[2]))
-        assert typed_object_count == 1, "You must PUT exactly one typed resource at a time; you tried putting %s: %s"%(typed_object_count, ", ".join(errors))    
-        return
-    
-    def generate_uris(self, g, var_bindings=None):   
-	# Only give URIs to objects that support externally-referenced paths.
-        if (self.path == None): return 
-    
-        q_typed_nodes = (None, 
-                         URIRef('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'), 
-                         self.smart_type.node)
-    
-        node_map = {}    
-        for s in g.triples(q_typed_nodes):
-            
-            # Let's just remap nodes that *lack* a URI
-            if (type(s[0]) == URIRef): continue
-            
-            if s[0] not in node_map:
-                full_path = self.determine_full_path(var_bindings)                
-                node_map[s[0]] = URIRef(full_path)
+        return URIRef(ret)    
 
+    def assert_never_a_subject(self, g, s):
+        t = g.triples((s, None, None))
+        assert len(list(t)) == 0, "Can't make statements about an external URI: %s"%s
+
+    def determine_remap_target(self,g,c,s,var_bindings):
+        full_path = None
+
+        if type(s) == Literal: return None
+        node_type = get_property(g, s, rdf.type)                
+        subject_uri = str(s)
+        
+        if type(s) == BNode:
+            assert node_type != None, "%s is a bnode with no type"%s.n3()
+            t = RecordObject[node_type]
+            if (t.path == None): return None
+
+        elif type(s) == URIRef:
+            if subject_uri.startswith("urn:smart_external_id:"):
+                full_path = self.internal_id(c, s)
+                assert full_path or node_type != None, "%s is a new external URI node with no type"%s.n3()
+                if full_path == None:
+                    t = RecordObject[node_type]
+                    assert t.path != None, "Non-gettable type %s shouldn't be a URI node."%t
+            elif subject_uri.startswith(smart_path("")):
+                return None
+            else:
+                self.assert_never_a_subject(g,s)
+                return None
+                    
+        # If we got here, we need to remap the node "s".
+        if full_path == None:
+            print "didn't exist before"
+            full_path = t.determine_full_path(var_bindings)
+        return full_path
+
+
+    def generate_uris(self, g, c, var_bindings=None):   
+        node_map = {}    
+        nodes = set(g.subjects()) | set(g.objects())
+
+        for s in nodes:
+            new_node = self.determine_remap_target(g,c,s, var_bindings)
+            if new_node: node_map[s] = new_node
+
+        print "remapping", node_map
         for (old_node, new_node) in node_map.iteritems():
             remap_node(g, old_node, new_node)
+            if type(old_node) == URIRef:
+                g.add((old_node, sp.externalIDFor, new_node))
 
-        for c in self.children:
-            c.generate_uris(g, var_bindings)
 
         return node_map.values()
+
     
     def query_one(self, id,filter_clause=""):
         ret = self.smart_type.query(one_name=id,filter_clause=filter_clause)
@@ -155,7 +169,7 @@ class RecordObject(object):
     def query_all(self, above_type=None, above_uri=None,filter_clause=""):
         atype = above_type and above_type.smart_type or None
         return self.smart_type.query(above_type=atype, above_uri=above_uri,filter_clause=filter_clause)
-    
+
 for t in api_types:
     RecordObject(t)
 

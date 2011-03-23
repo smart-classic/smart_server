@@ -28,12 +28,18 @@ for app,app_params in apps.iteritems():
     base_url = r["base_url"]
   
   if r["mode"] == "background" or r["mode"] == "helper":
+      admin_p = False
+      try:
+          admin_p =  app_params["admin_p"]
+      except: pass
+
       a = HelperApp.objects.create(
                        description = r["description"],
                        consumer_key = r["id"],
                        secret = 'smartapp-secret',
                        name =r["name"],
-                       email=r["id"])
+                       email=r["id"],
+                       admin_p = admin_p)
       
   elif r["mode"] == "ui":
       a = PHA.objects.create(

@@ -15,8 +15,13 @@ def sub(str, var, val):
 def LoadApp(app):
     # Some basic apps and a couple of accounts to get things going.
   print app
-  base_url = re.search("https?://.*?[/$]", app).group()[:-1]
-  s = urllib2.urlopen(app)
+  if not app.startswith("http"):
+      s = open(app)
+      base_url="unknown"
+  else:
+      base_url = re.search("https?://.*?[/$]", app).group()[:-1]
+      s = urllib2.urlopen(app)
+
   r = simplejson.loads(s.read())
 
   if ('base_url' not in locals()):
