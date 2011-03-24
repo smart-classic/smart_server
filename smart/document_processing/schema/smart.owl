@@ -1434,7 +1434,6 @@ In RDF/XML notation, a patient on oral amitriptyline 50 mg tablets might provide
   <api:category>record_items</api:category>
 </api:call>
 
-<!--
 <api:call>
   <api:description>Replace all demographics for a patient with a newly-supplied graph</api:description>
   <api:method>PUT</api:method>
@@ -1443,7 +1442,6 @@ In RDF/XML notation, a patient on oral amitriptyline 50 mg tablets might provide
   <api:by_internal_id>true</api:by_internal_id>
   <api:category>record_items</api:category>
 </api:call>
--->
 
 <api:call>
   <api:description>Add to demographics for a patient with a newly-supplied graph</api:description>

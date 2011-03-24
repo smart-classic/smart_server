@@ -16,3 +16,5 @@ def grant(happ, permset):
     permset.grant(get_record_tokens, None)
     permset.grant(download_ontology, None)
     permset.grant(record_search, [need_admin])
+    permset.grant(record_post_objects, [need_admin])
+    permset.grant(put_demographics, [need_admin])
