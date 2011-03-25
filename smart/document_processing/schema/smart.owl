@@ -1393,14 +1393,15 @@ In RDF/XML notation, a patient on oral amitriptyline 50 mg tablets might provide
 
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#externalID"/>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#medicalRecordNumber"/>
+                <owl:onClass rdf:resource="http://smartplatforms.org/terms#Code"/>
                 <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
                 <api:doc>
-					<rdf:Description>
-						<api:name>A person's external identifier, e.g. from another EMR system</api:name>
-						<api:description>RDF URI</api:description>
-					</rdf:Description>
-				</api:doc>
+		  <rdf:Description>
+		    <api:name>A person's external identifier, e.g. from another EMR system</api:name>
+		    <api:description>RDF sp:Code node</api:description>
+		  </rdf:Description>
+		</api:doc>
             </owl:Restriction>
         </rdfs:subClassOf>
 
