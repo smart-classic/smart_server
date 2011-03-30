@@ -36,9 +36,44 @@
 
 
 
+
+    <!-- http://smartplatforms.org/record -->
+<owl:Class rdf:about="http://smartplatforms.org/terms#MedicalRecord">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#hasMedicalDataElement"/>
+                <owl:onClass rdf:resource="http://smartplatforms.org/terms#MedicalDataElement"/>
+                <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
+                <api:doc>
+		  <rdf:Description>
+		    <api:name>A piece of medical data</api:name>
+		    <api:description>RDF MedicalDataElement node</api:description>
+		  </rdf:Description>
+		</api:doc>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+
+     <api:name>Medical Record</api:name>
+     <api:name_plural>Medical Records</api:name_plural>
+     <api:base_path>/records/{record_id}</api:base_path>
+     <api:description>Represents the root of a patient's medical record.</api:description>
+        <api:example rdf:datatype="http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral"><![CDATA[<?xml version="1.0" encoding="utf-8"?>]]></api:example>
+ </owl:Class>
+
+<owl:Class rdf:about="http://smartplatforms.org/terms#MedicalDataElement">
+     <api:name>Medical Data Element</api:name>
+     <api:name_plural>Medical Data Elements</api:name_plural>
+     <api:description>Parent class for medication, fulfillment, problem, demographics, etc.</api:description>
+        <api:example rdf:datatype="http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral"><![CDATA[<?xml version="1.0" encoding="utf-8"?>]]></api:example>
+ </owl:Class>
+
+
+
+
     <!-- http://smartplatforms.org/terms#AllergyException -->
     
     <owl:Class rdf:about="http://smartplatforms.org/terms#AllergyException">
+        <rdfs:subClassOf  rdf:resource="http://smartplatforms.org/terms#MedicalDataElement"/>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://smartplatforms.org/terms#exception"/>
@@ -110,6 +145,7 @@
     <!-- http://smartplatforms.org/terms#Allergy -->
     
     <owl:Class rdf:about="http://smartplatforms.org/terms#Allergy">
+        <rdfs:subClassOf  rdf:resource="http://smartplatforms.org/terms#MedicalDataElement"/>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://smartplatforms.org/terms#severity"/>
@@ -402,6 +438,7 @@ For instance, below are two allergies:  first, an allergy to the entire class of
     <!-- http://smartplatforms.org/terms#Alert -->
     
     <owl:Class rdf:about="http://smartplatforms.org/terms#Alert">
+        <rdfs:subClassOf  rdf:resource="http://smartplatforms.org/terms#MedicalDataElement"/>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://smartplatforms.org/terms#severity"/>
@@ -551,6 +588,7 @@ For instance, below are two allergies:  first, an allergy to the entire class of
     <!-- http://smartplatforms.org/terms#Fulfillment -->
 
     <owl:Class rdf:about="http://smartplatforms.org/terms#Fulfillment">
+        <rdfs:subClassOf  rdf:resource="http://smartplatforms.org/terms#MedicalDataElement"/>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://smartplatforms.org/terms#provider"/>
@@ -795,6 +833,7 @@ For instance, below are two allergies:  first, an allergy to the entire class of
     <!-- http://smartplatforms.org/terms#Medication -->
 
     <owl:Class rdf:about="http://smartplatforms.org/terms#Medication">
+        <rdfs:subClassOf  rdf:resource="http://smartplatforms.org/terms#MedicalDataElement"/>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://smartplatforms.org/terms#drugName"/>
@@ -1012,6 +1051,7 @@ In RDF/XML notation, a patient on oral amitriptyline 50 mg tablets might provide
     <!-- http://smartplatforms.org/terms#Note -->
 
     <owl:Class rdf:about="http://smartplatforms.org/terms#Note">
+        <rdfs:subClassOf  rdf:resource="http://smartplatforms.org/terms#MedicalDataElement"/>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://smartplatforms.org/terms#notes"/>
@@ -1161,6 +1201,7 @@ In RDF/XML notation, a patient on oral amitriptyline 50 mg tablets might provide
     <!-- http://smartplatforms.org/terms#Problem -->
 
     <owl:Class rdf:about="http://smartplatforms.org/terms#Problem">
+        <rdfs:subClassOf  rdf:resource="http://smartplatforms.org/terms#MedicalDataElement"/>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://smartplatforms.org/terms#notes"/>
@@ -1328,69 +1369,9 @@ In RDF/XML notation, a patient on oral amitriptyline 50 mg tablets might provide
 </api:call>
 
     <!-- http://smartplatforms.org/demographics -->
-    <owl:Class rdf:about="http://xmlns.com/foaf/0.1/Person">
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://xmlns.com/foaf/0.1/givenName"/>
-                <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
-                <api:doc>
-					<rdf:Description>
-						<api:name>A person's given, or first, name</api:name>
-						<api:description>Free text</api:description>
-					</rdf:Description>
-				</api:doc>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://xmlns.com/foaf/0.1/familyName"/>
-                <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
-                <api:doc>
-					<rdf:Description>
-						<api:name>A person's family, or last, name</api:name>
-						<api:description>Free text</api:description>
-					</rdf:Description>
-				</api:doc>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://xmlns.com/foaf/0.1/gender"/>
-                <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
-                <api:doc>
-					<rdf:Description>
-						<api:name>A person's gender</api:name>
-						<api:description>'male' or 'female'</api:description>
-					</rdf:Description>
-				</api:doc>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#zipcode"/>
-                <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
-                <api:doc>
-					<rdf:Description>
-						<api:name>A person's zip code</api:name>
-						<api:description>Free text</api:description>
-					</rdf:Description>
-				</api:doc>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#birthday"/>
-                <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
-                <api:doc>
-					<rdf:Description>
-						<api:name>A person's birth date</api:name>
-						<api:description>ISO-8601 string</api:description>
-					</rdf:Description>
-				</api:doc>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-
+<owl:Class rdf:about="http://smartplatforms.org/terms#Demographics">
+        <rdfs:subClassOf  rdf:resource="http://smartplatforms.org/terms#MedicalDataElement"/>
+        <rdfs:subClassOf  rdf:resource="http://xmlns.com/foaf/0.1/Person"/>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://smartplatforms.org/terms#medicalRecordNumber"/>
@@ -1399,7 +1380,7 @@ In RDF/XML notation, a patient on oral amitriptyline 50 mg tablets might provide
                 <api:doc>
 		  <rdf:Description>
 		    <api:name>A person's external identifier, e.g. from another EMR system</api:name>
-		    <api:description>RDF sp:Code node</api:description>
+		    <api:description>RDF Code node</api:description>
 		  </rdf:Description>
 		</api:doc>
             </owl:Restriction>
@@ -1413,15 +1394,21 @@ In RDF/XML notation, a patient on oral amitriptyline 50 mg tablets might provide
 <rdf:RDF
   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
   xmlns:sp="http://smartplatforms.org/terms#"
+  xmlns:dcterms="http://purl.org/dc/terms/"
   xmlns:foaf="http://xmlns.com/foaf/0.1/">
-   <rdf:Description rdf:about="http://smartplatforms.org/records/2000000008/demographics">
-     <rdf:type rdf:resource="http://xmlns.com/foaf/0.1/Person"/>
+   <sp:Demographics>
      <foaf:givenName>Bob</foaf:givenName>
      <foaf:familyName>Odenkirk</foaf:familyName>
      <foaf:gender>male</foaf:gender>
      <sp:zipcode>90001</sp:zipcode>
      <sp:birthday>1959-12-25</sp:birthday>
-   </rdf:Description>
+     <sp:medicalRecordNumber>
+       <sp:Code>
+	 <sp:system rdf:resource="http://my.hospital.org/" />
+	 <dcterms:identifier>2304575</dcterms:identifier>
+       </sp:Code>
+     </sp:medicalRecordNumbeR>
+   </sp:Demographics>
 </rdf:RDF>]]>
     </api:example>
  </owl:Class>
@@ -1430,16 +1417,16 @@ In RDF/XML notation, a patient on oral amitriptyline 50 mg tablets might provide
   <api:description>Get all demographics for a patient</api:description>
   <api:method>GET</api:method>
   <api:path>/records/{record_id}/demographics</api:path>
-  <api:target rdf:resource="http://xmlns.com/foaf/0.1/Person"/>
+  <api:target rdf:resource="http://smartplatforms.org/terms#Demographics"/>
   <api:by_internal_id>true</api:by_internal_id>
   <api:category>record_items</api:category>
 </api:call>
 
 <api:call>
-  <api:description>Replace all demographics for a patient with a newly-supplied graph</api:description>
-  <api:method>PUT</api:method>
-  <api:path>/records/{record_id}/demographics</api:path>
-  <api:target rdf:resource="http://xmlns.com/foaf/0.1/Person"/>
+  <api:description>Create a new medical record from the supplied graph</api:description>
+  <api:method>POST</api:method>
+  <api:path>/records/</api:path>
+  <api:target rdf:resource="http://smartplatforms.org/terms#MedicalRecord"/>
   <api:by_internal_id>true</api:by_internal_id>
   <api:category>record_items</api:category>
 </api:call>
@@ -1448,7 +1435,7 @@ In RDF/XML notation, a patient on oral amitriptyline 50 mg tablets might provide
   <api:description>Add to demographics for a patient with a newly-supplied graph</api:description>
   <api:method>POST</api:method>
   <api:path>/records/{record_id}/demographics</api:path>
-  <api:target rdf:resource="http://xmlns.com/foaf/0.1/Person"/>
+  <api:target rdf:resource="http://smartplatforms.org/terms#Demographics"/>
   <api:by_internal_id>true</api:by_internal_id>
   <api:category>record_items</api:category>
 </api:call>
@@ -2458,6 +2445,71 @@ No example yet.]]></api:example>
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
+
+
+    <owl:Class rdf:about="http://xmlns.com/foaf/0.1/Person">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://xmlns.com/foaf/0.1/givenName"/>
+                <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
+                <api:doc>
+					<rdf:Description>
+						<api:name>A person's given, or first, name</api:name>
+						<api:description>Free text</api:description>
+					</rdf:Description>
+				</api:doc>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://xmlns.com/foaf/0.1/familyName"/>
+                <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
+                <api:doc>
+					<rdf:Description>
+						<api:name>A person's family, or last, name</api:name>
+						<api:description>Free text</api:description>
+					</rdf:Description>
+				</api:doc>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://xmlns.com/foaf/0.1/gender"/>
+                <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
+                <api:doc>
+					<rdf:Description>
+						<api:name>A person's gender</api:name>
+						<api:description>'male' or 'female'</api:description>
+					</rdf:Description>
+				</api:doc>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#zipcode"/>
+                <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
+                <api:doc>
+					<rdf:Description>
+						<api:name>A person's zip code</api:name>
+						<api:description>Free text</api:description>
+					</rdf:Description>
+				</api:doc>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#birthday"/>
+                <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
+                <api:doc>
+					<rdf:Description>
+						<api:name>A person's birth date</api:name>
+						<api:description>ISO-8601 string</api:description>
+					</rdf:Description>
+				</api:doc>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+</owl:Class>
 
 <api:call>
   <api:description>Get a single lab result</api:description>

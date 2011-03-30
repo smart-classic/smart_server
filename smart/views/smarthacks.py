@@ -247,16 +247,14 @@ def download_ontology(request, **kwargs):
 # hook to build in demographics-specific behavior: 
 # if a record doesn't exist, create it before adding
 # demographic data
-@CallMapper.register(method="PUT",
+@CallMapper.register(method="POST",
                      category="record_items",
-                     target="http://xmlns.com/foaf/0.1/Person")
-def put_demographics(request, record_id, obj, **kwargs):
-  try:
-    Record.objects.get(id=record_id)
-  except:
+                     target="http://smartplatforms.org/terms#MedicalRecord")
+def put_demographics(request, *args, **kwargs):
+    obj = RecordObject["http://smartplatforms.org/terms#MedicalRecord"]
+    record_id = "".join([str(random.randint(0,9)) for x in range(12)])
     Record.objects.create(id=record_id)
-  record_delete_object(request, record_id, obj, **kwargs)
-  return record_post_objects(request, record_id, obj, **kwargs)
+    return record_post_objects(request, record_id, obj, **kwargs)
 
 
 def debug_oauth(request, **kwargs):

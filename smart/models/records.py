@@ -33,7 +33,6 @@ class Record(Object):
     } WHERE {
         <http://smartplatforms.org/records/$who/demographics> ?p ?o.
     }""").substitute(who=self.id)
-
     return q
 
   def get_demographic_rdf(self):
@@ -49,8 +48,8 @@ class Record(Object):
 
     # for each person, look up their demographics object.
     from smart.models.record_object import RecordObject
-    people = m.triples((None, rdf['type'], foaf['Person']))
-    pobj = RecordObject["http://xmlns.com/foaf/0.1/Person"] 
+    people = m.triples((None, rdf['type'], sp.Demographics))
+    pobj = RecordObject[sp.Demographics] 
 
     return_graph = bound_graph()
     for person in people:
@@ -64,10 +63,12 @@ class Record(Object):
       # Pull out demographics
       p_uri = p.n3() # subject URI
       p_subgraph = parse_rdf(c.sparql(pobj.query_one(p_uri)))
-
+      print "subq: " , pobj.query_one(p_uri)
+      print "subgraph: ", serialize_rdf(p_subgraph)
+      
       # Append to search result graph
       return_graph += p_subgraph
-
+    print "got", serialize_rdf(return_graph)
     return serialize_rdf(return_graph)
 
   @classmethod
@@ -75,7 +76,7 @@ class Record(Object):
     m = parse_rdf(res)
     
     print "Got", res
-    people = m.triples((None, rdf['type'], foaf['Person']))
+    people = m.triples((None, rdf['type'], sp.Demographics))
     record_list = []
     for p in people:
         record = Record()

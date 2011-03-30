@@ -2,6 +2,7 @@ from smart.models.rdf_store import *
 from smart.models.records import *
 from smart.lib.utils import *
 from graph_augmenter import augment_data
+
 import re
 
 def record_get_object(request, record_id, obj,  **kwargs):
@@ -44,19 +45,25 @@ def record_post_objects(request, record_id, obj, above_obj=None, **kwargs):
 
     g = parse_rdf(request.raw_post_data)
     var_bindings = obj.path_var_bindings(path)
+
+    if "record_id" in var_bindings:
+        assert var_bindings['record_id'] == record_id, "Mismatched: %s vs. %s"%(record_id, var_bindings['record_id'])
+    else:
+        var_bindings['record_id'] = record_id
+
     new_uris = obj.generate_uris(g, c, var_bindings)
 
     if (above_obj != None):
         pred = above_obj.smart_type.predicate_for_contained_type(obj.smart_type)
         assert pred != None, "Can't derive the predicate for adding %s below %s."%(obj.type, above_obj.type)
         for new_node in new_uris:
-            above_node = URIRef(smart_path(smart_parent(request.path)))
-            g.add((above_node, 
-                     pred, 
-                     new_node))
+            if get_property(g, new_node, rdf.type) == obj.node:
+                above_node = URIRef(smart_path(smart_parent(request.path)))
+                g.add((above_node, 
+                       pred, 
+                       new_node))
 
-
-    augment_data(g)
+    augment_data(g, var_bindings, new_uris)
     return rdf_post(c, g)    
 
 def record_put_object(request, record_id, obj, above_obj=None, **kwargs):

@@ -3,7 +3,6 @@ from django.conf import settings
 from smart.common.rdf_ontology import api_types, api_calls, ontology
 from rdf_rest_operations import *
 from smart.common.util import remap_node, parse_rdf, get_property, LookupType, URIRef, sp, rdf, default_ns
-from graph_augmenter import augment_data
 from ontology_url_patterns import CallMapper, BasicCallMapper
 
 class RecordObject(object):
@@ -91,7 +90,8 @@ class RecordObject(object):
         var_values = {}
   
         for i,v in enumerate(var_names):
-            var_values[v] = matches[i]
+            if matches[i] != "":
+                var_values[v] = matches[i]
   
         return var_values
     

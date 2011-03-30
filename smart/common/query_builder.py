@@ -56,7 +56,11 @@ class QueryBuilder(object):
 
     def build(self, root_name=None, root_type=None, depth=0):
         ret = ""
-        
+
+        # If we're at the root of a record, don't try to expand ALL data.
+        if depth>0 and root_type.node.n3() == "<http://smartplatforms.org/terms#MedicalRecord>":
+            return ret
+
         # Recursion starting off:  set initial conditions (if any).
         if root_type == None:
             root_name = self.root_name
@@ -64,7 +68,6 @@ class QueryBuilder(object):
             ret = " ".join(self.triples_created)
 
         # If there's a type, it must be the root_type
-        type_id = self.get_identifier("?rdftype", "object")
         ret += self.required_triple(root_name, "rdf:type", root_type.node.n3())
 
         for p in root_type.properties:
