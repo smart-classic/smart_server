@@ -1,4 +1,4 @@
-from bootstrap_utils import interpolated_postgres_load, put_rdf
+from bootstrap_utils import interpolated_postgres_load
 import os
 from django.conf import settings
 from smart.models import *
