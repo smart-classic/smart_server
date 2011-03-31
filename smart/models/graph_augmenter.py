@@ -37,6 +37,7 @@ def augment_data(g, var_bindings, new_nodes):
         if (n == recordURI): continue # don't assert that the record has itself as an element
 
         g.add((recordURI, sp.hasMedicalDataElement, n))
+        g.add((recordURI, rdf.type, sp.MedicalRecord))
 
 
 code_map = [

@@ -2090,7 +2090,7 @@ No example yet.]]></api:example>
 
     <!-- http://smartplatforms.org/terms#QuantitativeResult -->
 
-    <owl:Class rdf:about="http://smartplatforms.org/terms#QuantitativeValue">
+    <owl:Class rdf:about="http://smartplatforms.org/terms#QuantitativeResult">
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://smartplatforms.org/terms#value"/>

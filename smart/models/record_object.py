@@ -31,11 +31,7 @@ class RecordObject(object):
     @classmethod
     def register_type(cls, smart_type, robj):
         cls.known_types_dict[smart_type.node] = robj
-        
-    @property
-    def children(self):
-        return [RecordObject[x.node]  for x in self.smart_type.contained_types.values()]
-        
+                
     @property
     def properties(self):
         return [x.property for x in self.smart_type.properties]
@@ -139,7 +135,6 @@ class RecordObject(object):
                     
         # If we got here, we need to remap the node "s".
         if full_path == None:
-            print "didn't exist before"
             full_path = t.determine_full_path(var_bindings)
         return full_path
 
@@ -152,7 +147,6 @@ class RecordObject(object):
             new_node = self.determine_remap_target(g,c,s, var_bindings)
             if new_node: node_map[s] = new_node
 
-        print "remapping", node_map
         for (old_node, new_node) in node_map.iteritems():
             remap_node(g, old_node, new_node)
             if type(old_node) == URIRef:
@@ -272,4 +266,3 @@ def record_get_allergies(request, *args, **kwargs):
       parse_rdf(mae, model=m)
 
       return rdf_response(serialize_rdf(m))
-

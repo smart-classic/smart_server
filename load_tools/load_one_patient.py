@@ -42,7 +42,7 @@ class RecordImporter(object):
         if t.base_path == None: return
         ro = RecordObject[t.node]    
         var_bindings = {'record_id': self.target_id}
-        r = ro.generate_uris(self.data, var_bindings)
+        r = ro.generate_uris(self.data, None, var_bindings)
     
     @staticmethod
     def add_all(connector, model):

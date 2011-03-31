@@ -129,8 +129,10 @@ class SMArtType(SMArtOwlObject):
 
         for r in self.restrictions:
             if r.on_class:
-                self.contained_types[r.property] = SMArtType.get_or_create(model, r.on_class, calls)
-                self.contained_types[r.property].containing_types[self] = r.property
+                t = self.contained_types.setdefault(r.property, [])
+                c = SMArtType.get_or_create(model, r.on_class, calls)
+                c.containing_types[self] = r.property
+                t.append(c)
             else:
                 self.properties.append(r)
         
@@ -172,6 +174,7 @@ class SMArtType(SMArtOwlObject):
         ret = ret.replace("$construct_triples", q.construct_triples())
         ret = ret.replace("$query_triples", b)        
         ret = ret.replace("$filter_clause", filter_clause)        
+#        print ret
         return ret
                  
 parsed = False

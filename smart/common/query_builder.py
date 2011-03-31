@@ -83,12 +83,13 @@ class QueryBuilder(object):
 
         # We'll traverse + recurse down *only* from the top of the hierarchy
         # OR if we're dealing with "core" (i.e. blank-node, i.e. non-GETtable) resources.
-        for pred, contained in root_type.contained_types.iteritems():
-            if depth > 0 and contained.base_path: continue
+        for pred, contained_list in root_type.contained_types.iteritems():
+            for contained in contained_list:
+                if depth > 0 and contained.base_path: continue
 
-            p = str(pred)
-            oid = self.get_identifier("?"+p, "object")
-            ret += self.optional_linked_type(linked_type=contained, 
+                p = str(pred)
+                oid = self.get_identifier("?"+p, "object")
+                ret += self.optional_linked_type(linked_type=contained, 
                                              root_name=root_name,
                                              predicate="<"+p+">", 
                                              object=oid, 
