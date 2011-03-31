@@ -4,6 +4,7 @@ from smart.common.rdf_ontology import api_types, api_calls, ontology
 from rdf_rest_operations import *
 from smart.common.util import remap_node, parse_rdf, get_property, LookupType, URIRef, sp, rdf, default_ns
 from ontology_url_patterns import CallMapper, BasicCallMapper
+from graph_augmenter import augment_data
 
 class RecordObject(object):
     __metaclass__ = LookupType
@@ -155,7 +156,10 @@ class RecordObject(object):
 
         return node_map.values()
 
-    
+    def prepare_graph(self, g, c, var_bindings=None):
+        new_uris = self.generate_uris(g, c, var_bindings)
+        augment_data(g, var_bindings, new_uris)
+
     def query_one(self, id,filter_clause=""):
         ret = self.smart_type.query(one_name=id,filter_clause=filter_clause)
         return ret

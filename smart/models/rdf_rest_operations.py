@@ -1,7 +1,6 @@
 from smart.models.rdf_store import *
 from smart.models.records import *
 from smart.lib.utils import *
-from graph_augmenter import augment_data
 
 import re
 
@@ -51,7 +50,7 @@ def record_post_objects(request, record_id, obj, above_obj=None, **kwargs):
     else:
         var_bindings['record_id'] = record_id
 
-    new_uris = obj.generate_uris(g, c, var_bindings)
+    new_uris = obj.prepare_graph(g, c, var_bindings)
 
     if (above_obj != None):
         pred = above_obj.smart_type.predicate_for_contained_type(obj.smart_type)

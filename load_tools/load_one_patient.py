@@ -1,6 +1,6 @@
 from smart.models.rdf_store import TemporaryStoreConnector, RecordStoreConnector
 from smart.models.record_object import api_types, Record, RecordObject
-from smart.common.util import parse_rdf, serialize_rdf, remap_node, bound_graph, URIRef, BNode
+from smart.common.util import parse_rdf, serialize_rdf, remap_node, bound_graph, URIRef, BNode, sp
 from django.conf import settings
 import sys
 
@@ -20,11 +20,11 @@ class RecordImporter(object):
         self.data = parse_rdf(open(filename).read())
 
         # 1. For each known data type, extract relevant nodes
-        for t in api_types:
-            self.import_one_type(t)
-
+        var_bindings = {'record_id': self.target_id}
+        ro = RecordObject[sp.MedicalDataElement]    
+        ro.prepare_graph(self.data, None, var_bindings)
             
-        # 4. Copy extracted nodes to permanent RDF store
+        # 2. Copy extracted nodes to permanent RDF store
         self.write_to_record()
      
     def write_to_record(self):
@@ -38,12 +38,6 @@ class RecordImporter(object):
             print "adds: ",len(rconn.pending_adds)
             rconn.execute_transaction()
         
-    def import_one_type(self, t):
-        if t.base_path == None: return
-        ro = RecordObject[t.node]    
-        var_bindings = {'record_id': self.target_id}
-        r = ro.generate_uris(self.data, None, var_bindings)
-    
     @staticmethod
     def add_all(connector, model):
         for a in model:
