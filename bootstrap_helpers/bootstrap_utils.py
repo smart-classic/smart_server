@@ -1,6 +1,5 @@
 import os
 import subprocess
-import RDF
 from smart.lib.utils import url_request
 
 def interpolated_postgres_load(source_file, interpolations, db, user):
@@ -20,6 +19,3 @@ def interpolated_postgres_load(source_file, interpolations, db, user):
     pr.communicate()
 
     os.remove("postgres_load_temp")
-
-def put_rdf(url, data):
-    return url_request(url, 'PUT', {"Content-type": "application/rdf+xml"}, data)
