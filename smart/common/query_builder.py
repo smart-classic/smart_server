@@ -73,7 +73,13 @@ class QueryBuilder(object):
         for p in root_type.properties:
             p = str(p.property)
             oid = self.get_identifier("?"+p, "object")
-            ret  += self.optional_triple(root_name, "<"+p+">", oid)
+            # a special case for the rdf:li predicate, which resolves
+            # to _+*any* valid number
+            if p == "http://www.w3.org/1999/02/22-rdf-syntax-ns#li":
+                ret  += self.optional_triple(root_name, self.get_identifier("?listitem", "predicate"), oid)
+            else:
+                ret  += self.optional_triple(root_name, "<"+p+">", oid)
+
 
         # We'll traverse + recurse down *only* from the top of the hierarchy
         # OR if we're dealing with "core" (i.e. blank-node, i.e. non-GETtable) resources.

@@ -1690,20 +1690,8 @@ No example yet.]]></api:example>
 				</api:doc>
             </owl:Restriction>
         </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#qualitativeResult"/>
-                <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
-                <owl:onClass rdf:resource="http://smartplatforms.org/terms#QualitativeResult"/>
-                <api:doc>
-					<rdf:Description>
-						<api:name>Qualitative result, if any</api:name>
-						<api:description>RDF QualitativeResult node</api:description>
-					</rdf:Description>
-				</api:doc>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
+
+         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://smartplatforms.org/terms#quantitativeResult"/>
                 <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
@@ -1716,13 +1704,55 @@ No example yet.]]></api:example>
 				</api:doc>
             </owl:Restriction>
         </rdfs:subClassOf>
+
+         <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#nominalResult"/>
+                <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
+                <owl:onClass rdf:resource="http://smartplatforms.org/terms#NominalResult"/>
+                <api:doc>
+					<rdf:Description>
+						<api:name>Nominal result, if any</api:name>
+						<api:description>RDF NominalResult node</api:description>
+					</rdf:Description>
+				</api:doc>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+         <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#narrativeResult"/>
+                <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
+                <owl:onClass rdf:resource="http://smartplatforms.org/terms#NarrativeResult"/>
+                <api:doc>
+					<rdf:Description>
+						<api:name>Narrative result, if any</api:name>
+						<api:description>RDF NarrativeResult node</api:description>
+					</rdf:Description>
+				</api:doc>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+
+         <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#ordinalResult"/>
+                <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
+                <owl:onClass rdf:resource="http://smartplatforms.org/terms#OrdinalResult"/>
+                <api:doc>
+					<rdf:Description>
+						<api:name>Ordinal result, if any</api:name>
+						<api:description>RDF OrdinalResult node</api:description>
+					</rdf:Description>
+				</api:doc>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#externalID"/>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#accessionNumber"/>
                 <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
                 <api:doc>
 					<rdf:Description>
-						<api:name>External ID for a lab result, e.g. an accession number</api:name>
+						<api:name>External accession number for a lab result</api:name>
 						<api:description>Free Text</api:description>
 					</rdf:Description>
 				</api:doc>
@@ -1838,7 +1868,7 @@ No example yet.]]></api:example>
             </sp:ValueAndUnit>
           </sp:valueAndUnit>
           <sp:normalRange>
-             <sp:ResultRange>
+             <sp:ValueRange>
               <sp:minimum>
                 <sp:ValueAndUnit>
                    <sp:value>135</sp:value>
@@ -1851,10 +1881,10 @@ No example yet.]]></api:example>
                    <sp:unit>mEq/L</sp:unit>
                 </sp:ValueAndUnit>
               </sp:maximum>
-             </sp:ResultRange>
+             </sp:ValueRange>
           </sp:normalRange>
           <sp:nonCriticalRange>
-             <sp:ResultRange>
+             <sp:ValueRange>
               <sp:minimum>
                 <sp:ValueAndUnit>
                    <sp:value>120</sp:value>
@@ -1867,7 +1897,7 @@ No example yet.]]></api:example>
                    <sp:unit>mEq/L</sp:unit>
                 </sp:ValueAndUnit>
               </sp:maximum>
-             </sp:ResultRange>
+             </sp:ValueRange>
           </sp:nonCriticalRange>
         </sp:QuantitativeResult>
       </sp:quantitativeResult>
@@ -1980,7 +2010,7 @@ No example yet.]]></api:example>
 
     <!-- http://smartplatforms.org/terms#QuantitativeResult -->
 
-    <owl:Class rdf:about="http://smartplatforms.org/terms#QualitativeResult">
+    <owl:Class rdf:about="http://smartplatforms.org/terms#NarrativeResult">
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://smartplatforms.org/terms#value"/>
@@ -1993,27 +2023,77 @@ No example yet.]]></api:example>
 				</api:doc>
             </owl:Restriction>
         </rdfs:subClassOf>
+    </owl:Class>
+
+    <owl:Class rdf:about="http://smartplatforms.org/terms#NominalResult">
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#enumerationOption"/>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#value"/>
                 <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
                 <api:doc>
 					<rdf:Description>
-						<api:name>A value that could have applied for this result (e.g. to build an enumeration of possible result values)</api:name>
+						<api:name>Value</api:name>
 						<api:description>Free Text</api:description>
 					</rdf:Description>
 				</api:doc>
             </owl:Restriction>
         </rdfs:subClassOf>
+
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#nominalOptions"/>
+                <owl:onClass rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Bag" />
+                <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
+                <api:doc>
+		  <rdf:Description>
+			<api:name>An unordered set of values that could have applied for this result (e.g. to build an enumeration of possible result values)</api:name>
+				<api:description>Free Text</api:description>
+		  </rdf:Description>
+		</api:doc>
+            </owl:Restriction>
+        </rdfs:subClassOf>
     </owl:Class>
+
+
+
+    <owl:Class rdf:about="http://smartplatforms.org/terms#OrdinalResult">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#value"/>
+                <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
+                <api:doc>
+					<rdf:Description>
+						<api:name>Value</api:name>
+						<api:description>Free Text</api:description>
+					</rdf:Description>
+				</api:doc>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#ordinalOptions"/>
+                <owl:onClass rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq" />
+                <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
+                <api:doc>
+		  <rdf:Description>
+			<api:name>An ordered set of values that could have applied for this result (e.g. to build an enumeration of possible result values)</api:name>
+				<api:description>Free Text</api:description>
+		  </rdf:Description>
+		</api:doc>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+
+
 
 
     <!-- http://smartplatforms.org/terms#QuantitativeResult -->
 
-    <owl:Class rdf:about="http://smartplatforms.org/terms#QuantitativeResult">
+    <owl:Class rdf:about="http://smartplatforms.org/terms#QuantitativeValue">
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#valueAndUnit"/>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#value"/>
                 <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
                 <owl:onClass rdf:resource="http://smartplatforms.org/terms#ValueAndUnit"/>
                 <api:doc>
@@ -2024,15 +2104,45 @@ No example yet.]]></api:example>
 				</api:doc>
             </owl:Restriction>
         </rdfs:subClassOf>
+
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#value"/>
+                <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
+                <owl:onClass rdf:resource="http://smartplatforms.org/terms#ValueRange"/>
+                <api:doc>
+					<rdf:Description>
+						<api:name>Value and unit</api:name>
+						<api:description>RDF ValueAndUnit node</api:description>
+					</rdf:Description>
+				</api:doc>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#value"/>
+                <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
+                <owl:onClass rdf:resource="http://smartplatforms.org/terms#ValueRatio"/>
+                <api:doc>
+					<rdf:Description>
+						<api:name>Value and unit</api:name>
+						<api:description>RDF ValueAndUnit node</api:description>
+					</rdf:Description>
+				</api:doc>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+
+
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://smartplatforms.org/terms#normalRange"/>
                 <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
-                <owl:onClass rdf:resource="http://smartplatforms.org/terms#ResultRange"/>
+                <owl:onClass rdf:resource="http://smartplatforms.org/terms#ValueRange"/>
                 <api:doc>
 					<rdf:Description>
 						<api:name>Normal range for result</api:name>
-						<api:description>RDF ResultRange node</api:description>
+						<api:description>RDF ValueRange node</api:description>
 					</rdf:Description>
 				</api:doc>
             </owl:Restriction>
@@ -2041,11 +2151,11 @@ No example yet.]]></api:example>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://smartplatforms.org/terms#nonCriticalRange"/>
                 <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
-                <owl:onClass rdf:resource="http://smartplatforms.org/terms#ResultRange"/>
+                <owl:onClass rdf:resource="http://smartplatforms.org/terms#ValueRange"/>
                 <api:doc>
 					<rdf:Description>
 						<api:name>Non-critical range for result</api:name>
-						<api:description>RDF ResultRange node</api:description>
+						<api:description>RDF ValueRange node</api:description>
 					</rdf:Description>
 				</api:doc>
             </owl:Restriction>
@@ -2081,9 +2191,9 @@ No example yet.]]></api:example>
         </rdfs:subClassOf>
     </owl:Class>
 
-    <!-- http://smartplatforms.org/terms#ResultRange -->
+    <!-- http://smartplatforms.org/terms#ValueRange -->
 
-    <owl:Class rdf:about="http://smartplatforms.org/terms#ResultRange">
+    <owl:Class rdf:about="http://smartplatforms.org/terms#ValueRange">
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://smartplatforms.org/terms#minimum"/>
@@ -2111,6 +2221,38 @@ No example yet.]]></api:example>
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
+
+    <!-- http://smartplatforms.org/terms#ValueRatio -->
+
+    <owl:Class rdf:about="http://smartplatforms.org/terms#ValueRatio">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#numerator"/>
+                <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
+                <owl:onClass rdf:resource="http://smartplatforms.org/terms#ValueAndUnit"/>
+                <api:doc>
+					<rdf:Description>
+						<api:name>Numerator value</api:name>
+						<api:description>Numerical value</api:description>
+					</rdf:Description>
+				</api:doc>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#denominator"/>
+                <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
+                <owl:onClass rdf:resource="http://smartplatforms.org/terms#ValueAndUnit"/>
+                <api:doc>
+					<rdf:Description>
+						<api:name>Denominator value</api:name>
+						<api:description>Numerical value</api:description>
+					</rdf:Description>
+				</api:doc>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+
 
     <!-- http://smartplatforms.org/terms#Attribution -->
 
@@ -2445,6 +2587,39 @@ No example yet.]]></api:example>
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
+
+
+
+    <owl:Class rdf:about="http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#li"/>
+                <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
+                <api:doc>
+					<rdf:Description>
+						<api:name>A list item</api:name>
+						<api:description>Free text</api:description>
+					</rdf:Description>
+				</api:doc>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+</owl:Class>
+
+    <owl:Class rdf:about="http://www.w3.org/1999/02/22-rdf-syntax-ns#Bag">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#li"/>
+                <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
+                <api:doc>
+					<rdf:Description>
+						<api:name>A list item</api:name>
+						<api:description>Free text</api:description>
+					</rdf:Description>
+				</api:doc>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+</owl:Class>
+
 
 
     <owl:Class rdf:about="http://xmlns.com/foaf/0.1/Person">
