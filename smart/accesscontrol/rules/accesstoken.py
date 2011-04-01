@@ -4,7 +4,7 @@ Rules for Accounts
 
 from smart.views import *
 from smart.models.rdf_rest_operations import *
-from smart.models.record_object import record_get_filtered_labs, record_get_allergies
+from smart.models.record_object import *
 
 try:
     from smart.plugins import *  
@@ -44,6 +44,7 @@ def grant(accesstoken, permset):
         pass
     
     permset.grant(put_demographics, [check_token_for_record])
+    permset.grant(record_post_alert, [check_token_for_record])
     permset.grant(user_search)
     permset.grant(user_get)
     

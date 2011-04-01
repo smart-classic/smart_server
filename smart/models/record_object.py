@@ -259,3 +259,16 @@ def record_get_allergies(request, *args, **kwargs):
 
       return rdf_response(serialize_rdf(m))
 
+
+
+@CallMapper.register(category="record_item",
+                     method="POST",
+                     target="http://smartplatforms.org/terms#Alert")
+def record_post_alert(request, *args, **kwargs):
+      record_id = kwargs['record_id']
+      r = Record.objects.get(id=record_id)
+      app = request.principal.share.with_app
+
+      RecordAlert.from_rdf(request.raw_post_data, r, app)
+      return rdf_response(request.raw_post_data)
+

@@ -1,18 +1,18 @@
 """
-Records for SMArt bootstrap
+Records for SMART Reference EMR
 
-Ben Adida
+Ben Adida & Josh Mandel
 """
 
 from base import *
 from django.utils import simplejson
-from smart.common.util import rdf, foaf, sp, serialize_rdf, parse_rdf
+from smart.common.util import rdf, foaf, sp, serialize_rdf, parse_rdf, Namespace
 from smart.lib import utils
 from smart.models.apps import *
 from smart.models.accounts import *
 from smart.models.rdf_store import DemographicConnector
 from string import Template
-import re
+import re, datetime
 
 class Record(Object):
   Meta = BaseMeta()
@@ -27,7 +27,7 @@ class Record(Object):
     q = Template("""
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
     PREFIX foaf:   <http://xmlns.com/foaf/0.1/>
-    PREFIX sp: <http://smartplatforms.org/>
+    PREFIX sp: <http://smartplatforms.org/terms#>
     CONSTRUCT  {
         <http://smartplatforms.org/records/$who/demographics> ?p ?o.
     } WHERE {
@@ -79,3 +79,50 @@ class AccountApp(Object):
   class Meta:
     app_label = APP_LABEL
     unique_together = (('account', 'app'),)
+
+
+class RecordAlert(Object):
+  record=models.ForeignKey(Record)
+  alert_text =  models.TextField(null=False)
+  alert_time = models.DateTimeField(auto_now_add=True, null=False)
+  triggering_app = models.ForeignKey('OAuthApp', null=False, related_name='alerts')
+  acknowledged_by = models.ForeignKey('Account', null=True)
+  acknowledged_at = models.DateTimeField(null=True)
+
+  # uniqueness
+  class Meta:
+    app_label = APP_LABEL
+  
+  @classmethod
+  def from_rdf(cls, rdfstring, record, app):
+    s = parse_rdf(rdfstring)
+
+    q = """
+    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    PREFIX sp: <http://smartplatforms.org/terms#>
+    SELECT ?notes ?severity
+    WHERE {
+          ?a rdf:type sp:Alert.
+          ?a sp:notes ?notes.
+          ?a sp:severity ?scv.
+          ?scv sp:code ?severity.
+    }"""
+
+    r = list(s.query(q))
+    assert len(r) == 1, "Expected one alert in post, found %s"%len(r)
+    (notes, severity) = r[0]
+
+    assert type(notes) == Literal
+    spcodes = Namespace("http://smartplatforms.org/terms/code/alertLevel#")
+    assert severity in [spcodes.information, spcodes.warning, spcodes.critical]
+
+    a = RecordAlert(record=record, 
+                    alert_text=str(notes), 
+                    triggering_app=app)
+    a.save()
+    return a
+
+  def acknowledge(self, account):
+    self.acknowledged_by =  account
+    self.acknowledged_at = datetime.datetime.now()
+    self.save()

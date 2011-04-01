@@ -435,19 +435,6 @@ For instance, below are two allergies:  first, an allergy to the entire class of
 				</api:doc>
             </owl:Restriction>
         </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#acknowledged"/>
-                <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
-                <owl:onClass rdf:resource="http://smartplatforms.org/terms#Attribution"/>
-				<api:doc>
-					<rdf:Description>
-						<api:name>Attribution for who acknowledged this alert, and when.</api:name>
-						<api:description>RDF Attribution node</api:description>
-					</rdf:Description>
-				</api:doc>
-            </owl:Restriction>
-        </rdfs:subClassOf>
 
         <rdfs:subClassOf>
             <owl:Restriction>
@@ -473,47 +460,16 @@ For instance, below are two allergies:  first, an allergy to the entire class of
   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
   xmlns:sp="http://smartplatforms.org/terms#">
 <sp:Alert>
-  <sp:notes>Critical lab value:  serum sodium 109 mEq/L</sp:notes>
+  <sp:notes>Patient with T2DM is overdue for HbA1c</sp:notes>
   <sp:severity>
         <sp:CodedValue>
-          <sp:code>
-            <sp:Code  rdf:about="http://smartplatforms.org/terms/code/alertLevel#critical">
-              <sp:system rdf:resource="http://smartplatforms.org/terms/code/alertLevel#" />
-              <dcterms:identifier>critical</dcterms:identifier>
-            </sp:Code>
-          </sp:code>
-          <dcterms:title>Critical</dcterms:title>
+          <sp:code rdf:resource="http://smartplatforms.org/terms/code/alertLevel#warning"/>
+          <dcterms:title>Warning</dcterms:title>
         </sp:CodedValue>
   </sp:severity>
-      <sp:created>
-        <sp:Attribution>
-          <sp:startTime>2011-03-11T12:05:00</sp:startTime>
-          <sp:participant>
-             <sp:Participant rdf:about="mailto:lab-alerts@apps.smartplatforms.org"/>
-          </sp:participant>
-        </sp:Attribution>
-      </sp:created>
 </sp:Alert>
 </rdf:RDF>]]></api:example>
-    </owl:Class>
-
-<api:call>
-  <api:description>Get all alerts</api:description>
-  <api:method>GET</api:method>
-  <api:path>/records/{record_id}/alerts/</api:path>
-  <api:target rdf:resource="http://smartplatforms.org/terms#Alert"/>
-  <api:by_internal_id>true</api:by_internal_id>
-  <api:category>record_items</api:category>
-</api:call>
-
-<api:call>
-  <api:description>Get one alert</api:description>
-  <api:method>GET</api:method>
-  <api:path>/records/{record_id}/alerts/{alert_id}</api:path>
-  <api:target rdf:resource="http://smartplatforms.org/terms#Alert"/>
-  <api:by_internal_id>true</api:by_internal_id>
-  <api:category>record_item</api:category>
-</api:call>
+</owl:Class>
 
 <api:call>
   <api:description>Add a single alert</api:description>
@@ -522,29 +478,6 @@ For instance, below are two allergies:  first, an allergy to the entire class of
   <api:target rdf:resource="http://smartplatforms.org/terms#Alert"/>
   <api:by_internal_id>true</api:by_internal_id>
   <api:category>record_item</api:category>
-</api:call>
-
-<api:call>
-  <api:description>Append an acknowledgement as an update to an existing alert</api:description>
-  <api:method>POST</api:method>
-  <api:path>/records/{record_id}/alerts/{alert_id}</api:path>
-  <api:target rdf:resource="http://smartplatforms.org/terms#Alert"/>
-  <api:by_internal_id>true</api:by_internal_id>
-  <api:category>record_items</api:category>
-  <api:example rdf:datatype="http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
-<rdf:RDF
-  xmlns:dcterms="http://purl.org/dc/terms/"
-  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-  xmlns:sp="http://smartplatforms.org/terms#">
-
-<rdf:Description rdf:about="URI of existing alert">
-      <sp:acknowledged>
-        <sp:Attribution>
-          <sp:startTime>2011-03-12T09:00:00</sp:startTime>
-        </sp:Attribution>
-      </sp:acknowledged>
-</rdf:Description>
-</rdf:RDF>]]></api:example>
 </api:call>
 
 

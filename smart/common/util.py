@@ -3,6 +3,12 @@ from rdflib import Namespace, URIRef, Literal, BNode
 from StringIO import StringIO as sIO
 
 
+rdflib.plugin.register('sparql', rdflib.query.Processor,
+                       'rdfextras.sparql.processor', 'Processor')
+
+rdflib.plugin.register('sparql', rdflib.query.Result,
+                       'rdfextras.sparql.query', 'SPARQLQueryResult')
+
 rdf = Namespace('http://www.w3.org/1999/02/22-rdf-syntax-ns#')
 rdfs = Namespace('http://www.w3.org/2000/01/rdf-schema#')
 owl = Namespace('http://www.w3.org/2002/07/owl#')
