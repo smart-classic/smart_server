@@ -62,7 +62,6 @@ def record_post_objects(request, record_id, obj, above_obj=None, **kwargs):
                        pred, 
                        new_node))
 
-    augment_data(g, var_bindings, new_uris)
     return rdf_post(c, g)    
 
 def record_put_object(request, record_id, obj, above_obj=None, **kwargs):

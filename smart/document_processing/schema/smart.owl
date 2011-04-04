@@ -585,6 +585,162 @@ For instance, below are two allergies:  first, an allergy to the entire class of
 </api:call>
 
 
+    <!-- http://smartplatforms.org/terms#Encounter -->
+    
+    <owl:Class rdf:about="http://smartplatforms.org/terms#Encounter">
+        <rdfs:subClassOf  rdf:resource="http://smartplatforms.org/terms#MedicalDataElement"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#encounterType"/>
+                <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
+                <owl:onClass rdf:resource="http://smartplatforms.org/terms#CodedValue"/>
+				<api:doc>
+					<rdf:Description>
+						<api:name>Type of encounter</api:name>
+							<api:description rdf:datatype="http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral"><![CDATA[RDF CodedValue node where code is drawn from the following:
+
+							Code=http://smartplatforms.org/terms/code/encounterType#ambulatory, Title="Ambulatory encounter"
+
+							Code=http://smartplatforms.org/terms/code/encounterType#emergency, Title="Emergency encounter"
+
+							Code=http://smartplatforms.org/terms/code/encounterType#field, Title="Field encounter"
+
+							Code=http://smartplatforms.org/terms/code/encounterType#home, Title="Home encounter"
+
+							Code=http://smartplatforms.org/terms/code/encounterType#inpatient, Title="Inpatient encounter"
+
+							Code=http://smartplatforms.org/terms/code/encounterType#virtual, Title="Virtual encounter"
+
+							]]></api:description>
+					</rdf:Description>
+				</api:doc>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#startDate"/>
+                <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
+                <api:doc>
+					<rdf:Description>
+						<api:name>Date when encounter began</api:name>
+						<api:description>ISO-8601 string</api:description>
+					</rdf:Description>
+				</api:doc>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#endDate"/>
+                <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
+                <api:doc>
+					<rdf:Description>
+						<api:name>Date when encounter ended</api:name>
+						<api:description>ISO-8601 string</api:description>
+					</rdf:Description>
+				</api:doc>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#facility"/>
+                <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
+                <owl:onClass rdf:resource="http://smartplatforms.org/terms#Organization"/>
+                <api:doc>
+					<rdf:Description>
+						<api:name>Facility where encounter occurred</api:name>
+						<api:description>RDF Organization node</api:description>
+					</rdf:Description>
+				</api:doc>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#provider"/>
+                <owl:onClass rdf:resource="http://smartplatforms.org/terms#Provider"/>
+                <api:doc>
+					<rdf:Description>
+						<api:name>Provider responsible for encounter</api:name>
+						<api:description>RDF Provider node</api:description>
+					</rdf:Description>
+				</api:doc>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    <api:name>Encounter</api:name>
+     <api:name_plural>Encounters</api:name_plural>
+	 <api:base_path>/records/{record_id}/encounters/{encounter_id}</api:base_path>
+     <api:description>Encounters represent a time that a patient has received medical care.</api:description>
+     <api:example rdf:datatype="http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+  xmlns:sp="http://smartplatforms.org/terms#"
+  xmlns:foaf="http://xmlns.com/foaf/0.1/"
+  xmlns:dc="http://purl.org/dc/elements/1.1/"
+  xmlns:dcterms="http://purl.org/dc/terms/"
+  xmlns:v="http://www.w3.org/2006/vcard/ns#">
+ <sp:Encounter>
+    <sp:startDate>2010-05-12T04:00:00Z</sp:startDate>
+    <sp:endDate>2010-05-12T04:00:00Z</sp:endDate>
+      <sp:encounterType>
+        <sp:CodedValue>
+          <sp:code rdf:resource="http://smartplatforms.org/terms/code/encounterType#ambulatory"/>
+          <dcterms:title>Ambulatory encounter</dcterms:title>
+        </sp:CodedValue>
+      </sp:encounterType>
+    <sp:provider>
+      <sp:Provider>
+        <foaf:name>Joshua Mandel</foaf:name>
+        <sp:npi>5235235</sp:npi>
+        <sp:dea>325555555</sp:dea>
+      </sp:Provider>
+    </sp:provider>
+    <sp:facility>
+      <sp:Organization>
+        <sp:ncpdpid>5235235</sp:ncpdpid>
+            <foaf:name>CVS #588</foaf:name>
+            <sp:address>
+              <sp:Address>
+                <v:street-address>111 Lake Drive</v:street-address>
+                <v:locality>WonderCity</v:locality>
+                <v:postal-code>5555</v:postal-code>
+                <v:country-name>Australia</v:country-name>
+              </sp:Address>
+              </sp:address>
+      </sp:Organization>
+    </sp:facility>
+ </sp:Encounter>
+</rdf:RDF>]]></api:example>
+    </owl:Class>
+
+<api:call>
+  <api:description>Get all encounters</api:description>
+  <api:method>GET</api:method>
+  <api:path>/records/{record_id}/encounters/</api:path>
+  <api:target rdf:resource="http://smartplatforms.org/terms#Encounter"/>
+  <api:by_internal_id>true</api:by_internal_id>
+  <api:category>record_items</api:category>
+</api:call>
+
+<api:call>
+  <api:description>Get one encounter</api:description>
+  <api:method>GET</api:method>
+  <api:path>/records/{record_id}/encounters/{encounter_id}</api:path>
+  <api:target rdf:resource="http://smartplatforms.org/terms#Encounter"/>
+  <api:by_internal_id>true</api:by_internal_id>
+  <api:category>record_item</api:category>
+</api:call>
+
+
+<api:call>
+  <api:description>POST a single encounter</api:description>
+  <api:method>POST</api:method>
+  <api:path>/records/{record_id}/encounters/</api:path>
+  <api:target rdf:resource="http://smartplatforms.org/terms#Encounter"/>
+  <api:by_internal_id>true</api:by_internal_id>
+  <api:category>record_item</api:category>
+</api:call>
+
+
+
+
     <!-- http://smartplatforms.org/terms#Fulfillment -->
 
     <owl:Class rdf:about="http://smartplatforms.org/terms#Fulfillment">
