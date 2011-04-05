@@ -2163,6 +2163,301 @@ No example yet.]]></api:example>
 
     </owl:Class>
 
+    <!-- http://smartplatforms.org/terms#VitalSigns -->
+    
+    <owl:Class rdf:about="http://smartplatforms.org/terms#VitalSigns">
+        <rdfs:subClassOf  rdf:resource="http://smartplatforms.org/terms#MedicalDataElement"/>
+
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://purl.org/dc/elements/1.1/date"/>
+                <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
+                <api:doc>
+					<rdf:Description>
+						<api:name>Date + time when vital signs were recorded</api:name>
+						<api:description>ISO-8601 string</api:description>
+					</rdf:Description>
+				</api:doc>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#height"/>
+                <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
+                <owl:onClass rdf:resource="http://smartplatforms.org/terms#ValueAndUnit"/>
+				<api:doc>
+					<rdf:Description>
+						<api:name>Patient's height in meters</api:name>
+							<api:description rdf:datatype="http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral"><![CDATA[RDF ValueAndUnit node where unit is:  "m"]]></api:description>
+					</rdf:Description>
+				</api:doc>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#weight"/>
+                <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
+                <owl:onClass rdf:resource="http://smartplatforms.org/terms#ValueAndUnit"/>
+				<api:doc>
+					<rdf:Description>
+						<api:name>Patient's weight in kg</api:name>
+							<api:description rdf:datatype="http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral"><![CDATA[RDF ValueAndUnit node where unit is:  "kg"]]></api:description>
+					</rdf:Description>
+				</api:doc>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#bodyMassIndex"/>
+                <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
+                <owl:onClass rdf:resource="http://smartplatforms.org/terms#ValueAndUnit"/>
+				<api:doc>
+					<rdf:Description>
+						<api:name>Patient's Body Mass Index</api:name>
+							<api:description rdf:datatype="http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral"><![CDATA[RDF ValueAndUnit node where unit is:  "{BMI}"]]></api:description>
+					</rdf:Description>
+				</api:doc>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#respiratoryRate"/>
+                <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
+                <owl:onClass rdf:resource="http://smartplatforms.org/terms#ValueAndUnit"/>
+				<api:doc>
+					<rdf:Description>
+						<api:name>Patient's Respiratory Rate per minute</api:name>
+							<api:description rdf:datatype="http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral"><![CDATA[RDF ValueAndUnit node where unit is:  "{breaths}/min"]]></api:description>
+					</rdf:Description>
+				</api:doc>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#heartRate"/>
+                <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
+                <owl:onClass rdf:resource="http://smartplatforms.org/terms#ValueAndUnit"/>
+				<api:doc>
+					<rdf:Description>
+						<api:name>Patient's Heart Rate per minute</api:name>
+							<api:description rdf:datatype="http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral"><![CDATA[RDF ValueAndUnit node where unit is:  "{beats}/min"]]></api:description>
+					</rdf:Description>
+				</api:doc>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+
+
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#temperature"/>
+                <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
+                <owl:onClass rdf:resource="http://smartplatforms.org/terms#ValueAndUnit"/>
+				<api:doc>
+					<rdf:Description>
+						<api:name>Patient's Temperature in Celcius</api:name>
+						<api:description rdf:datatype="http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral"><![CDATA[RDF ValueAndUnit node where unit is:  "Cel"]]></api:description>
+					</rdf:Description>
+				</api:doc>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+
+
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#oxygenSaturation"/>
+                <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
+                <owl:onClass rdf:resource="http://smartplatforms.org/terms#ValueAndUnit"/>
+				<api:doc>
+					<rdf:Description>
+						<api:name>Patient's Oxygen Saturation in percent hemoglobin</api:name>
+						<api:description rdf:datatype="http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral"><![CDATA[RDF ValueAndUnit node where unit is:  "%{HemoglobinSaturation}"]]></api:description>
+					</rdf:Description>
+				</api:doc>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+
+
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#bloodPressure"/>
+                <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
+                <owl:onClass rdf:resource="http://smartplatforms.org/terms#BloodPressure"/>
+				<api:doc>
+					<rdf:Description>
+						<api:name>Patient's systolic + diastolic Blood Pressure in mmHg, with optinal position coding</api:name>
+						<api:description rdf:datatype="http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral"><![CDATA[RDF BloodPressure Node]]></api:description>
+					</rdf:Description>
+				</api:doc>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+
+
+    <api:name>VitalSigns</api:name>
+     <api:name_plural>VitalSigns</api:name_plural>
+     <api:base_path>/records/{record_id}/vital_signs/{vital_signs_id}</api:base_path>
+     <api:description>Each VitalSigns element represent a set of vital signs collected together.</api:description>
+     <api:example rdf:datatype="http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+  xmlns:sp="http://smartplatforms.org/terms#"
+  xmlns:foaf="http://xmlns.com/foaf/0.1/"
+  xmlns:dc="http://purl.org/dc/elements/1.1/"
+  xmlns:dcterms="http://purl.org/dc/terms/"
+  xmlns:v="http://www.w3.org/2006/vcard/ns#">
+ <sp:VitalSigns>
+    <dc:date>2010-05-12T04:00:00Z</dc:date>
+    <sp:height>
+      <sp:ValueAndUnit>
+        <sp:value>1.80</sp:value>
+        <sp:unit>m</sp:unit>
+      </sp:ValueAndUnit>
+    </sp:height>
+    <sp:weight>
+      <sp:ValueAndUnit>
+        <sp:value>70.8</sp:value>
+        <sp:unit>kg</sp:unit>
+      </sp:ValueAndUnit>
+    </sp:weight>
+    <sp:bodyMassIndex>
+      <sp:ValueAndUnit>
+        <sp:value>21.8</sp:value>
+        <sp:unit>{BMI}</sp:unit>
+      </sp:ValueAndUnit>
+    </sp:bodyMassIndex>
+    <sp:respiratoryRate>
+      <sp:ValueAndUnit>
+        <sp:value>16</sp:value>
+        <sp:unit>{breaths}/min</sp:unit>
+      </sp:ValueAndUnit>
+    </sp:respiratoryRate>
+    <sp:heartRate>
+      <sp:ValueAndUnit>
+        <sp:value>70</sp:value>
+        <sp:unit>{beats}/min</sp:unit>
+      </sp:ValueAndUnit>
+    </sp:heartRate>
+    <sp:oxygenSaturation>
+      <sp:ValueAndUnit>
+        <sp:value>99</sp:value>
+        <sp:unit>%{HemoglobinSaturation}</sp:unit>
+      </sp:ValueAndUnit>
+    </sp:oxygenSaturation>
+    <sp:temperature>
+      <sp:ValueAndUnit>
+        <sp:value>37</sp:value>
+        <sp:unit>Cel</sp:unit>
+      </sp:ValueAndUnit>
+    </sp:temperature>
+    <sp:bloodPressure>
+      <sp:BloodPressure>
+        <sp:systolic>
+          <sp:ValueAndUnit>
+            <sp:value>132</sp:value>
+            <sp:unit>mm[Hg]</sp:unit>
+          </sp:ValueAndUnit>
+        </sp:systolic>
+        <sp:diastolic>
+          <sp:ValueAndUnit>
+            <sp:value>82</sp:value>
+            <sp:unit>mm[Hg]</sp:unit>
+          </sp:ValueAndUnit>
+        </sp:diastolic>
+        <sp:bodyPosition>
+          <sp:CodedValue>
+            <sp:code rdf:resource="http://smartplatforms.org/terms/code/bodyPosition#sitting"/>
+            <dcterms:title>Sitting</dcterms:title>
+          </sp:CodedValue>
+        </sp:bodyPosition>
+      </sp:BloodPressure>
+    </sp:bloodPressure>
+ </sp:VitalSigns>
+</rdf:RDF>]]></api:example>
+    </owl:Class>
+
+<api:call>
+  <api:description>Get all vital_signs</api:description>
+  <api:method>GET</api:method>
+  <api:path>/records/{record_id}/vital_signs/</api:path>
+  <api:target rdf:resource="http://smartplatforms.org/terms#VitalSigns"/>
+  <api:by_internal_id>true</api:by_internal_id>
+  <api:category>record_items</api:category>
+</api:call>
+
+<api:call>
+  <api:description>Get one vital</api:description>
+  <api:method>GET</api:method>
+  <api:path>/records/{record_id}/vital_signs/{vital_signs_id}</api:path>
+  <api:target rdf:resource="http://smartplatforms.org/terms#VitalSigns"/>
+  <api:by_internal_id>true</api:by_internal_id>
+  <api:category>record_item</api:category>
+</api:call>
+
+
+<api:call>
+  <api:description>POST a single vital</api:description>
+  <api:method>POST</api:method>
+  <api:path>/records/{record_id}/vital_signs/</api:path>
+  <api:target rdf:resource="http://smartplatforms.org/terms#VitalSigns"/>
+  <api:by_internal_id>true</api:by_internal_id>
+  <api:category>record_item</api:category>
+</api:call>
+
+
+
+    <owl:Class rdf:about="http://smartplatforms.org/terms#BloodPressure">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#systolic"/>
+                <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
+                <owl:onClass rdf:resource="http://smartplatforms.org/terms#ValueAndUnit"/>
+				<api:doc>
+					<rdf:Description>
+						<api:name>systolic blood pressure in mmHG</api:name>
+						<api:description rdf:datatype="http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral"><![CDATA[RDF ValueAndUnit node where unit is:  "mm[Hg]"]]></api:description>
+					</rdf:Description>
+				</api:doc>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#diastolic"/>
+                <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
+                <owl:onClass rdf:resource="http://smartplatforms.org/terms#ValueAndUnit"/>
+				<api:doc>
+					<rdf:Description>
+						<api:name>diastolic blood pressure in mmHG</api:name>
+						<api:description rdf:datatype="http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral"><![CDATA[RDF ValueAndUnit node where unit is:  "mm[Hg]"]]></api:description>
+					</rdf:Description>
+				</api:doc>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#bodyPosition"/>
+                <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
+                <owl:onClass rdf:resource="http://smartplatforms.org/terms#CodedValue"/>
+                <api:doc>
+					<rdf:Description>
+						<api:name>Position of patient when blood pressure was recorded</api:name>
+							<api:description rdf:datatype="http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral"><![CDATA[RDF CodedValue node where code is drawn from the following:
+							Code=http://smartplatforms.org/terms/code/bodyPosition#sitting, Title="Sitting"
+
+							Code=http://smartplatforms.org/terms/code/bodyPosition#standing, Title="Standing"
+
+							Code=http://smartplatforms.org/terms/code/bodyPosition#supine, Title="Supine"
+							]]></api:description>
+					</rdf:Description>
+				</api:doc>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+
+
 
     <!-- http://smartplatforms.org/terms#QuantitativeResult -->
 
