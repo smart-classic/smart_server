@@ -47,6 +47,23 @@ def account_password_set(request, account):
   return HttpResponseBadRequest()
 
 @paramloader()
+def record_get_alerts(request, record):
+  alerts = RecordAlert.objects.filter(record=record)
+  return render_template('alerts', { 'alerts': alerts }, type='xml')
+
+@paramloader()
+def account_acknowledge_alert(request, account, alert_id):
+  alerts = RecordAlert.objects.filter(id=alert_id, acknowledged_by=None)
+  assert len(alerts) <= 1
+
+  if len(alerts) > 0:
+    alerts[0].acknowledge(account)
+
+  return DONE
+
+
+
+@paramloader()
 @transaction.commit_on_success
 def account_initialize(request, account, primary_secret):
   SECONDARY_SECRET = 'secondary_secret'

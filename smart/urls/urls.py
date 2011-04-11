@@ -62,6 +62,9 @@ urlpatterns += patterns(
     (r'^apps/(?P<app_email>[^/]+)/tokens/records/(?P<record_id>[^/]+)/next$', get_next_record_tokens),
     (r'^apps/(?P<app_email>[^/]+)/tokens/records/(?P<record_id>[^/]+)$', get_record_tokens),
 
+    (r'^accounts/(?P<account_email>[^/]+)/alerts/(?P<alert_id>[^/]+)/acknowledge', account_acknowledge_alert),    
+    (r'^records/(?P<record_id>[^/]+)/alerts/all', record_get_alerts),    
+
     (r'^accounts/search$', account_search),
     (r'^accounts/(?P<account_email>[^/]+)$', account_info),
     (r'^accounts/(?P<account_email>[^/]+)/recent_records/$', account_recent_records),
