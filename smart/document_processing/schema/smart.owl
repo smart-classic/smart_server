@@ -1464,12 +1464,12 @@ In RDF/XML notation, a patient on oral amitriptyline 50 mg tablets might provide
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://smartplatforms.org/terms#medicalRecordNumber"/>
-                <owl:onClass rdf:resource="http://smartplatforms.org/terms#Code"/>
+                <owl:onClass rdf:resource="http://smartplatforms.org/terms#CodedValue"/>
                 <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
                 <api:doc>
 		  <rdf:Description>
 		    <api:name>A person's external identifier, e.g. from another EMR system</api:name>
-		    <api:description>RDF Code node</api:description>
+		    <api:description>RDF CodedValue node</api:description>
 		  </rdf:Description>
 		</api:doc>
             </owl:Restriction>
@@ -1492,11 +1492,11 @@ In RDF/XML notation, a patient on oral amitriptyline 50 mg tablets might provide
      <sp:zipcode>90001</sp:zipcode>
      <sp:birthday>1959-12-25</sp:birthday>
      <sp:medicalRecordNumber>
-       <sp:Code>
-	 <sp:system rdf:resource="http://my.hospital.org/" />
-	 <dcterms:identifier>2304575</dcterms:identifier>
-       </sp:Code>
-     </sp:medicalRecordNumbeR>
+       <sp:CodedValue>
+	 <sp:code rdf:resource="http://my.hospital.org/2304575" />
+	 <dcterms:title>My Hospital Record 2304575</dcterms:title>
+       </sp:CodedValue>
+     </sp:medicalRecordNumber>
    </sp:Demographics>
 </rdf:RDF>]]>
     </api:example>
@@ -2095,6 +2095,76 @@ No example yet.]]></api:example>
     </api:example>
 
     </owl:Class>
+
+<!-- http://smartplatforms.org/terms#SocialHistory -->
+<owl:Class rdf:about="http://smartplatforms.org/terms#SocialHistory">
+        <rdfs:subClassOf  rdf:resource="http://smartplatforms.org/terms#MedicalDataElement"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#smokingStatus"/>
+                <owl:onClass rdf:resource="http://smartplatforms.org/terms#CodedValue"/>
+                <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
+                <api:doc>
+		  <rdf:Description>
+		    <api:name>A person's external identifier, e.g. from another EMR system</api:name>
+					<api:description rdf:datatype="http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral"><![CDATA[RDF CodedValue node where code is drawn from the following:
+
+							Code=http://smartplatforms.org/terms/code/smokingStatus#someDays, Title="Current some day smoker"
+
+							Code=http://smartplatforms.org/terms/code/smokingStatus#daily, Title="Current every day smoker"
+
+							Code=http://smartplatforms.org/terms/code/smokingStatus#former, Title="Former Smoker"
+
+							Code=http://smartplatforms.org/terms/code/smokingStatus#never, Title="Never Smoker"
+
+							Code=http://smartplatforms.org/terms/code/smokingStatus#current, Title="Smoker, current status unknown"
+
+							Code=http://smartplatforms.org/terms/code/smokingStatus#unknown, Title="Unknown if ever smoked"
+]]></api:description>
+		  </rdf:Description>
+		</api:doc>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+
+     <api:name>Social History</api:name>
+     <api:name_plural>Social Histories</api:name_plural>
+     <api:base_path>/records/{record_id}/social_history</api:base_path>
+     <api:description>Summary data from a patient's social history.  For now, we only track smoking status (with categories as defined by Meaningful Use Stage 1 Professional Core Measure #9).</api:description>
+        <api:example rdf:datatype="http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
+<rdf:RDF
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+  xmlns:sp="http://smartplatforms.org/terms#"
+  xmlns:dcterms="http://purl.org/dc/terms/">
+   <sp:SocialHistory>
+     <sp:smokingStatus>
+       <sp:CodedValue>
+	 <sp:code rdf:resource="http://smartplatforms.org/terms/code/smokingStatus#never" />
+	 <dcterms:title>Never Smoker</dcterms:title>
+       </sp:CodedValue>
+     </sp:smokingStatus>
+   </sp:SocialHistory>
+</rdf:RDF>]]>
+    </api:example>
+ </owl:Class>
+
+<api:call>
+  <api:description>Get Social History for a patient</api:description>
+  <api:method>GET</api:method>
+  <api:path>/records/{record_id}/social_history</api:path>
+  <api:target rdf:resource="http://smartplatforms.org/terms#SocialHistory"/>
+  <api:by_internal_id>true</api:by_internal_id>
+  <api:category>record_items</api:category>
+</api:call>
+
+<api:call>
+  <api:description>Add a new Social History element</api:description>
+  <api:method>POST</api:method>
+  <api:path>/records/{record_id}/social_history</api:path>
+  <api:target rdf:resource="http://smartplatforms.org/terms#SocialHistory"/>
+  <api:by_internal_id>true</api:by_internal_id>
+  <api:category>record_items</api:category>
+</api:call>
+
 
     <!-- http://smartplatforms.org/terms#VitalSigns -->
     
@@ -2771,6 +2841,48 @@ No example yet.]]></api:example>
 					<rdf:Description>
 						<api:name>E-mail address of the person</api:name>
 						<api:description>Free text</api:description>
+					</rdf:Description>
+				</api:doc>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#preferredLanguage"/>
+                <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
+                <api:doc>
+					<rdf:Description>
+						<api:name>Preferred language of the person</api:name>
+						<api:description>language tag string (e.g. 'en') according to http://www.ietf.org/rfc/rfc4646.txt</api:description>
+					</rdf:Description>
+				</api:doc>
+            </owl:Restriction>
+        </rdfs:subClassOf>        
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#ethnicity"/>
+                <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
+                <api:doc>
+					<rdf:Description>
+						<api:name>Ethnicity of the person</api:name>
+						<api:description><![CDATA[CodedValue node where code descends from the Ethnicity concept (2133-7) of the CDC ethnicity value set. For example: 
+
+Code=http://phinvads.cdc.gov/vads/ViewCodeSystemConcept.action?oid=2.16.840.1.113883.6.238&code=2135-2, Title=Hispanic or Latino]]>
+</api:description>
+					</rdf:Description>
+				</api:doc>
+            </owl:Restriction>
+        </rdfs:subClassOf>        
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#race"/>
+                <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
+                <api:doc>
+					<rdf:Description>
+						<api:name>Race of the person</api:name>
+						<api:description><![CDATA[CodedValue node where code descends from the Race concept (1000-9) of the CDC race value set. For example: 
+
+Code=http://phinvads.cdc.gov/vads/ViewCodeSystemConcept.action?oid=2.16.840.1.113883.6.238&code=2054-5, Title=Black or African American]]>
+</api:description>
 					</rdf:Description>
 				</api:doc>
             </owl:Restriction>
