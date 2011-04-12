@@ -67,6 +67,8 @@ class PHA(OAuthApp):
   
   # is app enabled by default on new accounts?
   enabled_by_default = models.BooleanField(default=False)
+  supported_environments = models.CharField(max_length=30, default="desktop,mobile,tablet")
+  optimal_environments = models.CharField(max_length=30, default="desktop")
 
 class HelperApp(OAuthApp):
   """

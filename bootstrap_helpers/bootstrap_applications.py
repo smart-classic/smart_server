@@ -41,6 +41,11 @@ for app,app_params in apps.iteritems():
                        admin_p = admin_p)
       
   elif r["mode"] == "ui":
+      if "optimalBrowserEnvironments" not in r:
+        r["optimalBrowserEnvironments"] = ["desktop"]
+      if "supportedBrowserEnvironments" not in r:
+        r["supportedBrowserEnvironments"] = ["desktop", "mobile", "tablet"]
+
       a = PHA.objects.create(
                        description = r["description"],
                        consumer_key = r["id"],
@@ -48,6 +53,8 @@ for app,app_params in apps.iteritems():
                        name =r["name"],
                        email=r["id"],
                        icon_url=sub(r["icon"], "base_url", base_url),
+                       optimal_environments=",".join(r["optimalBrowserEnvironments"]),
+                       supported_environments=",".join(r["supportedBrowserEnvironments"]),
                        enabled_by_default=enabled_by_default)
   else: a = None
 
