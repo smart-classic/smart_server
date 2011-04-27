@@ -2173,6 +2173,21 @@ No example yet.]]></api:example>
 
         <rdfs:subClassOf>
             <owl:Restriction>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#encounter"/>
+                <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
+                <owl:onClass rdf:resource="http://smartplatforms.org/terms#Encounter"/>
+                <api:doc>
+					<rdf:Description>
+						<api:name>Encounter during which vital signs were taken</api:name>
+						<api:description>RDF Encounter node</api:description>
+					</rdf:Description>
+				</api:doc>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+
+
+        <rdfs:subClassOf>
+            <owl:Restriction>
                 <owl:onProperty rdf:resource="http://purl.org/dc/elements/1.1/date"/>
                 <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
                 <api:doc>
@@ -2188,7 +2203,7 @@ No example yet.]]></api:example>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://smartplatforms.org/terms#height"/>
                 <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
-                <owl:onClass rdf:resource="http://smartplatforms.org/terms#ValueAndUnit"/>
+                <owl:onClass rdf:resource="http://smartplatforms.org/terms#VitalSign"/>
 				<api:doc>
 					<rdf:Description>
 						<api:name>Patient's height in meters</api:name>
@@ -2202,7 +2217,7 @@ No example yet.]]></api:example>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://smartplatforms.org/terms#weight"/>
                 <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
-                <owl:onClass rdf:resource="http://smartplatforms.org/terms#ValueAndUnit"/>
+                <owl:onClass rdf:resource="http://smartplatforms.org/terms#VitalSign"/>
 				<api:doc>
 					<rdf:Description>
 						<api:name>Patient's weight in kg</api:name>
@@ -2216,7 +2231,7 @@ No example yet.]]></api:example>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://smartplatforms.org/terms#bodyMassIndex"/>
                 <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
-                <owl:onClass rdf:resource="http://smartplatforms.org/terms#ValueAndUnit"/>
+                <owl:onClass rdf:resource="http://smartplatforms.org/terms#VitalSign"/>
 				<api:doc>
 					<rdf:Description>
 						<api:name>Patient's Body Mass Index</api:name>
@@ -2230,7 +2245,7 @@ No example yet.]]></api:example>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://smartplatforms.org/terms#respiratoryRate"/>
                 <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
-                <owl:onClass rdf:resource="http://smartplatforms.org/terms#ValueAndUnit"/>
+                <owl:onClass rdf:resource="http://smartplatforms.org/terms#VitalSign"/>
 				<api:doc>
 					<rdf:Description>
 						<api:name>Patient's Respiratory Rate per minute</api:name>
@@ -2239,12 +2254,12 @@ No example yet.]]></api:example>
 				</api:doc>
             </owl:Restriction>
         </rdfs:subClassOf>
-
+VitalSign
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://smartplatforms.org/terms#heartRate"/>
                 <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
-                <owl:onClass rdf:resource="http://smartplatforms.org/terms#ValueAndUnit"/>
+                <owl:onClass rdf:resource="http://smartplatforms.org/terms#VitalSign"/>
 				<api:doc>
 					<rdf:Description>
 						<api:name>Patient's Heart Rate per minute</api:name>
@@ -2259,7 +2274,7 @@ No example yet.]]></api:example>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://smartplatforms.org/terms#temperature"/>
                 <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
-                <owl:onClass rdf:resource="http://smartplatforms.org/terms#ValueAndUnit"/>
+                <owl:onClass rdf:resource="http://smartplatforms.org/terms#VitalSign"/>
 				<api:doc>
 					<rdf:Description>
 						<api:name>Patient's Temperature in Celcius</api:name>
@@ -2274,7 +2289,7 @@ No example yet.]]></api:example>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://smartplatforms.org/terms#oxygenSaturation"/>
                 <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
-                <owl:onClass rdf:resource="http://smartplatforms.org/terms#ValueAndUnit"/>
+                <owl:onClass rdf:resource="http://smartplatforms.org/terms#VitalSign"/>
 				<api:doc>
 					<rdf:Description>
 						<api:name>Patient's Oxygen Saturation in percent hemoglobin</api:name>
@@ -2313,68 +2328,140 @@ No example yet.]]></api:example>
   xmlns:v="http://www.w3.org/2006/vcard/ns#">
  <sp:VitalSigns>
     <dc:date>2010-05-12T04:00:00Z</dc:date>
+    <sp:encounter>
+	 <sp:Encounter>
+	    <sp:startDate>2010-05-12T04:00:00Z</sp:startDate>
+	    <sp:endDate>2010-05-12T04:20:00Z</sp:endDate>
+	      <sp:encounterType>
+		<sp:CodedValue>
+		  <sp:code rdf:resource="http://smartplatforms.org/terms/code/encounterType#ambulatory"/>
+		  <dcterms:title>Ambulatory encounter</dcterms:title>
+		</sp:CodedValue>
+	      </sp:encounterType>
+	 </sp:Encounter>
+    </sp:encounter>
     <sp:height>
-      <sp:ValueAndUnit>
-        <sp:value>1.80</sp:value>
-        <sp:unit>m</sp:unit>
-      </sp:ValueAndUnit>
+      <sp:VitalSign>
+       <sp:vitalName>
+        <sp:CodedValue>
+          <sp:code rdf:resource="http://loinc.org/codes/8302-2"/>
+          <dcterms:title>Height (measured)</dcterms:title>
+        </sp:CodedValue>
+      </sp:vitalName>
+      <sp:value>1.80</sp:value>
+      <sp:unit>m</sp:unit>
+     </sp:VitalSign>
     </sp:height>
     <sp:weight>
-      <sp:ValueAndUnit>
-        <sp:value>70.8</sp:value>
-        <sp:unit>kg</sp:unit>
-      </sp:ValueAndUnit>
+      <sp:VitalSign>
+       <sp:vitalName>
+        <sp:CodedValue>
+          <sp:code rdf:resource="http://loinc.org/codes/3141-9"/>
+          <dcterms:title>Body weight (measured)</dcterms:title>
+        </sp:CodedValue>
+       </sp:vitalName>
+      <sp:value>70.8</sp:value>
+      <sp:unit>kg</sp:unit>
+     </sp:VitalSign>
     </sp:weight>
     <sp:bodyMassIndex>
-      <sp:ValueAndUnit>
-        <sp:value>21.8</sp:value>
-        <sp:unit>{BMI}</sp:unit>
-      </sp:ValueAndUnit>
+      <sp:VitalSign>
+       <sp:vitalName>
+        <sp:CodedValue>
+          <sp:code rdf:resource="http://loinc.org/codes/41909-3"/>
+          <dcterms:title>Body mass index</dcterms:title>
+        </sp:CodedValue>
+      </sp:vitalName>
+      <sp:value>21.8</sp:value>
+      <sp:unit>{BMI}</sp:unit>
+     </sp:VitalSign>
     </sp:bodyMassIndex>
     <sp:respiratoryRate>
-      <sp:ValueAndUnit>
-        <sp:value>16</sp:value>
-        <sp:unit>{breaths}/min</sp:unit>
-      </sp:ValueAndUnit>
+      <sp:VitalSign>
+       <sp:vitalName>
+        <sp:CodedValue>
+          <sp:code rdf:resource="http://loinc.org/codes/9279-1"/>
+          <dcterms:title>Respiration rate</dcterms:title>
+        </sp:CodedValue>
+      </sp:vitalName>
+      <sp:value>16</sp:value>
+      <sp:unit>{breaths}/min</sp:unit>
+     </sp:VitalSign>
     </sp:respiratoryRate>
     <sp:heartRate>
-      <sp:ValueAndUnit>
-        <sp:value>70</sp:value>
-        <sp:unit>{beats}/min</sp:unit>
-      </sp:ValueAndUnit>
+      <sp:VitalSign>
+       <sp:vitalName>
+        <sp:CodedValue>
+          <sp:code rdf:resource="http://loinc.org/codes/8867-4"/>
+          <dcterms:title>Heart rate</dcterms:title>
+        </sp:CodedValue>
+      </sp:vitalName>
+      <sp:value>70</sp:value>
+      <sp:unit>{beats}/min</sp:unit>
+     </sp:VitalSign>
     </sp:heartRate>
     <sp:oxygenSaturation>
-      <sp:ValueAndUnit>
-        <sp:value>99</sp:value>
-        <sp:unit>%{HemoglobinSaturation}</sp:unit>
-      </sp:ValueAndUnit>
+      <sp:VitalSign>
+       <sp:vitalName>
+        <sp:CodedValue>
+          <sp:code rdf:resource="http://loinc.org/codes/2710-2"/>
+          <dcterms:title>Oxygen saturation</dcterms:title>
+        </sp:CodedValue>
+      </sp:vitalName>
+      <sp:value>99</sp:value>
+      <sp:unit>%{HemoglobinSaturation}</sp:unit>
+     </sp:VitalSign>
     </sp:oxygenSaturation>
     <sp:temperature>
-      <sp:ValueAndUnit>
-        <sp:value>37</sp:value>
-        <sp:unit>Cel</sp:unit>
-      </sp:ValueAndUnit>
+      <sp:VitalSign>
+       <sp:vitalName>
+        <sp:CodedValue>
+          <sp:code rdf:resource="http://loinc.org/codes/8310-5"/>
+          <dcterms:title>Body temperature</dcterms:title>
+        </sp:CodedValue>
+      </sp:vitalName>
+      <sp:value>37</sp:value>
+      <sp:unit>Cel</sp:unit>
+     </sp:VitalSign>
     </sp:temperature>
     <sp:bloodPressure>
       <sp:BloodPressure>
-        <sp:systolic>
-          <sp:ValueAndUnit>
-            <sp:value>132</sp:value>
-            <sp:unit>mm[Hg]</sp:unit>
-          </sp:ValueAndUnit>
-        </sp:systolic>
-        <sp:diastolic>
-          <sp:ValueAndUnit>
-            <sp:value>82</sp:value>
-            <sp:unit>mm[Hg]</sp:unit>
-          </sp:ValueAndUnit>
-        </sp:diastolic>
-        <sp:bodyPosition>
-          <sp:CodedValue>
-            <sp:code rdf:resource="http://smartplatforms.org/terms/code/bodyPosition#sitting"/>
-            <dcterms:title>Sitting</dcterms:title>
-          </sp:CodedValue>
-        </sp:bodyPosition>
+       <sp:systolic>
+         <sp:VitalSign>
+          <sp:vitalName>
+           <sp:CodedValue>
+             <sp:code rdf:resource="http://loinc.org/codes/8480-6"/>
+             <dcterms:title>Systolic blood pressure</dcterms:title>
+           </sp:CodedValue>
+         </sp:vitalName>
+             <sp:value>132</sp:value>
+             <sp:unit>mm[Hg]</sp:unit>
+        </sp:VitalSign>
+       </sp:systolic>
+       <sp:diastolic>
+         <sp:VitalSign>
+          <sp:vitalName>
+           <sp:CodedValue>
+             <sp:code rdf:resource="http://loinc.org/codes/8462-4"/>
+             <dcterms:title>Diastolic blood pressure</dcterms:title>
+           </sp:CodedValue>
+         </sp:vitalName>
+         <sp:value>82</sp:value>
+         <sp:unit>mm[Hg]</sp:unit>
+        </sp:VitalSign>
+       </sp:diastolic>
+       <sp:bodyPosition>
+         <sp:CodedValue>
+           <sp:code rdf:resource="http://smartplatforms.org/terms/code/bodyPosition#sitting"/>
+           <dcterms:title>Sitting</dcterms:title>
+         </sp:CodedValue>
+       </sp:bodyPosition>
+       <sp:bodySite>
+         <sp:CodedValue>
+           <sp:code rdf:resource="http://smartplatforms.org/terms/code/bodySite#rightArm"/>
+           <dcterms:title>Right Arm</dcterms:title>
+         </sp:CodedValue>
+       </sp:bodySite>
       </sp:BloodPressure>
     </sp:bloodPressure>
  </sp:VitalSigns>
@@ -2410,13 +2497,32 @@ No example yet.]]></api:example>
 </api:call>
 
 
+    <owl:Class rdf:about="http://smartplatforms.org/terms#VitalSign">
+        <rdfs:subClassOf  rdf:resource="http://smartplatforms.org/terms#ValueAndUnit"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#vitalName"/>
+                <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
+                <owl:onClass rdf:resource="http://smartplatforms.org/terms#CodedValue"/>
+                <api:doc>
+					<rdf:Description>
+						<api:name>LOINC Coded Value for the vital sign type</api:name>
+						<api:description>RDF CodedValue node, drawn from LOINC. </api:description>
+					</rdf:Description>
+				</api:doc>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+
+    </owl:Class>
+
+
 
     <owl:Class rdf:about="http://smartplatforms.org/terms#BloodPressure">
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://smartplatforms.org/terms#systolic"/>
                 <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
-                <owl:onClass rdf:resource="http://smartplatforms.org/terms#ValueAndUnit"/>
+                <owl:onClass rdf:resource="http://smartplatforms.org/terms#VitalSign"/>
 				<api:doc>
 					<rdf:Description>
 						<api:name>systolic blood pressure in mmHG</api:name>
@@ -2430,7 +2536,7 @@ No example yet.]]></api:example>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://smartplatforms.org/terms#diastolic"/>
                 <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
-                <owl:onClass rdf:resource="http://smartplatforms.org/terms#ValueAndUnit"/>
+                <owl:onClass rdf:resource="http://smartplatforms.org/terms#VitalSign"/>
 				<api:doc>
 					<rdf:Description>
 						<api:name>diastolic blood pressure in mmHG</api:name>
@@ -2453,6 +2559,29 @@ No example yet.]]></api:example>
 							Code=http://smartplatforms.org/terms/code/bodyPosition#standing, Title="Standing"
 
 							Code=http://smartplatforms.org/terms/code/bodyPosition#supine, Title="Supine"
+							]]></api:description>
+					</rdf:Description>
+				</api:doc>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+
+
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#bodySite"/>
+                <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
+                <owl:onClass rdf:resource="http://smartplatforms.org/terms#CodedValue"/>
+                <api:doc>
+					<rdf:Description>
+						<api:name>Position of patient when blood pressure was recorded</api:name>
+							<api:description rdf:datatype="http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral"><![CDATA[RDF CodedValue node where code is drawn from the following:
+							Code=http://smartplatforms.org/terms/code/bodySite#leftArm, Title="Left Arm"
+
+							Code=http://smartplatforms.org/terms/code/bodySite#rightArm, Title="Right Arm"
+
+							Code=http://smartplatforms.org/terms/code/bodySite#leftLeg, Title="Left Leg"
+
+							Code=http://smartplatforms.org/terms/code/bodySite#leftLeg, Title="Right Leg"
 							]]></api:description>
 					</rdf:Description>
 				</api:doc>
