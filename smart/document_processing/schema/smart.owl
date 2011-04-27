@@ -2434,8 +2434,8 @@ VitalSign
              <dcterms:title>Systolic blood pressure</dcterms:title>
            </sp:CodedValue>
          </sp:vitalName>
-             <sp:value>132</sp:value>
-             <sp:unit>mm[Hg]</sp:unit>
+         <sp:value>132</sp:value>
+         <sp:unit>mm[Hg]</sp:unit>
         </sp:VitalSign>
        </sp:systolic>
        <sp:diastolic>
@@ -2452,14 +2452,14 @@ VitalSign
        </sp:diastolic>
        <sp:bodyPosition>
          <sp:CodedValue>
-           <sp:code rdf:resource="http://smartplatforms.org/terms/code/bodyPosition#sitting"/>
+           <sp:code rdf:resource="http://www.ihtsdo.org/snomed-ct/concepts/33586001"/>
            <dcterms:title>Sitting</dcterms:title>
          </sp:CodedValue>
        </sp:bodyPosition>
        <sp:bodySite>
          <sp:CodedValue>
-           <sp:code rdf:resource="http://smartplatforms.org/terms/code/bodySite#rightArm"/>
-           <dcterms:title>Right Arm</dcterms:title>
+           <sp:code rdf:resource="http://www.ihtsdo.org/snomed-ct/concepts/368209003"/>
+           <dcterms:title>Right arm</dcterms:title>
          </sp:CodedValue>
        </sp:bodySite>
       </sp:BloodPressure>
@@ -2554,11 +2554,12 @@ VitalSign
 					<rdf:Description>
 						<api:name>Position of patient when blood pressure was recorded</api:name>
 							<api:description rdf:datatype="http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral"><![CDATA[RDF CodedValue node where code is drawn from the following:
-							Code=http://smartplatforms.org/terms/code/bodyPosition#sitting, Title="Sitting"
 
-							Code=http://smartplatforms.org/terms/code/bodyPosition#standing, Title="Standing"
+							Code=http://www.ihtsdo.org/snomed-ct/concepts/33586001, Title="Sitting"
 
-							Code=http://smartplatforms.org/terms/code/bodyPosition#supine, Title="Supine"
+							Code=http://www.ihtsdo.org/snomed-ct/concepts/10904000, Title="Standing"
+
+							Code=http://www.ihtsdo.org/snomed-ct/concepts/40199007, Title="Supine"
 							]]></api:description>
 					</rdf:Description>
 				</api:doc>
@@ -2575,13 +2576,14 @@ VitalSign
 					<rdf:Description>
 						<api:name>Position of patient when blood pressure was recorded</api:name>
 							<api:description rdf:datatype="http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral"><![CDATA[RDF CodedValue node where code is drawn from the following:
-							Code=http://smartplatforms.org/terms/code/bodySite#leftArm, Title="Left Arm"
 
-							Code=http://smartplatforms.org/terms/code/bodySite#rightArm, Title="Right Arm"
+							Code=http://www.ihtsdo.org/snomed-ct/concepts/368208006, Title="Left arm"
 
-							Code=http://smartplatforms.org/terms/code/bodySite#leftLeg, Title="Left Leg"
+							Code=http://www.ihtsdo.org/snomed-ct/concepts/368209003, Title="Right arm"
 
-							Code=http://smartplatforms.org/terms/code/bodySite#leftLeg, Title="Right Leg"
+							Code=http://www.ihtsdo.org/snomed-ct/concepts/61396006, Title="Left thigh"
+
+							Code=http://www.ihtsdo.org/snomed-ct/concepts/11207009, Title="Right thigh"
 							]]></api:description>
 					</rdf:Description>
 				</api:doc>
