@@ -2368,7 +2368,7 @@ VitalSign
       <sp:VitalSign>
        <sp:vitalName>
         <sp:CodedValue>
-          <sp:code rdf:resource="http://loinc.org/codes/41909-3"/>
+          <sp:code rdf:resource="http://loinc.org/codes/39156-5"/>
           <dcterms:title>Body mass index</dcterms:title>
         </sp:CodedValue>
       </sp:vitalName>
