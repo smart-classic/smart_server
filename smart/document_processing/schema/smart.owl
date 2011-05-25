@@ -2589,6 +2589,29 @@ VitalSign
 				</api:doc>
             </owl:Restriction>
         </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#method"/>
+                <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
+                <owl:onClass rdf:resource="http://smartplatforms.org/terms#CodedValue"/>
+                <api:doc>
+					<rdf:Description>
+						<api:name>Position of patient when blood pressure was recorded</api:name>
+							<api:description rdf:datatype="http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral"><![CDATA[RDF CodedValue node where code is drawn from the following:
+
+							Code=http://smartplatforms.org/terms/code/bloodPressureMethod#auscultation, Title="Auscultation"
+
+							Code=http://smartplatforms.org/terms/code/bloodPressureMethod#palpation, Title="Palpation"
+
+							Code=http://smartplatforms.org/terms/code/bloodPressureMethod#machine, Title="Machine"
+
+							Code=http://smartplatforms.org/terms/code/bloodPressureMethod#invasive, Title="Invasive"
+							]]></api:description>
+					</rdf:Description>
+				</api:doc>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+
     </owl:Class>
 
 

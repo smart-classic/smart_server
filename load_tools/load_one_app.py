@@ -36,6 +36,13 @@ def LoadApp(app):
                        email=r["id"])
       
   elif r["mode"] == "ui":
+      exists = PHA.objects.filter(email=r["id"])
+      assert len(exists) <2, "Found >1 PHA by the name %s"%r["id"]
+      if len(exists)==1:
+          print exists[0]
+          print "deleting, exists."
+          exists[0].delete()
+
       a = PHA.objects.create(
                        description = r["description"],
                        consumer_key = r["id"],
