@@ -15,24 +15,28 @@ These instructions apply to each of three github repositories that you'll need i
 # System setup
 
 * Recent Linux installation (Kernel 2.6+).  We recommend an up-to-date version of Ubuntu, and these instructions are written from that perspective.
+* Note: These instructions have been updated for Ubuntu 11.4.
 * Note: We recommend you do this by sudo'ing from a non-root user.  If you would like to do this as root make sure you create at least one non-root user with `useradd -m {USER}` otherwise the default locale will not be set.  This issue is most common on a new OS build.
-* PostgreSQL 8.3+
-<pre>
-     apt-get install postgresql
-</pre>
 
-* Python 2.6 with package <tt>psycopg2</tt> and <tt>libxslt1</tt>
+* Python 2.7 with package <tt>psycopg2</tt> and <tt>libxslt1</tt>
 <pre>
-    apt-get install python-psycopg2 python-libxslt1 python-m2crypto python-simplejson python-argparse python-setuptools python-pyparsing
+    sudo apt-get install python-psycopg2 python-libxslt1 python-m2crypto python-simplejson python-argparse python-setuptools python-pyparsing
 
-    easy_install -U "rdflib>=3.0.0"  rdfextras
+    sudo easy_install -U "rdflib>=3.0.0"  rdfextras
 </pre>
 
 * Django 1.1
 
-    `apt-get install python-django`
+<pre>
+    sudo apt-get install python-django
+</pre>
 
-# Setup Database 
+* PostgreSQL 8.3+
+<pre>
+     sudo apt-get install postgresql
+</pre>
+
+# Setup Database
 
 You'll have the easiest time naming your database <tt>smart</tt>
 
@@ -48,7 +52,7 @@ This should be the second uncommented line in your default config. Change <tt>id
 
 You will need to restart PostgreSQL:
 <pre>
-   service postgresql-8.4 restart
+   sudo service postgresql restart
 </pre>
 
 * Create a PostgreSQL user for your SMArt service, e.g. "smart" and setup a password
@@ -70,23 +74,23 @@ You will need to restart PostgreSQL:
 * get Tomcat and OpenRDF-Sesame:
 <pre>
  sudo apt-get install tomcat6
- wget http://downloads.sourceforge.net/project/sesame/Sesame%202/2.3.2/openrdf-sesame-2.3.2-sdk.tar.gz
+ wget http://downloads.sourceforge.net/project/sesame/Sesame%202/2.4.0/openrdf-sesame-2.4.0-sdk.tar.gz
 </pre>
 
 * install OpenRDF Sesame as a Tomcat web application
 <pre>
- tar -xzvf openrdf-sesame-2.3.2-sdk.tar.gz
- sudo cp -r openrdf-sesame-2.3.2/war/* /var/lib/tomcat6/webapps/
+ tar -xzvf openrdf-sesame-2.4.0-sdk.tar.gz
  sudo mkdir /usr/share/tomcat6/.aduna
  sudo chown tomcat6.tomcat6 /usr/share/tomcat6/.aduna/
+ sudo cp -r openrdf-sesame-2.4.0/war/* /var/lib/tomcat6/webapps/
 </pre>
 
-* restart Tomcat
+* restart Tomcat (optional since autoDeploy is typically enabled in Tomcat by default)
 <pre>
  sudo /etc/init.d/tomcat6 restart
 </pre>
 
-* check that Tomcat is running by hitting <tt>http://localhost:8080</tt>. You should see a page saying "It Works!"
+* check that Tomcat and OpenRDF Sesame are running by hitting <tt>http://localhost:8080/openrdf-sesame/</tt>. You should see the main OpenRDF status page.
 
 The OpenRDF store doesn't support access control. You will probably want to limit access to just localhost.
 To limit servlet access to localhost, make two tomcat configuration changes:
@@ -104,6 +108,11 @@ To limit servlet access to localhost, make two tomcat configuration changes:
 You'll need to restart Tomcat again if you make these changes
 
 # Download, Install, and Configure SMArt Backend Server 
+
+* Install GIT
+<pre>
+     sudo apt-get install git
+</pre>
 
 * get the code
  <pre>
@@ -186,21 +195,23 @@ The Django development servers are easy to run at the prompt.
 The backend server can run on localhost in the configuration given above:
 <pre>
  cd /web/smart_server/
- python manage.py runserver 7000
+ nohup python manage.py runserver 7000 > /dev/null &
 </pre>
 
-The UI server, if you want it accessible from another machine, needs to specify a hostname or IP address. If you want port 80, you need to be root of course:
+The UI server, if you want it accessible from another machine, needs to specify a hostname or IP address. If you want port 80, you need to be root of course. The mask "0.0.0.0" will allow all incoming connections:
 
 <pre>
  cd /web/smart_ui_server/
- python manage.py runserver 0.0.0.0:7001
+ nohup python manage.py runserver 0.0.0.0:7001 > /dev/null &
 </pre>
 
 And finally, the Sample Apps:
 
 <pre>
  cd /web/smart_sample_apps/
- python manage.py runserver 0.0.0.0:8001
+ nohup python manage.py runserver 0.0.0.0:8001 > /dev/null &
 </pre>
+
+* Note: In the above examples the console output is suppressed. If you are having trouble with the server, you may want to redirect the output to the console or a log file.
 
 #The SMArt EMR is now at: http://localhost:7001/login
