@@ -193,21 +193,21 @@ The Django development servers are easy to run at the prompt.
 
 The backend server can run on localhost in the configuration given above:
 <pre>
- cd /web/smart_server/
+ cd /path/to/smart_server/
  nohup python manage.py runserver 7000 > /dev/null &
 </pre>
 
 The UI server, if you want it accessible from another machine, needs to specify a hostname or IP address. If you want port 80, you need to be root of course. The mask "0.0.0.0" will allow all incoming connections:
 
 <pre>
- cd /web/smart_ui_server/
+ cd /path/to/smart_ui_server/
  nohup python manage.py runserver 0.0.0.0:7001 > /dev/null &
 </pre>
 
 And finally, the Sample Apps:
 
 <pre>
- cd /web/smart_sample_apps/
+ cd /path/to/smart_sample_apps/
  nohup python manage.py runserver 0.0.0.0:8001 > /dev/null &
 </pre>
 
