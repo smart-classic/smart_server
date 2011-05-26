@@ -26,7 +26,6 @@ These instructions apply to each of three github repositories that you'll need i
 </pre>
 
 * Django 1.1
-
 <pre>
     sudo apt-get install python-django
 </pre>
@@ -50,7 +49,7 @@ This should be the second uncommented line in your default config. Change <tt>id
 
   `local     all     all        md5`
 
-You will need to restart PostgreSQL:
+* You will need to restart PostgreSQL:
 <pre>
    sudo service postgresql restart
 </pre>
