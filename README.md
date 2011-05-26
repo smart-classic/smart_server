@@ -89,7 +89,7 @@ This should be the second uncommented line in your default config. Change <tt>id
  sudo /etc/init.d/tomcat6 restart
 </pre>
 
-* check that Tomcat and OpenRDF Sesame are running by hitting <tt>http://localhost:8080/openrdf-sesame/</tt>. You should see the main OpenRDF status page.
+* check that Tomcat and OpenRDF Sesame are running by hitting <tt>http://localhost:8080/openrdf-sesame</tt>. You should see the main OpenRDF status page.
 
 The OpenRDF store doesn't support access control. You will probably want to limit access to just localhost.
 To limit servlet access to localhost, make two tomcat configuration changes:
