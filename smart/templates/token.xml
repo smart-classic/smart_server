@@ -3,9 +3,9 @@
   <App id="{{app_email}}" />{% if account_email %}
   <Account id="{{account_email}}" />{% endif %}{% if record_id %}
   <Record id="{{record_id}}" />{% endif %}
-  <SMArtConnectToken>{{connect_token.token}}</SMArtConnectToken>
-  <SMArtConnectSecret>{{connect_token.secret}}</SMArtConnectSecret>
-  <SMArtContainerAPIBase>{{api_base}}</SMArtContainerAPIBase>
+  <ConnectToken>{{connect_token.token}}</ConnectToken>
+  <ConnectSecret>{{connect_token.secret}}</ConnectSecret>
+  <APIBase>{{api_base}}</APIBase>
   <RESTToken>{{rest_token.token}}</RESTToken>
   <RESTSecret>{{rest_token.secret}}</RESTSecret>{% if oauth_cookie %}  
 
