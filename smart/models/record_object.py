@@ -1,6 +1,7 @@
 import re, uuid
 from django.conf import settings
 from smart.common.rdf_ontology import api_types, api_calls, ontology
+from smart.common.query_builder import SMART_Querier
 from rdf_rest_operations import *
 from smart.common.util import remap_node, parse_rdf, get_property, LookupType, URIRef, sp, rdf, default_ns
 from ontology_url_patterns import CallMapper, BasicCallMapper
@@ -25,13 +26,13 @@ class RecordObject(object):
     def __getitem__(cls, key):
         try: return cls.known_types_dict[key]
         except: 
-            try: return cls.known_types_dict[key.node]
+            try: return cls.known_types_dict[key.uri]
             except: 
                 return cls.known_types_dict[URIRef(key.encode())]
 
     @classmethod
     def register_type(cls, smart_type, robj):
-        cls.known_types_dict[smart_type.node] = robj
+        cls.known_types_dict[smart_type.uri] = robj
                 
     @property
     def properties(self):
@@ -39,11 +40,11 @@ class RecordObject(object):
     
     @property
     def uri(self):
-        return str(self.smart_type.node)
+        return str(self.smart_type.uri)
     
     @property
     def node(self):
-        return self.smart_type.node
+        return self.smart_type.uri
 
     @property
     def path(self):
@@ -160,13 +161,13 @@ class RecordObject(object):
         new_uris = self.generate_uris(g, c, var_bindings)
         augment_data(g, var_bindings, new_uris)
 
-    def query_one(self, id,filter_clause=""):
-        ret = self.smart_type.query(one_name=id,filter_clause=filter_clause)
+    def query_one(self, id):
+        ret = SMART_Querier.query_one(self.smart_type, id=id)
         return ret
 
-    def query_all(self, above_type=None, above_uri=None,filter_clause=""):
-        atype = above_type and above_type.smart_type or None
-        return self.smart_type.query(above_type=atype, above_uri=above_uri,filter_clause=filter_clause)
+    def query_all(self):
+        ret = SMART_Querier.query_all(self.smart_type)
+        return ret
 
 for t in api_types:
     RecordObject(t)
@@ -195,8 +196,6 @@ class RecordCallMapper(object):
     @property
     def arguments(self):
       r = {'obj': self.obj}      
-      if self.call.above:
-          r['above_obj'] = RecordObject[self.call.above]
       return r
 
     @property

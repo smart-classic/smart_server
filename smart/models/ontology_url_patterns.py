@@ -23,8 +23,10 @@ class OntologyURLMapper():
   def calls_by_path(self):
       ret = {}
 
+      print "got calls", len(api_calls)
       for c in api_calls:
-          ret.setdefault(c.path, set()).add(c)
+        print "setting path", c.path, c
+        ret.setdefault(c.path, set()).add(c)
 
       calls = ret.keys()
       calls = sorted(calls, key=lambda x: -1*len(str(x)))
