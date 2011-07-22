@@ -13,9 +13,13 @@ def type_start(t):
     example = t.example
     print "==%s RDF==\n"%name
 
-    if len(t.parents) == 1:
-        print "%s is a subtype of and inherits properties from: [[#%s RDF| %s]]\n"%(type_name_string(t), type_name_string(t.parents[0]),type_name_string(t.parents[0]))
-        
+    if len(t.parent_classes) > 0:
+        print "%s is a subtype of and inherits properties from:"%type_name_string(t)
+        parents = []
+        for p in t.parent_classes:
+            parents.append("[[#%s RDF| %s]] "%( type_name_string(p),type_name_string(p)))
+        print ", ".join(parents)
+        print "\n" 
     if description: print "%s"%description+"\n"
     if example:
         print "<pre>%s</pre>\n"%example
@@ -23,12 +27,13 @@ def type_start(t):
 
 def properties_start(type):
     print """'''%s Properties'''\n{| border="1" cellpadding="20" cellspacing="0"
-|+ align="bottom" style="color:#e76700;" |''%s Predicates''
+|+ align="bottom" style="color:#e76700;" |''%s Properties''
 |-""" % (type, type)
 
 
-def properties_row(property, name, description):
-    print "|%s\n|%s\n|%s\n|-"%(property,name, description)
+def properties_row(property, name,card, description):
+    card = "{{nobr|" + card + "}}"
+    print "|%s\n|%s\n|%s\n|%s\n|-"%(property,name, card,description)
 
 def properties_end():
     print """|}"""
@@ -37,23 +42,32 @@ def wiki_batch_start(batch):
     print "\n=%s=\n"%batch
 
 def type_name_string(t):
-    return t.name and str(t.name) or str(t.node).rsplit("#")[1]
+    try: return t.name and str(t.name) or str(t.uri).rsplit("#",1)[1]
+    except:
+        try: 
+            return str(t.uri).rsplit("/",1)[1]
+        except: 
+            return ""
     
 def wiki_payload_for_type(t):
     type_start(t)    
     wiki_properties_for_type(t)
     
 def wiki_properties_for_type(t):
-    if len(t.restrictions) == 0:
+    if len(t.object_properties) + len(t.data_properties) == 0:
         return
 
-    properties_start(t.node)
-    for c in sorted(t.restrictions, key=lambda r: str(r.node)):
-        name = c.doc.name and c.doc.name or ""
-        desc = c.doc.description and c.doc.description or ""
-        if c.on_class != None:
-            desc = desc + "[[#%s RDF | (details...)]]"%(type_name_string(ontology[c.on_class]))
-        properties_row(str(c.property), name, desc)
+    properties_start(t.uri)
+    for c in sorted(t.object_properties + t.data_properties, key=lambda r: str(r.uri)):
+        name = type_name_string(c)
+        desc = c.description
+
+        if type(c) is OWL_ObjectProperty:
+            desc += type_name_string(c.to_class) + " element [[#%s RDF | (details...)]]"%(type_name_string(c.to_class))
+        elif type(c) is OWL_DataProperty:
+            desc += (c.all_values_from and c.all_values_from.n3() or "string literal")
+        
+        properties_row(name, str(c.uri), c.cardinality_string, desc)
     properties_end()
     
 def wiki_api_for_type(t):
@@ -77,10 +91,10 @@ def wiki_api_for_type(t):
 main_types = []
 helper_types = []
 for t in api_types:
-    if (t.base_path == None):
-        helper_types.append(t)
-    else:
+    if (t.is_statement and len(t.calls) > 0):
         main_types.append(t)
+    else:
+        helper_types.append(t)
 
 
 def type_sort_order(x): 
@@ -93,7 +107,7 @@ def call_sort_order(x):
     return ret
 
 main_types = sorted(main_types, key=lambda x: type_sort_order(x) + str(x.name))
-helper_types = sorted(helper_types, key=lambda x: str(x.node))
+helper_types = sorted(helper_types, key=lambda x: str(x.uri))
 
 import sys
 if __name__=="__main__":

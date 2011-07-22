@@ -76,6 +76,7 @@ class RecordObject(object):
             return None
         
     def path_var_bindings(self, request_path):
+        print request_path, self.path
         var_names =  re.findall("{(.*?)}",self.path)
         
         match_string = self.path
@@ -108,19 +109,20 @@ class RecordObject(object):
 
     def assert_never_a_subject(self, g, s):
         t = g.triples((s, None, None))
+        print "checking never a subject", s, len(list(t))
         assert len(list(t)) == 0, "Can't make statements about an external URI: %s"%s
 
     def determine_remap_target(self,g,c,s,var_bindings):
         full_path = None
 
         if type(s) == Literal: return None
-        node_type = get_property(g, s, rdf.type)                
+        node_type = get_property(g, s, rdf.type)
         subject_uri = str(s)
         
         if type(s) == BNode:
             assert node_type != None, "%s is a bnode with no type"%s.n3()
             t = RecordObject[node_type]
-            if (t.path == None): return None
+            if not t.smart_type.is_statement: return None
 
         elif type(s) == URIRef:
             if subject_uri.startswith("urn:smart_external_id:"):

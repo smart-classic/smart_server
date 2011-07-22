@@ -187,7 +187,7 @@ def record_search_xml(request):
     print "Query for pts", q
     record_list = Record.search_records(q)
     record_list = Record.rdf_to_objects(record_list)
-
+    print "Query found", record_list
     return render_template('record_list', {'records': record_list}, type='xml')
 
 
@@ -241,7 +241,7 @@ def do_webhook(request, webhook_name):
                      target="http://smartplatforms.org/terms#Ontology")
 def download_ontology(request, **kwargs):
     import os
-    f = open(os.path.join(settings.APP_HOME, "smart/document_processing/schema/smart.owl")).read()
+    f = open(settings.ONTOLOGY_FILE).read()
     return HttpResponse(f, mimetype="application/rdf+xml")
 
 # hook to build in demographics-specific behavior: 
@@ -255,6 +255,7 @@ def put_demographics(request, *args, **kwargs):
     record_id = "".join([str(random.randint(0,9)) for x in range(12)])
     Record.objects.create(id=record_id)
     return record_post_objects(request, record_id, obj, **kwargs)
+
 
 
 def debug_oauth(request, **kwargs):

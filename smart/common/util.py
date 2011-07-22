@@ -44,6 +44,11 @@ def get_property(model, s, p, raw_statement=False):
 
     return rdfO(r[0])
 
+def get_property_list(model, s, p):
+    r = model.triples((s, p, None))
+
+    return [x[2] for x in r]
+
 def remap_node(model, old_node, new_node=None):
     if (new_node == None):
         new_node = URIRef("http://reified_node_" + str(old_node))

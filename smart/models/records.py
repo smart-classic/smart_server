@@ -63,7 +63,6 @@ class Record(Object):
       # Pull out demographics
       p_uri = p.n3() # subject URI
       p_subgraph = parse_rdf(c.sparql(pobj.query_one(p_uri)))
-      print "subq: " , pobj.query_one(p_uri)
       print "subgraph: ", serialize_rdf(p_subgraph)
       
       # Append to search result graph
@@ -75,7 +74,7 @@ class Record(Object):
   def rdf_to_objects(cls, res):
     m = parse_rdf(res)
     
-    print "Got", res
+    print "Mapping RDF to objects...", res
     people = m.triples((None, rdf['type'], sp.Demographics))
     record_list = []
     for p in people:

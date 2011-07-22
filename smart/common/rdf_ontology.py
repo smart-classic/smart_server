@@ -1,10 +1,24 @@
 from query_builder import QueryBuilder
 from util import *
+import string
 
 class OWL_Base(object):
     __metaclass__ = LookupType
     store = {}
     attributes = {}
+
+    data_properties = None
+
+    @classmethod 
+    def find_all_data_properties(cls, graph):        
+        OWL_Base.data_properties = {}
+        for p in graph.triples((None, rdf.type, owl.DatatypeProperty)):
+                OWL_Base.data_properties[p[0]] = True
+
+    def get_annotation(self, p):
+        try:
+            return filter(lambda x:  x.uri==p, self.annotations)[0].value
+        except: return None
 
     def get_property(self, p):
         return [x[2] for x in self.graph.triples((self.uri, p, None))]
@@ -25,6 +39,9 @@ class OWL_Base(object):
                     setattr(self, pn, self.get_property(v)[0])
             except: setattr(self, pn, None)
 
+        if self.__class__.data_properties == None:
+            OWL_Base.find_all_data_properties(graph)
+
     @classmethod
     def get_or_create(cls, graph, node, *args, **kwargs):
         if cls.store.has_key(node): return cls.store[node]
@@ -34,12 +51,15 @@ class OWL_Base(object):
 
     @classmethod
     def __getitem__(cls, key):
-        print "getting ", cls, key
         try: return cls.store[key]
         except: 
             k = str(key)
             return cls.store[URIRef(k)]
 
+class OWL_Datatype(OWL_Base):
+    attributes = {
+        "on_datatype": owl.onDatatype
+        }
 
 class OWL_Restriction(OWL_Base):
     attributes = {
@@ -58,15 +78,24 @@ class OWL_Restriction(OWL_Base):
 
         self.is_simple_subclass = type(uri) is URIRef
 
-        self.is_object_property = self.on_property and (self.on_class or self.all_values_from)
-        self.is_data_property = self.on_property and not self.is_object_property
+        # This could be a simple subclass restriction (a subclassOf b).
+        try:
+            dr = self.data_properties[self.on_property]
+        except:
+            dr = False
 
+        self.is_data_property = dr and self.on_property
+        self.is_object_property = (not dr) and self.on_property
+
+        if (type(self.all_values_from) == BNode):
+            self.all_values_from = OWL_Datatype(graph, self.all_values_from).on_datatype
 
 class OWL_Class(OWL_Base):
     store = {}
 
 
     def __init__(self, graph, uri):
+        assert uri != None, "Expect a non-null URI"
         super(OWL_Class, self).__init__(graph, uri)
         self.subclass_restrictions = self.find_subclass_restrictions()
 
@@ -134,22 +163,84 @@ class OWL_Class(OWL_Base):
             except: pass
         return ret
 
-    def get_annotation(self, p):
-        try:
-            return filter(lambda x:  x.uri==p, self.annotations)[0].value
-        except: return None
-
 class OWL_Annotation(object):
     def __init__(self, graph, from_class, uri, value):
         self.from_class = from_class
         self.uri = uri
         self.value = str(value)
 
-class OWL_Property(object):
+class OWL_Property(OWL_Base):
+
+    property_annotations = None
+
+    @property
+    def cardinality_string(self):
+        if self.cardinality:
+            return str(self.cardinality)
+        ret = ""
+        if self.min_cardinality != None:
+            ret += str(self.min_cardinality) + " - "
+        elif self.min_qcardinality != None:
+            ret += str(self.min_qcardinality) + " - "
+        else: ret += "0 - "
+ 
+        if self.max_cardinality != None:
+            ret += str(self.max_cardinality)
+        elif self.max_qcardinality != None:
+            ret += str(self.max_qcardinality)
+        else: ret += "Many"
+        return ret
+        
+
+
+    @classmethod 
+    def find_all_annotations(cls, graph):
+        if OWL_Property.property_annotations != None: 
+            return
+
+        OWL_Property.property_annotations = {}
+
+        q = """
+            PREFIX owl:<http://www.w3.org/2002/07/owl#>
+            PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+            PREFIX rdfs:<http://www.w3.org/2000/01/rdf-schema#>
+               SELECT ?from_class ?on_property ?annotation_property ?annotation_value
+               WHERE {
+                      ?axiom rdf:type owl:Axiom.
+                      ?annotation_property rdf:type owl:AnnotationProperty.
+                      ?axiom ?annotation_property ?annotation_value.
+                      ?axiom owl:annotatedSource ?from_class.
+                      ?axiom owl:annotatedProperty rdfs:subClassOf.
+                      ?axiom owl:annotatedTarget ?target.
+                      ?target owl:onProperty ?on_property.
+               }"""
+        
+        for annotation  in graph.query(q):
+            akey = annotation[0].n3() + "."+annotation[1].n3()
+            akey_vals = OWL_Property.property_annotations.setdefault(akey, [])
+            akey_vals.append(annotation)
+
     def merge_values_from(self, other, include_nulls=False):
         for (an, v) in other.attributes.iteritems():
             if include_nulls or getattr(other, an) != None:
                 setattr(self, an, getattr(other,an))
+
+
+    # TODO:  query only once for all annotations to speed things up.
+    def find_annotations(self):
+
+        if OWL_Property.property_annotations == None:
+            OWL_Property.find_all_annotations(self.graph)
+
+        ret = []
+        try:
+            akey = self.from_class.uri.n3()+"."+ self.uri.n3()
+            about_me = self.__class__.property_annotations[akey]
+            for a in about_me:
+                ret.append(OWL_Annotation(self.graph, self, a[2], a[3]))
+        except KeyError: 
+            pass
+        return ret
 
     @property
     def has_nonzero_cardinality(self):
@@ -168,7 +259,12 @@ class OWL_Property(object):
 
         if self.on_class and self.all_values_from:
             assert self.on_class == self.all_values_from, \
-                "OnClass must equal AllValuesFrom: %s vs. %s"%(self.on_class, self.all_values_from)
+                "%s OnClass must equal AllValuesFrom: %s vs. %s"%(self.uri, self.on_class, self.all_values_from)
+
+        self.annotations = self.find_annotations()
+        self.description = self.get_annotation(rdfs.comment) or ""
+        self.name = self.get_annotation(rdfs.label) or self.uri
+
 
 class OWL_ObjectProperty(OWL_Property):
     def find_to_class(self):
@@ -186,6 +282,11 @@ class OWL_DataProperty(OWL_Property):
 class SMART_Class(OWL_Class):
     __metaclass__ = LookupType
 
+    @property
+    def is_statement(self):
+        parent_class_uris = [c.uri for c in self.parent_classes]
+        return URIRef("http://smartplatforms.org/terms#Statement") in parent_class_uris
+
     def __init__(self, graph, uri):
         super(SMART_Class, self).__init__(graph, uri)
         self.name = self.get_annotation(rdfs.label) or ""
@@ -195,7 +296,6 @@ class SMART_Class(OWL_Class):
 
         self.calls = []
         for call in graph.triples((None, api.target, uri)):
-            print "Found an API call"
             self.calls.append(SMART_API_Call.get_or_create(graph, call[0]))
 
 """Represent calls like GET /records/{rid}/medications/"""
@@ -204,12 +304,13 @@ class SMART_API_Call(OWL_Base):
     store = {}
     attributes =  {
         "target": api.target,
-        "description": api.description,
+        "description": rdfs.comment,
         "path": api.path,
         "method": api.method,
         "by_internal_id": api.by_internal_id,
         "category": api.category
         }
+
 
 parsed = False
                 
@@ -220,24 +321,23 @@ def parse_ontology(f):
     global api_types
     global parsed
     
-    m = parse_rdf(open("/tmp/smart.owl").read())
+    m = parse_rdf(f)
     for c in m.triples((None, rdf.type, owl.Class)):
         o = SMART_Class.get_or_create(m, URIRef(c[0]))
 
     api_calls = SMART_API_Call.store.values()
     api_types = SMART_Class.store.values()
     parsed = True
-    print "parsed onto"
 
 api_calls = None  
 api_types = None 
 ontology = SMART_Class
 
-#try:
-from django.conf import settings
-f = open(settings.ONTOLOGY_FILE).read()
-parse_ontology(f)
-#except (ImportError, AttributeError): 
-    
-#    pass
+f = None
+try:
+  from django.conf import settings
+  f = open(settings.ONTOLOGY_FILE).read()
+except: pass
 
+if f != None:
+  parse_ontology(f)

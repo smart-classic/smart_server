@@ -35,8 +35,8 @@ class SMART_Querier(object):
 
         ret = ret.replace("$construct_triples", q.construct_triples())
         ret = ret.replace("$query_triples", b)        
-        ret = ret.replace("$filter_clause", filter_clause)        
-        print ret
+        ret = ret.replace("$filter_clause", filter_clause)
+        print "QUERY:", ret
         return ret
 
 class QueryBuilder(object):
@@ -101,6 +101,9 @@ class QueryBuilder(object):
             root_name = self.root_name
             root_type = self.root_type            
             ret = " ".join(self.triples_created)
+            ret += self.required_triple(root_name, 
+                             "<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>", 
+                             root_type.uri.n3())
         else:
             ret += self.optional_triple(root_name, 
                              "<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>", 
