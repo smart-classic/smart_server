@@ -42,7 +42,10 @@ def wiki_batch_start(batch):
     print "\n=%s=\n"%batch
 
 def type_name_string(t):
-    try: return t.name and str(t.name) or str(t.uri).rsplit("#",1)[1]
+    if t.name:
+        return str(t.name)
+
+    try: return str(t.uri).rsplit("#",1)[1]
     except:
         try: 
             return str(t.uri).rsplit("/",1)[1]
@@ -63,11 +66,17 @@ def wiki_properties_for_type(t):
         desc = c.description
 
         if type(c) is OWL_ObjectProperty:
-            desc += type_name_string(c.to_class) + " element [[#%s RDF | (details...)]]"%(type_name_string(c.to_class))
+            d = (c.to_class.description or "")
+            if len(d) > 1000:
+                d = d[:1000]+"..."
+            if len(d) > 0:
+                d = ": " + d
+
+            desc += type_name_string(c.to_class) + " " +d + " [[#%s RDF | (details...)]]"%(type_name_string(c.to_class))
         elif type(c) is OWL_DataProperty:
             desc += (c.all_values_from and c.all_values_from.n3() or "string literal")
         
-        properties_row(name, str(c.uri), c.cardinality_string, desc)
+        properties_row(name, c.uri.n3(), c.cardinality_string, desc)
     properties_end()
     
 def wiki_api_for_type(t):

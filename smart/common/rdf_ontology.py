@@ -263,7 +263,7 @@ class OWL_Property(OWL_Base):
 
         self.annotations = self.find_annotations()
         self.description = self.get_annotation(rdfs.comment) or ""
-        self.name = self.get_annotation(rdfs.label) or self.uri
+        self.name = self.get_annotation(rdfs.label) or ""
 
 
 class OWL_ObjectProperty(OWL_Property):
