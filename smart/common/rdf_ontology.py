@@ -1,6 +1,6 @@
 from query_builder import QueryBuilder
 from util import *
-import string
+import string, re
 
 class OWL_Base(object):
     __metaclass__ = LookupType
@@ -8,6 +8,9 @@ class OWL_Base(object):
     attributes = {}
 
     data_properties = None
+
+    def guess_name(self):
+        return re.split("[#\/]", str(self.uri))[-1]
 
     @classmethod 
     def find_all_data_properties(cls, graph):        
@@ -174,6 +177,13 @@ class OWL_Property(OWL_Base):
     property_annotations = None
 
     @property
+    def multiple_cardinality(self):
+        return  (self.cardinality and self.cardinality > 1) or \
+            (self.max_cardinality and self.max_cardinality > 1) or \
+            (self.max_qcardinality and self.max_qcardinality > 1) or \
+            (not (self.cardinality or self.max_cardinality or self.max_qcardinality))
+    
+    @property
     def cardinality_string(self):
         if self.cardinality:
             return str(self.cardinality)
@@ -263,7 +273,7 @@ class OWL_Property(OWL_Base):
 
         self.annotations = self.find_annotations()
         self.description = self.get_annotation(rdfs.comment) or ""
-        self.name = self.get_annotation(rdfs.label) or ""
+        self.name = self.get_annotation(rdfs.label) or self.guess_name()
 
 
 class OWL_ObjectProperty(OWL_Property):
@@ -289,7 +299,7 @@ class SMART_Class(OWL_Class):
 
     def __init__(self, graph, uri):
         super(SMART_Class, self).__init__(graph, uri)
-        self.name = self.get_annotation(rdfs.label) or ""
+        self.name = self.get_annotation(rdfs.label) or self.guess_name()
         self.description = self.get_annotation(rdfs.comment)
         self.example = self.get_annotation(api.example)
         self.base_path = self.get_annotation(api.base_path)
