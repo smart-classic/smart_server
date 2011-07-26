@@ -79,6 +79,7 @@ TEMPLATE_LOADERS = (
 
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
+    'smart_server.smart.middlewares.reseed_random.ReseedRandom',
     'smart_server.smart.middlewares.authentication.Authentication',
     'smart_server.smart.middlewares.authorization.Authorization',
   #  'smart_server.smart.middlewares.profiling.ProfileMiddleware'
@@ -128,7 +129,7 @@ SERVER_EMAIL = EMAIL_HOST_USER
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 # excluse a URL pattern from access control
-SMART_ACCESS_CONTROL_EXCEPTIONS = ["^/codes/", "^/spl/","^/records/100000.*"]
+SMART_ACCESS_CONTROL_EXCEPTIONS = ["^/codes/", "^/spl/"]
 
 # logging
 import logging
