@@ -21,7 +21,8 @@ urlpatterns += patterns(
 
     # Record
     (r'^record_by_token/$', record_by_token),
-    (r'^records/search/$', record_search),
+    (r'^records/search/xml$', record_search_xml),
+    (r'^records/search$', record_search),
     (r'^records/(?P<record_id>[^/]+)$', record_info),
 
     (r'^accounts/(?P<account_id>[^/]+)/apps/(?P<app_email>[^/]+)$', MethodDispatcher({

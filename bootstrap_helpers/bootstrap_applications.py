@@ -27,14 +27,25 @@ for app,app_params in apps.iteritems():
     base_url = r["base_url"]
   
   if r["mode"] == "background" or r["mode"] == "helper":
+      admin_p = False
+      try:
+          admin_p =  app_params["admin_p"]
+      except: pass
+
       a = HelperApp.objects.create(
                        description = r["description"],
                        consumer_key = r["id"],
                        secret = 'smartapp-secret',
                        name =r["name"],
-                       email=r["id"])
+                       email=r["id"],
+                       admin_p = admin_p)
       
   elif r["mode"] == "ui":
+      if "optimalBrowserEnvironments" not in r:
+        r["optimalBrowserEnvironments"] = ["desktop"]
+      if "supportedBrowserEnvironments" not in r:
+        r["supportedBrowserEnvironments"] = ["desktop", "mobile", "tablet"]
+
       a = PHA.objects.create(
                        description = r["description"],
                        consumer_key = r["id"],
@@ -42,6 +53,8 @@ for app,app_params in apps.iteritems():
                        name =r["name"],
                        email=r["id"],
                        icon_url=sub(r["icon"], "base_url", base_url),
+                       optimal_environments=",".join(r["optimalBrowserEnvironments"]),
+                       supported_environments=",".join(r["supportedBrowserEnvironments"]),
                        enabled_by_default=enabled_by_default)
   else: a = None
 

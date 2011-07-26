@@ -15,7 +15,6 @@ class OntologyURLMapper():
           mapper = CallMapper.map_call(c)
           methods[str(c.method)] = mapper.maps_to
           arguments.update(mapper.arguments)
-      
         self.patterns += patterns( '',
                                  (self.django_path(p),
                                   MethodDispatcher(methods), 

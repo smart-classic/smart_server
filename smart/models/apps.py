@@ -67,6 +67,8 @@ class PHA(OAuthApp):
   
   # is app enabled by default on new accounts?
   enabled_by_default = models.BooleanField(default=False)
+  supported_environments = models.CharField(max_length=30, default="desktop,mobile,tablet")
+  optimal_environments = models.CharField(max_length=30, default="desktop")
 
 class HelperApp(OAuthApp):
   """
@@ -77,6 +79,7 @@ class HelperApp(OAuthApp):
   Meta = BaseMeta()
   # short description of the app
   description = models.CharField(max_length=2000, null=True)
+  admin_p= models.BooleanField(default=False)
 
 ##
 ## App Tokens are implemented separately, since they require access to record and docs

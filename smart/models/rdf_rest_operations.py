@@ -1,6 +1,7 @@
 from smart.models.rdf_store import *
 from smart.models.records import *
 from smart.lib.utils import *
+
 import re
 
 def record_get_object(request, record_id, obj,  **kwargs):
@@ -38,21 +39,29 @@ def record_delete_all_objects(request, record_id, obj,  above_obj=None, **kwargs
     return rdf_delete(c, obj.query_all(above_type=above_obj, above_uri=above_uri))
 
 def record_post_objects(request, record_id, obj, above_obj=None, **kwargs):
+    c = RecordStoreConnector(Record.objects.get(id=record_id))
     path = smart_path(request.path)
+
     g = parse_rdf(request.raw_post_data)
     var_bindings = obj.path_var_bindings(path)
-    new_uris = obj.generate_uris(g, var_bindings)
+
+    if "record_id" in var_bindings:
+        assert var_bindings['record_id'] == record_id, "Mismatched: %s vs. %s"%(record_id, var_bindings['record_id'])
+    else:
+        var_bindings['record_id'] = record_id
+
+    new_uris = obj.prepare_graph(g, c, var_bindings)
 
     if (above_obj != None):
         pred = above_obj.smart_type.predicate_for_contained_type(obj.smart_type)
         assert pred != None, "Can't derive the predicate for adding %s below %s."%(obj.type, above_obj.type)
         for new_node in new_uris:
-            above_node = URIRef(smart_path(smart_parent(request.path)))
-            g.add((above_node, 
-                     pred, 
-                     new_node))
+            if get_property(g, new_node, rdf.type) == obj.node:
+                above_node = URIRef(smart_path(smart_parent(request.path)))
+                g.add((above_node, 
+                       pred, 
+                       new_node))
 
-    c = RecordStoreConnector(Record.objects.get(id=record_id))
     return rdf_post(c, g)    
 
 def record_put_object(request, record_id, obj, above_obj=None, **kwargs):
@@ -62,41 +71,4 @@ def record_put_object(request, record_id, obj, above_obj=None, **kwargs):
     #  3.  Add any parent-child links if needed
     #  4.  Delete the thing from existing store, if it's present
     #  5.  POST the (new) thing to the store
-    c = RecordStoreConnector(Record.objects.get(id=record_id))
-    g = parse_rdf(request.raw_post_data)    
-
-    chain_of_ids = re.findall("external_id/([^/]+)", request.path)
-    external_id = chain_of_ids[-1]
-    above_internal_id=None
-    
-    if (len(chain_of_ids) > 1):
-        above_external_id = chain_of_ids[-2]
-        above_internal_id = above_obj.internal_id(c, above_external_id)
-        assert (above_internal_id != None), "No containing object exists with external_id %s"%above_external_id
-
-    # 1.
-    obj.ensure_only_one_put(g)
-    var_bindings = obj.path_var_bindings(smart_path(request.path))
-    new_nodes = obj.generate_uris(g, var_bindings)
-    
-    assert len(new_nodes) == 1, "Expected exactly one new node in %s ; %s"%(new_nodes, request.raw_post_data)
-    new_node = new_nodes[0]
-    
-    # 2.
-    g.add((new_node, 
-            URIRef('http://smartplatforms.org/external_id'), 
-            Literal(external_id.encode())))
-
-    # 3.
-    if above_internal_id != None:
-        g.add((URIRef(above_internal_id), 
-                  above_obj.smart_type.predicate_for_contained_type(obj.smart_type), 
-                  new_node))
-
-    # 4. 
-    id = obj.internal_id(c, external_id)  
-    if (id):
-        rdf_delete(c, obj.query_one("<%s>"%(id)), save=False)
-    
-    # 5.
-    return rdf_post(c, g)
+    pass

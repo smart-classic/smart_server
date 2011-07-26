@@ -6,11 +6,9 @@
    "http://localhost:8001/framework/med_adherence/smart_manifest.json" :  {"enabled_by_default": true},
    "http://localhost:8001/framework/problem_list/smart_manifest.json" :  {"enabled_by_default": true},
    "http://localhost:8001/framework/got_statins/smart_manifest.json" : {"enabled_by_default": false},
-   "http://localhost:8001/surescripts_connector/smart_manifest.json" :  {"enabled_by_default": false},
+   "http://localhost:8001/framework/background_app/smart_manifest.json" :  {"enabled_by_default": false, "admin_p": true},
    "http://localhost:8001/framework/api_playground/smart_manifest.json" : {"enabled_by_default": true},
-   "http://localhost:8001/framework/blue_button_import/smart_manifest.json" :  {"enabled_by_default": false},
-   "http://localhost:8001/framework/med_coder/smart_manifest.json" : {"enabled_by_default": false},
-   "http://localhost:8001/framework/nlp_import/smart_manifest.json" :  {"enabled_by_default": false},
-   "http://localhost:8001/framework/med_batch_add/smart_manifest.json" : {"enabled_by_default": false}
+   "http://localhost:8001/framework/cardio_risk_viz/smart_manifest.json" : {"enabled_by_default": false},
+   "http://localhost:8001/framework/pedi_bpc/smart_manifest.json" : {"enabled_by_default": false}
  }
 }

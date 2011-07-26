@@ -9,6 +9,8 @@
   <ui>{{pha.has_ui}}</ui>
   {%if not pha.background_p%}
   <iconURL>{{pha.icon_url}}</iconURL>
+  <optimalBrowserEnvironments>{{pha.optimal_environments}}</optimalBrowserEnvironments>
+  <supportedBrowserEnvironments>{{pha.supported_environments}}</supportedBrowserEnvironments>
   {%endif%}
 </App>
 {% endfor %}

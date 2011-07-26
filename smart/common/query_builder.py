@@ -56,7 +56,11 @@ class QueryBuilder(object):
 
     def build(self, root_name=None, root_type=None, depth=0):
         ret = ""
-        
+
+        # If we're at the root of a record, don't try to expand ALL data.
+        if depth>0 and root_type.node.n3() == "<http://smartplatforms.org/terms#MedicalRecord>":
+            return ret
+
         # Recursion starting off:  set initial conditions (if any).
         if root_type == None:
             root_name = self.root_name
@@ -64,22 +68,28 @@ class QueryBuilder(object):
             ret = " ".join(self.triples_created)
 
         # If there's a type, it must be the root_type
-        type_id = self.get_identifier("?rdftype", "object")
         ret += self.required_triple(root_name, "rdf:type", root_type.node.n3())
 
         for p in root_type.properties:
             p = str(p.property)
             oid = self.get_identifier("?"+p, "object")
-            ret  += self.optional_triple(root_name, "<"+p+">", oid)
+            # a special case for the rdf:li predicate, which resolves
+            # to _+*any* valid number
+            if p == "http://www.w3.org/1999/02/22-rdf-syntax-ns#li":
+                ret  += self.optional_triple(root_name, self.get_identifier("?listitem", "predicate"), oid)
+            else:
+                ret  += self.optional_triple(root_name, "<"+p+">", oid)
+
 
         # We'll traverse + recurse down *only* from the top of the hierarchy
         # OR if we're dealing with "core" (i.e. blank-node, i.e. non-GETtable) resources.
-        for pred, contained in root_type.contained_types.iteritems():
-            if depth > 0 and contained.base_path: continue
+        for pred, contained_list in root_type.contained_types.iteritems():
+            for contained in contained_list:
+                if depth > 0 and contained.base_path: continue
 
-            p = str(pred)
-            oid = self.get_identifier("?"+p, "object")
-            ret += self.optional_linked_type(linked_type=contained, 
+                p = str(pred)
+                oid = self.get_identifier("?"+p, "object")
+                ret += self.optional_linked_type(linked_type=contained, 
                                              root_name=root_name,
                                              predicate="<"+p+">", 
                                              object=oid, 

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Alerts>
+{% for alert in alerts %}
+  <Alert id="{{ alert.id }}" >
+  <notes>{{alert.alert_text}}</notes>
+  <time>{{alert.alert_time}}</time>
+  <triggering_app>{{alert.triggering_app.email}}</triggering_app>
+  <acknowledged_by>{{alert.acknowledged_by.id|default:""}}</acknowledged_by>
+  <acknowledged_at>{{alert.acknowledged_by.id|default:""}}</acknowledged_at>
+  </Alert>
+{% endfor %}
+</Alerts>

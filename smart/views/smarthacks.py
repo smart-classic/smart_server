@@ -179,9 +179,17 @@ def remove_app(request, account, app):
 
 def record_search(request):
     q = request.GET.get('sparql', None)
+    record_list = Record.search_records(q)
+    return HttpResponse(record_list, mimetype="application/rdf+xml")
+
+def record_search_xml(request):
+    q = request.GET.get('sparql', None)
     print "Query for pts", q
     record_list = Record.search_records(q)
+    record_list = Record.rdf_to_objects(record_list)
+
     return render_template('record_list', {'records': record_list}, type='xml')
+
 
 def allow_options(request, **kwargs):
     r =  utils.x_domain(HttpResponse())
@@ -239,16 +247,14 @@ def download_ontology(request, **kwargs):
 # hook to build in demographics-specific behavior: 
 # if a record doesn't exist, create it before adding
 # demographic data
-@CallMapper.register(method="PUT",
+@CallMapper.register(method="POST",
                      category="record_items",
-                     target="http://xmlns.com/foaf/0.1/Person")
-def put_demographics(request, record_id, obj, **kwargs):
-  try:
-    Record.objects.get(id=record_id)
-  except:
+                     target="http://smartplatforms.org/terms#MedicalRecord")
+def put_demographics(request, *args, **kwargs):
+    obj = RecordObject["http://smartplatforms.org/terms#MedicalRecord"]
+    record_id = "".join([str(random.randint(0,9)) for x in range(12)])
     Record.objects.create(id=record_id)
-  record_delete_object(request, record_id, obj, **kwargs)
-  return record_post_objects(request, record_id, obj, **kwargs)
+    return record_post_objects(request, record_id, obj, **kwargs)
 
 
 def debug_oauth(request, **kwargs):

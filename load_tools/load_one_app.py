@@ -15,8 +15,13 @@ def sub(str, var, val):
 def LoadApp(app):
     # Some basic apps and a couple of accounts to get things going.
   print app
-  base_url = re.search("https?://.*?[/$]", app).group()[:-1]
-  s = urllib2.urlopen(app)
+  if not app.startswith("http"):
+      s = open(app)
+      base_url="unknown"
+  else:
+      base_url = re.search("https?://.*?[/$]", app).group()[:-1]
+      s = urllib2.urlopen(app)
+
   r = simplejson.loads(s.read())
 
   if ('base_url' not in locals()):
@@ -31,6 +36,13 @@ def LoadApp(app):
                        email=r["id"])
       
   elif r["mode"] == "ui":
+      exists = PHA.objects.filter(email=r["id"])
+      assert len(exists) <2, "Found >1 PHA by the name %s"%r["id"]
+      if len(exists)==1:
+          print exists[0]
+          print "deleting, exists."
+          exists[0].delete()
+
       a = PHA.objects.create(
                        description = r["description"],
                        consumer_key = r["id"],
