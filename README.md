@@ -56,7 +56,7 @@ This should be the second uncommented line in your default config. Change <tt>id
 
 * Create a PostgreSQL user for your SMArt service, e.g. "smart" and setup a password
  <pre>
- su - postgres
+ sudo su - postgres
  createuser --superuser smart
  psql
  postgres=# \password smart
