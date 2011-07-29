@@ -45,13 +45,13 @@
 	    if (!t.is_statement)
 		throw "Only Statements can be added to a SMART Object collection, not " + t;
 	    
-	    items_by_type[t.name] || (items_by_type[t.name] = []);
-	    items_by_type[t.name].push(i);
+	    items_by_type[t.name] || (items_by_type[t.name] = {});
+	    items_by_type[t.name][i.uri] = i;
 	    items_by_uri[i.uri] = i;
 	};
 
 	// Get all items from the collection, by type (e.g. "Medication")
-	this.get_items = function(type_name) {
+	this.by_type = function(type_name) {
 	    
 	    // This function should only be called with a "clinical statement" type
 	    // (e.g. it can be called to find all Medications, but not all CodedValues
@@ -66,11 +66,15 @@
 	    if (!td || td.length == 0)
 		throw "Only Statements can be retrieved to a SMART Object collection."
 	    
-	    return items_by_type[type_name];
+	    var ret = [];
+	    $.each(items_by_type[type_name], function(n, item){
+		ret.push(item);
+	    });
+	    return ret;
 	};
 	
 	// Get a single item from the collection, by URI
-	this.get_item = function(item_uri) {
+	this.by_uri = function(item_uri) {
 	    return items_by_uri[item_uri];
 	};
     };
@@ -122,6 +126,7 @@
 
 		var v = match["dp"+i].value;
 
+		if (v._string) v = v._string;
 		if ($.inArray(v,ii.values) == -1) {
 		    ii.values.push(v);
 		}
@@ -146,6 +151,7 @@
 
 
 	$.each(matched_items, function(iURL, item) {
+	    if (!item.object_properties) return; 
 	    $.each(item.object_properties, function(opURI, sub_item_set) {
 		$.each(sub_item_set, function(subItemURI, sub_item) {
 		    parse_one_type(payload, sub_item.type, sub_item);
@@ -161,11 +167,15 @@
     function make_structured(item) {
 
 	var structured_item = {
-	    uri: item.uri,
 	    type: item.type.uri
 	};
+
+	if (item.uri && !(item.uri.match(/^_:/)))
+	    structured_item.uri= item.uri;
+
 	
 	$.each(item.type.data_properties, function(i, dp) {
+	    if (!item.data_properties) return;
 	    if (!item.data_properties[dp.uri]) return;
 
 	    if (dp.allow_list) {
@@ -181,7 +191,7 @@
 	
 	$.each(item.type.object_properties, function(i, op) {
 	    var structured_subitems = [];
-	    
+	    if (!item.object_properties) return;
 	    if (!item.object_properties[op.uri]) return;
 	    $.each(item.object_properties[op.uri], function(siURI, subitem) {
 		structured_subitems.push(make_structured(subitem));

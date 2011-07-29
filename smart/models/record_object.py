@@ -116,6 +116,7 @@ class RecordObject(object):
         full_path = None
 
         if type(s) == Literal: return None
+        print "Found tyupes", g, list(g.triples((s, rdf.type, None)))
         node_type = get_property(g, s, rdf.type)
         subject_uri = str(s)
         
@@ -261,7 +262,7 @@ def record_get_filtered_labs(request, *args, **kwargs):
 def record_get_allergies(request, *args, **kwargs):
       record_id = kwargs['record_id']
       a = RecordObject["http://smartplatforms.org/terms#Allergy"]
-      ae = RecordObject["http://smartplatforms.org/terms#AllergyException"]
+      ae = RecordObject["http://smartplatforms.org/terms#AllergyExclusion"]
       c = RecordStoreConnector(Record.objects.get(id=record_id))
 
       ma = c.sparql(a.query_all())

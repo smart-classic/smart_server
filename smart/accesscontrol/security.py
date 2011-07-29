@@ -24,6 +24,7 @@ from smart.accesscontrol.oauth_servers import ADMIN_OAUTH_SERVER, OAUTH_SERVER, 
 def get_oauth_info(request, server):
   try:
     oauth_request = server.extract_oauth_request(djangoutils.extract_request(request))
+    
     consumer, token, parameters = server.check_resource_access(oauth_request)
     return consumer, token, parameters, oauth_request
   except oauth.OAuthError as e:

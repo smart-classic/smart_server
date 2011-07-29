@@ -21,7 +21,7 @@ class RecordImporter(object):
 
         # 1. For each known data type, extract relevant nodes
         var_bindings = {'record_id': self.target_id}
-        ro = RecordObject[sp.MedicalDataElement]    
+        ro = RecordObject[sp.Statement]    
         ro.prepare_graph(self.data, None, var_bindings)
             
         # 2. Copy extracted nodes to permanent RDF store
