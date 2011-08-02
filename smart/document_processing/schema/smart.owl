@@ -1787,7 +1787,7 @@ No example yet.]]></api:example>
                 <owl:onClass rdf:resource="http://smartplatforms.org/terms#QuantitativeResult"/>
                 <api:doc>
 					<rdf:Description>
-						<api:name>Qualitative result, if any</api:name>
+						<api:name>Quantitative result, if any</api:name>
 						<api:description>RDF QuantitativeResult node</api:description>
 					</rdf:Description>
 				</api:doc>
@@ -2701,7 +2701,7 @@ VitalSign
     <owl:Class rdf:about="http://smartplatforms.org/terms#QuantitativeResult">
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#value"/>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#valueAndUnit"/>
                 <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
                 <owl:onClass rdf:resource="http://smartplatforms.org/terms#ValueAndUnit"/>
                 <api:doc>
@@ -2715,7 +2715,7 @@ VitalSign
 
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#value"/>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#valueRange"/>
                 <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
                 <owl:onClass rdf:resource="http://smartplatforms.org/terms#ValueRange"/>
                 <api:doc>
@@ -2729,7 +2729,7 @@ VitalSign
 
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#value"/>
+                <owl:onProperty rdf:resource="http://smartplatforms.org/terms#valueRatio"/>
                 <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
                 <owl:onClass rdf:resource="http://smartplatforms.org/terms#ValueRatio"/>
                 <api:doc>
