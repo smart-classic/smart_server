@@ -32,7 +32,7 @@ data_property = string.Template("""
       {
         name: "$name", 
         uri: "$uri",
-        allow_list: $allow_list,
+        allow_list: $allow_list
       }""")
 
 object_property = string.Template("""

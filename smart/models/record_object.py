@@ -1,6 +1,6 @@
 import re, uuid
 from django.conf import settings
-from smart.common.rdf_ontology import api_types, api_calls, ontology
+from smart.common.rdf_ontology import api_types, api_calls, ontology, SMART_Class
 from smart.common.query_builder import SMART_Querier
 from rdf_rest_operations import *
 from smart.common.util import remap_node, parse_rdf, get_property, LookupType, URIRef, sp, rdf, default_ns
@@ -117,7 +117,20 @@ class RecordObject(object):
 
         if type(s) == Literal: return None
         print "Found tyupes", g, list(g.triples((s, rdf.type, None)))
-        node_type = get_property(g, s, rdf.type)
+        node_type = list(g.triples((s, rdf.type, None)))
+        while len(node_type) > 1:
+            a = SMART_Class[node_type[0][2]]
+            b = SMART_Class[node_type[1][2]]
+            if a in b.parent_classes:
+                del node_type[0]
+            elif b in a.parent_classes:
+                del node_type[1]
+            else: 
+                raise Exception("Expected only a linear chain of types, got ", node_type)
+        if len(node_type) > 0:
+            node_type = node_type[0][2]
+
+        print "settled on type", node_type
         subject_uri = str(s)
         
         if type(s) == BNode:
