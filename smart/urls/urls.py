@@ -41,6 +41,8 @@ urlpatterns += patterns(
     (r'^apps/accounts/(?P<account_id>[^/]+)/$', apps_for_account),
     (r'^activity/(?P<activity_name>[^/]+)/app/(?P<app_id>[^/]+)$', resolve_activity_with_app),
     (r'^activity/(?P<activity_name>[^/]+)$', resolve_activity),
+
+    (r'^apps/(?P<descriptor>.+)/manifest$', resolve_manifest),
     
     # static
     (r'^static/(?P<path>.*)$', 'django.views.static.serve', {'document_root': 'static'}),

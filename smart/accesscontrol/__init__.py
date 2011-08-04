@@ -75,4 +75,5 @@ def grant_baseline(permset):
   permset.grant(smart.views.debug_oauth, None)
   permset.grant(smart.views.smarthacks.container_capabilities, None)
   permset.grant(smart.views.smarthacks.download_ontology)
+  permset.grant(smart.views.resolve_manifest)
     
