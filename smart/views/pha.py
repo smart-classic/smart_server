@@ -19,6 +19,13 @@ def all_phas(request):
   phas = [PHA.objects.get(id=x.app.id) for x in AppActivity.objects.filter(name="main")]
   return render_template('phas', {'phas': phas}, type="xml")
 
+
+def all_manifests(request):
+  """A list of the PHAs as JSON"""
+  phas = [PHA.objects.get(id=x.app.id) for x in AppActivity.objects.filter(name="main")]
+  ret = "[" +", ".join([a.manifest for a in phas])+ "]"
+  return HttpResponse(ret, mimetype='text/json')
+
 def resolve_manifest(request, descriptor):
   if "@" in descriptor:
     return resolve_manifest_with_app(request, "main", descriptor)
@@ -27,17 +34,7 @@ def resolve_manifest(request, descriptor):
 
 def resolve_manifest_with_app(request, activity_name, app_id):
   act = resolve_activity_helper(request, activity_name, app_id)
-  # TODO:  actually save the manifest in database and return *that*
-  # instead of this lousy reconstruction.
-  js =  """{
-	"id": "%s",
-	"mode": "ui", 
-	"activities": { 
-	    "main": "%s"
-	}
-    }"""%(act.app.email, act.url)
-
-  return HttpResponse(js, mimetype='text/json')
+  return HttpResponse(act.app.manifest, mimetype='text/json')
 
 def resolve_activity(request, activity_name):
     return resolve_activity_with_app(request, activity_name, None)

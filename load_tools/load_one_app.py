@@ -11,31 +11,46 @@ import urllib2
 def sub(str, var, val):
     return str.replace("{%s}"%var, val)
 
-
-def LoadApp(app):
+def LoadApp(app, enabled_by_default=False):
     # Some basic apps and a couple of accounts to get things going.
   print app
   if not app.startswith("http"):
       s = open(app)
-      base_url="unknown"
+      base_url = None
   else:
       base_url = re.search("https?://.*?[/$]", app).group()[:-1]
       s = urllib2.urlopen(app)
 
-  r = simplejson.loads(s.read())
+  manifest_string = s.read()
+  s.close() 
+  LoadAppFromJSON(manifest_string, enabled_by_default)
 
-  if ('base_url' not in locals()):
-    base_url = r["base_url"]
+def LoadAppFromJSON(manifest_string, enabled_by_default, base_url=None):
+  r = simplejson.loads(manifest_string)
+  if base_url == None:
+      try:
+          base_url = r["base_url"]
+      except:
+          base_url = "unknown"
   
+  manifest_string = manifest_string.replace("{base_url}", base_url)
+
   if r["mode"] == "background" or r["mode"] == "helper":
       a = HelperApp.objects.create(
                        description = r["description"],
                        consumer_key = r["id"],
                        secret = 'smartapp-secret',
                        name =r["name"],
-                       email=r["id"])
+                       email=r["id"],
+                       manifest=manifest_string)
       
-  elif r["mode"] == "ui":
+  elif r["mode"] == "ui" or r["mode"] == "frame_ui":
+
+      if "optimalBrowserEnvironments" not in r:
+          r["optimalBrowserEnvironments"] = ["desktop"]
+      if "supportedBrowserEnvironments" not in r:
+          r["supportedBrowserEnvironments"] = ["desktop", "mobile", "tablet"]
+              
       exists = PHA.objects.filter(email=r["id"])
       assert len(exists) <2, "Found >1 PHA by the name %s"%r["id"]
       if len(exists)==1:
@@ -49,8 +64,12 @@ def LoadApp(app):
                        secret = 'smartapp-secret',
                        name =r["name"],
                        email=r["id"],
+                       mode=r["mode"],
                        icon_url=sub(r["icon"], "base_url", base_url),
-                       enabled_by_default=False)
+                       enabled_by_default=enabled_by_default,
+                       optimal_environments=",".join(r["optimalBrowserEnvironments"]),
+                       supported_environments=",".join(r["supportedBrowserEnvironments"]),
+                       manifest=manifest_string)
   else: a = None
 
   try:
@@ -72,8 +91,6 @@ def LoadApp(app):
                               url=hook_url,
                               requires_patient_context=rpc)
   except: pass
-  print "done ", app
-  s.close() 
 
 if __name__ == "__main__":
     import string

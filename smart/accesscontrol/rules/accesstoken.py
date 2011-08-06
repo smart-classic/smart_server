@@ -15,6 +15,13 @@ def check_token_for_record_wrapper(token):
             return token.share.record.id == view_kwargs['record_id']
         return check_token_for_record
 
+def check_frame_mode_wrapper(token):
+    pha = PHA.objects.get(id=token.share.with_app.id)
+    
+    def r(request, view_func, view_args, view_kwargs):
+        return pha.mode == "frame_ui"
+    return r
+
 
 def grant(accesstoken, permset):
     """
@@ -47,5 +54,15 @@ def grant(accesstoken, permset):
     permset.grant(record_post_alert, [check_token_for_record])
     permset.grant(user_search)
     permset.grant(user_get)
+    
+
+    check_frame_mode = check_frame_mode_wrapper(accesstoken)
+    permset.grant(resolve_activity_with_app, [])
+    permset.grant(resolve_manifest, [check_frame_mode])
+    permset.grant(all_manifests, [check_frame_mode])
+
+
+
+
     
     

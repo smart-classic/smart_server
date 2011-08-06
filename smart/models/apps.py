@@ -40,9 +40,7 @@ class OAuthApp(Principal):
   consumer_key = models.CharField(max_length=200)
   secret = models.CharField(max_length=60)
   name = models.CharField(max_length = 200)
-
-## HACK because of problem
-#OAuthApp = Principal
+  manifest=models.TextField(null=True)
 
 
 ##
@@ -69,6 +67,7 @@ class PHA(OAuthApp):
   enabled_by_default = models.BooleanField(default=False)
   supported_environments = models.CharField(max_length=30, default="desktop,mobile,tablet")
   optimal_environments = models.CharField(max_length=30, default="desktop")
+  mode=models.CharField(max_length=10)
 
 class HelperApp(OAuthApp):
   """
