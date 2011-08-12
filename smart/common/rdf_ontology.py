@@ -90,8 +90,11 @@ class OWL_Restriction(OWL_Base):
         self.is_data_property = dr and self.on_property
         self.is_object_property = (not dr) and self.on_property
 
+        # We don't yet deal with arbitrary anonymous constraint expressions
+        # like "(drugName only (code only RxNorm_Semantic))"...
+        # Just allow predicates to conenct with concrete URI classes.
         if (type(self.all_values_from) == BNode):
-            self.all_values_from = OWL_Datatype(graph, self.all_values_from).on_datatype
+            self.all_values_from = None
 
 class OWL_Class(OWL_Base):
     store = {}
@@ -277,13 +280,13 @@ class OWL_Property(OWL_Base):
 
 
 class OWL_ObjectProperty(OWL_Property):
-    def find_to_class(self):
+    @property
+    def to_class(self):
         to_class_uri = self.on_class or self.all_values_from
         return self.from_class.get_or_create(self.graph, to_class_uri)
 
     def __init__(self, graph, from_class, uri, restrictions):
         super(OWL_ObjectProperty, self).__init__(graph, from_class, uri, restrictions)
-        self.to_class = self.find_to_class()
 
 class OWL_DataProperty(OWL_Property):
     def __init__(self, graph, from_class, uri, restrictions):

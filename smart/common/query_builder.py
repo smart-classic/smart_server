@@ -111,11 +111,16 @@ class QueryBuilder(object):
 
         for prop in root_type.object_properties:
                 oid = self.get_identifier("?"+prop.uri.n3(), "object")
-                ret += self.optional_linked_type(linked_type=prop.to_class, 
+
+                if not prop.to_class.is_statement: # for regular data, keep generating the query
+                    ret += self.optional_linked_type(linked_type=prop.to_class, 
                                              root_name=root_name,
                                              predicate=prop.uri.n3(),
                                              object=oid, 
                                              depth=depth+1)
+
+                else: # if we're comming to another statement, bottom out the recursion
+                    ret += self.optional_triple(root_name, prop.uri.n3(), oid)
 
         for prop in root_type.data_properties:
                 oid = self.get_identifier("?"+prop.uri.n3(), "object")

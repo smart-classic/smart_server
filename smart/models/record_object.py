@@ -5,7 +5,6 @@ from smart.common.query_builder import SMART_Querier
 from rdf_rest_operations import *
 from smart.common.util import remap_node, parse_rdf, get_property, LookupType, URIRef, sp, rdf, default_ns
 from ontology_url_patterns import CallMapper, BasicCallMapper
-from graph_augmenter import augment_data
 
 class RecordObject(object):
     __metaclass__ = LookupType
@@ -107,17 +106,13 @@ class RecordObject(object):
         
         return URIRef(ret)    
 
-    def assert_never_a_subject(self, g, s):
-        t = g.triples((s, None, None))
-        print "checking never a subject", s, len(list(t))
-        assert len(list(t)) == 0, "Can't make statements about an external URI: %s"%s
-
     def determine_remap_target(self,g,c,s,var_bindings):
         full_path = None
 
         if type(s) == Literal: return None
-        print "Found tyupes", g, list(g.triples((s, rdf.type, None)))
+
         node_type = list(g.triples((s, rdf.type, None)))
+
         while len(node_type) > 1:
             a = SMART_Class[node_type[0][2]]
             b = SMART_Class[node_type[1][2]]
@@ -130,13 +125,15 @@ class RecordObject(object):
         if len(node_type) > 0:
             node_type = node_type[0][2]
 
-        print "settled on type", node_type
         subject_uri = str(s)
         
         if type(s) == BNode:
-            assert node_type != None, "%s is a bnode with no type"%s.n3()
+            print list(g.triples((s, None, None)))
+            print list(g.triples((None, None, s)))
+            assert node_type, "%s is a bnode with no type"%s.n3()
             t = RecordObject[node_type]
-            if not t.smart_type.is_statement: return None
+            if not t.smart_type.is_statement: 
+                return None
 
         elif type(s) == URIRef:
             if subject_uri.startswith("urn:smart_external_id:"):
@@ -144,13 +141,10 @@ class RecordObject(object):
                 assert full_path or node_type != None, "%s is a new external URI node with no type"%s.n3()
                 if full_path == None:
                     t = RecordObject[node_type]
-                    assert t.path != None, "Non-gettable type %s shouldn't be a URI node."%t
-            elif subject_uri.startswith(smart_path("")):
-                return None
+                    assert t.is_statement, "External IDs assignable only to Statement nodes, not %s"%t
             else:
-                self.assert_never_a_subject(g,s)
                 return None
-                    
+
         # If we got here, we need to remap the node "s".
         if full_path == None:
             full_path = t.determine_full_path(var_bindings)
@@ -173,9 +167,26 @@ class RecordObject(object):
 
         return node_map.values()
 
+    def attach_statements_to_record(self, g, new_uris, var_bindings):
+        # Attach each data element (med, problem, lab, etc), to the 
+        # base record URI with the sp:Statement predicate.
+        recordURI = URIRef(smart_path("/records/%s"%var_bindings['record_id']))
+        for n in new_uris:
+            node_type = get_property(g, n, rdf.type)
+            
+            # Filter for top-level medical record "Statement" types
+            t = ontology[node_type]
+            if (not t.is_statement): continue
+            if (not t.base_path.startswith("/records")): continue
+            if (n == recordURI): continue # don't assert that the record has itself as an element
+            
+            g.add((recordURI, sp.hasStatement, n))
+            g.add((recordURI, rdf.type, sp.MedicalRecord))
+
     def prepare_graph(self, g, c, var_bindings=None):
         new_uris = self.generate_uris(g, c, var_bindings)
-        augment_data(g, var_bindings, new_uris)
+        self.attach_statements_to_record(g, new_uris, var_bindings)
+
 
     def query_one(self, id):
         ret = SMART_Querier.query_one(self.smart_type, id=id)
