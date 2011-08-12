@@ -19,7 +19,7 @@ a=PHA.objects.create(description = 'Points to a locally-hosted app for developme
                    secret = 'smartapp-secret',
                    name ='My App',
                    email='my-app@apps.smartplatforms.org',
-                   icon_url="http://sandbox.smartplatforms.org/static/smart_ui_server/resources/images/app_icons_32/developers_sandbox.png",
+                   icon_url="http://sandbox.smartplatforms.org/static/smart_common/resources/images/app_icons_32/developers_sandbox.png",
                      enabled_by_default=True
                      )
 
@@ -32,7 +32,7 @@ a=PHA.objects.create(description = 'Points to a cloud-hosted app for development
                    secret = 'smartapp-secret',
                    name ='My Cloud App',
                    email='my-cloud-app@apps.smartplatforms.org',
-                   icon_url="http://sandbox.smartplatforms.org/static/smart_ui_server/resources/images/app_icons_32/developers_sandbox.png",
+                   icon_url="http://sandbox.smartplatforms.org/static/smart_common/resources/images/app_icons_32/developers_sandbox.png",
                      enabled_by_default=False
                      )
 
