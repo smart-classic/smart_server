@@ -128,8 +128,9 @@ class RecordObject(object):
         subject_uri = str(s)
         
         if type(s) == BNode:
-            print list(g.triples((s, None, None)))
-            print list(g.triples((None, None, s)))
+            if not node_type:
+                print list(g.triples((s, None, None)))
+                print list(g.triples((None, None, s)))
             assert node_type, "%s is a bnode with no type"%s.n3()
             t = RecordObject[node_type]
             if not t.smart_type.is_statement: 
