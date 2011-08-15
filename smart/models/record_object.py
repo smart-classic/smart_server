@@ -1,9 +1,9 @@
 import re, uuid
 from django.conf import settings
-from smart.common.rdf_ontology import api_types, api_calls, ontology, SMART_Class
-from smart.common.query_builder import SMART_Querier
+from smart.client.common.rdf_ontology import api_types, api_calls, ontology, SMART_Class
+from smart.client.common.query_builder import SMART_Querier
 from rdf_rest_operations import *
-from smart.common.util import remap_node, parse_rdf, get_property, LookupType, URIRef, sp, rdf, default_ns
+from smart.client.common.util import remap_node, parse_rdf, get_property, LookupType, URIRef, sp, rdf, default_ns
 from ontology_url_patterns import CallMapper, BasicCallMapper
 
 class RecordObject(object):

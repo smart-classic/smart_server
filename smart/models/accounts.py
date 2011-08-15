@@ -7,8 +7,8 @@ Ben Adida
 from base import *
 from django.utils import simplejson
 from smart.lib import utils
-from smart.common import util
-from smart.common.util import Literal, URIRef
+from smart.client.common import util
+from smart.client.common.util import Literal, URIRef
 
 ##
 ## Accounts
@@ -208,7 +208,7 @@ class Account(Principal):
     utils.send_mail(subject,body, settings.EMAIL_FROM_ADDRESS, [self.contact_email])
 
   def to_rdf(self, model = None):
-    from smart.common.util import sp, foaf, rdf
+    from smart.client.common.util import sp, foaf, rdf
 
     if model == None:  m = util.bound_graph()
     else: m = model

@@ -17,7 +17,7 @@ try:
   from django.forms.fields import email_re
 except:
   from django.core.validators import email_re
-from smart.common.util import parse_rdf, serialize_rdf, bound_graph
+from smart.client.common.util import parse_rdf, serialize_rdf, bound_graph
 import django.core.mail as mail
 import logging
 import string, random

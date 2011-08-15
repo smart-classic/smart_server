@@ -6,7 +6,7 @@ Ben Adida & Josh Mandel
 
 from base import *
 from django.utils import simplejson
-from smart.common.util import rdf, foaf, sp, serialize_rdf, parse_rdf, bound_graph, URIRef, Namespace
+from smart.client.common.util import rdf, foaf, sp, serialize_rdf, parse_rdf, bound_graph, URIRef, Namespace
 from smart.lib import utils
 from smart.models.apps import *
 from smart.models.accounts import *

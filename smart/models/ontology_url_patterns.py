@@ -1,5 +1,5 @@
 import re
-from smart.common.rdf_ontology import api_types, api_calls, ontology
+from smart.client.common.rdf_ontology import api_types, api_calls, ontology
 from django.conf.urls.defaults import patterns
 from smart.lib.utils import MethodDispatcher
 

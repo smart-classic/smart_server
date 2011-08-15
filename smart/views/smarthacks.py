@@ -8,7 +8,7 @@ Josh Mandel
 from base import *
 from smart.lib import utils
 from smart.lib.utils import *
-from smart.common.util import rdf, sp, bound_graph, URIRef, Namespace
+from smart.client.common.util import rdf, sp, bound_graph, URIRef, Namespace
 from django.http import HttpResponse
 from django.conf import settings
 from smart.models import *
