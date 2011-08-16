@@ -110,9 +110,6 @@ class UserDataStore(oauth.OAuthStore):
     The account is whatever data structure was received by the OAuthServer.
     """
     
-    if record == None:
-      raise Exception("need a record to authorize a share")
-
     request_token.authorized_at = datetime.datetime.utcnow()
     request_token.authorized_by = account
 
@@ -126,8 +123,7 @@ class UserDataStore(oauth.OAuthStore):
                                                                        })
       
     request_token.share = share
-    request_token.save()
-    
+    request_token.save()    
 
   def mark_request_token_used(self, consumer, request_token):
     """

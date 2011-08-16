@@ -72,13 +72,16 @@ def LoadAppFromJSON(manifest_string, enabled_by_default, base_url=None):
                        manifest=manifest_string)
   else: a = None
 
-  try:
-    for (act_name, act_url) in r["activities"].iteritems():
-      act_url = sub(act_url, "base_url", base_url)
+  if "index" in r.keys():
+      act_name = "main"
+      act_url  = r["index"]
       AppActivity.objects.create(app=a, name=act_name, url=act_url)
-  except: pass
+  
+      if "intents" in r.keys():
+          for k in r["intents"]:
+              AppActivity.objects.create(app=a, name=k, url=act_url)
 
-  try:
+  if "web_hooks" in r.keys():
     for (hook_name, hook_data) in r["web_hooks"].iteritems():
       hook_url = sub(hook_data["url"], "base_url", base_url)
 
@@ -90,8 +93,6 @@ def LoadAppFromJSON(manifest_string, enabled_by_default, base_url=None):
                               description=hook_data["description"],
                               url=hook_url,
                               requires_patient_context=rpc)
-  except: pass
-
 if __name__ == "__main__":
     import string
     for v in sys.argv[1:]:

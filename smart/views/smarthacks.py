@@ -16,7 +16,7 @@ from smart.models.record_object import RecordObject
 from smart.models.rdf_rest_operations import *
 from oauth.oauth import OAuthRequest
 from smart.models.ontology_url_patterns import CallMapper
-import datetime
+import datetime, urllib
 
 SAMPLE_NOTIFICATION = {
     'id' : 'foonotification',
@@ -87,33 +87,43 @@ def immediate_tokens_for_browser_auth(record, account, app, smart_connect_p = Tr
     ret.save()
     return ret
   
-def cookie_for_token(t):
+def signed_header_for_token(t):
     app=t.share.with_app
     try:
         activity = AppActivity.objects.get(name="main", app=app)
     except AppActivity.DoesNotExist:    
         activity = AppActivity.objects.get(app=app)
-        
-    app_index_req = utils.url_request_build(activity.url, "GET", {}, "")
-    oauth_request = OAuthRequest(app, None, app_index_req, oauth_parameters=t.passalong_params)
+
+    headers = {}
+    get_params = urllib.urlencode(t.passalong_params)
+
+    app_index_req = utils.url_request_build(activity.url, "GET", headers, get_params)
+
+    # sign as a two-legged OAuth request for the app
+    oauth_request = OAuthRequest(consumer=app,
+                                 token=None, # no access tokens for 2-legged request
+                                 http_request=app_index_req)
+
     oauth_request.sign()
     auth = oauth_request.to_header()["Authorization"]
-    return {'oauth_cookie' : auth}
+    return auth
 
 @paramloader()
-def launch_app(request, record, account, app):
+def launch_app(request, account, app):
     """
     expecting
-    PUT /accounts/{account_id}/apps/{app_email}
+    PUT /accounts/{account_id}/apps/{app_email}/launch?record_id={record_id}
     """
-    print "Adding AccountApp"
+
+    record = None
+    record_id = request.GET.get('record_id', None)
+    if (record_id): record = Record.objects.get(id=record_id)
+
     AccountApp.objects.get_or_create(account = account, app = app)
-    print "Added AccountApp"
-
     ct = immediate_tokens_for_browser_auth(record, account, app)
-
     rt = immediate_tokens_for_browser_auth(record, account, app, False)
-    cookie = cookie_for_token(rt)
+
+    header = signed_header_for_token(rt)
 
     return render_template('token', 
                              {'connect_token':          ct,
@@ -121,7 +131,7 @@ def launch_app(request, record, account, app):
                               'api_base':       settings.SITE_URL_PREFIX,
                               'app_email':      app.email, 
                               'account_email':  account.email,
-                              'oauth_cookie': cookie}, 
+                              'oauth_header': header}, 
                             type='xml')
 
 

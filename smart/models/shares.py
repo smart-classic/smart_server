@@ -5,7 +5,7 @@ Ben Adida
 Steve Zabak
 """
 
-import urllib
+import urllib, datetime
 
 from django.db import models
 from django.conf import settings
@@ -19,7 +19,7 @@ class Share(Object):
   """
 
   # the record that's being shared
-  record = models.ForeignKey('Record', related_name = 'shares')
+  record = models.ForeignKey('Record', related_name = 'shares', null=True)
   with_app = models.ForeignKey('OAuthApp', related_name='shares_to', null=True)
 
   # authorized
@@ -36,13 +36,17 @@ class Share(Object):
   class Meta:
     app_label = APP_LABEL
     unique_together = (('record', 'with_app', 'authorized_by'),)
-    
-
+  
   def new_access_token(self, token_str, token_secret):
     """
     create a new access token based on this share
     """
-    return AccessToken.objects.create(token=token_str, token_secret=token_secret, share=self)
+    expires_at = datetime.datetime.utcnow() + datetime.timedelta(minutes = 60)
+
+    return AccessToken.objects.create(token=token_str,
+                                      token_secret=token_secret, 
+                                      share=self,
+                                      expires_at=expires_at)
 
 class Token(object):
   """
@@ -64,6 +68,7 @@ class AccessToken(Principal, Token):
   # the token, secret, and PHA this corresponds to
   token = models.CharField(max_length=40)
   token_secret = models.CharField(max_length=60)
+  expires_at = models.DateTimeField(null = True)
 
   # derived from a share
   share = models.ForeignKey('Share')
@@ -101,9 +106,12 @@ class AccessToken(Principal, Token):
     c['smart_container_api_base'] = settings.SITE_URL_PREFIX
     c['smart_oauth_token'] = self.token
     c['smart_oauth_token_secret'] = self.secret
-    c['smart_record_id'] = self.share.record.id
     c['smart_user_id'] = self.share.authorized_by.email
     c['smart_app_id'] = self.share.with_app.email
+
+    if self.share.record:
+      c['smart_record_id'] = self.share.record.id
+
     return c
   
 

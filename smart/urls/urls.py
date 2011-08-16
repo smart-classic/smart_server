@@ -29,7 +29,7 @@ urlpatterns += patterns(
                 'PUT': add_app,
                 'DELETE': remove_app})),
                 
-    (r'^accounts/(?P<account_id>[^/]+)/apps/(?P<pha_email>[^/]+)/records/(?P<record_id>[^/]+)/launch$', launch_app),
+    (r'^accounts/(?P<account_id>[^/]+)/apps/(?P<pha_email>[^/]+)/launch', launch_app),
     
     (r'^users/$', MethodDispatcher({ 'POST': user_create,'OPTIONS' : allow_options})),
     (r'^users/reset_password_request$', MethodDispatcher({'POST': user_reset_password_request})),
