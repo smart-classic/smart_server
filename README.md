@@ -88,7 +88,7 @@ This should be the second uncommented line in your default config. Change <tt>id
 
 * restart Tomcat (optional since autoDeploy is typically enabled in Tomcat by default)
 <pre>
- sudo /etc/init.d/tomcat6 restart
+ sudo service tomcat6 restart
 </pre>
 
 * check that Tomcat and OpenRDF Sesame are running by hitting <tt>http://localhost:8080/openrdf-sesame/</tt>. You should see the main OpenRDF status page.
@@ -130,6 +130,8 @@ You'll need to restart Tomcat again if you make these changes
     * set <tt>SMART_UI_SERVER_LOCATION</tt> to the URL where your UI server will be running, including port number  e.g. <tt>http://localhost:7001</tt>
 
 * copy <tt>bootstrap_helpers/application_list.json.default</tt> to <tt>bootstrap_helpers/application_list.json</tt> and customize to include the apps you want.
+
+* update the database and repository settings in <tt>reset.sh</tt> (if you changed the default DB and repository endpoints in <tt>settings.py</tt>
 
 * set things up (supplying the smart db password when prompted a few times)
  <pre>
