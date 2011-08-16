@@ -131,7 +131,7 @@ You'll need to restart Tomcat again if you make these changes
 
 * copy <tt>bootstrap_helpers/application_list.json.default</tt> to <tt>bootstrap_helpers/application_list.json</tt> and customize to include the apps you want.
 
-* update the database and repository settings in <tt>reset.sh</tt> (if you changed the default DB and repository endpoints in <tt>settings.py</tt>
+* update the database and repository settings in <tt>reset.sh</tt> (if you changed the default DB and repository endpoints in <tt>settings.py</tt>)
 
 * set things up (supplying the smart db password when prompted a few times)
  <pre>
