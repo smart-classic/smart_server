@@ -37,7 +37,13 @@ def wiki_batch_start(batch):
     print "\n=%s=\n"%batch
 
 def type_name_string(t):
-    return t.name and str(t.name) or str(t.node).rsplit("#")[1]
+    if t.name:
+        return str(t.name)
+    try:
+        return str(t.node).rsplit("#")[1]
+    except:
+        return str(t.node).rsplit("/")[1]
+
     
 def wiki_payload_for_type(t):
     type_start(t)    
