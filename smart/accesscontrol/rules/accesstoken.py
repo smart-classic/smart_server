@@ -60,9 +60,4 @@ def grant(accesstoken, permset):
     permset.grant(resolve_activity_with_app, [])
     permset.grant(resolve_manifest, [check_frame_mode])
     permset.grant(all_manifests, [check_frame_mode])
-
-
-
-
-    
-    
+    permset.grant(record_search, [check_frame_mode])
