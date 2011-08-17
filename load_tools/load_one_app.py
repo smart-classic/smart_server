@@ -23,7 +23,7 @@ def LoadApp(app, enabled_by_default=False):
 
   manifest_string = s.read()
   s.close() 
-  LoadAppFromJSON(manifest_string, enabled_by_default)
+  LoadAppFromJSON(manifest_string, enabled_by_default, base_url)
 
 def LoadAppFromJSON(manifest_string, enabled_by_default, base_url=None):
   r = simplejson.loads(manifest_string)
