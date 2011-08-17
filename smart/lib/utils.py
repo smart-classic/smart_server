@@ -20,7 +20,7 @@ except:
 from smart.client.common.util import parse_rdf, serialize_rdf, bound_graph
 import django.core.mail as mail
 import logging
-import string, random
+import string, random, re
 import functools
 import psycopg2
 import psycopg2.extras
@@ -204,6 +204,10 @@ def rdf_post(record_connector, new_g):
     record_connector.execute_transaction()
     return rdf_response(serialize_rdf(new_g))
 
+alnum_pattern = re.compile('^a-zA-Z0-9_+')
+
+def string_to_alphanumeric(s):
+  return alnum_pattern.sub('', s)
 
 logging.basicConfig(
       level = logging.DEBUG,

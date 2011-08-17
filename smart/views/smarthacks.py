@@ -4,7 +4,7 @@ Quick hacks for SMArt
 Ben Adida
 Josh Mandel
 """
-
+from string import Template
 from base import *
 from smart.lib import utils
 from smart.lib.utils import *
@@ -188,7 +188,55 @@ def remove_app(request, account, app):
     return DONE
 
 def record_search(request):
-    q = request.GET.get('sparql', None)
+
+    sparql = Template("""PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX  foaf:  <http://xmlns.com/foaf/0.1/>
+PREFIX  sp:  <http://smartplatforms.org/terms#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+CONSTRUCT {?person rdf:type sp:Demographics} 
+WHERE   {
+?person rdf:type sp:Demographics. 
+$statements
+}
+order by ?ln""")
+
+
+    statements = []
+    fn = request.GET.get('family_name', None)
+    if fn:
+        fn = string_to_alphanumeric(fn)
+        statements += [""" ?person foaf:familyName ?familyName. FILTER  regex(?familyName, "^%s","i") """%fn]
+
+    gn = request.GET.get('given_name', None)
+    if gn:
+        gn = string_to_alphanumeric(gn)
+        statements += [""" ?person foaf:givenName ?givenName. FILTER  regex(?givenName, "^%s","i") """%gn]
+
+
+    gender = request.GET.get('gender', None)
+    if gender:
+        gender = string_to_alphanumeric(gender)
+        statements += [""" ?person foaf:gender ?gender. FILTER  regex(?gender, "^%s","i") """%gender]
+
+    mrn = request.GET.get('medical_record_number', None)
+    if mrn:
+        mrn = string_to_alphanumeric(mrn)
+        statements += [""" ?person sp:medicalRecordNumber ?mrn.  ?mrn dcterms:identifier  ?mrnid. FILTER  regex(?mrnid, "^%s$","i") """%mrn]
+
+
+    zipcode = request.GET.get('zipcode', None)
+    if zipcode:
+        zipcode = string_to_alphanumeric(zipcode)
+        statements += [""" ?person sp:zipcode ?zipcode. FILTER  regex(?zipcode, "^%s$","i") """%zipcode]
+
+    birthday = request.GET.get('birthday', None)
+    if birthday:
+        birthday = string_to_alphanumeric(birthday)
+        statements += [""" ?person sp:birthday ?birthday. FILTER  regex(?birthday, "^%s$","i") """%birthday]
+
+    statements = " ".join(statements)
+    q = sparql.substitute(statements=statements)
+    print q
     record_list = Record.search_records(q)
     return HttpResponse(record_list, mimetype="application/rdf+xml")
 
