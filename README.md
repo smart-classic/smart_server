@@ -51,7 +51,7 @@ This should be the second uncommented line in your default config. Change <tt>id
 
 * You will need to restart PostgreSQL:
 <pre>
-   sudo service postgresql restart
+   sudo service postgresql-8.4 restart
 </pre>
 
 * Create a PostgreSQL user for your SMArt service, e.g. "smart" and setup a password
