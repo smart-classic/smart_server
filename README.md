@@ -18,6 +18,12 @@ These instructions apply to each of three github repositories that you'll need i
 * Note: These instructions have been updated for Ubuntu 11.4.
 * Note: We recommend you do this by sudo'ing from a non-root user.  If you would like to do this as root make sure you create at least one non-root user with `useradd -m {USER}` otherwise the default locale will not be set.  This issue is most common on a new OS build.
 
+* Update the apt-get manifests
+
+<pre>
+    sudo apt-get update
+</pre>
+
 * Python 2.7 with package <tt>psycopg2</tt> and <tt>libxslt1</tt>
 <pre>
     sudo apt-get install python-psycopg2 python-libxslt1 python-m2crypto python-simplejson python-argparse python-setuptools python-pyparsing
@@ -110,7 +116,7 @@ You'll need to restart Tomcat again if you make these changes
 
 # Download, Install, and Configure SMArt Backend Server 
 
-* Install GIT
+* Install GIT (NOTE: try "sudo apt-get install git-core" if the git package is not found)
 <pre>
      sudo apt-get install git
 </pre>
