@@ -18,6 +18,12 @@ These instructions apply to each of three github repositories that you'll need i
 * Note: These instructions have been updated for Ubuntu 11.4.
 * Note: We recommend you do this by sudo'ing from a non-root user.  If you would like to do this as root make sure you create at least one non-root user with `useradd -m {USER}` otherwise the default locale will not be set.  This issue is most common on a new OS build.
 
+* Update the apt-get manifests
+
+<pre>
+    sudo apt-get update
+</pre>
+
 * Python 2.7 with package <tt>psycopg2</tt> and <tt>libxslt1</tt>
 <pre>
     sudo apt-get install python-psycopg2 python-libxslt1 python-m2crypto python-simplejson python-argparse python-setuptools python-pyparsing
@@ -51,7 +57,7 @@ This should be the second uncommented line in your default config. Change <tt>id
 
 * You will need to restart PostgreSQL:
 <pre>
-   sudo service postgresql restart
+   sudo service postgresql-8.4 restart
 </pre>
 
 * Create a PostgreSQL user for your SMArt service, e.g. "smart" and setup a password
@@ -110,7 +116,7 @@ You'll need to restart Tomcat again if you make these changes
 
 # Download, Install, and Configure SMArt Backend Server 
 
-* Install GIT
+* Install GIT (NOTE: try "sudo apt-get install git-core" if the git package is not found)
 <pre>
      sudo apt-get install git
 </pre>
@@ -204,21 +210,21 @@ The Django development servers are easy to run at the prompt.
 The backend server can run on localhost in the configuration given above:
 <pre>
  cd /path/to/smart_server/
- nohup python manage.py runconcurrentserver 7000 > /dev/null 2>&1 &
+ nohup python manage.py runconcurrentserver 7000 > log.txt 2>&1 &
 </pre>
 
 The UI server, if you want it accessible from another machine, needs to specify a hostname or IP address. If you want port 80, you need to be root of course. The mask "0.0.0.0" will allow all incoming connections:
 
 <pre>
  cd /path/to/smart_ui_server/
- nohup python manage.py runconcurrentserver 0.0.0.0:7001 > /dev/null 2>&1 &
+ nohup python manage.py runconcurrentserver 0.0.0.0:7001 > log.txt 2>&1 &
 </pre>
 
 And finally, the Sample Apps:
 
 <pre>
  cd /path/to/smart_sample_apps/
- nohup python manage.py runconcurrentserver 0.0.0.0:8001 > /dev/null 2>&1 &
+ nohup python manage.py runconcurrentserver 0.0.0.0:8001 > log.txt 2>&1 &
 </pre>
 
 * Note: In the above examples the console output is suppressed. If you are having trouble with the server, you may want to redirect the output to the console or a log file.
