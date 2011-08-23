@@ -6,7 +6,9 @@ Ben Adida & Josh Mandel
 
 from base import *
 from django.utils import simplejson
-from smart.client.common.util import rdf, foaf, sp, serialize_rdf, parse_rdf, bound_graph, URIRef, Namespace
+from smart.client.common.query_builder import SMART_Querier
+from smart.client.common.rdf_ontology import ontology
+from smart.client.common.util import rdf, foaf, vcard, sp, serialize_rdf, parse_rdf, bound_graph, URIRef, Namespace
 from smart.lib import utils
 from smart.models.apps import *
 from smart.models.accounts import *
@@ -21,24 +23,6 @@ class Record(Object):
 
   def __unicode__(self):
     return 'Record %s' % self.id
-
-  def query(self):
-
-    q = Template("""
-    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-    PREFIX foaf:   <http://xmlns.com/foaf/0.1/>
-    PREFIX sp: <http://smartplatforms.org/terms#>
-    CONSTRUCT  {
-        <http://smartplatforms.org/records/$who/demographics> ?p ?o.
-    } WHERE {
-        <http://smartplatforms.org/records/$who/demographics> ?p ?o.
-    }""").substitute(who=self.id)
-    return q
-
-  def get_demographic_rdf(self):
-    c = DemographicConnector()
-    q = self.query()
-    return c.sparql(q)
 
   @classmethod
   def search_records(cls, query):
@@ -80,19 +64,38 @@ class Record(Object):
     for p in people:
         record = Record()
         print "working with person ", p
-        record.id = re.search("\/records\/(.*?)\/demographics", str(p[0])).group(1)
-        record.fn = str(list(m.triples((p[0], foaf['givenName'], None)))[0][2])
-        record.ln = (list(m.triples((p[0], foaf['familyName'], None)))[0][2])
-        print "found the snames ", record.fn, record.ln, record.id
-        dob = str(list(m.triples((p[0], sp['birthday'], None)))[0][2])
-        record.dob = dob
+        q = """
+PREFIX sp:<http://smartplatforms.org/terms#>
+PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX dcterms:<http://purl.org/dc/terms/>
+PREFIX v:<http://www.w3.org/2006/vcard/ns#>
+PREFIX foaf:<http://xmlns.com/foaf/0.1/>
 
-        gender = str(list(m.triples((p[0], foaf['gender'], None)))[0][2])
-        record.gender = gender
+SELECT ?gn ?fn ?dob ?gender ?zipcode
+WHERE {
+  ?d rdf:type sp:Demographics.
+  ?d v:n ?n.
+  ?n v:given-name ?gn.
+  ?n v:family-name ?fn.
+ optional{  ?d foaf:gender ?gender.}
+ optional{  ?d v:bday ?dob.}
 
-        zipcode = str(list(m.triples((p[0], sp['zipcode'], None)))[0][2])
-        record.zipcode = zipcode
-       
+ optional{  ?d v:adr ?a. 
+            ?a rdf:type v:Pref.
+            ?a v:postal-code ?zipcode.
+    }
+
+ optional{  ?d v:adr ?a. 
+            ?a v:postal-code ?zipcode.
+    }
+
+}"""
+
+        d = list(m.query(q))
+        assert len(d) == 1, "Got wrong number of demographics for %s: %s"%(p, d)
+
+        record.id = re.search("\/records\/(.*?)\/demographics", str(p[0])).group(1)        
+        record.fn, record.ln, record.dob, record.gender, record.zipcode =  d[0]
         record_list.append(record)
 
     return record_list

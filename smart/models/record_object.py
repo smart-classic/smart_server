@@ -111,27 +111,22 @@ class RecordObject(object):
 
         if type(s) == Literal: return None
 
-        node_type = list(g.triples((s, rdf.type, None)))
+        node_type_candidates = list(g.triples((s, rdf.type, None)))
+        node_type = []
 
-        while len(node_type) > 1:
-            a = SMART_Class[node_type[0][2]]
-            b = SMART_Class[node_type[1][2]]
-            if a in b.parent_classes:
-                del node_type[0]
-            elif b in a.parent_classes:
-                del node_type[1]
-            else: 
-                raise Exception("Expected only a linear chain of types, got ", node_type)
+        for c in node_type_candidates:
+            if SMART_Class[c[2]].is_statement:
+                node_type += [c]
+        assert len(node_type) <= 1, "Got multiple node types for %s"%[x[2] for x in node_type]
+
         if len(node_type) > 0:
             node_type = node_type[0][2]
 
         subject_uri = str(s)
         
         if type(s) == BNode:
-            if not node_type:
-                print list(g.triples((s, None, None)))
-                print list(g.triples((None, None, s)))
-            assert node_type, "%s is a bnode with no type"%s.n3()
+            if not node_type: return None
+
             t = RecordObject[node_type]
             if not t.smart_type.is_statement: 
                 return None
