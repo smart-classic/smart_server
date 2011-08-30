@@ -35,43 +35,41 @@ class Record(Object):
     people = m.triples((None, rdf['type'], sp.Demographics))
     pobj = RecordObject[sp.Demographics] 
 
+    obtained = set()
     return_graph = bound_graph()
     for person in people:
       p = person[0] # subject
 
       # Connect to RDF Store
       pid = re.search("\/records\/(.*?)\/demographics", str(p)).group(1)
+      if pid in obtained: continue
+
       print "matched ", p," to ", pid
+      obtained.add(pid)
       c = RecordStoreConnector(Record.objects.get(id=pid))
 
       # Pull out demographics
       p_uri = p.n3() # subject URI
       p_subgraph = parse_rdf(c.sparql(pobj.query_one(p_uri)))
-      print "subgraph: ", serialize_rdf(p_subgraph)
       
       # Append to search result graph
       return_graph += p_subgraph
-    print "got", serialize_rdf(return_graph)
     return serialize_rdf(return_graph)
 
   @classmethod
   def rdf_to_objects(cls, res):
     m = parse_rdf(res)
     
-    print "Mapping RDF to objects...", res
-    people = m.triples((None, rdf['type'], sp.Demographics))
     record_list = []
-    for p in people:
-        record = Record()
-        print "working with person ", p
-        q = """
+
+    q = """
 PREFIX sp:<http://smartplatforms.org/terms#>
 PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX dcterms:<http://purl.org/dc/terms/>
 PREFIX v:<http://www.w3.org/2006/vcard/ns#>
 PREFIX foaf:<http://xmlns.com/foaf/0.1/>
 
-SELECT ?gn ?fn ?dob ?gender ?zipcode
+SELECT ?gn ?fn ?dob ?gender ?zipcode ?d
 WHERE {
   ?d rdf:type sp:Demographics.
   ?d v:n ?n.
@@ -91,13 +89,13 @@ WHERE {
 
 }"""
 
-        d = list(m.query(q))
-        assert len(d) == 1, "Got wrong number of demographics for %s: %s"%(p, d)
-
-        record.id = re.search("\/records\/(.*?)\/demographics", str(p[0])).group(1)        
-        record.fn, record.ln, record.dob, record.gender, record.zipcode =  d[0]
-        record_list.append(record)
-
+    people = list(m.query(q))
+    for p in people:
+      record = Record()
+      record.id = re.search("\/records\/(.*?)\/demographics", str(p[5])).group(1)        
+      record.fn, record.ln, record.dob, record.gender, record.zipcode =  p[:5]
+      record_list.append(record)
+      
     return record_list
     
 class AccountApp(Object):

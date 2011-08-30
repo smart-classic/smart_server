@@ -59,7 +59,6 @@ class RecordObject(object):
             WHERE {
                     %s <http://smartplatforms.org/terms#externalIDFor> ?o.
                   }  """%(external_id.n3(), external_id.n3())
-        print "querying", idquery
         id_graph = parse_rdf(record_connector.sparql(idquery))
 
 
@@ -69,7 +68,6 @@ class RecordObject(object):
 
         try:
             s =  l[0][2]
-            print "FOUND an internal id", s
             return s
         except: 
             return None

@@ -236,16 +236,13 @@ order by ?ln""")
 
     statements = " ".join(statements)
     q = sparql.substitute(statements=statements)
-    print q
     record_list = Record.search_records(q)
     return HttpResponse(record_list, mimetype="application/rdf+xml")
 
 def record_search_xml(request):
     q = request.GET.get('sparql', None)
-    print "Query for pts", q
     record_list = Record.search_records(q)
     record_list = Record.rdf_to_objects(record_list)
-    print "Query found", record_list
     return render_template('record_list', {'records': record_list}, type='xml')
 
 
@@ -254,7 +251,6 @@ def allow_options(request, **kwargs):
     r['Access-Control-Allow-Methods'] = "POST, GET, PUT, DELETE"
     r['Access-Control-Allow-Headers'] = "authorization,x-requested-with,content-type"
     r['Access-Control-Max-Age'] = 60
-    print r._headers
     return r
 
 def do_webhook(request, webhook_name):
