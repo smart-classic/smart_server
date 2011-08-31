@@ -128,16 +128,43 @@ def launch_app(request, record, account, app):
 def create_proxied_record(request):
     record_id = request.POST['record_id']
     record_name = request.POST['record_name']
-
-    print "ASKED to create proxied record: ", record_id, record_name
-
     r, created = Record.objects.get_or_create(id=record_id, defaults={'full_name':record_name})
-    print "GOT: ", r, created
     if not created and r.full_name != record_name:
         r.full_name = record_name
         r.save()
 
     return DONE
+
+@paramloader()
+def generate_direct_url(request, record):
+    print "ASKED to authorize proxied access to record: ", record.id, record.full_name
+    r = Record.objects.get(id=record.id)
+
+    # For some use cases, may want to replace this with a throwaway user, created here
+    account = Account.objects.get(email=settings.PROXY_USER_ID)
+
+    if account.is_active:
+        t = r.generate_direct_access_token(account=account);
+        return_url = settings.SMART_UI_SERVER_LOCATION + "/token/"+t.token
+        return HttpResponse(return_url, mimetype='text/plain')
+
+    else: print "Nonative", account
+    return DONE
+
+def session_from_direct_url(request):
+    token = request.GET['token']
+    login_token =  RecordDirectAccessToken.objects.get(token=token)
+
+    # TODO: move this to security function on chrome consumer
+    if (datetime.datetime.utcnow() > login_token.expires_at):
+        raise Exception("Expired token %s"%t)
+    
+    session_token = SESSION_OAUTH_SERVER.generate_and_preauthorize_access_token(request.principal, user=login_token.account)
+    session_token.expires_at = login_token.expires_at
+    session_token.save()
+
+    return render_template('login_token', {'record': login_token.record, 'token': str(session_token)}, type='xml')
+    
 
 @paramloader()
 def get_record_tokens(request, record, app):

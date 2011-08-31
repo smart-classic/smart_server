@@ -21,6 +21,11 @@ class Record(Object):
 
   def __unicode__(self):
     return 'Record %s' % self.id
+  
+  def generate_direct_access_token(self, account):
+    u = RecordDirectAccessToken.objects.create(record=self, account=account)
+    u.save()
+    return u
 
   def query(self):
 
@@ -107,6 +112,35 @@ class AccountApp(Object):
     app_label = APP_LABEL
     unique_together = (('account', 'app'),)
 
+
+# Not an OAuth token, but an opaque token
+# that can be used to support auto-login via a direct link
+# to a smart_ui_server. 
+class RecordDirectAccessToken(Object):
+  record = models.ForeignKey(Record, related_name='direct_access_tokens', null=False)
+  account = models.ForeignKey(Account, related_name='direct_record_shares', null=False)
+  token = models.CharField(max_length=40, unique=True)
+  token_secret = models.CharField(max_length=60, null=True)
+  expires_at = models.DateTimeField(null = False)
+
+  def save(self, *args, **kwargs):
+
+    if not self.token:
+      self.token = utils.random_string(30)
+      print "RANDOM", self.token
+
+
+    if self.expires_at == None:
+      minutes_to_expire=30
+      try:
+        minutes_to_expire = settings.MINUTES_TO_EXPIRE_DIRECT_ACCESS
+      except: pass
+
+      self.expires_at = datetime.datetime.utcnow() + datetime.timedelta(minutes = minutes_to_expire)
+    super(RecordDirectAccessToken, self).save(*args, **kwargs)
+
+  class Meta:
+    app_label = APP_LABEL
 
 class RecordAlert(Object):
   record=models.ForeignKey(Record)
