@@ -160,7 +160,6 @@ def session_from_direct_url(request):
         raise Exception("Expired token %s"%t)
     
     session_token = SESSION_OAUTH_SERVER.generate_and_preauthorize_access_token(request.principal, user=login_token.account)
-    session_token.expires_at = login_token.expires_at
     session_token.save()
 
     return render_template('login_token', {'record': login_token.record, 'token': str(session_token)}, type='xml')
