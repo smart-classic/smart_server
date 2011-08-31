@@ -72,7 +72,9 @@ urlpatterns += patterns(
     (r'^accounts/(?P<account_email>[^/]+)/recent_records/$', account_recent_records),
     (r'^accounts/(?P<account_email>[^/]+)/', include('smart.urls.account')),    
 
-    (r'^records/create/proxied', MethodDispatcher({ 'POST': create_proxied_record}))
+    (r'^records/create/proxied', MethodDispatcher({ 'POST': create_proxied_record})),
+    (r'^records/(?P<record_id>[^/]+)/generate_direct_url', MethodDispatcher({ 'GET': generate_direct_url })),
+    (r'^session/from_direct_url', MethodDispatcher({ 'GET': session_from_direct_url }))
   )
 
 """
