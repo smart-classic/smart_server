@@ -17,5 +17,3 @@ def map_user(cls, request, record):
     a.records.add(record)
     a.save()
     return a
-
-print "REgistering new"
