@@ -14,6 +14,7 @@ Josh Mandel
 
 from base import *
 from smart.lib import utils
+from django.core.exceptions import PermissionDenied
 from django.http import HttpResponse
 from django.conf import settings
 from smart.models import *
@@ -50,8 +51,10 @@ def generate_direct_url(request, record):
     # For some use cases, may want to replace this with a throwaway user
     account = DirectAccessUserMapper.map_user(request, record)
 
+    p = request.GET.get("pin", None)
+
     if account.is_active:
-        t = r.generate_direct_access_token(account=account);
+        t = r.generate_direct_access_token(account=account, token_secret=p);
         return_url = settings.SMART_UI_SERVER_LOCATION + "/token/"+t.token
         return HttpResponse(return_url, mimetype='text/plain')
 
@@ -60,7 +63,11 @@ def generate_direct_url(request, record):
 
 def session_from_direct_url(request):
     token = request.GET['token']
+    p = request.GET.get("pin", None)
+
     login_token =  RecordDirectAccessToken.objects.get(token=token)
+    if (login_token.token_secret != p):
+        raise PermissionDenied("Wrong pin for token")
 
     # TODO: move this to security function on chrome consumer
     if (datetime.datetime.utcnow() > login_token.expires_at):

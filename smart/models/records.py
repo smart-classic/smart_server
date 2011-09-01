@@ -22,8 +22,10 @@ class Record(Object):
   def __unicode__(self):
     return 'Record %s' % self.id
   
-  def generate_direct_access_token(self, account):
-    u = RecordDirectAccessToken.objects.create(record=self, account=account)
+  def generate_direct_access_token(self, account, token_secret=None):
+    u = RecordDirectAccessToken.objects.create(record=self, 
+                                               account=account,
+                                               token_secret=token_secret)
     u.save()
     return u
 
