@@ -187,3 +187,6 @@ class RecordAlert(Object):
     self.acknowledged_by =  account
     self.acknowledged_at = datetime.datetime.now()
     self.save()
+
+class LimitedAccount(Account):
+      records = models.ManyToManyField(Record, related_name="+")
