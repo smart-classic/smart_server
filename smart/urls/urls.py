@@ -81,6 +81,6 @@ in an ontology-driven way:  rdfobjects loads the ontology, registers
 handlers for all the relevant paths (e.g. /records/{record_id}/medications/)
 and specified methods (GET, POST, PUT, DELETE).
 """
-
 from smart.plugins import *
+
 OntologyURLMapper(urlpatterns) 
