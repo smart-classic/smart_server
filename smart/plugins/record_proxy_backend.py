@@ -1,4 +1,3 @@
-import re, RDF, uuid
 from django.conf import settings
 from smart.common.util import remap_node, parse_rdf, LookupType
 from smart.common.rdf_ontology import api_types, api_calls, ontology

@@ -1,4 +1,3 @@
-import re, RDF, uuid
 from django.conf import settings
 
 from smart.views import *
