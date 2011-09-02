@@ -20,9 +20,10 @@ def check_unlimited_wrapper(account):
             l = account.limitedaccount
         except Account.DoesNotExist:
             return True
-            
+
         try:  
-            return  view_kwargs['record_id'] == l.records.get().id
+            ret = request.GET["record_id"] == l.records.get().id
+            return ret
         except: 
             return False
 
