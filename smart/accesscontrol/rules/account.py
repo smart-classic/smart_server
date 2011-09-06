@@ -18,7 +18,7 @@ def check_unlimited_wrapper(account):
     def check(request, view_func, view_args, view_kwargs):
         try: 
             l = account.limitedaccount
-        except Account.DoesNotExist:
+        except LimitedAccount.DoesNotExist:
             return True
 
         try:  
