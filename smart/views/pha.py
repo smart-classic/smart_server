@@ -7,6 +7,8 @@ import urllib, urlparse
 from base import *
 
 from smart.accesscontrol.oauth_servers import OAUTH_SERVER, SESSION_OAUTH_SERVER
+from smart.models.ontology_url_patterns import CallMapper
+
 from oauth.djangoutils import extract_request
 from oauth import oauth
 
@@ -20,12 +22,18 @@ def all_phas(request):
   return render_template('phas', {'phas': phas}, type="xml")
 
 
+@CallMapper.register(method="GET",
+                     category="container_items",
+                     target="http://smartplatforms.org/terms#AppManifest")
 def all_manifests(request):
   """A list of the PHAs as JSON"""
   phas = [PHA.objects.get(id=x.app.id) for x in AppActivity.objects.filter(name="main")]
   ret = "[" +", ".join([a.manifest for a in phas])+ "]"
   return HttpResponse(ret, mimetype='text/json')
 
+@CallMapper.register(method="GET",
+                     category="container_item",
+                     target="http://smartplatforms.org/terms#AppManifest")
 def resolve_manifest(request, descriptor):
   if "@" in descriptor:
     return resolve_manifest_with_app(request, "main", descriptor)

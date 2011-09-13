@@ -1,4 +1,5 @@
 import sys
+import copy
 stdout = sys.stdout
 sys.stdout = sys.stderr
 from smart.client.common.rdf_ontology import *
@@ -55,6 +56,11 @@ def type_name_string(t):
 def wiki_payload_for_type(t):
     type_start(t)    
     wiki_properties_for_type(t)
+
+cardinalities  = {"0 - 1": "Optional (0 or 1)", 
+                  "0 - Many": "Optional (0 or more)", 
+                  "1": "Required (exactly 1)", 
+                  "1 - Many": "Required (1 or more)"}
     
 def wiki_properties_for_type(t):
     if len(t.object_properties) + len(t.data_properties) == 0:
@@ -72,17 +78,17 @@ def wiki_properties_for_type(t):
             if len(d) > 0:
                 d = ": " + d
 
-            desc += type_name_string(c.to_class) + " " +d + " [[#%s RDF | (details...)]]"%(type_name_string(c.to_class))
+            desc = type_name_string(c.to_class) + "[[#%s RDF | (details...)]]"%(type_name_string(c.to_class)) + d
         elif type(c) is OWL_DataProperty:
             desc += (c.all_values_from and c.all_values_from.n3() or "string literal")
-        
-        properties_row(name, c.uri.n3(), c.cardinality_string, desc)
+        cardinality = cardinalities[c.cardinality_string]
+
+        properties_row(name, c.uri.n3(), cardinality, desc)
     properties_end()
     
-def wiki_api_for_type(t):
+def wiki_api_for_type(t, calls_for_t):
     print "=== %s ==="%t.name
     print "[[Developers_Documentation:_RDF_Data#%s_RDF | RDF Payload description]]\n"%t.name
-    calls_for_t = sorted(t.calls)
 
     last_description = ""
     for call in calls_for_t:
@@ -96,27 +102,37 @@ def wiki_api_for_type(t):
             print ""
             last_description = str(call.description)
              
-
 main_types = []
 helper_types = []
+calls_to_document = copy.copy(api_calls)
+
 for t in api_types:
-    if (t.is_statement and len(t.calls) > 0):
+    if t.is_statement or len(t.calls) > 0:
         main_types.append(t)
-    else:
+    elif (sp.Component in [x.uri for x in t.parent_classes] and 
+          sp.Code not in [x.uri for x in t.parent_classes]):
         helper_types.append(t)
 
-
 def type_sort_order(x): 
-    return str(x.calls[0].category).split("_")[0].capitalize()
+    is_record = filter(lambda x: "record" in x, [c.category for c in x.calls])
+    if len(is_record) > 0 or len(x.calls) == 0:
+        return "Clinical Statement"
+    return "Container-level "
+
+def call_category(x):
+    return x.category.split("_")[0].capitalize()
 
 def call_sort_order(x):
+    
     m = {"GET" : 10, "POST":20,"PUT":30,"DELETE":40}    
     ret =  m[x.method]
     if ("items" in x.category): ret -= 1
+    ret = call_category(x) + str(x.target) + str(ret)
     return ret
 
 main_types = sorted(main_types, key=lambda x: type_sort_order(x) + str(x.name))
-helper_types = sorted(helper_types, key=lambda x: str(x.uri))
+helper_types = sorted(helper_types, key=lambda x: x.name)
+calls_to_document = sorted(calls_to_document, key=call_sort_order)
 
 import sys
 if __name__=="__main__":
@@ -128,15 +144,22 @@ if __name__=="__main__":
                 wiki_batch_start(current_batch+" Types") # e.g. "Record Items" or "Container Items"
             wiki_payload_for_type(t)
 
-        wiki_batch_start("Core Data Types") # e.g. "Record Items" or "Container Items"            
+        wiki_batch_start("Component Types") # e.g. "Record Items" or "Container Items"            
         for t in helper_types: 
             wiki_payload_for_type(t)            
             
             
     if "api" in sys.argv:
         current_batch = None
-        for t in main_types: 
-            if type_sort_order(t) != current_batch:
-                current_batch = type_sort_order(t)
+        processed = []
+        for t in calls_to_document: 
+            if call_category(t) != current_batch:
+                current_batch = call_category(t)
                 wiki_batch_start(current_batch+" Calls")
-            wiki_api_for_type(t)
+            if (t in processed): continue
+
+            target = SMART_Class[t.target]
+            calls_for_t = filter(lambda x: call_category(x)==current_batch, sorted(target.calls))
+            processed.extend(calls_for_t)
+            wiki_api_for_type(target, calls_for_t)
+

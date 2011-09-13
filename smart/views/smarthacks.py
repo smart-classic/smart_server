@@ -213,6 +213,9 @@ def remove_app(request, account, app):
 
     return DONE
 
+@CallMapper.register(method="GET",
+                     category="container_items",
+                     target="http://smartplatforms.org/terms#Demographics")
 def record_search(request):
 
     sparql = Template("""PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
