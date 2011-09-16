@@ -32,6 +32,7 @@ my_app = """
   "id" : "my-app@apps.smartplatforms.org",
   "version" : ".1a",
   "mode" : "ui",
+  "scope": "record",
   "index" : "http://localhost:8000/smartapp/index.html",
   "icon" :  "http://sandbox.smartplatforms.org/static/smart_common/resources/images/app_icons_32/developers_sandbox.png"
 }
