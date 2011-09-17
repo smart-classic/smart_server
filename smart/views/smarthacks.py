@@ -95,14 +95,13 @@ def signed_header_for_token(t):
         activity = AppActivity.objects.get(app=app)
 
     headers = {}
-    get_params = urllib.urlencode(t.passalong_params)
-
-    app_index_req = utils.url_request_build(activity.url, "GET", headers, get_params)
+    app_index_req = utils.url_request_build(activity.url, "GET", headers, "")
 
     # sign as a two-legged OAuth request for the app
     oauth_request = OAuthRequest(consumer=app,
-                                 token=None, # no access tokens for 2-legged request
-                                 http_request=app_index_req)
+                                 token=None, # no access tokens: 2-legged request
+                                 http_request=app_index_req,
+                                 oauth_parameters=t.passalong_params)
 
     oauth_request.sign()
     auth = oauth_request.to_header()["Authorization"]
