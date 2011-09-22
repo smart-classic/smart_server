@@ -110,40 +110,26 @@ class RecordObject(object):
         if type(s) == Literal: return None
 
         node_type_candidates = list(g.triples((s, rdf.type, None)))
-        node_type = []
-
+        node_type = None
         for c in node_type_candidates:
-            if SMART_Class[c[2]].is_statement:
-                node_type += [c]
-        assert len(node_type) <= 1, "Got multiple node types for %s"%[x[2] for x in node_type]
+            t = SMART_Class[c[2]]
+            if t.is_statement or t.uri == sp.MedicalRecord:
+                assert node_type==None, "Got multiple node types for %s"%[x[2] for x in node_type]
+                node_type  = t.uri
 
-        if len(node_type) > 0:
-            node_type = node_type[0][2]
-
-        subject_uri = str(s)
-        
-        if type(s) == BNode:
-            if not node_type: return None
-
-            t = RecordObject[node_type]
-            if not t.smart_type.is_statement: 
-                return None
-
+        if type(s) == BNode and not node_type: return None
         elif type(s) == URIRef:
+            subject_uri = str(s)        
             if subject_uri.startswith("urn:smart_external_id:"):
                 full_path = self.internal_id(c, s)
                 assert full_path or node_type != None, "%s is a new external URI node with no type"%s.n3()
-                if full_path == None:
-                    t = RecordObject[node_type]
-                    assert t.is_statement, "External IDs assignable only to Statement nodes, not %s"%t
             else:
                 return None
 
         # If we got here, we need to remap the node "s".
         if full_path == None:
-            full_path = t.determine_full_path(var_bindings)
+            full_path = RecordObject[node_type].determine_full_path(var_bindings)
         return full_path
-
 
     def generate_uris(self, g, c, var_bindings=None):   
         node_map = {}    
