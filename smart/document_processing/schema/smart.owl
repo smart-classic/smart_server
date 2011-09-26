@@ -6464,19 +6464,6 @@ A single fulfillment event (that is, the medication was dispensed to the patient
     </owl:NamedIndividual>
     
 
-    <!-- http://smartplatforms.org/terms/api/calls#get_medical_record -->
-
-    <owl:NamedIndividual rdf:about="&calls;get_medical_record">
-        <rdf:type rdf:resource="&api;call"/>
-        <api:by_internal_id>true</api:by_internal_id>
-        <api:method>GET</api:method>
-        <api:path>/records/{record_id}</api:path>
-        <api:category>record_items</api:category>
-        <rdfs:comment>Get a medical record</rdfs:comment>
-        <api:target rdf:resource="http://smartplatforms.org/terms#MedicalRecord"/>
-    </owl:NamedIndividual>
-
-
 
     <!-- http://smartplatforms.org/terms/api/calls#post_medication -->
 
