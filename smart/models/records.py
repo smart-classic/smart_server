@@ -13,6 +13,7 @@ from smart.lib import utils
 from smart.models.apps import *
 from smart.models.accounts import *
 from smart.models.rdf_store import DemographicConnector, RecordStoreConnector
+from smart.models.mongo import key_to_mongo, records_db, extract_field, RDFifier
 from string import Template
 import re, datetime
 
@@ -32,78 +33,38 @@ class Record(Object):
     return u
 
   @classmethod
-  def search_records(cls, query):
-    c = DemographicConnector()
-    res = c.sparql(query)
-    m = parse_rdf(res)
-
-    # for each person, look up their demographics object.
-    from smart.models.record_object import RecordObject
-    people = m.triples((None, rdf['type'], sp.Demographics))
-    pobj = RecordObject[sp.Demographics] 
-
-    obtained = set()
-    return_graph = bound_graph()
-    for person in people:
-      p = person[0] # subject
-
-      # Connect to RDF Store
-      pid = re.search("\/records\/(.*?)\/demographics", str(p)).group(1)
-      if pid in obtained: continue
-
-      print "matched ", p," to ", pid
-      obtained.add(pid)
-      c = RecordStoreConnector(Record.objects.get(id=pid))
-
-      # Pull out demographics
-      p_uri = p.n3() # subject URI
-      p_subgraph = parse_rdf(c.sparql(pobj.query_one(p_uri)))
+  def search_records_mongo(cls, match):
+    ret = []
+    for m in  records_db[str(sp.Demographics)].find(match):
+      ret.append(m)
       
-      # Append to search result graph
-      return_graph += p_subgraph
-    return serialize_rdf(return_graph)
+    return RDFifier(ret).graph.serialize()
+    
+  """
+      r = Record()
+      print "Matched", m
+      r.fn = extract_field(m, vcard['n'], vcard['given-name'])
+      r.ln = extract_field(m, vcard['n'], vcard['family-name'])
+      r.dob = extract_field(m, vcard['bday'])
+      r.gender = extract_field(m, foaf['gender'])
+      r.zipcode = extract_field(m, vcard['adr'], vcard['postal-code'])[0]
+      ret.append(r)
+    return ret
+    """
 
   @classmethod
-  def rdf_to_objects(cls, res):
-    m = parse_rdf(res)
-    
-    record_list = []
-
-    q = """
-PREFIX sp:<http://smartplatforms.org/terms#>
-PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-PREFIX dcterms:<http://purl.org/dc/terms/>
-PREFIX v:<http://www.w3.org/2006/vcard/ns#>
-PREFIX foaf:<http://xmlns.com/foaf/0.1/>
-
-SELECT ?gn ?fn ?dob ?gender ?zipcode ?d
-WHERE {
-  ?d rdf:type sp:Demographics.
-  ?d v:n ?n.
-  ?n v:given-name ?gn.
-  ?n v:family-name ?fn.
- optional{  ?d foaf:gender ?gender.}
- optional{  ?d v:bday ?dob.}
-
- optional{  ?d v:adr ?a. 
-            ?a rdf:type v:Pref.
-            ?a v:postal-code ?zipcode.
-    }
-
- optional{  ?d v:adr ?a. 
-            ?a v:postal-code ?zipcode.
-    }
-
-}"""
-
-    people = list(m.query(q))
-    for p in people:
-      record = Record()
-      record.id = re.search("\/records\/(.*?)\/demographics", str(p[5])).group(1)        
-      record.fn, record.ln, record.dob, record.gender, record.zipcode =  p[:5]
-      record_list.append(record)
-      
-    return record_list
+  def search_records(cls):
+    ret = []
+    for m in  records_db[str(sp.Demographics)].find():
+      r = Record()
+      r.id  = m['@subject']['@iri'].rsplit("/records/", 1)[1].split("/demographics")[0]
+      r.fn = extract_field(m, vcard['n'], vcard['given-name'])
+      r.ln = extract_field(m, vcard['n'], vcard['family-name'])
+      r.dob = extract_field(m, vcard['bday'])
+      r.gender = extract_field(m, foaf['gender'])
+      r.zipcode = extract_field(m, vcard['adr'], vcard['postal-code'])[0]
+      ret.append(r)
+    return ret
     
 class AccountApp(Object):
   account = models.ForeignKey(Account)

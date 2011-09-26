@@ -16,6 +16,7 @@ from smart.models.record_object import RecordObject
 from smart.models.rdf_rest_operations import *
 from oauth.oauth import OAuthRequest
 from smart.models.ontology_url_patterns import CallMapper
+from smart.models.mongo import key_to_mongo
 import datetime, urllib
 
 SAMPLE_NOTIFICATION = {
@@ -217,60 +218,49 @@ def remove_app(request, account, app):
                      target="http://smartplatforms.org/terms#Demographics")
 def record_search(request):
 
-    sparql = Template("""PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-PREFIX  foaf:  <http://xmlns.com/foaf/0.1/>
-PREFIX  sp:  <http://smartplatforms.org/terms#>
-PREFIX dcterms: <http://purl.org/dc/terms/>
-CONSTRUCT {?person rdf:type sp:Demographics} 
-WHERE   {
-?person rdf:type sp:Demographics. 
-$statements
-}
-order by ?ln""")
-
-
-    statements = []
+    match_criteria = {}
     fn = request.GET.get('family_name', None)
     if fn:
         fn = string_to_alphanumeric(fn)
-        statements += [""" ?person foaf:familyName ?familyName. FILTER  regex(?familyName, "^%s","i") """%fn]
+        match_criteria[key_to_mongo(vcard['n'], vcard['family-name'])] = {
+            "$regex" : '^'+fn, "$options": 'i'
+            }
 
     gn = request.GET.get('given_name', None)
     if gn:
         gn = string_to_alphanumeric(gn)
-        statements += [""" ?person foaf:givenName ?givenName. FILTER  regex(?givenName, "^%s","i") """%gn]
-
+        match_criteria[key_to_mongo(vcard['n'], vcard['given-name'])] = {
+            "$regex" : '^'+gn, "$options": 'i'
+            }
 
     gender = request.GET.get('gender', None)
     if gender:
         gender = string_to_alphanumeric(gender)
-        statements += [""" ?person foaf:gender ?gender. FILTER  regex(?gender, "^%s","i") """%gender]
+        match_criteria[key_to_mongo(foaf.gender)] = gender
 
     mrn = request.GET.get('medical_record_number', None)
     if mrn:
         mrn = string_to_alphanumeric(mrn)
-        statements += [""" ?person sp:medicalRecordNumber ?mrn.  ?mrn dcterms:identifier  ?mrnid. FILTER  regex(?mrnid, "^%s$","i") """%mrn]
-
+        match_criteria[key_to_mongo(sp.medicalRecordNumber, dcterms.identifier)] = {
+                "$regex" : '^'+mrn, "$options": 'i'
+                }
 
     zipcode = request.GET.get('zipcode', None)
     if zipcode:
         zipcode = string_to_alphanumeric(zipcode)
-        statements += [""" ?person sp:zipcode ?zipcode. FILTER  regex(?zipcode, "^%s$","i") """%zipcode]
+        match_criteria[key_to_mongo(vcard['adr'], vcard['postal-code'])] = zipcode
 
     birthday = request.GET.get('birthday', None)
     if birthday:
         birthday = string_to_alphanumeric(birthday)
-        statements += [""" ?person sp:birthday ?birthday. FILTER  regex(?birthday, "^%s$","i") """%birthday]
-
-    statements = " ".join(statements)
-    q = sparql.substitute(statements=statements)
-    record_list = Record.search_records(q)
+        match_criteria[key_to_mongo(vcard['bday'])] = { "$regex" : '^'+birthday, "$options": 'i'}
+    
+    record_list = Record.search_records_mongo(match_criteria)
     return HttpResponse(record_list, mimetype="application/rdf+xml")
 
+
 def record_search_xml(request):
-    q = request.GET.get('sparql', None)
-    record_list = Record.search_records(q)
-    record_list = Record.rdf_to_objects(record_list)
+    record_list = Record.search_records()
     return render_template('record_list', {'records': record_list}, type='xml')
 
 

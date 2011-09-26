@@ -160,13 +160,15 @@ class RecordObject(object):
             if (not t.base_path.startswith("/records")): continue
             if (n == recordURI): continue # don't assert that the record has itself as an element
             
+            g.add((n, sp.belongsTo, recordURI))
             g.add((recordURI, sp.hasStatement, n))
             g.add((recordURI, rdf.type, sp.MedicalRecord))
+
+
 
     def prepare_graph(self, g, c, var_bindings=None):
         new_uris = self.generate_uris(g, c, var_bindings)
         self.attach_statements_to_record(g, new_uris, var_bindings)
-
 
     def query_one(self, id):
         ret = SMART_Querier.query_one(self.smart_type, id=id)
