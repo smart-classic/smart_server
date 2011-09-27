@@ -8,7 +8,6 @@
     <!ENTITY v "http://www.w3.org/2006/vcard/ns#" >
     <!ENTITY dc "http://purl.org/dc/elements/1.1/" >
     <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
-    <!ENTITY dc2 "http://smartplatforms.org/terms#dc:" >
     <!ENTITY examples "http://smartplatforms.org/examples#" >
     <!ENTITY cemterms "http://smartplatforms.org/cemterms#" >
     <!ENTITY api "http://smartplatforms.org/terms/api#" >
@@ -786,7 +785,6 @@
      xmlns:OrderStatus_DOMAIN_ECID14="&OrderStatus_DOMAIN_ECID;85281161-8"
      xmlns:BodySide_DOMAIN_ECID="http://smartplatforms.org/terms#BodySide_DOMAIN_ECID/905"
      xmlns:OrderStatus_DOMAIN_ECID15="&OrderStatus_DOMAIN_ECID;5"
-     xmlns:dc2="http://smartplatforms.org/terms#dc:"
      xmlns:Substance_DOMAIN_ECID82="&Substance_DOMAIN_ECID2;1581"
      xmlns:Substance_DOMAIN_ECID81="&Substance_DOMAIN_ECID2;9157476"
      xmlns:Substance_DOMAIN_ECID80="&Substance_DOMAIN_ECID2;49034"
@@ -1784,9 +1782,9 @@
     
 
 
-    <!-- http://smartplatforms.org/terms#dc:created -->
+    <!-- http://smartplatforms.org/terms#dcterms:created -->
 
-    <owl:DatatypeProperty rdf:about="&dc2;created"/>
+    <owl:DatatypeProperty rdf:about="&dcterms;created"/>
     
 
 
@@ -5033,7 +5031,7 @@ For a medication with a simple dosing schedule, record how often to take the med
   xmlns:spcode=&quot;http://smartplatforms.org/terms/codes/&quot;&gt; 
 
  &lt;sp:VitalSigns&gt;
-    &lt;dc:date&gt;2010-05-12T04:00:00Z&lt;/dc:date&gt;
+    &lt;dcterms:date&gt;2010-05-12T04:00:00Z&lt;/dcterms:date&gt;
     &lt;sp:encounter&gt;
       &lt;sp:Encounter&gt;
       &lt;sp:startDate&gt;2010-05-12T04:00:00Z&lt;/sp:startDate&gt;
