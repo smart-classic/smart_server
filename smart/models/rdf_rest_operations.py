@@ -13,7 +13,7 @@ def mongo_match(t, record_uri, target_uris=None):
         ret[key_to_mongo(sp.belongsTo)+".@iri"] =  record_uri
 
     if target_uris:
-        ret["@subject.@iri"] = {"$in":list(target_uris)}
+        ret["@subject"] = {"$in":list(target_uris)}
     print "MATCHIGN", ret
     return ret
 
@@ -110,6 +110,7 @@ def record_delete_all_objects(request, record_id, obj, **kwargs):
     restrict_to_element = get_restriction_element(**kwargs)
 
     # Find results in patient record matching the given type
+    print "REMOVING", obj.uri, record_uri, restrict_to_element
     records_db[obj.uri].remove(mongo_match(obj,
                                            record_uri, 
                                            restrict_to_element))
@@ -130,9 +131,10 @@ def record_post_objects(request, record_id, obj,  **kwargs):
     def ensure_exists(t, skipped_v):
         for k, v in skipped_v.iteritems():
             if k[0]=='@': continue
-            assert isinstance(v, list)# Allow links from external object only in list properties
+            
+            assert isinstance(v, list), "%s vs. %s"%(k,v)# Allow links from external object only in list properties
 
-        exists_q = mongo_match(t, record_uri, [skipped_v['@subject']['@iri']])
+        exists_q = mongo_match(t, record_uri, [skipped_v['@subject']])
         exists = records_db[t.uri].find_one(exists_q)
         assert exists, "New object needs %s %s"%(t.uri,  exists_q)
         return
@@ -148,13 +150,13 @@ def record_post_objects(request, record_id, obj,  **kwargs):
 
     for t, skipped_vals in skipped.iteritems():
         for skipped_v in skipped_vals:
-            exists_q = mongo_match(t, record_uri, [skipped_v['@subject']['@iri']])
+            exists_q = mongo_match(t, record_uri, [skipped_v['@subject']])
             updates = {}
             for k, v in skipped_v.iteritems():
                 if k[0]=='@': continue
-                updates[k] = {"$pushall": v}
-
-            records_db[t.uri].update(exists_q, updates)        
+                updates[k] = {k: v}
+            print "UPDATING", exists_q, updates
+            records_db[t.uri].update(exists_q, {'$pushAll': updates})        
         
     return rdf_response(g.serialize())
 

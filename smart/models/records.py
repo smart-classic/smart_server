@@ -57,7 +57,7 @@ class Record(Object):
     ret = []
     for m in  records_db[str(sp.Demographics)].find():
       r = Record()
-      r.id  = m['@subject']['@iri'].rsplit("/records/", 1)[1].split("/demographics")[0]
+      r.id  = m['@subject'].rsplit("/records/", 1)[1].split("/demographics")[0]
       r.fn = extract_field(m, vcard['n'], vcard['given-name'])
       r.ln = extract_field(m, vcard['n'], vcard['family-name'])
       r.dob = extract_field(m, vcard['bday'])
