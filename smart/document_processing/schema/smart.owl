@@ -6374,6 +6374,20 @@ For a medication with a simple dosing schedule, record how often to take the med
     
 
 
+    <!-- http://smartplatforms.org/terms/api/calls#get_vital_signs -->
+
+    <owl:NamedIndividual rdf:about="&calls;get_capabilities">
+        <rdf:type rdf:resource="&api;call"/>
+        <rdfs:comment>Get capabilities for a container</rdfs:comment>
+        <api:method>GET</api:method>
+        <api:by_internal_id>true</api:by_internal_id>
+        <api:path>/capabilities/</api:path>
+        <api:category>container_items</api:category>
+        <api:target rdf:resource="http://smartplatforms.org/terms#Container"/>
+    </owl:NamedIndividual>
+    
+
+
     <!-- http://smartplatforms.org/terms/api/calls#post_alert -->
 
     <owl:NamedIndividual rdf:about="&calls;post_alert">
