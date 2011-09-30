@@ -139,6 +139,9 @@ def record_post_objects(request, record_id, obj,  **kwargs):
         assert exists, "New object needs %s %s"%(t.uri,  exists_q)
         return
 
+
+    for i in b.statement_elements.values():
+        print i
     for k, v in b.statement_elements.iteritems():
         if str(obj.uri) not in v['@type']:
             t = SMART_Class[v['@type'][0]]
@@ -154,7 +157,7 @@ def record_post_objects(request, record_id, obj,  **kwargs):
             updates = {}
             for k, v in skipped_v.iteritems():
                 if k[0]=='@': continue
-                updates[k] = {k: v}
+                updates[k] = v
             print "UPDATING", exists_q, updates
             records_db[t.uri].update(exists_q, {'$pushAll': updates})        
         

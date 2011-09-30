@@ -164,7 +164,12 @@ class RecordObject(object):
             g.add((recordURI, sp.hasStatement, n))
             g.add((recordURI, rdf.type, sp.MedicalRecord))
 
-
+        # Make sure any inverse properties are represented in both directions
+        for k,v in SMART_Class.object_property_inverses.iteritems():
+            for n in g.triples((None, k, None)): 
+                g.add((n[2], v, n[0]))
+            for n in g.triples((None, v, None)):
+                g.add((n[2], k, n[0]))
 
     def prepare_graph(self, g, c, var_bindings=None):
         new_uris = self.generate_uris(g, c, var_bindings)
