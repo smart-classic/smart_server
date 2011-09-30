@@ -1537,7 +1537,9 @@
 
     <!-- http://smartplatforms.org/terms#medication -->
 
-    <owl:ObjectProperty rdf:about="http://smartplatforms.org/terms#medication"/>
+    <owl:ObjectProperty rdf:about="http://smartplatforms.org/terms#medication">
+      <owl:inverseOf rdf:resource="http://smartplatforms.org/terms#fulfillment"/>
+    </owl:ObjectProperty>
     
 
 
