@@ -2254,7 +2254,6 @@ No example yet.]]></api:example>
 				</api:doc>
             </owl:Restriction>
         </rdfs:subClassOf>
-VitalSign
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://smartplatforms.org/terms#heartRate"/>
