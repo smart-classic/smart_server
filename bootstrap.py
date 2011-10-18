@@ -7,8 +7,8 @@ print "DONE BOOTSTRAP imports"
 
 # Create the chrome app and a single 'localhost' development app
 MachineApp.objects.create(name='chrome',
-                          consumer_key='chrome',
-                          secret='chrome',
+                          consumer_key=settings.CHROME_CONSUMER,
+                          secret=settings.CHROME_SECRET,
                           app_type='chrome',
                           email='chrome@apps.smart-project.org')
 

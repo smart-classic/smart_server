@@ -5,11 +5,9 @@ from smart.lib.utils import url_request
 from smart.models.rdf_rest_operations import *
 from smart.models.ontology_url_patterns import CallMapper, BasicCallMapper
 
-PROXY_BASE  = "http://sandbox-api.smartplatforms.org"
-
 def proxy_get(request, *args, **kwargs):
     print "proxying request", request.path, args, kwargs
-    url = PROXY_BASE + request.path    
+    url = settings.PROXY_BASE + request.path    
     ret = url_request(url, "GET", {})
     return rdf_response(ret)
 
