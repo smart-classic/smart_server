@@ -40,9 +40,9 @@ def main():
                     action="store_true",
                     default=False,
                     help="All steps: clone, generate settings, "+
-                      "generate sample data, run app server, "+
-                      "reset api server, load sample data, "+
-                      "run api servers")
+                      "kill running servers, generate sample data, "+
+                      "run app server, reset api server, "+
+                      "load sample data, run api servers")
 
     parser.add_option("-g", "--clone-git-repositories", dest="clone_git",
                     action="store_true",
@@ -135,6 +135,12 @@ def main():
             call_command("cd smart_ui_server; git checkout dev; cd ..")
             call_command("cd smart_sample_patients; git checkout dev; cd ..")
             call_command("cd smart_sample_apps; git checkout dev; cd ..")
+
+        call_command("cd smart_server; git submodule init && git submodule update; cd ..", print_output=True)
+        call_command("cd smart_ui_server; git submodule init && git submodule update; cd ..", print_output=True)
+        call_command("cd smart_sample_patients; git submodule init && git submodule update; cd ..", print_output=True)
+        call_command("cd smart_sample_apps; git submodule init && git submodule update; cd ..", print_output=True)
+
 
     if options.generate_settings:
         print "Configuring SMART server settings..."
