@@ -62,7 +62,7 @@ def main():
     parser.add_option("-p", "--generate-sample-data", dest="generate_sample_data",
                     action="store_true",
                     default=False,
-                    help="Generate settings files")
+                    help="Generate sample patient data")
 
     parser.add_option("-k", "--kill-servers", dest="kill_servers",
                     action="store_true",
