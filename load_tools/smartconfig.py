@@ -153,7 +153,7 @@ def main():
                                   ''.join([choice(PASSWORD_LETTERBANK) for i in range(8)]))
 
         ui_server_base_url = get_input("SMART UI server", "http://localhost:7001")
-        app_server_base_url = get_input("SMART UI server", "http://localhost:8001")
+        app_server_base_url = get_input("SMART App server", "http://localhost:8001")
         
         standalone_mode = get_input(
 """Run server in standalone mode (patient data stored in local db)?  
