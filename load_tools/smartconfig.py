@@ -173,7 +173,7 @@ with patient data hosted at a REST URL you provide.""", "yes")
                             "smart_server/bootstrap_helpers/application_list.json ")
 
         do_sed('smart_server/bootstrap_helpers/application_list.json', 
-                   'http://localhost:8001',
+                   'http:\/\/localhost:8001',
                    app_server_base_url)
 
 
