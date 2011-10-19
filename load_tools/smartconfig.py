@@ -84,6 +84,11 @@ def main():
                     default=False,
                     help="Load sample data into DB")
 
+    parser.add_option("-c", "--create-user", dest="create_user",
+                    action="store_true",
+                    default=False,
+                    help="Create a user account for web login")
+
     parser.add_option("-u", "--run-api-servers", dest="run_api_servers",
                     action="store_true",
                     default=False,
@@ -96,6 +101,7 @@ def main():
         options.generate_settings or
         options.generate_sample_data or
         options.load_sample_data or
+        options.create_user or 
         options.kill_servers or
         options.reset_servers or
         options.run_app_server or 
@@ -109,6 +115,7 @@ def main():
         options.generate_settings  = True
         options.generate_sample_data  = True
         options.load_sample_data  = True
+        options.create_user = True
         options.kill_servers = True
         options.run_app_server = True
         options.reset_servers  = True
@@ -261,6 +268,24 @@ with patient data hosted at a REST URL you provide.""", "yes")
                      "../smart_sample_patients/generated_data/* ;"
                      "cd ..;", print_output=True)
 
+
+
+    if options.create_user:
+        print "Configuring a user ..."
+
+        given_name = get_input("Given Name", "Demo")
+        family_name = get_input("Family Name", "User")
+        email = get_input("Email", "demouser@smartplatforms.org")
+        password = get_input("Password", "password")
+
+        call_command("cd smart_server; " + 
+                     "PYTHONPATH=.:.. DJANGO_SETTINGS_MODULE=settings "+
+                     "python load_tools/create_user.py  " + 
+                     given_name + " " + 
+                     family_name + " " + 
+                     email + " " + 
+                     password + "; " 
+                     "cd ..;", print_output=True)
 
     if options.run_api_servers:
         port = get_port(ui_server)
