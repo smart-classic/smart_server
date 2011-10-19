@@ -114,7 +114,16 @@ To limit servlet access to localhost, make two tomcat configuration changes:
 
 You'll need to restart Tomcat again if you make these changes
 
-# Download, Install, and Configure SMART Backend Server 
+# Download, Install, and Configure SMART Server Components (automated)
+
+At this point you are ready to install the SMART server components. There are two ways to do this. You can either use the easy install script (described here) or skip this step and follow the manual setup steps. If you complete the installation via the automated script, there won't be any further steps that you need to do.
+
+<pre>
+  wget https://raw.github.com/chb/smart_server/dev/load_tools/smartconfig.py
+  python smartconfig.py -a
+</pre>
+
+# Download, Install, and Configure SMART Backend Server (manual steps)
 
 * Install GIT (NOTE: try "sudo apt-get install git-core" if the git package is not found)
 <pre>
@@ -154,8 +163,8 @@ You'll need to restart Tomcat again if you make these changes
    This is normal -- nothing has gone wrong.
    
    IMPORTANT: if you've enabled apps that are part of the sample apps below, you should <em>wait</em> to run <tt>reset.sh</tt> until you've got the sample apps server running. The SMART Reference EMR attempts to download the apps' manifest files, and if they're not available over HTTP, <tt>reset.sh</tt> won't complete successfully. If you mistakenly run <tt>reset.sh</tt> before setting up the SMART Sample Apps, don't worry, just set up the SMART Sample Apps server, and run <tt>reset.sh</tt> again.
-
-# Download, Install, and Configure SMART UI Server
+   
+# Download, Install, and Configure SMART UI Server (manual steps)
 
 * get the code
 
@@ -170,7 +179,7 @@ You'll need to restart Tomcat again if you make these changes
     * set <tt>SMART_UI_BASE</tt> to the complete path to the location where you've installed <tt>smart_ui_server</tt>, e.g. <tt>/web/smart_ui_server</tt>
     * set <tt>SMART_SERVER_LOCATION</tt>, <tt>CONSUMER_KEY</tt>, <tt>CONSUMER_SECRET</tt> appropriately to match the SMART Server's location and chrome credentials. (Check your <tt>bootstrap.py</tt> within <tt>smart_server</tt> for those credentials. If you change them, you'll need to run <tt>reset.sh</tt> again on the SMART server. If you never changed <tt>bootstrap.py</tt>, then your <tt>CONSUMER_KEY</tt> and <tt>CONSUMER_SECRET</tt> are both <tt>chrome</tt>, and you don't need to change their value in the UI server default settings file.)
 
-# Download, Install, and Configure SMART Sample Apps
+# Download, Install, and Configure SMART Sample Apps (Manual)
 
 * get the source code
  <pre>
@@ -184,7 +193,7 @@ You'll need to restart Tomcat again if you make these changes
     * set <tt>APP_HOME</tt> to the complete path to the location where you've installed <tt>smart_sample_apps</tt>, e.g. <tt>/web/smart_sample_apps</tt>
     * set <tt>SMART_SERVER_PARAMS</tt> to point to the location of the SMART Server. If you are running the SMART server on <tt>localhost:7000</tt> as we suggest, there's no need to change anything.
 
-# Generate Sample Patient Records and Load Them in the SMART EMR
+# Generate Sample Patient Records and Load Them in the SMART EMR (manual steps)
 
 * get the source code and generate sample data
  <pre>
@@ -203,7 +212,7 @@ You'll need to restart Tomcat again if you make these changes
  
  Expect this to take a few minutes.
 
-#Running the Development Servers
+#Running the Development Servers (manual steps)
 
 The Django development servers are easy to run at the prompt.
 
