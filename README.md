@@ -120,7 +120,7 @@ At this point you are ready to install the SMART server components. There are tw
 
 <pre>
   wget https://raw.github.com/chb/smart_server/dev/load_tools/smartconfig.py
-  python smartconfig.py -a
+  python smartconfig.py -a -d
 </pre>
 
 # Download, Install, and Configure SMART Backend Server (manual steps)
