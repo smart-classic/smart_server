@@ -116,7 +116,7 @@ You'll need to restart Tomcat again if you make these changes
 
 # Download, Install, and Configure SMART Server Components (automated)
 
-At this point you are ready to install the SMART server components. There are two ways to do this. You can either use the easy install script (described here) or skip this step and follow the manual setup steps. If you complete the installation via the automated script, there won't be any further steps that you need to do.
+At this point you are ready to install the SMART server components. There are two ways to do this. You can either use the easy install script (described here) or skip this step and follow the manual setup steps. If you complete the installation via the automated script, there are no any further steps that you need to do after running the script (your SMART server will be fully functional).
 
 <pre>
   wget https://raw.github.com/chb/smart_server/dev/load_tools/smartconfig.py
