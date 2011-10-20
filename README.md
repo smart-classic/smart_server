@@ -69,10 +69,9 @@ This should be the second uncommented line in your default config. Change <tt>id
  postgres=# \q
  </pre>
 
-* Create the Databases and make the smart user their owner.
+* Create the Database and make the smart user its owner.
  <pre>
  createdb -O smart smart
- createdb -O smart rxnorm
  exit
  </pre>
 
