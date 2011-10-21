@@ -63,6 +63,8 @@ This should be the second uncommented line in your default config. Change <tt>id
 * Create a PostgreSQL user for your SMART service, e.g. "smart" and setup a password
  <pre>
  sudo su - postgres
+ pg_dropcluster --stop 9.1 main
+ pg_createcluster --start -e UTF-8 9.1 main
  createuser --superuser smart
  psql
  postgres=# \password smart
@@ -113,6 +115,12 @@ To limit servlet access to localhost, make two tomcat configuration changes:
 
 You'll need to restart Tomcat again if you make these changes
 
+# Install GIT 
+(NOTE: try "sudo apt-get install git-core" if the git package is not found)
+<pre>
+     sudo apt-get install git
+</pre>
+
 # Download, Install, and Configure SMART Server Components (automated)
 
 At this point you are ready to install the SMART server components. There are two ways to do this. You can either use the easy install script (described here) or skip this step and follow the manual setup steps. If you complete the installation via the automated script, there are no further steps that you need to do after running the script (your SMART server will be fully functional).
@@ -123,11 +131,6 @@ At this point you are ready to install the SMART server components. There are tw
 </pre>
 
 # Download, Install, and Configure SMART Backend Server (manual steps)
-
-* Install GIT (NOTE: try "sudo apt-get install git-core" if the git package is not found)
-<pre>
-     sudo apt-get install git
-</pre>
 
 * get the code
  <pre>
