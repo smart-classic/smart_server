@@ -1,14 +1,17 @@
 #!/usr/bin/env python
+
 import sys
 import os
 import re
 import imp
 import subprocess
 import logging
-import optparse
+import argparse
 import string
 import urlparse
+
 from random import choice
+
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s %(levelname)s %(message)s')
 
@@ -21,7 +24,6 @@ def get_input(p, d):
     if v: return v
     return d
 
-
 def do_sed(t,n,v):
     v =  re.sub("/", r'\/', v)
     c = "sed -i -e's/%s/%s/' %s" % (n, v, t)
@@ -33,10 +35,9 @@ def fill_field(t, n, v):
     return do_sed(t, "{{%s}}"%n, v)
 
 def main():
-    usage = "usage: %prog [options]"
-    parser = optparse.OptionParser(usage)
+    parser = argparse.ArgumentParser(description='SMART Server Management Tool')
 
-    parser.add_option("-a", "--all-steps", dest="all_steps",
+    parser.add_argument("-a", "--all-steps", dest="all_steps",
                     action="store_true",
                     default=False,
                     help="All steps: clone, generate settings, "+
@@ -44,86 +45,89 @@ def main():
                       "run app server, reset api server, "+
                       "load sample data, run api servers")
 
-    parser.add_option("-g", "--clone-git-repositories", dest="clone_git",
-                    action="store_true",
-                    default=False,
-                    help="Clone git repositories")
-
-    parser.add_option("-d", "--development-branch", dest="branch_dev",
+    parser.add_argument("-d", "--development-branch", dest="branch_dev",
                     action="store_true",
                     default=False,
                     help="Use development branch (in conjunction with -g)")
+                      
+    parser.add_argument("-g", "--clone-git-repositories", dest="clone_git",
+                    action="store_true",
+                    default=False,
+                    help="Clone git repositories")
+                    
+    parser.add_argument("-u", "--update-git-repositories", dest="update_git",
+                    action="store_true",
+                    default=False,
+                    help="Update git repositories")
 
-    parser.add_option("-s", "--generate-settings-files", dest="generate_settings",
+    parser.add_argument("-s", "--generate-settings-files", dest="generate_settings",
                     action="store_true",
                     default=False,
                     help="Generate settings files")
-
-    parser.add_option("-p", "--generate-sample-data", dest="generate_sample_data",
+                    
+    parser.add_argument("-k", "--kill-servers", dest="kill_servers",
+                    action="store_true",
+                    default=False,
+                    help="Kill all currently-running django development servers")
+                      
+    parser.add_argument("-p", "--generate-sample-data", dest="generate_sample_data",
                     action="store_true",
                     default=False,
                     help="Generate sample patient data")
 
-    parser.add_option("-k", "--kill-servers", dest="kill_servers",
+    parser.add_argument("-v", "--run-app-server", dest="run_app_server",
                     action="store_true",
                     default=False,
-                      help="Kill all currently-running django development servers")
-
-    parser.add_option("-v", "--run-app-server", dest="run_app_server",
-                    action="store_true",
-                    default=False,
-                    help="Run servers")
-
-    parser.add_option("-r", "--reset-api-server", dest="reset_servers",
+                    help="Run app server (first kills all running SMART servers). Can be used in conjunction with -w")
+    
+    parser.add_argument("-r", "--reset-api-server", dest="reset_servers",
                     action="store_true",
                     default=False,
                     help="Reset API server")
-
-    parser.add_option("-l", "--load-sample-data", dest="load_sample_data",
+                    
+    parser.add_argument("-l", "--load-sample-data", dest="load_sample_data",
                     action="store_true",
                     default=False,
                     help="Load sample data into DB")
-
-    parser.add_option("-c", "--create-user", dest="create_user",
+                    
+    parser.add_argument("-c", "--create-user", dest="create_user",
                     action="store_true",
                     default=False,
                     help="Create a user account for web login")
-
-    parser.add_option("-u", "--run-api-servers", dest="run_api_servers",
+    
+    parser.add_argument("-w", "--run-api-servers", dest="run_api_servers",
                     action="store_true",
                     default=False,
-                    help="Run servers")
+                    help="Run api server (first kills all running SMART servers). Can be used conjunction with -v")
 
-    options, args = parser.parse_args()
+    args = parser.parse_args()
 
-    if not options.all_steps and not ( 
-        options.clone_git or
-        options.generate_settings or
-        options.generate_sample_data or
-        options.load_sample_data or
-        options.create_user or 
-        options.kill_servers or
-        options.reset_servers or
-        options.run_app_server or 
-        options.run_api_servers):
-        
-        parser.print_help()
-        sys.exit(1)
+    if not args.all_steps and not ( 
+        args.clone_git or
+        args.update_git or
+        args.generate_settings or
+        args.generate_sample_data or
+        args.load_sample_data or
+        args.create_user or 
+        args.kill_servers or
+        args.reset_servers or
+        args.run_app_server or 
+        args.run_api_servers):
+            parser.print_help()
+            sys.exit(1)
 
-    if options.all_steps:
-        options.clone_git = True
-        options.generate_settings  = True
-        options.generate_sample_data  = True
-        options.load_sample_data  = True
-        options.create_user = True
-        options.kill_servers = True
-        options.run_app_server = True
-        options.reset_servers  = True
-        options.run_api_servers = True
+    if args.all_steps:
+        args.clone_git = True
+        args.generate_settings  = True
+        args.generate_sample_data  = True
+        args.load_sample_data  = True
+        args.create_user = True
+        args.kill_servers = True
+        args.run_app_server = True
+        args.reset_servers  = True
+        args.run_api_servers = True
 
-
-    if options.clone_git:
-
+    if args.clone_git:
         print "Cloning (4) SMART git repositories..."
         call_command("git clone --recursive https://github.com/chb/smart_server.git", 
                      print_output=True)
@@ -137,7 +141,7 @@ def main():
         call_command("git clone --recursive https://github.com/chb/smart_sample_patients.git", 
                      print_output=True)
 
-        if options.branch_dev:
+        if args.branch_dev:
             call_command("cd smart_server; git checkout dev; cd ..")
             call_command("cd smart_ui_server; git checkout dev; cd ..")
             call_command("cd smart_sample_patients; git checkout dev; cd ..")
@@ -148,8 +152,29 @@ def main():
         call_command("cd smart_sample_patients; git submodule init && git submodule update; cd ..", print_output=True)
         call_command("cd smart_sample_apps; git submodule init && git submodule update; cd ..", print_output=True)
 
-
-    if options.generate_settings:
+    if args.update_git:
+        call_command("cd smart_server; " +
+                     "git pull; " +
+                     "git submodule init; " +
+                     "git submodule update; " +
+                     "cd ..; " +
+                     "cd smart_ui_server; " +
+                     "git pull; " +
+                     "git submodule init; " +
+                     "git submodule update; " +
+                     "cd ..; " +
+                     "cd smart_sample_apps; " +
+                     "git pull; " +
+                     "git submodule init; " +
+                     "git submodule update; " +
+                     "cd ..; " +
+                     "cd smart_sample_patients; " +
+                     "git pull; " +
+                     "git submodule init; " +
+                     "git submodule update; " +
+                     "cd ..;", print_output=True)
+        
+    if args.generate_settings:
         print "Configuring SMART server settings..."
 
         api_server_base_url = get_input("SMART API Server", "http://localhost:7000")
@@ -163,9 +188,9 @@ def main():
         app_server_base_url = get_input("SMART App server", "http://localhost:8001")
         
         standalone_mode = get_input(
-"""Run server in standalone mode (patient data stored in local db)?  
-If you choose 'no', the server will be configured in proxy mode, 
-with patient data hosted at a REST URL you provide.""", "yes")
+            """Run server in standalone mode (patient data stored in local db)?  
+            If you choose 'no', the server will be configured in proxy mode, 
+            with patient data hosted at a REST URL you provide.""", "yes")
 
         if standalone_mode=="no":
             proxy_base = get_input("Proxy server to use for medical record data",
@@ -221,33 +246,28 @@ with patient data hosted at a REST URL you provide.""", "yes")
             print "yes standalone"
             fill_field('smart_server/settings.py', 'use_proxy', 'False')
 
-    if options.generate_sample_data:
-
-        call_command("cd smart_sample_patients/bin; " + 
-                     "rm -rf ../generated_data; " + 
-                     "mkdir ../generated_data; " + 
-                     "python generate.py --write ../generated_data;" + 
-                     "cd ../..;", print_output=True)
-
-    if options.run_app_server or options.run_api_servers:
-        options.kill_servers = True
+    if args.run_app_server or args.run_api_servers:
+        args.kill_servers = True
         server_settings = imp.load_source("settings", "smart_server/settings.py")
         app_settings = imp.load_source("settings", "smart_sample_apps/settings.py")
-
-
         app_server = app_settings.SMART_APP_SERVER_BASE
         api_server = server_settings.SITE_URL_PREFIX
         ui_server = server_settings.SMART_UI_SERVER_LOCATION
 
-
-
-    if options.kill_servers:
+    if args.kill_servers:
         call_command("ps -ah | "+
                      "grep -i 'python manage.py' | "+
                      "egrep  -o '^\ *[0\-9]+' | "+
                      "xargs -i  kill '{}'")
+                     
+    if args.generate_sample_data:
+        call_command("cd smart_sample_patients/bin; " + 
+                     "rm -rf ../generated-data/*.xml; " + 
+                     "python generate.py --write ../generated-data;" + 
+                     "python generate-vitals-patient.py > ../generated-data/99912345.xml;" +
+                     "cd ../..;", print_output=True)
 
-    if options.run_app_server:
+    if args.run_app_server:
         port = get_port(app_server)
         print "port:", port
         call_command("cd smart_sample_apps && python manage.py runconcurrentserver 0.0.0.0:%s --noreload &"%port, 
@@ -255,22 +275,22 @@ with patient data hosted at a REST URL you provide.""", "yes")
 
         print "App Server running."
 
-    if options.reset_servers:
+    if args.reset_servers:
+        print "Resetting the SMART server..."
+        print "Note: Enter the SMART databse password when prompted (3 times)."
+        print "      It is 'smart' by default."
         call_command("cd smart_server && "+
                      "sh ./reset.sh;"+
                      "cd ../..;", print_output=True)
 
-
-    if options.load_sample_data:
+    if args.load_sample_data:
         call_command("cd smart_server; " + 
                      "PYTHONPATH=.:.. DJANGO_SETTINGS_MODULE=settings "+
                      "python load_tools/load_one_patient.py  " + 
-                     "../smart_sample_patients/generated_data/* ;"
+                     "../smart_sample_patients/generated-data/* ;"
                      "cd ..;", print_output=True)
 
-
-
-    if options.create_user:
+    if args.create_user:
         print "Configuring a user ..."
 
         given_name = get_input("Given Name", "Demo")
@@ -287,7 +307,7 @@ with patient data hosted at a REST URL you provide.""", "yes")
                      password + "; " 
                      "cd ..;", print_output=True)
 
-    if options.run_api_servers:
+    if args.run_api_servers:
         port = get_port(ui_server)
         print "port:", port
         call_command("cd smart_ui_server; python manage.py runconcurrentserver 0.0.0.0:%s --noreload &"%port, 
