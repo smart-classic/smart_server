@@ -256,7 +256,8 @@ def main():
 
     if args.kill_servers:
         call_command("ps -ah | "+
-                     "grep -i 'python manage.py' | "+
+                     "grep -i 'python' | "+
+                     "grep -i 'manage.py' | "+
                      "egrep  -o '^\ *[0\-9]+' | "+
                      "xargs -i  kill '{}'")
                      
