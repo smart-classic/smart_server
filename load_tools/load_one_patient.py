@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 from smart.models.rdf_store import TemporaryStoreConnector, RecordStoreConnector
 from smart.models.record_object import api_types, Record, RecordObject
 from smart.client.common.util import parse_rdf, serialize_rdf, remap_node, bound_graph, URIRef, BNode, sp

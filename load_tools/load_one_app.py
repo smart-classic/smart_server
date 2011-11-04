@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 from django.conf import settings
 from smart.models import *
 from string import Template

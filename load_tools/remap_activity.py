@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 from smart.models import *
 
 def remap_app(current_user_id, current_url):
