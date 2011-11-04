@@ -126,8 +126,8 @@ You'll need to restart Tomcat again if you make these changes
 At this point you are ready to install the SMART server components. There are two ways to do this. You can either use the easy install script (described here) or skip this step and follow the manual setup steps. If you complete the installation via the automated script, there are no further steps that you need to do after running the script (your SMART server will be fully functional).
 
 <pre>
-  wget https://raw.github.com/chb/smart_server/dev/load_tools/smartconfig.py
-  python smartconfig.py -a -d
+  wget https://raw.github.com/chb/smart_server/dev/load_tools/smart_manager.py
+  python smart_manager.py -a -d
 </pre>
 
 # Download, Install, and Configure SMART Backend Server (manual steps)
