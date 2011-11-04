@@ -12,7 +12,7 @@ from smart.lib.utils import serialize_rdf
 from xml.dom.minidom import parse, parseString
 import libxml2
 import urllib
-from smart.common.util import *
+from smart.client.common.util import *
 
 pillbox_api_key = "7SETYPBTYS"
 pillbox_url = "http://pillbox.nlm.nih.gov/PHP/pillboxAPIService.php"

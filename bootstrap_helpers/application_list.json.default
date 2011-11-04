@@ -1,9 +1,9 @@
 {
 "app_list" : 
  {
-   "http://localhost:8001/framework/allergy_check/smart_manifest.json" : {"enabled_by_default": false},
+   "http://localhost:8001/framework/med_calendar/smart_manifest.json" :  {"enabled_by_default": false},
    "http://localhost:8001/framework/med_list/smart_manifest.json" :  {"enabled_by_default": true},
-   "http://localhost:8001/framework/med_adherence/smart_manifest.json" :  {"enabled_by_default": true},
+   "http://localhost:8001/framework/med_adherence/smart_manifest.json" :  {"enabled_by_default": false},
    "http://localhost:8001/framework/problem_list/smart_manifest.json" :  {"enabled_by_default": true},
    "http://localhost:8001/framework/got_statins/smart_manifest.json" : {"enabled_by_default": false},
    "http://localhost:8001/framework/background_app/smart_manifest.json" :  {"enabled_by_default": false, "admin_p": true},

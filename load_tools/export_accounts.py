@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import os
 os.system("python manage.py dumpdata smart.account smart.AuthSystem smart.AccountAuthSystem smart.Principal > accounts.json")
 

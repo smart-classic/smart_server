@@ -12,29 +12,44 @@ def check_my_account_wrapper(account):
     return check_my_account
 
 
+
+def check_unlimited_wrapper(account):
+
+    def check(request, view_func, view_args, view_kwargs):
+        try: 
+            l = account.limitedaccount
+        except LimitedAccount.DoesNotExist:
+            return True
+
+        try:  
+            ret = request.GET["record_id"] == l.records.get().id
+            return ret
+        except: 
+            return False
+
+    return check
+
 def grant(account, permset):
     """
     grant the permissions of an account to this permset
     """
 
     check_my_account = check_my_account_wrapper(account)
+    check_unlimited = check_unlimited_wrapper(account)
 
     permset.grant(home)
 
     # accounts
     permset.grant(account_info, [check_my_account])
 
-    # see the record list
-    permset.grant(record_list, [check_my_account])
-
     # see the records
-    permset.grant(record_info, [])
+    permset.grant(record_info, [check_unlimited])
 
     # see the apps in records
 
     # add and remove apps
     permset.grant(add_app, [])
-    permset.grant(launch_app, [])
+    permset.grant(launch_app, [check_unlimited])
     permset.grant(remove_app, [])
     
     # Claiming a request token is free
@@ -42,13 +57,13 @@ def grant(account, permset):
     permset.grant(request_token_approve, None) # need to verify record ID?
     permset.grant(request_token_info, None) # need to verify exists?
     permset.grant(account_recent_records, [check_my_account])
-    permset.grant(record_search_xml, [])
+    permset.grant(record_search_xml, [check_unlimited])
     permset.grant(record_get_alerts, [])
     permset.grant(account_acknowledge_alert, [])
 
-    permset.grant(record_search, [])
+    permset.grant(record_search, [check_unlimited])
     permset.grant(apps_for_account, [])
     permset.grant(resolve_activity, [])
     permset.grant(resolve_activity_with_app, [])
-    
-    
+    permset.grant(resolve_manifest, [])
+    permset.grant(all_manifests, [])

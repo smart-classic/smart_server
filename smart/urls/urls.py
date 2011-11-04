@@ -29,7 +29,7 @@ urlpatterns += patterns(
                 'PUT': add_app,
                 'DELETE': remove_app})),
                 
-    (r'^accounts/(?P<account_id>[^/]+)/apps/(?P<pha_email>[^/]+)/records/(?P<record_id>[^/]+)/launch$', launch_app),
+    (r'^accounts/(?P<account_id>[^/]+)/apps/(?P<pha_email>[^/]+)/launch', launch_app),
     
     (r'^users/$', MethodDispatcher({ 'POST': user_create,'OPTIONS' : allow_options})),
     (r'^users/reset_password_request$', MethodDispatcher({'POST': user_reset_password_request})),
@@ -41,6 +41,8 @@ urlpatterns += patterns(
     (r'^apps/accounts/(?P<account_id>[^/]+)/$', apps_for_account),
     (r'^activity/(?P<activity_name>[^/]+)/app/(?P<app_id>[^/]+)$', resolve_activity_with_app),
     (r'^activity/(?P<activity_name>[^/]+)$', resolve_activity),
+    (r'^apps/manifests/?$', all_manifests),
+    (r'^apps/(?P<descriptor>.+)/manifest$', resolve_manifest),
     
     # static
     (r'^static/(?P<path>.*)$', 'django.views.static.serve', {'document_root': 'static'}),
@@ -70,7 +72,9 @@ urlpatterns += patterns(
     (r'^accounts/(?P<account_email>[^/]+)/recent_records/$', account_recent_records),
     (r'^accounts/(?P<account_email>[^/]+)/', include('smart.urls.account')),    
 
-    (r'^records/create/proxied', MethodDispatcher({ 'POST': create_proxied_record}))
+    (r'^records/create/proxied', MethodDispatcher({ 'POST': create_proxied_record})),
+    (r'^records/(?P<record_id>[^/]+)/generate_direct_url', MethodDispatcher({ 'GET': generate_direct_url })),
+    (r'^session/from_direct_url', MethodDispatcher({ 'GET': session_from_direct_url }))
   )
 
 """
@@ -79,6 +83,6 @@ in an ontology-driven way:  rdfobjects loads the ontology, registers
 handlers for all the relevant paths (e.g. /records/{record_id}/medications/)
 and specified methods (GET, POST, PUT, DELETE).
 """
-
 from smart.plugins import *
+
 OntologyURLMapper(urlpatterns) 

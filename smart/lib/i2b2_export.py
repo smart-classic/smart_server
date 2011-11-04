@@ -12,7 +12,7 @@ import rdflib
 import httplib
 import re
 import os
-from smart.common.util import *
+from smart.client.common.util import *
 
 loinc = Namespace("http://loinc.org/codes/")
 rxcuins = Namespace("http://link.informatics.stonybrook.edu/rxnorm/RXCUI/")

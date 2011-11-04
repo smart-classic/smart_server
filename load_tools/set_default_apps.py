@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 from smart.models import *
 for ac in Account.objects.all():
   for ap in PHA.objects.all():

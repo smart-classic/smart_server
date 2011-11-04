@@ -4,11 +4,11 @@ Quick hacks for SMArt
 Ben Adida
 Josh Mandel
 """
-
+from string import Template
 from base import *
 from smart.lib import utils
 from smart.lib.utils import *
-from smart.common.util import rdf, sp, bound_graph, URIRef, Namespace
+from smart.client.common.util import rdf, sp, bound_graph, URIRef, Namespace
 from django.http import HttpResponse
 from django.conf import settings
 from smart.models import *
@@ -16,7 +16,7 @@ from smart.models.record_object import RecordObject
 from smart.models.rdf_rest_operations import *
 from oauth.oauth import OAuthRequest
 from smart.models.ontology_url_patterns import CallMapper
-import datetime
+import datetime, urllib
 
 SAMPLE_NOTIFICATION = {
     'id' : 'foonotification',
@@ -87,33 +87,42 @@ def immediate_tokens_for_browser_auth(record, account, app, smart_connect_p = Tr
     ret.save()
     return ret
   
-def cookie_for_token(t):
+def signed_header_for_token(t):
     app=t.share.with_app
     try:
         activity = AppActivity.objects.get(name="main", app=app)
     except AppActivity.DoesNotExist:    
         activity = AppActivity.objects.get(app=app)
-        
-    app_index_req = utils.url_request_build(activity.url, "GET", {}, "")
-    oauth_request = OAuthRequest(app, None, app_index_req, oauth_parameters=t.passalong_params)
+
+    headers = {}
+    app_index_req = utils.url_request_build(activity.url, "GET", headers, "")
+
+    # sign as a two-legged OAuth request for the app
+    oauth_request = OAuthRequest(consumer=app,
+                                 token=None, # no access tokens: 2-legged request
+                                 http_request=app_index_req,
+                                 oauth_parameters=t.passalong_params)
+
     oauth_request.sign()
     auth = oauth_request.to_header()["Authorization"]
-    return {'oauth_cookie' : auth}
+    return auth
 
 @paramloader()
-def launch_app(request, record, account, app):
+def launch_app(request, account, app):
     """
     expecting
-    PUT /accounts/{account_id}/apps/{app_email}
+    PUT /accounts/{account_id}/apps/{app_email}/launch?record_id={record_id}
     """
-    print "Adding AccountApp"
+
+    record = None
+    record_id = request.GET.get('record_id', None)
+    if (record_id): record = Record.objects.get(id=record_id)
+
     AccountApp.objects.get_or_create(account = account, app = app)
-    print "Added AccountApp"
-
     ct = immediate_tokens_for_browser_auth(record, account, app)
-
     rt = immediate_tokens_for_browser_auth(record, account, app, False)
-    cookie = cookie_for_token(rt)
+
+    header = signed_header_for_token(rt)
 
     return render_template('token', 
                              {'connect_token':          ct,
@@ -121,23 +130,49 @@ def launch_app(request, record, account, app):
                               'api_base':       settings.SITE_URL_PREFIX,
                               'app_email':      app.email, 
                               'account_email':  account.email,
-                              'oauth_cookie': cookie}, 
+                              'oauth_header': header}, 
                             type='xml')
 
 
 def create_proxied_record(request):
     record_id = request.POST['record_id']
     record_name = request.POST['record_name']
-
-    print "ASKED to create proxied record: ", record_id, record_name
-
     r, created = Record.objects.get_or_create(id=record_id, defaults={'full_name':record_name})
-    print "GOT: ", r, created
     if not created and r.full_name != record_name:
         r.full_name = record_name
         r.save()
 
     return DONE
+
+@paramloader()
+def generate_direct_url(request, record):
+    print "ASKED to authorize proxied access to record: ", record.id, record.full_name
+    r = Record.objects.get(id=record.id)
+
+    # For some use cases, may want to replace this with a throwaway user, created here
+    account = Account.objects.get(email=settings.PROXY_USER_ID)
+
+    if account.is_active:
+        t = r.generate_direct_access_token(account=account);
+        return_url = settings.SMART_UI_SERVER_LOCATION + "/token/"+t.token
+        return HttpResponse(return_url, mimetype='text/plain')
+
+    else: print "Nonative", account
+    return DONE
+
+def session_from_direct_url(request):
+    token = request.GET['token']
+    login_token =  RecordDirectAccessToken.objects.get(token=token)
+
+    # TODO: move this to security function on chrome consumer
+    if (datetime.datetime.utcnow() > login_token.expires_at):
+        raise Exception("Expired token %s"%t)
+    
+    session_token = SESSION_OAUTH_SERVER.generate_and_preauthorize_access_token(request.principal, user=login_token.account)
+    session_token.save()
+
+    return render_template('login_token', {'record': login_token.record, 'token': str(session_token)}, type='xml')
+    
 
 @paramloader()
 def get_record_tokens(request, record, app):
@@ -177,17 +212,65 @@ def remove_app(request, account, app):
 
     return DONE
 
+@CallMapper.register(method="GET",
+                     category="container_items",
+                     target="http://smartplatforms.org/terms#Demographics")
 def record_search(request):
-    q = request.GET.get('sparql', None)
+
+    sparql = Template("""PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX  foaf:  <http://xmlns.com/foaf/0.1/>
+PREFIX  sp:  <http://smartplatforms.org/terms#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+CONSTRUCT {?person rdf:type sp:Demographics} 
+WHERE   {
+?person rdf:type sp:Demographics. 
+$statements
+}
+order by ?ln""")
+
+
+    statements = []
+    fn = request.GET.get('family_name', None)
+    if fn:
+        fn = string_to_alphanumeric(fn)
+        statements += [""" ?person foaf:familyName ?familyName. FILTER  regex(?familyName, "^%s","i") """%fn]
+
+    gn = request.GET.get('given_name', None)
+    if gn:
+        gn = string_to_alphanumeric(gn)
+        statements += [""" ?person foaf:givenName ?givenName. FILTER  regex(?givenName, "^%s","i") """%gn]
+
+
+    gender = request.GET.get('gender', None)
+    if gender:
+        gender = string_to_alphanumeric(gender)
+        statements += [""" ?person foaf:gender ?gender. FILTER  regex(?gender, "^%s","i") """%gender]
+
+    mrn = request.GET.get('medical_record_number', None)
+    if mrn:
+        mrn = string_to_alphanumeric(mrn)
+        statements += [""" ?person sp:medicalRecordNumber ?mrn.  ?mrn dcterms:identifier  ?mrnid. FILTER  regex(?mrnid, "^%s$","i") """%mrn]
+
+
+    zipcode = request.GET.get('zipcode', None)
+    if zipcode:
+        zipcode = string_to_alphanumeric(zipcode)
+        statements += [""" ?person sp:zipcode ?zipcode. FILTER  regex(?zipcode, "^%s$","i") """%zipcode]
+
+    birthday = request.GET.get('birthday', None)
+    if birthday:
+        birthday = string_to_alphanumeric(birthday)
+        statements += [""" ?person sp:birthday ?birthday. FILTER  regex(?birthday, "^%s$","i") """%birthday]
+
+    statements = " ".join(statements)
+    q = sparql.substitute(statements=statements)
     record_list = Record.search_records(q)
     return HttpResponse(record_list, mimetype="application/rdf+xml")
 
 def record_search_xml(request):
     q = request.GET.get('sparql', None)
-    print "Query for pts", q
     record_list = Record.search_records(q)
     record_list = Record.rdf_to_objects(record_list)
-
     return render_template('record_list', {'records': record_list}, type='xml')
 
 
@@ -196,7 +279,6 @@ def allow_options(request, **kwargs):
     r['Access-Control-Allow-Methods'] = "POST, GET, PUT, DELETE"
     r['Access-Control-Allow-Headers'] = "authorization,x-requested-with,content-type"
     r['Access-Control-Max-Age'] = 60
-    print r._headers
     return r
 
 def do_webhook(request, webhook_name):
@@ -241,7 +323,7 @@ def do_webhook(request, webhook_name):
                      target="http://smartplatforms.org/terms#Ontology")
 def download_ontology(request, **kwargs):
     import os
-    f = open(os.path.join(settings.APP_HOME, "smart/document_processing/schema/smart.owl")).read()
+    f = open(settings.ONTOLOGY_FILE).read()
     return HttpResponse(f, mimetype="application/rdf+xml")
 
 # hook to build in demographics-specific behavior: 
@@ -255,6 +337,7 @@ def put_demographics(request, *args, **kwargs):
     record_id = "".join([str(random.randint(0,9)) for x in range(12)])
     Record.objects.create(id=record_id)
     return record_post_objects(request, record_id, obj, **kwargs)
+
 
 
 def debug_oauth(request, **kwargs):

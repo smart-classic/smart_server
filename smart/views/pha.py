@@ -7,6 +7,8 @@ import urllib, urlparse
 from base import *
 
 from smart.accesscontrol.oauth_servers import OAUTH_SERVER, SESSION_OAUTH_SERVER
+from smart.models.ontology_url_patterns import CallMapper
+
 from oauth.djangoutils import extract_request
 from oauth import oauth
 
@@ -19,10 +21,37 @@ def all_phas(request):
   phas = [PHA.objects.get(id=x.app.id) for x in AppActivity.objects.filter(name="main")]
   return render_template('phas', {'phas': phas}, type="xml")
 
+
+@CallMapper.register(method="GET",
+                     category="container_items",
+                     target="http://smartplatforms.org/terms#AppManifest")
+def all_manifests(request):
+  """A list of the PHAs as JSON"""
+  phas = [PHA.objects.get(id=x.app.id) for x in AppActivity.objects.filter(name="main")]
+  ret = "[" +", ".join([a.manifest for a in phas])+ "]"
+  return HttpResponse(ret, mimetype='text/json')
+
+@CallMapper.register(method="GET",
+                     category="container_item",
+                     target="http://smartplatforms.org/terms#AppManifest")
+def resolve_manifest(request, descriptor):
+  if "@" in descriptor:
+    return resolve_manifest_with_app(request, "main", descriptor)
+  else:
+    return resolve_manifest_with_app(request, descriptor, None)
+
+def resolve_manifest_with_app(request, activity_name, app_id):
+  act = resolve_activity_helper(request, activity_name, app_id)
+  return HttpResponse(act.app.manifest, mimetype='text/json')
+
 def resolve_activity(request, activity_name):
     return resolve_activity_with_app(request, activity_name, None)
 
 def resolve_activity_with_app(request, activity_name, app_id):
+  act = resolve_activity_helper(request, activity_name, app_id)
+  return render_template('activity', {'a': act}, type="xml")
+
+def resolve_activity_helper(request, activity_name, app_id):
   """Map an activity name (and optionally specified app id) to activity URL."""
   act = None
   
@@ -42,8 +71,7 @@ def resolve_activity_with_app(request, activity_name, app_id):
   except: pass
 
   print "mapped ", request.principal, activity_name, app_id, " to: ", act
-    
-  return render_template('activity', {'a': act}, type="xml")
+  return act
 
   
 def pha(request, pha_email):

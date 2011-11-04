@@ -1,3 +1,6 @@
 [submodule "oauth"]
 	path = oauth
 	url = https://github.com/chb/oauth_py.git
+[submodule "smart/client"]
+	path = smart/client
+	url = ../smart_client_python

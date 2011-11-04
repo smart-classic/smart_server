@@ -7,8 +7,8 @@
   <ConnectSecret>{{connect_token.secret}}</ConnectSecret>
   <APIBase>{{api_base}}</APIBase>
   <RESTToken>{{rest_token.token}}</RESTToken>
-  <RESTSecret>{{rest_token.secret}}</RESTSecret>{% if oauth_cookie %}  
-
-  <OAuthCookie>{{oauth_cookie.oauth_cookie}}</OAuthCookie>{% endif %}
+  <RESTSecret>{{rest_token.secret}}</RESTSecret>{% if oauth_header %}  
+  <OAuthHeader>{{oauth_header}}</OAuthHeader>{% endif %}
+  <ExpiresAt>{{rest_token.expires_at|date:"c"}}</ExpiresAt>
 </AccessToken>
 

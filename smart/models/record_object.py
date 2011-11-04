@@ -1,10 +1,10 @@
 import re, uuid
 from django.conf import settings
-from smart.common.rdf_ontology import api_types, api_calls, ontology
+from smart.client.common.rdf_ontology import api_types, api_calls, ontology, SMART_Class
+from smart.client.common.query_builder import SMART_Querier
 from rdf_rest_operations import *
-from smart.common.util import remap_node, parse_rdf, get_property, LookupType, URIRef, sp, rdf, default_ns
+from smart.client.common.util import remap_node, parse_rdf, get_property, LookupType, URIRef, sp, rdf, default_ns
 from ontology_url_patterns import CallMapper, BasicCallMapper
-from graph_augmenter import augment_data
 
 class RecordObject(object):
     __metaclass__ = LookupType
@@ -25,13 +25,13 @@ class RecordObject(object):
     def __getitem__(cls, key):
         try: return cls.known_types_dict[key]
         except: 
-            try: return cls.known_types_dict[key.node]
+            try: return cls.known_types_dict[key.uri]
             except: 
                 return cls.known_types_dict[URIRef(key.encode())]
 
     @classmethod
     def register_type(cls, smart_type, robj):
-        cls.known_types_dict[smart_type.node] = robj
+        cls.known_types_dict[smart_type.uri] = robj
                 
     @property
     def properties(self):
@@ -39,11 +39,11 @@ class RecordObject(object):
     
     @property
     def uri(self):
-        return str(self.smart_type.node)
+        return str(self.smart_type.uri)
     
     @property
     def node(self):
-        return self.smart_type.node
+        return self.smart_type.uri
 
     @property
     def path(self):
@@ -59,7 +59,6 @@ class RecordObject(object):
             WHERE {
                     %s <http://smartplatforms.org/terms#externalIDFor> ?o.
                   }  """%(external_id.n3(), external_id.n3())
-        print "querying", idquery
         id_graph = parse_rdf(record_connector.sparql(idquery))
 
 
@@ -69,12 +68,12 @@ class RecordObject(object):
 
         try:
             s =  l[0][2]
-            print "FOUND an internal id", s
             return s
         except: 
             return None
         
     def path_var_bindings(self, request_path):
+        print request_path, self.path
         var_names =  re.findall("{(.*?)}",self.path)
         
         match_string = self.path
@@ -105,40 +104,32 @@ class RecordObject(object):
         
         return URIRef(ret)    
 
-    def assert_never_a_subject(self, g, s):
-        t = g.triples((s, None, None))
-        assert len(list(t)) == 0, "Can't make statements about an external URI: %s"%s
-
     def determine_remap_target(self,g,c,s,var_bindings):
         full_path = None
 
         if type(s) == Literal: return None
-        node_type = get_property(g, s, rdf.type)                
-        subject_uri = str(s)
-        
-        if type(s) == BNode:
-            assert node_type != None, "%s is a bnode with no type"%s.n3()
-            t = RecordObject[node_type]
-            if (t.path == None): return None
 
+        node_type_candidates = list(g.triples((s, rdf.type, None)))
+        node_type = None
+        for c in node_type_candidates:
+            t = SMART_Class[c[2]]
+            if t.is_statement or t.uri == sp.MedicalRecord:
+                assert node_type==None, "Got multiple node types for %s"%[x[2] for x in node_type]
+                node_type  = t.uri
+
+        if type(s) == BNode and not node_type: return None
         elif type(s) == URIRef:
+            subject_uri = str(s)        
             if subject_uri.startswith("urn:smart_external_id:"):
                 full_path = self.internal_id(c, s)
                 assert full_path or node_type != None, "%s is a new external URI node with no type"%s.n3()
-                if full_path == None:
-                    t = RecordObject[node_type]
-                    assert t.path != None, "Non-gettable type %s shouldn't be a URI node."%t
-            elif subject_uri.startswith(smart_path("")):
-                return None
             else:
-                self.assert_never_a_subject(g,s)
                 return None
-                    
+
         # If we got here, we need to remap the node "s".
         if full_path == None:
-            full_path = t.determine_full_path(var_bindings)
+            full_path = RecordObject[node_type].determine_full_path(var_bindings)
         return full_path
-
 
     def generate_uris(self, g, c, var_bindings=None):   
         node_map = {}    
@@ -156,17 +147,34 @@ class RecordObject(object):
 
         return node_map.values()
 
+    def attach_statements_to_record(self, g, new_uris, var_bindings):
+        # Attach each data element (med, problem, lab, etc), to the 
+        # base record URI with the sp:Statement predicate.
+        recordURI = URIRef(smart_path("/records/%s"%var_bindings['record_id']))
+        for n in new_uris:
+            node_type = get_property(g, n, rdf.type)
+            
+            # Filter for top-level medical record "Statement" types
+            t = ontology[node_type]
+            if (not t.is_statement): continue
+            if (not t.base_path.startswith("/records")): continue
+            if (n == recordURI): continue # don't assert that the record has itself as an element
+            
+            g.add((recordURI, sp.hasStatement, n))
+            g.add((recordURI, rdf.type, sp.MedicalRecord))
+
     def prepare_graph(self, g, c, var_bindings=None):
         new_uris = self.generate_uris(g, c, var_bindings)
-        augment_data(g, var_bindings, new_uris)
+        self.attach_statements_to_record(g, new_uris, var_bindings)
 
-    def query_one(self, id,filter_clause=""):
-        ret = self.smart_type.query(one_name=id,filter_clause=filter_clause)
+
+    def query_one(self, id):
+        ret = SMART_Querier.query_one(self.smart_type, id=id)
         return ret
 
-    def query_all(self, above_type=None, above_uri=None,filter_clause=""):
-        atype = above_type and above_type.smart_type or None
-        return self.smart_type.query(above_type=atype, above_uri=above_uri,filter_clause=filter_clause)
+    def query_all(self):
+        ret = SMART_Querier.query_all(self.smart_type)
+        return ret
 
 for t in api_types:
     RecordObject(t)
@@ -195,8 +203,6 @@ class RecordCallMapper(object):
     @property
     def arguments(self):
       r = {'obj': self.obj}      
-      if self.call.above:
-          r['above_obj'] = RecordObject[self.call.above]
       return r
 
     @property
@@ -260,7 +266,7 @@ def record_get_filtered_labs(request, *args, **kwargs):
 def record_get_allergies(request, *args, **kwargs):
       record_id = kwargs['record_id']
       a = RecordObject["http://smartplatforms.org/terms#Allergy"]
-      ae = RecordObject["http://smartplatforms.org/terms#AllergyException"]
+      ae = RecordObject["http://smartplatforms.org/terms#AllergyExclusion"]
       c = RecordStoreConnector(Record.objects.get(id=record_id))
 
       ma = c.sparql(a.query_all())

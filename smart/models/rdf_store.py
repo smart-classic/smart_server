@@ -7,7 +7,7 @@ Ben Adida
 from base import *
 from django.utils import simplejson
 from smart.lib import utils
-from smart.common.util import URIRef, Literal, BNode
+from smart.client.common.util import URIRef, Literal, BNode
 from smart.models.apps import *
 from smart.models.accounts import *
 from smart.models import PHA

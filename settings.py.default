@@ -1,20 +1,28 @@
 import os
 # Django settings for smart project.
 
+# base URL for the app
+APP_HOME = '{{path_to_smart_server}}'
+
+# SMART API Server base URL
+SITE_URL_PREFIX = '{{api_server_base_url}}' # e.g. http://localhost:7000
+
+CHROME_CONSUMER='{{chrome_consumer}}'
+CHROME_SECRET='{{chrome_secret}}'
+
+
+# SMART UI Server base URL
+SMART_UI_SERVER_LOCATION = '{{ui_server_base_url}}' # e.g. http://localhost:7001
+
+PLUGIN_USE_PROXY = {{use_proxy}} # Enable PROXY_MODE: True or False
+PROXY_USER_ID = '{{proxy_user_email}}' # only needed if running in PROXY MODE
+PROXY_BASE = '{{proxy_base_url}}' # only needed if running in PROXY MODE
+
+ONTOLOGY_FILE = os.path.join(APP_HOME, "smart/document_processing/schema/smart.owl")
+
 DEBUG = True
 DEBUG_PROPAGATE_EXCEPTIONS = True
 TEMPLATE_DEBUG = DEBUG
-
-# base URL for the app
-APP_HOME = '/path/to/smart_server'
-ONTOLOGY_FILE = os.path.join(APP_HOME, "smart/document_processing/schema/smart.owl")
-
-# URL prefix
-SITE_URL_PREFIX = "http://url.of.apiserver:port"
-
-SMART_UI_SERVER_LOCATION = "http://url.of.uiserver:port"
-
-PLUGIN_USE_PROXY = False
 
 ADMINS = (
     ('Name', 'email'),

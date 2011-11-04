@@ -6,7 +6,9 @@ Ben Adida & Josh Mandel
 
 from base import *
 from django.utils import simplejson
-from smart.common.util import rdf, foaf, sp, serialize_rdf, parse_rdf, bound_graph, URIRef, Namespace
+from smart.client.common.query_builder import SMART_Querier
+from smart.client.common.rdf_ontology import ontology
+from smart.client.common.util import rdf, foaf, vcard, sp, serialize_rdf, parse_rdf, bound_graph, URIRef, Namespace
 from smart.lib import utils
 from smart.models.apps import *
 from smart.models.accounts import *
@@ -21,24 +23,13 @@ class Record(Object):
 
   def __unicode__(self):
     return 'Record %s' % self.id
-
-  def query(self):
-
-    q = Template("""
-    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-    PREFIX foaf:   <http://xmlns.com/foaf/0.1/>
-    PREFIX sp: <http://smartplatforms.org/terms#>
-    CONSTRUCT  {
-        <http://smartplatforms.org/records/$who/demographics> ?p ?o.
-    } WHERE {
-        <http://smartplatforms.org/records/$who/demographics> ?p ?o.
-    }""").substitute(who=self.id)
-    return q
-
-  def get_demographic_rdf(self):
-    c = DemographicConnector()
-    q = self.query()
-    return c.sparql(q)
+  
+  def generate_direct_access_token(self, account, token_secret=None):
+    u = RecordDirectAccessToken.objects.create(record=self, 
+                                               account=account,
+                                               token_secret=token_secret)
+    u.save()
+    return u
 
   @classmethod
   def search_records(cls, query):
@@ -51,51 +42,67 @@ class Record(Object):
     people = m.triples((None, rdf['type'], sp.Demographics))
     pobj = RecordObject[sp.Demographics] 
 
+    obtained = set()
     return_graph = bound_graph()
     for person in people:
       p = person[0] # subject
 
       # Connect to RDF Store
       pid = re.search("\/records\/(.*?)\/demographics", str(p)).group(1)
+      if pid in obtained: continue
+
       print "matched ", p," to ", pid
+      obtained.add(pid)
       c = RecordStoreConnector(Record.objects.get(id=pid))
 
       # Pull out demographics
       p_uri = p.n3() # subject URI
       p_subgraph = parse_rdf(c.sparql(pobj.query_one(p_uri)))
-      print "subq: " , pobj.query_one(p_uri)
-      print "subgraph: ", serialize_rdf(p_subgraph)
       
       # Append to search result graph
       return_graph += p_subgraph
-    print "got", serialize_rdf(return_graph)
     return serialize_rdf(return_graph)
 
   @classmethod
   def rdf_to_objects(cls, res):
     m = parse_rdf(res)
     
-    print "Got", res
-    people = m.triples((None, rdf['type'], sp.Demographics))
     record_list = []
+
+    q = """
+PREFIX sp:<http://smartplatforms.org/terms#>
+PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX dcterms:<http://purl.org/dc/terms/>
+PREFIX v:<http://www.w3.org/2006/vcard/ns#>
+PREFIX foaf:<http://xmlns.com/foaf/0.1/>
+
+SELECT ?gn ?fn ?dob ?gender ?zipcode ?d
+WHERE {
+  ?d rdf:type sp:Demographics.
+  ?d v:n ?n.
+  ?n v:given-name ?gn.
+  ?n v:family-name ?fn.
+ optional{  ?d foaf:gender ?gender.}
+ optional{  ?d v:bday ?dob.}
+
+ optional{  ?d v:adr ?a. 
+            ?a rdf:type v:Pref.
+            ?a v:postal-code ?zipcode.
+    }
+
+ optional{  ?d v:adr ?a. 
+            ?a v:postal-code ?zipcode.
+    }
+
+}"""
+
+    people = list(m.query(q))
     for p in people:
-        record = Record()
-        print "working with person ", p
-        record.id = re.search("\/records\/(.*?)\/demographics", str(p[0])).group(1)
-        record.fn = str(list(m.triples((p[0], foaf['givenName'], None)))[0][2])
-        record.ln = (list(m.triples((p[0], foaf['familyName'], None)))[0][2])
-        print "found the snames ", record.fn, record.ln, record.id
-        dob = str(list(m.triples((p[0], sp['birthday'], None)))[0][2])
-        record.dob = dob
-
-        gender = str(list(m.triples((p[0], foaf['gender'], None)))[0][2])
-        record.gender = gender
-
-        zipcode = str(list(m.triples((p[0], sp['zipcode'], None)))[0][2])
-        record.zipcode = zipcode
-       
-        record_list.append(record)
-
+      record = Record()
+      record.id = re.search("\/records\/(.*?)\/demographics", str(p[5])).group(1)        
+      record.fn, record.ln, record.dob, record.gender, record.zipcode =  p[:5]
+      record_list.append(record)
+      
     return record_list
     
 class AccountApp(Object):
@@ -107,6 +114,35 @@ class AccountApp(Object):
     app_label = APP_LABEL
     unique_together = (('account', 'app'),)
 
+
+# Not an OAuth token, but an opaque token
+# that can be used to support auto-login via a direct link
+# to a smart_ui_server. 
+class RecordDirectAccessToken(Object):
+  record = models.ForeignKey(Record, related_name='direct_access_tokens', null=False)
+  account = models.ForeignKey(Account, related_name='direct_record_shares', null=False)
+  token = models.CharField(max_length=40, unique=True)
+  token_secret = models.CharField(max_length=60, null=True)
+  expires_at = models.DateTimeField(null = False)
+
+  def save(self, *args, **kwargs):
+
+    if not self.token:
+      self.token = utils.random_string(30)
+      print "RANDOM", self.token
+
+
+    if self.expires_at == None:
+      minutes_to_expire=30
+      try:
+        minutes_to_expire = settings.MINUTES_TO_EXPIRE_DIRECT_ACCESS
+      except: pass
+
+      self.expires_at = datetime.datetime.utcnow() + datetime.timedelta(minutes = minutes_to_expire)
+    super(RecordDirectAccessToken, self).save(*args, **kwargs)
+
+  class Meta:
+    app_label = APP_LABEL
 
 class RecordAlert(Object):
   record=models.ForeignKey(Record)
@@ -153,3 +189,6 @@ class RecordAlert(Object):
     self.acknowledged_by =  account
     self.acknowledged_at = datetime.datetime.now()
     self.save()
+
+class LimitedAccount(Account):
+      records = models.ManyToManyField(Record, related_name="+")

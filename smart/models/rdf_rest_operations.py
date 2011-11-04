@@ -21,24 +21,16 @@ def record_delete_object(request,  record_id, obj, **kwargs):
         assert (id != None), "No %s was found with external_id %s"%(obj.type, kwargs['external_id'])
     return rdf_delete(c, obj.query_one("<%s>"%id.encode()))
 
-def record_get_all_objects(request, record_id, obj, above_obj=None, **kwargs):
-    above_uri = None
-    if (above_obj != None):
-        above_uri = smart_path(smart_parent(request.path))
-
+def record_get_all_objects(request, record_id, obj, **kwargs):
     c = RecordStoreConnector(Record.objects.get(id=record_id))
-    return rdf_get(c, obj.query_all(above_type=above_obj, above_uri=above_uri))
+    return rdf_get(c, obj.query_all())
 
-def record_delete_all_objects(request, record_id, obj,  above_obj=None, **kwargs):
-    above_uri = None
-    if (above_obj != None):
-        above_uri = smart_path(smart_parent(request.path))
-
+def record_delete_all_objects(request, record_id, obj, **kwargs):
     
     c = RecordStoreConnector(Record.objects.get(id=record_id))
-    return rdf_delete(c, obj.query_all(above_type=above_obj, above_uri=above_uri))
+    return rdf_delete(c, obj.query_all())
 
-def record_post_objects(request, record_id, obj, above_obj=None, **kwargs):
+def record_post_objects(request, record_id, obj,  **kwargs):
     c = RecordStoreConnector(Record.objects.get(id=record_id))
     path = smart_path(request.path)
 
@@ -52,19 +44,9 @@ def record_post_objects(request, record_id, obj, above_obj=None, **kwargs):
 
     new_uris = obj.prepare_graph(g, c, var_bindings)
 
-    if (above_obj != None):
-        pred = above_obj.smart_type.predicate_for_contained_type(obj.smart_type)
-        assert pred != None, "Can't derive the predicate for adding %s below %s."%(obj.type, above_obj.type)
-        for new_node in new_uris:
-            if get_property(g, new_node, rdf.type) == obj.node:
-                above_node = URIRef(smart_path(smart_parent(request.path)))
-                g.add((above_node, 
-                       pred, 
-                       new_node))
-
     return rdf_post(c, g)    
 
-def record_put_object(request, record_id, obj, above_obj=None, **kwargs):
+def record_put_object(request, record_id, obj, **kwargs):
     # An idempotent PUT requires:  
     #  1.  Ensure we're only putting *one* object
     #  2.  Add its external_id as an attribute in the RDF graph

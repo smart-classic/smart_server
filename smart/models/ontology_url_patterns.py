@@ -1,5 +1,5 @@
 import re
-from smart.common.rdf_ontology import api_types, api_calls, ontology
+from smart.client.common.rdf_ontology import api_types, api_calls, ontology
 from django.conf.urls.defaults import patterns
 from smart.lib.utils import MethodDispatcher
 
@@ -23,8 +23,10 @@ class OntologyURLMapper():
   def calls_by_path(self):
       ret = {}
 
+      print "got calls", len(api_calls)
       for c in api_calls:
-          ret.setdefault(c.path, set()).add(c)
+        print "setting path", c.path, c
+        ret.setdefault(c.path, set()).add(c)
 
       calls = ret.keys()
       calls = sorted(calls, key=lambda x: -1*len(str(x)))
@@ -58,7 +60,7 @@ class CallMapper(object):
         precedence = m.map_score
         if precedence > 0:
           potential_maps[m] = precedence
-        
+
       in_order = sorted(potential_maps.keys(), 
                         key=lambda x: potential_maps[x])
       return in_order[-1]
@@ -73,6 +75,7 @@ class CallMapper(object):
       category = options.pop('category', None)
       target = options.pop('target', None)
       filter_func = options.pop('filter_func', None)
+      path = options.pop('path', None)
 
       def ret(single_func):
         class SingleMethodMatcher(BasicCallMapper):
@@ -81,6 +84,7 @@ class CallMapper(object):
             return  ((not method or str(self.call.method) == method) and
                      (not category or str(self.call.category) == category) and
                      (not target or str(self.call.target) == target) and 
+                     (not path or str(self.call.path) == path) and 
                      (not filter_func or filter_func(self.call)))
           maps_to = staticmethod(single_func)  
         cls.__mapper_registry.add(SingleMethodMatcher)

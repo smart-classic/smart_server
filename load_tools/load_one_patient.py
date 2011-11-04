@@ -1,6 +1,8 @@
+#!/usr/bin/env python
+
 from smart.models.rdf_store import TemporaryStoreConnector, RecordStoreConnector
 from smart.models.record_object import api_types, Record, RecordObject
-from smart.common.util import parse_rdf, serialize_rdf, remap_node, bound_graph, URIRef, BNode, sp
+from smart.client.common.util import parse_rdf, serialize_rdf, remap_node, bound_graph, URIRef, BNode, sp
 from django.conf import settings
 import sys
 
@@ -21,7 +23,7 @@ class RecordImporter(object):
 
         # 1. For each known data type, extract relevant nodes
         var_bindings = {'record_id': self.target_id}
-        ro = RecordObject[sp.MedicalDataElement]    
+        ro = RecordObject[sp.Statement]    
         ro.prepare_graph(self.data, None, var_bindings)
             
         # 2. Copy extracted nodes to permanent RDF store
