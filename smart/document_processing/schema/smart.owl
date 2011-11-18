@@ -2978,7 +2978,7 @@ For instance, below are two allergies: first, an allergy to the entire class of 
                 <owl:minCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:minCardinality>
             </owl:Restriction>
         </rdfs:subClassOf>
-        <rdfs:comment>In RDF/XML, patient Tad Dockendorf (of Surescripts testing database fame) looks like this: </rdfs:comment>
+        <rdfs:comment>In RDF/XML, patient Bob Odenkirk looks like this: </rdfs:comment>
         <api:example>&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
 &lt;rdf:RDF
   xmlns:rdf=&quot;http://www.w3.org/1999/02/22-rdf-syntax-ns#&quot;
@@ -3027,6 +3027,7 @@ For instance, below are two allergies: first, an allergy to the entire class of 
 
      &lt;foaf:gender&gt;male&lt;/foaf:gender&gt;
      &lt;v:bday&gt;1959-12-25&lt;/v:bday&gt;
+     &lt;v:email&gt;bob.odenkirk@nomail.smartplatforms.org&lt;/v:email&gt;
 
      &lt;sp:medicalRecordNumber&gt;
        &lt;sp:Code&gt;
