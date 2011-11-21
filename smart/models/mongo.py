@@ -1,11 +1,49 @@
 from smart.models.records import *
 from smart.client.common.rdf_ontology import *
-from pymongo import Connection
-import json
+from pymongo import Connection, json_util
+
+from bson.dbref import DBRef
+from bson.max_key import MaxKey
+from bson.min_key import MinKey
+from bson.objectid import ObjectId
+from bson.timestamp import Timestamp
+from bson.tz_util import utc
+
 import re
 
 mongo_conn = Connection()
 records_db = mongo_conn.records
+
+
+def serialize_bson(obj):
+    if isinstance(obj, ObjectId):
+        return None
+    if isinstance(obj, DBRef):
+        return obj.as_doc()
+    if isinstance(obj, datetime.datetime):
+        # TODO share this code w/ bson.py?
+        if obj.utcoffset() is not None:
+            obj = obj - obj.utcoffset()
+        millis = int(calendar.timegm(obj.timetuple()) * 1000 +
+                     obj.microsecond / 1000)
+        return {"$date": millis}
+    if isinstance(obj, _RE_TYPE):
+        flags = ""
+        if obj.flags & re.IGNORECASE:
+            flags += "i"
+        if obj.flags & re.MULTILINE:
+            flags += "m"
+        return {"$regex": obj.pattern,
+                "$options": flags}
+    if isinstance(obj, MinKey):
+        return {"$minKey": 1}
+    if isinstance(obj, MaxKey):
+        return {"$maxKey": 1}
+    if isinstance(obj, Timestamp):
+        return {"t": obj.time, "i": obj.inc}
+    if _use_uuid and isinstance(obj, uuid.UUID):
+        return {"$uuid": obj.hex}
+    raise TypeError("%r is not JSON serializable" % obj)
 
 
 
@@ -172,7 +210,9 @@ def readall():
     ts =  datetime.datetime.now()
 
     record = sys.argv[2]
+    print record
     for url in sys.argv[3:]:
+        print url
         m = SMART_Class[url]
         results = []
         print m.uri
@@ -182,7 +222,9 @@ def readall():
             results.append(result)
         tf = datetime.datetime.now() - ts
         print "Elapsed", tf
-        v = RDFifier(results).graph.serialize()
+        print  json.dumps(results, default=serialize_bson)
+        v = RDFifier(results).graph
+        s = v.serialize()
         tf = datetime.datetime.now() - ts
         print "Elapsed", tf
     
