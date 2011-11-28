@@ -47,13 +47,12 @@ urlpatterns += patterns(
     # static
     (r'^static/(?P<path>.*)$', 'django.views.static.serve', {'document_root': 'static'}),
 
-    # SMArt API
-    (r'^app_storage/(?P<pha_email>[^/]+)/$', MethodDispatcher({
-                                       'GET': pha_storage_get,
-                                       'POST': pha_storage_post,
-                                       'DELETE': pha_storage_delete,
+    # SMArt API                                       
+    (r'^accounts/(?P<account_email>[^/]+)/apps/(?P<pha_email>[^/]+)/preferences', MethodDispatcher({
+                                       'GET': preferences_get,
+                                       'POST': preferences_post,
+                                       'DELETE': preferences_delete,
                                        'OPTIONS' : allow_options})),
-
 
     (r'^webhook/(?P<webhook_name>[^/]+)$', MethodDispatcher({
                                        'GET': do_webhook,
