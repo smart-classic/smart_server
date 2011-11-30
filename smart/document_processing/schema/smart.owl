@@ -2563,7 +2563,7 @@ For instance, below are two allergies: first, an allergy to the entire class of 
     <!-- http://smartplatforms.org/terms#UserPreferences -->
 
     <owl:Class rdf:about="http://smartplatforms.org/terms#UserPreferences">
-        <rdfs:label>User preferences</rdfs:label>
+        <rdfs:label>User Preferences</rdfs:label>
     </owl:Class>
 
 
