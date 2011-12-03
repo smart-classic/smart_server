@@ -1,7 +1,7 @@
 from smart.models import *
 from django.http import HttpResponse
 
-def preferences_post (request, account_email, pha_email):
+def preferences_put (request, account_email, pha_email):
     p = find_preferences (account_email, pha_email)
     if p == None: p = create_preferences (account_email, pha_email)
     p.data = request.raw_post_data

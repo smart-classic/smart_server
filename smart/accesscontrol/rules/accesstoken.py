@@ -70,5 +70,5 @@ def grant(accesstoken, permset):
 
     check_token_for_account_app = check_token_for_account_app_wrapper(accesstoken)
     permset.grant(preferences_get, [check_token_for_account_app])
-    permset.grant(preferences_post, [check_token_for_account_app])
+    permset.grant(preferences_put, [check_token_for_account_app])
     permset.grant(preferences_delete, [check_token_for_account_app])

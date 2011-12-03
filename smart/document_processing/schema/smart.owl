@@ -6098,15 +6098,15 @@ For a medication with a simple dosing schedule, record how often to take the med
         <api:target rdf:resource="http://smartplatforms.org/terms#UserPreferences"/>
     </owl:NamedIndividual>
     
-    <!-- http://smartplatforms.org/terms/api/calls#post_preferences -->
+    <!-- http://smartplatforms.org/terms/api/calls#put_preferences -->
 
-    <owl:NamedIndividual rdf:about="&calls;post_preferences">
+    <owl:NamedIndividual rdf:about="&calls;put_preferences">
         <rdf:type rdf:resource="&api;call"/>
         <api:by_internal_id>true</api:by_internal_id>
         <api:path>/accounts/{user_id}/apps/{smart_app_id}/preferences</api:path>
         <api:category>record_items</api:category>
-        <rdfs:comment>Post new user preferences for an app</rdfs:comment>
-        <api:method>POST</api:method>
+        <rdfs:comment>Set new user preferences for an app</rdfs:comment>
+        <api:method>PUT</api:method>
         <api:target rdf:resource="http://smartplatforms.org/terms#UserPreferences"/>
     </owl:NamedIndividual>
     

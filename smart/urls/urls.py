@@ -50,7 +50,7 @@ urlpatterns += patterns(
     # SMArt API                                       
     (r'^accounts/(?P<account_email>[^/]+)/apps/(?P<pha_email>[^/]+)/preferences', MethodDispatcher({
                                        'GET': preferences_get,
-                                       'POST': preferences_post,
+                                       'PUT': preferences_put,
                                        'DELETE': preferences_delete,
                                        'OPTIONS' : allow_options})),
 
