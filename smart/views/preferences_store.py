@@ -18,6 +18,8 @@ def preferences_put (request, account_email, pha_email):
 
 def preferences_get (request, account_email, pha_email):   
     p = find_preferences (account_email, pha_email)
+    data = ""
+    mime = "text/plain"
     if p != None: 
         data = p.data
         mime = p.mime
