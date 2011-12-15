@@ -14,7 +14,7 @@ def preferences_put (request, account_email, pha_email):
     p.data = request.raw_post_data
     p.mime = ct
     p.save()
-    return HttpResponse(ct)
+    return HttpResponse("ok")
 
 def preferences_get (request, account_email, pha_email):   
     p = find_preferences (account_email, pha_email)
