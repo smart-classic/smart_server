@@ -1,18 +1,27 @@
 from smart.models import *
+from base import utils
 from django.http import HttpResponse
 
 def preferences_put (request, account_email, pha_email):
+    try:
+        ct = utils.get_content_type(request).lower().split(';')[0]
+        if (not ct) or len(ct) == 0 or ct == "none": ct = "text/plain"
+    except:
+        ct = "text/plain"
+
     p = find_preferences (account_email, pha_email)
     if p == None: p = create_preferences (account_email, pha_email)
     p.data = request.raw_post_data
+    p.mime = ct
     p.save()
-    return HttpResponse("ok")
+    return HttpResponse(ct)
 
 def preferences_get (request, account_email, pha_email):   
-    res = ""
     p = find_preferences (account_email, pha_email)
-    if p != None: res = p.data
-    return HttpResponse(res)
+    if p != None: 
+        data = p.data
+        mime = p.mime
+    return HttpResponse(data, mimetype=mime)
 
 def preferences_delete(request, account_email, pha_email): 
     p = find_preferences (account_email, pha_email)
