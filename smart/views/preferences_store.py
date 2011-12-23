@@ -44,4 +44,4 @@ def resolve_account_pha (account_email, pha_email):
     
 def fetch_preferences(account_email, pha_email):
     account, pha = resolve_account_pha (account_email, pha_email)
-    return Preferences.objects.get_or_create(account=account, pha=pha, defaults={data: "", mime: "text/plain"})
+    return Preferences.objects.get_or_create(account=account, pha=pha, defaults={"data": "", "mime": "text/plain"})
