@@ -9,25 +9,19 @@ def preferences_put (request, account_email, pha_email):
     except:
         ct = "text/plain"
 
-    p = find_preferences (account_email, pha_email)
-    if p == None: p = create_preferences (account_email, pha_email)
+    p = fetch_preferences (account_email, pha_email)
     p.data = request.raw_post_data
     p.mime = ct
     p.save()
     return HttpResponse("ok")
 
 def preferences_get (request, account_email, pha_email):   
-    p = find_preferences (account_email, pha_email)
-    data = ""
-    mime = "text/plain"
-    if p != None: 
-        data = p.data
-        mime = p.mime
-    return HttpResponse(data, mimetype=mime)
+    p = fetch_preferences (account_email, pha_email)
+    return HttpResponse(p.data, mimetype=p.mime)
 
 def preferences_delete(request, account_email, pha_email): 
-    p = find_preferences (account_email, pha_email)
-    if p != None: p.delete()
+    p = fetch_preferences (account_email, pha_email)
+    p.delete()
     return HttpResponse("ok")  
 
 def resolve_account_pha (account_email, pha_email):
@@ -48,14 +42,6 @@ def resolve_account_pha (account_email, pha_email):
     
     return account, pha
     
-def create_preferences(account_email, pha_email):
-    account, pha = resolve_account_pha (account_email, pha_email)    
-    return Preferences(account=account, pha=pha)
-    
-def find_preferences(account_email, pha_email):
+def fetch_preferences(account_email, pha_email):
     account, pha = resolve_account_pha (account_email, pha_email)
-    
-    try:
-        return Preferences.objects.get(account=account, pha=pha)
-    except Preferences.DoesNotExist:
-        return None
+    return Preferences.objects.get_or_create(account=account, pha=pha, defaults={data: "", mime: "text/plain"})
