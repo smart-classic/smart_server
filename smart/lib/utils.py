@@ -26,6 +26,7 @@ import psycopg2
 import psycopg2.extras
 import httplib
 import time
+import django
 
 smart_base = "http://smartplatforms.org"
 
@@ -213,3 +214,50 @@ logging.basicConfig(
       level = logging.DEBUG,
       format = '%(asctime)s %(levelname)s %(message)s',
       )
+
+class DjangoVersionDependentExecutor(object):
+    """ class which will execute different code based on Django's version.
+
+    Syntax for a version requirement is ``{major}.{minor}.{revision}[+|-]``, 
+    where the optional ``+`` and ``-`` indicate whether to include versions 
+    after or before the given release, respectively.
+
+    """
+
+    def __init__(self, version_map, default_return_val=None):
+        """ create the object.
+
+        version_map is a dictionary of ``version_requirement:callable`` pairs.
+        When called, the object will execute all callables in the 
+        dictionary that corresponds to a version_requirement satisfied by the
+        current Django version.
+
+        If no such callables exist, calling the object will return
+        ``default_return_val``. Otherwise, the call will return the value
+        returned by the last callable to be executed. Note that, since there
+        is no specified ordering on the callables, this could be the result
+        of any passed callable. For this reason, it is a good idea to pass
+        callables that all return values of equivalent types.
+        
+        """
+        self.django_v = django.VERSION[0:3]
+        self.ret = default_return_val
+        self.funcs = []
+
+        for version_string, func in version_map.iteritems():
+            if version_string[-1] in ('+', '-'):
+                direction = version_string[-1]
+                version_string = version_string[:-1]
+
+            req_v = tuple(map(int, version_string.split('.'))[0:3])
+
+            if (req_v < self.django_v and direction == '+') \
+                    or (req_v > self.django_v and direction == '-') \
+                    or (req_v == self.django_v):
+                self.funcs.append(func)
+
+    def __call__(self, *args, **kwargs):
+        ret_val = self.ret
+        for func in self.funcs:
+            ret_val = func(*args, **kwargs)
+        return ret_val
