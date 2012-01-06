@@ -5191,7 +5191,7 @@ For a medication with a simple dosing schedule, record how often to take the med
     
 
 
-    <!-- http://smartplatforms.org/terms/api/calls#get_vital_signs -->
+    <!-- http://smartplatforms.org/terms/api/calls#get_capabilities -->
 
     <owl:NamedIndividual rdf:about="&calls;get_capabilities">
         <rdf:type rdf:resource="&api;call"/>
