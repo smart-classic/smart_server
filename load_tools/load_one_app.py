@@ -6,6 +6,7 @@ from string import Template
 import re
 import sys
 import os
+import json
 from django.utils import simplejson
 import urllib2
 
@@ -27,6 +28,9 @@ def LoadApp(app, enabled_by_default=False):
   s.close() 
   LoadAppFromJSON(manifest_string, enabled_by_default, base_url)
 
+def LoadAppFromJSON_new(manifest_string, enabled_by_default, base_url=None):
+  r = json.loads(manifest_string)
+  
 def LoadAppFromJSON(manifest_string, enabled_by_default, base_url=None):
   r = simplejson.loads(manifest_string)
   if base_url == None:

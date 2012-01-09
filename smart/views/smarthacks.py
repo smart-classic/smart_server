@@ -16,7 +16,7 @@ from smart.models.record_object import RecordObject
 from smart.models.rdf_rest_operations import *
 from oauth.oauth import OAuthRequest
 from smart.models.ontology_url_patterns import CallMapper
-import datetime, urllib
+import datetime, urllib, json
 
 SAMPLE_NOTIFICATION = {
     'id' : 'foonotification',
@@ -32,20 +32,27 @@ sporg = Namespace("http://smartplatforms.org/")
                      category="container_items",
                      target="http://smartplatforms.org/terms#Container")
 def container_capabilities(request, **kwargs):
-    m = bound_graph()
-    site = URIRef(settings.SITE_URL_PREFIX)
-    print "avail", dir(m)
-    m.add((site, rdf['type'], sp['Container']))
-
-    m.add((site, sp['capability'], sporg['capability/SNOMED/lookup']))
-
-    m.add((site, sp['capability'], sporg['capability/SPL/lookup']))
-
-    m.add((site,
-             sp['capability'],
-             sporg['capability/Pillbox/lookup']))
+    #m = bound_graph()
+    #site = URIRef(settings.SITE_URL_PREFIX)
+    #print "avail", dir(m)
     
-    return utils.x_domain(HttpResponse(utils.serialize_rdf(m), "application/rdf+xml"))
+    #m.add((site, rdf['type'], sp['Container']))
+    #m.add((site, sp['capability'], sporg['capability/SNOMED/lookup']))
+    #m.add((site, sp['capability'], sporg['capability/SPL/lookup']))
+    #m.add((site, sp['capability'], sporg['capability/Pillbox/lookup']))
+    
+    #return utils.x_domain(HttpResponse(utils.serialize_rdf(m), "application/rdf+xml"))
+    
+    capabilities = {
+       "http://smartplatforms.org/terms#Allergy": {"methods": ["GET"]},
+       "http://smartplatforms.org/terms#Demographcs": {"methods": ["GET"]},
+       "http://smartplatforms.org/terms#Medication": {"methods": ["GET"]},
+       "http://smartplatforms.org/terms#Problem": {"methods": ["GET"]},
+       "http://smartplatforms.org/terms#LabResult": {"methods": ["GET"]},
+       "http://smartplatforms.org/terms#VitalSigns": {"methods": ["GET"]}
+    }
+    
+    return utils.x_domain(HttpResponse(json.dumps(capabilities), "application/json"))
 
 @paramloader()
 def record_list(request, account):
