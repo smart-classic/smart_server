@@ -2,11 +2,11 @@
 
 from django.conf import settings
 from smart.models import *
+from smart.lib.utils import get_capabilities
 from string import Template
 import re
 import sys
 import os
-import json
 from django.utils import simplejson
 import urllib2
 
@@ -27,9 +27,6 @@ def LoadApp(app, enabled_by_default=False):
   manifest_string = s.read()
   s.close() 
   LoadAppFromJSON(manifest_string, enabled_by_default, base_url)
-
-def LoadAppFromJSON_new(manifest_string, enabled_by_default, base_url=None):
-  r = json.loads(manifest_string)
   
 def LoadAppFromJSON(manifest_string, enabled_by_default, base_url=None):
   r = simplejson.loads(manifest_string)
@@ -83,9 +80,16 @@ def LoadAppFromJSON(manifest_string, enabled_by_default, base_url=None):
       act_url  = r["index"]
       AppActivity.objects.create(app=a, name=act_name, url=act_url)
   
-      if "intents" in r.keys():
-          for k in r["intents"]:
-              AppActivity.objects.create(app=a, name=k, url=act_url)
+  #if "intents" in r.keys():
+  #    for k in r["intents"]:
+  #        AppActivity.objects.create(app=a, name=k, url=act_url)
+  
+  if "requires" in r.keys():  
+    capabilities = get_capabilities()
+    for k in r["requires"].keys():
+        for m in r["requires"][k]["methods"]:
+            if m not in capabilities[k]["methods"]:
+                print "WARNING! This app requires an unsupported method:", k, m
 
   if "web_hooks" in r.keys():
     for (hook_name, hook_data) in r["web_hooks"].iteritems():

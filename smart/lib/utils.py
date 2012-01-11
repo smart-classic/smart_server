@@ -18,6 +18,7 @@ try:
 except:
   from django.core.validators import email_re
 from smart.client.common.util import parse_rdf, serialize_rdf, bound_graph
+from smart.client.common import rdf_ontology
 import django.core.mail as mail
 import logging
 import string, random, re
@@ -111,6 +112,22 @@ def get_content_type(request):
   if not content_type and request.META.has_key('HTTP_CONTENT_TYPE'):
     content_type = request.META['HTTP_CONTENT_TYPE']
   return content_type
+  
+def get_capabilities ():
+    capabilities = {}
+
+    for t in rdf_ontology.api_calls:
+
+        target = str(t.target)
+        method = str(t.method)
+
+        if target not in capabilities.keys():
+            capabilities[target] = {"methods": []}
+            
+        if method not in capabilities[target]["methods"]:
+            capabilities[target]["methods"].append(method)
+            
+    return capabilities
 
 # some decorators to make life easier
 def django_json(func):

@@ -43,16 +43,8 @@ def container_capabilities(request, **kwargs):
     
     #return utils.x_domain(HttpResponse(utils.serialize_rdf(m), "application/rdf+xml"))
     
-    capabilities = {
-       "http://smartplatforms.org/terms#Allergy": {"methods": ["GET"]},
-       "http://smartplatforms.org/terms#Demographcs": {"methods": ["GET"]},
-       "http://smartplatforms.org/terms#Medication": {"methods": ["GET"]},
-       "http://smartplatforms.org/terms#Problem": {"methods": ["GET"]},
-       "http://smartplatforms.org/terms#LabResult": {"methods": ["GET"]},
-       "http://smartplatforms.org/terms#VitalSigns": {"methods": ["GET"]}
-    }
-    
-    return utils.x_domain(HttpResponse(json.dumps(capabilities), "application/json"))
+    capabilities = get_capabilities()
+    return utils.x_domain(HttpResponse(json.dumps(capabilities, sort_keys=True, indent=4), "application/json"))
 
 @paramloader()
 def record_list(request, account):
