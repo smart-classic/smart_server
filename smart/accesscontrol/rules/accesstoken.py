@@ -64,8 +64,8 @@ def grant(accesstoken, permset):
 
     check_frame_mode = check_frame_mode_wrapper(accesstoken)
     permset.grant(resolve_activity_with_app, [])
-    permset.grant(resolve_manifest, [check_frame_mode])
-    permset.grant(all_manifests, [check_frame_mode])
+    permset.grant(resolve_manifest, [])
+    permset.grant(all_manifests, [])
     permset.grant(record_search, [check_frame_mode])
 
     check_token_for_account_app = check_token_for_account_app_wrapper(accesstoken)
