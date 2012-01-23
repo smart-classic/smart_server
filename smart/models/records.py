@@ -6,6 +6,7 @@ Ben Adida & Josh Mandel
 
 from base import *
 from django.utils import simplejson
+from django.conf import settings
 from smart.client.common.query_builder import SMART_Querier
 from smart.client.common.rdf_ontology import ontology
 from smart.client.common.util import rdf, foaf, vcard, sp, serialize_rdf, parse_rdf, bound_graph, URIRef, Namespace
