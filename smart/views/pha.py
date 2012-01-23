@@ -5,6 +5,7 @@ Indivo views -- PHAs
 import urllib, urlparse
 
 from base import *
+from django.utils import simplejson
 
 from smart.accesscontrol.oauth_servers import OAUTH_SERVER, SESSION_OAUTH_SERVER
 from smart.models.ontology_url_patterns import CallMapper
@@ -42,7 +43,14 @@ def resolve_manifest(request, descriptor):
 
 def resolve_manifest_with_app(request, activity_name, app_id):
   act = resolve_activity_helper(request, activity_name, app_id)
-  return HttpResponse(act.app.manifest, mimetype='text/json')
+
+  manifest = act.app.manifest
+  if (act.remapped):
+      manifest = simplejson.loads(manifest)
+      manifest['index'] = act.url
+      manifest = simplejson.dumps(manifest)
+  
+  return HttpResponse(manifest, mimetype='text/json')
 
 def resolve_activity(request, activity_name):
     return resolve_activity_with_app(request, activity_name, None)
@@ -66,9 +74,11 @@ def resolve_activity_helper(request, activity_name, app_id):
   try:
       r = PrincipalActivityRemaps.objects.get(activity=act, principal=request.principal)
       act.url = r.url
+      act.remapped = True
       print "remapping for principal %s: %s", (request.principal, act.url) 
 
-  except: pass
+  except:
+      act.remapped = False
 
   print "mapped ", request.principal, activity_name, app_id, " to: ", act
   return act
