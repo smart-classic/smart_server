@@ -158,6 +158,11 @@ def x_domain(r):
 def trim(p, n):
     return '/'.join(p.split('/')[:-n]).encode()
 
+class URLFetchException(Exception):
+    def __init__(self, status, body=""):
+        self.status = status
+        self.body = body
+
 def url_request(url,  method, headers, data=None):
     req = url_request_build(url,  method, headers, data)
     return url_request_execute(req)
@@ -192,9 +197,8 @@ def url_request_execute(req):
     elif (r.status == 204):
         conn.close()
         return True
-    
-    
-    else: raise Exception("Unexpected HTTP status %s"%r.status)
+    else:
+        raise URLFetchException(r.status, r.read())
 
 def rdf_response(s):
     return x_domain(HttpResponse(s, mimetype="application/rdf+xml"))
