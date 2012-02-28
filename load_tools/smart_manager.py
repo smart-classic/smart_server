@@ -45,10 +45,14 @@ def main():
                       "run app server, reset api server, "+
                       "load sample data, run api servers")
 
+    parser.add_argument("-b", "--branch", dest="using_branch",
+                    default="master",
+                    help="Use a specific branch for checkouts and updates")
+
     parser.add_argument("-d", "--development-branch", dest="branch_dev",
                     action="store_true",
                     default=False,
-                    help="Use development branch (in conjunction with -g)")
+                    help="Use development branch for checkous and updates")
                       
     parser.add_argument("-g", "--clone-git-repositories", dest="clone_git",
                     action="store_true",
@@ -101,7 +105,11 @@ def main():
                     help="Run api server (first kills all running SMART servers). Can be used conjunction with -v")
 
     args = parser.parse_args()
+    repos = ["smart_server", "smart_ui_server", "smart_sample_patients", "smart_sample_apps"]
 
+    if args.branch_dev:
+        args.using_branch = "dev"
+    print "USING BRANCH", args.using_branch
     if not args.all_steps and not ( 
         args.clone_git or
         args.update_git or
@@ -129,50 +137,22 @@ def main():
 
     if args.clone_git:
         print "Cloning (4) SMART git repositories..."
-        call_command("git clone --recursive https://github.com/chb/smart_server.git", 
-                     print_output=True)
+        for r in repos:
+            call_command("git clone --recursive https://github.com/chb/"+r+".git", 
+                        print_output=True)
 
-        call_command("git clone --recursive https://github.com/chb/smart_ui_server.git", 
-                     print_output=True)
-
-        call_command("git clone --recursive https://github.com/chb/smart_sample_apps.git", 
-                     print_output=True)
-
-        call_command("git clone --recursive https://github.com/chb/smart_sample_patients.git", 
-                     print_output=True)
-
-        if args.branch_dev:
-            call_command("cd smart_server; git checkout dev; cd ..")
-            call_command("cd smart_ui_server; git checkout dev; cd ..")
-            call_command("cd smart_sample_patients; git checkout dev; cd ..")
-            call_command("cd smart_sample_apps; git checkout dev; cd ..")
-
-        call_command("cd smart_server; git submodule init && git submodule update; cd ..", print_output=True)
-        call_command("cd smart_ui_server; git submodule init && git submodule update; cd ..", print_output=True)
-        call_command("cd smart_sample_patients; git submodule init && git submodule update; cd ..", print_output=True)
-        call_command("cd smart_sample_apps; git submodule init && git submodule update; cd ..", print_output=True)
+            call_command("cd "+r+"; git checkout "+args.using_branch+"; cd ..")
+            call_command("cd "+r+"; git submodule init && git submodule update; cd ..", print_output=True)
 
     if args.update_git:
-        call_command("cd smart_server; " +
+        for r in repos:
+            call_command("cd "+r+"; " +
+                     "git checkout " + args.using_branch + "; "+
                      "git pull; " +
                      "git submodule init; " +
                      "git submodule update; " +
-                     "cd ..; " +
-                     "cd smart_ui_server; " +
-                     "git pull; " +
-                     "git submodule init; " +
-                     "git submodule update; " +
-                     "cd ..; " +
-                     "cd smart_sample_apps; " +
-                     "git pull; " +
-                     "git submodule init; " +
-                     "git submodule update; " +
-                     "cd ..; " +
-                     "cd smart_sample_patients; " +
-                     "git pull; " +
-                     "git submodule init; " +
-                     "git submodule update; " +
-                     "cd ..;", print_output=True)
+                     "cd ..; ",
+                      print_output=True)
         
     if args.generate_settings:
         print "Configuring SMART server settings..."
