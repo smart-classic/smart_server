@@ -92,7 +92,7 @@ def LoadAppFromJSON(manifest_string, enabled_by_default, base_url=None):
                 print "WARNING! This app requires an unsupported method:", k, m
                 
   if "smart_version" in r.keys():  
-    if r["smart_version"] != settings.VERSION
+    if r["smart_version"] != settings.VERSION:
         print "WARNING! This app requires SMART version", r["smart_version"]
 
   if "web_hooks" in r.keys():
