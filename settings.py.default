@@ -1,6 +1,9 @@
 import os
 # Django settings for smart project.
 
+# SMART version identifier
+VERSION = '0.4'
+
 # base URL for the app
 APP_HOME = '{{path_to_smart_server}}'
 
