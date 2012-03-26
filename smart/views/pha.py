@@ -30,7 +30,7 @@ def all_manifests(request):
   """A list of the PHAs as JSON"""
   phas = [PHA.objects.get(id=x.app.id) for x in AppActivity.objects.filter(name="main")]
   ret = "[" +", ".join([a.manifest for a in phas])+ "]"
-  return HttpResponse(ret, mimetype='text/json')
+  return HttpResponse(ret, mimetype='application/json')
 
 @CallMapper.register(method="GET",
                      category="container_item",
@@ -50,7 +50,7 @@ def resolve_manifest_with_app(request, activity_name, app_id):
       manifest['index'] = act.url
       manifest = simplejson.dumps(manifest)
   
-  return HttpResponse(manifest, mimetype='text/json')
+  return HttpResponse(manifest, mimetype='application/json')
 
 def resolve_activity(request, activity_name):
     return resolve_activity_with_app(request, activity_name, None)
