@@ -88,12 +88,10 @@ cardinalities  = {"0 - 1": "Optional (0 or 1)",
 def wiki_properties_for_type(t):
     if len(t.object_properties) + len(t.data_properties) == 0:
         return
-
     properties_start(t.uri)
     for c in sorted(t.object_properties + t.data_properties, key=lambda r: str(r.uri)):
         name = type_name_string(c)
         desc = c.description
-
         if type(c) is OWL_ObjectProperty:
             is_code = sp.Code in [p.uri for p in c.to_class.parents] and " code" or ""
             targetname = type_name_string(c.to_class)+ is_code
@@ -102,11 +100,15 @@ def wiki_properties_for_type(t):
             further = filter(lambda x: isinstance(x.all_values_from, OWL_Restriction), c.restrictions)
             for f in further:
                 p = split_uri(str(f.all_values_from.on_property))
-                pc = f.all_values_from.all_values_from
-                pc = type_name_string(pc)
-                desc += "\n''where'' '''"+ p +   "''' comes from '''%s''' [[#%s code RDF | (details...)]]"%(pc,pc)
-            if c.description:
-                desc += "\n\n" + c.description
+                avf = f.all_values_from
+                if avf.has_value:
+                    desc += "\n''where'' '''"+ p +   "''' has value: '''%s'''"%avf.has_value
+                else:
+                    pc = avf.all_values_from
+                    pc = type_name_string(pc)
+                    desc += "\n''where'' '''"+ p +   "''' comes from '''%s''' [[#%s code RDF | (details...)]]"%(pc,pc)
+		if c.description:
+		  desc += "\n\n" + c.description
 
         elif type(c) is OWL_DataProperty:
             avf = filter(lambda x: x.all_values_from, c.restrictions)
