@@ -1095,10 +1095,10 @@
       &lt;sp:CodedValue&gt;
         &lt;dcterms:title&gt;Sulfonamide Antibacterial&lt;/dcterms:title&gt;
         &lt;sp:code&gt;
-        &lt;spcode:NDFRT rdf:about=&quot;http://rxnav.nlm.nih.gov/REST/rxcui?idtype=NUI&amp;amp;id=N0000175503&quot;&gt;
+        &lt;spcode:NDFRT rdf:about=&quot;http://purl.bioontology.org/ontology/NDFRT/N0000175503&quot;&gt;
           &lt;rdf:type rdf:resource=&quot;http://smartplatforms.org/terms#Code&quot; /&gt; 
           &lt;dcterms:title&gt;Sulfonamide Antibacterial&lt;/dcterms:title&gt;
-          &lt;sp:system&gt;http://rxnav.nlm.nih.gov/REST/rxcui?idtype=NUI&amp;amp;id=&lt;/sp:system&gt;
+          &lt;sp:system&gt;http://purl.bioontology.org/ontology/NDFRT/&lt;/sp:system&gt;
           &lt;dcterms:identifier&gt;N0000175503&lt;/dcterms:identifier&gt;
         &lt;/spcode:NDFRT&gt;
         &lt;/sp:code&gt;
@@ -1109,10 +1109,10 @@
       &lt;sp:CodedValue&gt;
           &lt;dcterms:title&gt;Severe&lt;/dcterms:title&gt;
         &lt;sp:code&gt;
-        &lt;spcode:AllergySeverity rdf:about=&quot;http://www.ihtsdo.org/snomed-ct/concepts/24484000&quot;&gt;
+        &lt;spcode:AllergySeverity rdf:about=&quot;http://purl.bioontology.org/ontology/SNOMEDCT/24484000&quot;&gt;
           &lt;rdf:type rdf:resource=&quot;http://smartplatforms.org/terms#Code&quot; /&gt; 
           &lt;dcterms:title&gt;Severe&lt;/dcterms:title&gt;
-          &lt;sp:system&gt;http://www.ihtsdo.org/snomed-ct/concepts/&lt;/sp:system&gt;
+          &lt;sp:system&gt;http://purl.bioontology.org/ontology/SNOMEDCT/&lt;/sp:system&gt;
           &lt;dcterms:identifier&gt;24484000&lt;/dcterms:identifier&gt;
         &lt;/spcode:AllergySeverity&gt;
         &lt;/sp:code&gt;
@@ -1122,10 +1122,10 @@
       &lt;sp:CodedValue&gt;
           &lt;dcterms:title&gt;Anaphylaxis&lt;/dcterms:title&gt;
         &lt;sp:code&gt;
-        &lt;spcode:SNOMED rdf:about=&quot;http://www.ihtsdo.org/snomed-ct/concepts/39579001&quot;&gt;
+        &lt;spcode:SNOMED rdf:about=&quot;http://purl.bioontology.org/ontology/SNOMEDCT/39579001&quot;&gt;
           &lt;rdf:type rdf:resource=&quot;http://smartplatforms.org/terms#Code&quot; /&gt; 
           &lt;dcterms:title&gt;Anaphylaxis&lt;/dcterms:title&gt;
-          &lt;sp:system&gt;http://www.ihtsdo.org/snomed-ct/concepts/&lt;/sp:system&gt;
+          &lt;sp:system&gt;http://purl.bioontology.org/ontology/SNOMEDCT/&lt;/sp:system&gt;
           &lt;dcterms:identifier&gt;39579001&lt;/dcterms:identifier&gt;
         &lt;/spcode:SNOMED&gt;
         &lt;/sp:code&gt;
@@ -1136,10 +1136,10 @@
       &lt;sp:CodedValue&gt;
           &lt;dcterms:title&gt;Drug allergy&lt;/dcterms:title&gt;   
         &lt;sp:code&gt;
-        &lt;spcode:AllergyCategory rdf:about=&quot;http://www.ihtsdo.org/snomed-ct/concepts/416098002&quot;&gt;
+        &lt;spcode:AllergyCategory rdf:about=&quot;http://purl.bioontology.org/ontology/SNOMEDCT/416098002&quot;&gt;
           &lt;rdf:type rdf:resource=&quot;http://smartplatforms.org/terms#Code&quot; /&gt; 
           &lt;dcterms:title&gt;Drug allergy&lt;/dcterms:title&gt;   
-          &lt;sp:system&gt;http://www.ihtsdo.org/snomed-ct/concepts/&lt;/sp:system&gt;
+          &lt;sp:system&gt;http://purl.bioontology.org/ontology/SNOMEDCT/&lt;/sp:system&gt;
           &lt;dcterms:identifier&gt;416098002&lt;/dcterms:identifier&gt;
         &lt;/spcode:AllergyCategory&gt;
         &lt;/sp:code&gt;
@@ -1153,10 +1153,10 @@
       &lt;sp:CodedValue&gt;
           &lt;dcterms:title&gt;Cephalexin&lt;/dcterms:title&gt;
         &lt;sp:code&gt;
-        &lt;spcode:RxNorm_Ingredient rdf:about=&quot;http://rxnav.nlm.nih.gov/REST/rxcui/2231&quot;&gt;
+        &lt;spcode:RxNorm_Ingredient rdf:about=&quot;http://purl.bioontology.org/ontology/RXNORM/2231&quot;&gt;
           &lt;rdf:type rdf:resource=&quot;http://smartplatforms.org/terms#Code&quot; /&gt; 
           &lt;dcterms:title&gt;Cephalexin&lt;/dcterms:title&gt;
-          &lt;sp:system&gt;http://rxnav.nlm.nih.gov/REST/rxcui/&lt;/sp:system&gt;
+          &lt;sp:system&gt;http://purl.bioontology.org/ontology/RXNORM/&lt;/sp:system&gt;
           &lt;dcterms:identifier&gt;2231&lt;/dcterms:identifier&gt;
         &lt;/spcode:RxNorm_Ingredient&gt;
         &lt;/sp:code&gt;
@@ -1167,10 +1167,10 @@
       &lt;sp:CodedValue&gt;
           &lt;dcterms:title&gt;Severe&lt;/dcterms:title&gt;
         &lt;sp:code&gt;
-        &lt;spcode:AllergySeverity rdf:about=&quot;http://www.ihtsdo.org/snomed-ct/concepts/24484000&quot;&gt;
+        &lt;spcode:AllergySeverity rdf:about=&quot;http://purl.bioontology.org/ontology/SNOMEDCT/24484000&quot;&gt;
           &lt;rdf:type rdf:resource=&quot;http://smartplatforms.org/terms#Code&quot; /&gt; 
           &lt;dcterms:title&gt;Severe&lt;/dcterms:title&gt;
-          &lt;sp:system&gt;http://www.ihtsdo.org/snomed-ct/concepts/&lt;/sp:system&gt;
+          &lt;sp:system&gt;http://purl.bioontology.org/ontology/SNOMEDCT/&lt;/sp:system&gt;
           &lt;dcterms:identifier&gt;24484000&lt;/dcterms:identifier&gt;
         &lt;/spcode:AllergySeverity&gt;
         &lt;/sp:code&gt;
@@ -1181,10 +1181,10 @@
       &lt;sp:CodedValue&gt;
           &lt;dcterms:title&gt;Anaphylaxis&lt;/dcterms:title&gt;
         &lt;sp:code&gt;
-        &lt;spcode:SNOMED rdf:about=&quot;http://www.ihtsdo.org/snomed-ct/concepts/39579001&quot;&gt;
+        &lt;spcode:SNOMED rdf:about=&quot;http://purl.bioontology.org/ontology/SNOMEDCT/39579001&quot;&gt;
           &lt;rdf:type rdf:resource=&quot;http://smartplatforms.org/terms#Code&quot; /&gt; 
           &lt;dcterms:title&gt;Anaphylaxis&lt;/dcterms:title&gt;
-          &lt;sp:system&gt;http://www.ihtsdo.org/snomed-ct/concepts/&lt;/sp:system&gt;
+          &lt;sp:system&gt;http://purl.bioontology.org/ontology/SNOMEDCT/&lt;/sp:system&gt;
           &lt;dcterms:identifier&gt;39579001&lt;/dcterms:identifier&gt;
         &lt;/spcode:SNOMED&gt;
         &lt;/sp:code&gt;
@@ -1195,10 +1195,10 @@
       &lt;sp:CodedValue&gt;
           &lt;dcterms:title&gt;Drug allergy&lt;/dcterms:title&gt;   
         &lt;sp:code&gt;
-        &lt;spcode:AllergyCategory rdf:about=&quot;http://www.ihtsdo.org/snomed-ct/concepts/416098002&quot;&gt;
+        &lt;spcode:AllergyCategory rdf:about=&quot;http://purl.bioontology.org/ontology/SNOMEDCT/416098002&quot;&gt;
           &lt;rdf:type rdf:resource=&quot;http://smartplatforms.org/terms#Code&quot; /&gt; 
           &lt;dcterms:title&gt;Drug allergy&lt;/dcterms:title&gt;   
-          &lt;sp:system&gt;http://www.ihtsdo.org/snomed-ct/concepts/&lt;/sp:system&gt;
+          &lt;sp:system&gt;http://purl.bioontology.org/ontology/SNOMEDCT/&lt;/sp:system&gt;
           &lt;dcterms:identifier&gt;416098002&lt;/dcterms:identifier&gt;
         &lt;/spcode:AllergyCategory&gt;
         &lt;/sp:code&gt;
@@ -1219,7 +1219,8 @@ For instance, below are two allergies: first, an allergy to the entire class of 
         <api:base_path>/records/{record_id}/allergies/{allergy_id}</api:base_path>
     </owl:Class>
     <owl:Axiom>
-        <rdfs:comment>Class of allergen, e.g. Sulfonamides or ACE inhibitors.  RDF Code node with code drawn from NDF-RT: http://rxnav.nlm.nih.gov/REST/rxcui?idtype=NUI&amp;id={NDFRT_ID}</rdfs:comment>
+        <rdfs:comment>Class of allergen, e.g. Sulfonamides or ACE inhibitors.  RDF Code node with code drawn from
+            NDF-RT: http://purl.bioontology.org/ontology/NDFRT/{NDFRT_ID}</rdfs:comment>
         <owl:annotatedSource rdf:resource="http://smartplatforms.org/terms#Allergy"/>
         <owl:annotatedProperty rdf:resource="&rdfs;subClassOf"/>
         <owl:annotatedTarget>
@@ -1329,10 +1330,10 @@ For instance, below are two allergies: first, an allergy to the entire class of 
       &lt;sp:CodedValue&gt;
         &lt;dcterms:title&gt;No known allergies&lt;/dcterms:title&gt;
         &lt;sp:code&gt;
-          &lt;spcode:AllergyExclusion rdf:about=&quot;http://www.ihtsdo.org/snomed-ct/concepts/160244002&quot;&gt;
+          &lt;spcode:AllergyExclusion rdf:about=&quot;http://purl.bioontology.org/ontology/SNOMEDCT/160244002&quot;&gt;
            &lt;rdf:type rdf:resource=&quot;http://smartplatforms.org/terms#Code&quot; /&gt; 
            &lt;dcterms:title&gt;No known allergies&lt;/dcterms:title&gt;
-           &lt;sp:system&gt;http://www.ihtsdo.org/snomed-ct/concepts/&lt;/sp:system&gt;
+           &lt;sp:system&gt;http://purl.bioontology.org/ontology/SNOMEDCT/&lt;/sp:system&gt;
            &lt;dcterms:identifier&gt;160244002&lt;/dcterms:identifier&gt;
           &lt;/spcode:AllergyExclusion&gt;
         &lt;/sp:code&gt;
@@ -2591,10 +2592,10 @@ http://www2a.cdc.gov/nip/IIS/IISStandards/vaccines.asp?rpt=cvx#54</rdfs:comment>
               &lt;/sp:Provenance&gt;
             &lt;/sp:provenance&gt;
 	    &lt;sp:code&gt;
-              &lt;spcode:LOINC rdf:about=&quot;http://loinc.org/codes/2951-2&quot;&gt;
+              &lt;spcode:LOINC rdf:about=&quot;http://purl.bioontology.org/ontology/LNC/2951-2&quot;&gt;
                 &lt;rdf:type rdf:resource=&quot;http://smartplatforms.org/terms#Code&quot; /&gt; 
                 &lt;dcterms:title&gt;Serum sodium&lt;/dcterms:title&gt;
-                &lt;sp:system&gt;http://loinc.org/codes/&lt;/sp:system&gt;
+                &lt;sp:system&gt;http://purl.bioontology.org/ontology/LNC/&lt;/sp:system&gt;
                 &lt;dcterms:identifier&gt;2951-2&lt;/dcterms:identifier&gt; 
               &lt;/spcode:LOINC&gt;    
 	      &lt;/sp:code&gt;
@@ -2749,7 +2750,7 @@ http://www2a.cdc.gov/nip/IIS/IISStandards/vaccines.asp?rpt=cvx#54</rdfs:comment>
         </owl:annotatedTarget>
     </owl:Axiom>
     <owl:Axiom>
-        <rdfs:comment>LOINC Coded Value for result (e.g. with title=&#39;Serum Sodium&#39; and code=http://loinc.org/codes/2951-2</rdfs:comment>
+        <rdfs:comment>LOINC Coded Value for result (e.g. with title=&#39;Serum Sodium&#39; and code=http://purl.bioontology.org/ontology/LNC/2951-2</rdfs:comment>
         <owl:annotatedSource rdf:resource="http://smartplatforms.org/terms#LabResult"/>
         <owl:annotatedProperty rdf:resource="&rdfs;subClassOf"/>
         <owl:annotatedTarget>
@@ -3008,9 +3009,9 @@ In RDF/XML notation, a patient on oral amitriptyline 50 mg tablets might provide
       &lt;sp:CodedValue&gt;
           &lt;dcterms:title&gt;AMITRIPTYLINE HCL 50 MG TAB&lt;/dcterms:title&gt;
           &lt;sp:code&gt;
-            &lt;spcode:RxNorm_Semantic rdf:about=&quot;http://rxnav.nlm.nih.gov/REST/rxcui/856845&quot;&gt;
+            &lt;spcode:RxNorm_Semantic rdf:about=&quot;http://purl.bioontology.org/ontology/RXNORM/856845&quot;&gt;
               &lt;rdf:type rdf:resource=&quot;http://smartplatforms.org/terms#Code&quot; /&gt; 
-              &lt;sp:system&gt;http://rxnav.nlm.nih.gov/REST/rxcui/&lt;/sp:system&gt;
+              &lt;sp:system&gt;http://purl.bioontology.org/ontology/RXNORM/&lt;/sp:system&gt;
               &lt;dcterms:identifier&gt;856845&lt;/dcterms:identifier&gt;
               &lt;dcterms:title&gt;AMITRIPTYLINE HCL 50 MG TAB&lt;/dcterms:title&gt;
             &lt;/spcode:RxNorm_Semantic&gt;    
@@ -3062,7 +3063,7 @@ In RDF/XML notation, a patient on oral amitriptyline 50 mg tablets might provide
         </owl:annotatedTarget>
     </owl:Axiom>
     <owl:Axiom>
-        <rdfs:comment rdf:datatype="&rdf;XMLLiteral">RxNorm Concept ID for this medication.  Note: the RxNorm CUI for a SMART medication should have one of the following four types:  SCD (Semantic Clinical Drug), SBD (Semantic Branded Drug), GPCK (Generic Pack), BPCK (Brand Name Pack).   Restricting medications to these four RxNorm types can also be expressed as &quot;TTY in (&#39;SCD&#39;,&#39;SBD&#39;,&#39;GPCK&#39;,&#39;BPCK&#39;)&quot; -- and this restriction ensures that SMART medications use concepts of the appropriate specificity:  concepts like &quot;650 mg generic acetaminophen&quot; or &quot;20 mg brand-name Claritin&quot;.   Please note that SMART medications do not include explicit structured data about pill strength, concentration, or precise ingredients.  These data are available through RxNorm, including through the free [http://rxnav.nlm.nih.gov/RxNormRestAPI.html RxNav REST API].  Code element with code drawn from http://rxnav.nlm.nih.gov/REST/rxcui/{rxcui}</rdfs:comment>
+        <rdfs:comment rdf:datatype="&rdf;XMLLiteral">RxNorm Concept ID for this medication.  Note: the RxNorm CUI for a SMART medication should have one of the following four types:  SCD (Semantic Clinical Drug), SBD (Semantic Branded Drug), GPCK (Generic Pack), BPCK (Brand Name Pack).   Restricting medications to these four RxNorm types can also be expressed as &quot;TTY in (&#39;SCD&#39;,&#39;SBD&#39;,&#39;GPCK&#39;,&#39;BPCK&#39;)&quot; -- and this restriction ensures that SMART medications use concepts of the appropriate specificity:  concepts like &quot;650 mg generic acetaminophen&quot; or &quot;20 mg brand-name Claritin&quot;.   Please note that SMART medications do not include explicit structured data about pill strength, concentration, or precise ingredients.  These data are available through RxNorm, including through the free [http://rxnav.nlm.nih.gov/RxNormRestAPI.html RxNav REST API].  Code element with code drawn from http://purl.bioontology.org/ontology/RXNORM/{rxcui}</rdfs:comment>
         <owl:annotatedSource rdf:resource="http://smartplatforms.org/terms#Medication"/>
         <owl:annotatedProperty rdf:resource="&rdfs;subClassOf"/>
         <owl:annotatedTarget>
@@ -3498,10 +3499,10 @@ A single fulfillment event (that is, the medication was dispensed to the patient
       &lt;sp:CodedValue&gt;
           &lt;dcterms:title&gt;Backache (finding)&lt;/dcterms:title&gt;      
           &lt;sp:code&gt;
-            &lt;spcode:SNOMED rdf:about=&quot;http://www.ihtsdo.org/snomed-ct/concepts/161891005&quot;&gt;
+            &lt;spcode:SNOMED rdf:about=&quot;http://purl.bioontology.org/ontology/SNOMEDCT/161891005&quot;&gt;
               &lt;rdf:type rdf:resource=&quot;http://smartplatforms.org/terms#Code&quot; /&gt; 
               &lt;dcterms:title&gt;Backache (finding)&lt;/dcterms:title&gt;      
-              &lt;sp:system&gt;http://www.ihtsdo.org/snomed-ct/concepts/&lt;/sp:system&gt;
+              &lt;sp:system&gt;http://purl.bioontology.org/ontology/SNOMEDCT/&lt;/sp:system&gt;
               &lt;dcterms:identifier&gt;161891005&lt;/dcterms:identifier&gt; 
             &lt;/spcode:SNOMED&gt;
           &lt;/sp:code&gt;
@@ -4109,10 +4110,10 @@ A single fulfillment event (that is, the medication was dispensed to the patient
         &lt;sp:CodedValue&gt;
           &lt;dcterms:title&gt;Height (measured)&lt;/dcterms:title&gt;
           &lt;sp:code&gt;
-            &lt;spcode:VitalSign rdf:about=&quot;http://loinc.org/codes/8302-2&quot;&gt;
+            &lt;spcode:VitalSign rdf:about=&quot;http://purl.bioontology.org/ontology/LNC/8302-2&quot;&gt;
               &lt;rdf:type rdf:resource=&quot;http://smartplatforms.org/terms#Code&quot; /&gt; 
               &lt;dcterms:title&gt;Height (measured)&lt;/dcterms:title&gt;
-              &lt;sp:system&gt;http://loinc.org/codes/&lt;/sp:system&gt;
+              &lt;sp:system&gt;http://purl.bioontology.org/ontology/LNC/&lt;/sp:system&gt;
               &lt;dcterms:identifier&gt;8302-2&lt;/dcterms:identifier&gt; 
             &lt;/spcode:VitalSign&gt;    
           &lt;/sp:code&gt;
@@ -4128,10 +4129,10 @@ A single fulfillment event (that is, the medication was dispensed to the patient
         &lt;sp:CodedValue&gt;
           &lt;dcterms:title&gt;Body weight (measured)&lt;/dcterms:title&gt;
           &lt;sp:code&gt;    
-            &lt;spcode:VitalSign rdf:about=&quot;http://loinc.org/codes/3141-9&quot;&gt;
+            &lt;spcode:VitalSign rdf:about=&quot;http://purl.bioontology.org/ontology/LNC/3141-9&quot;&gt;
               &lt;rdf:type rdf:resource=&quot;http://smartplatforms.org/terms#Code&quot; /&gt; 
               &lt;dcterms:title&gt;Body weight (measured)&lt;/dcterms:title&gt;
-              &lt;sp:system&gt;http://loinc.org/codes/&lt;/sp:system&gt;
+              &lt;sp:system&gt;http://purl.bioontology.org/ontology/LNC/&lt;/sp:system&gt;
               &lt;dcterms:identifier&gt;3141-9&lt;/dcterms:identifier&gt; 
             &lt;/spcode:VitalSign&gt;
           &lt;/sp:code&gt;
@@ -4147,10 +4148,10 @@ A single fulfillment event (that is, the medication was dispensed to the patient
         &lt;sp:CodedValue&gt;
           &lt;dcterms:title&gt;Body mass index&lt;/dcterms:title&gt;
           &lt;sp:code&gt;
-            &lt;spcode:VitalSign rdf:about=&quot;http://loinc.org/codes/39156-5&quot;&gt;
+            &lt;spcode:VitalSign rdf:about=&quot;http://purl.bioontology.org/ontology/LNC/39156-5&quot;&gt;
               &lt;rdf:type rdf:resource=&quot;http://smartplatforms.org/terms#Code&quot; /&gt; 
               &lt;dcterms:title&gt;Body mass index&lt;/dcterms:title&gt;
-              &lt;sp:system&gt;http://loinc.org/codes/&lt;/sp:system&gt;
+              &lt;sp:system&gt;http://purl.bioontology.org/ontology/LNC/&lt;/sp:system&gt;
               &lt;dcterms:identifier&gt;39156-5&lt;/dcterms:identifier&gt; 
             &lt;/spcode:VitalSign&gt;        
           &lt;/sp:code&gt;
@@ -4166,10 +4167,10 @@ A single fulfillment event (that is, the medication was dispensed to the patient
         &lt;sp:CodedValue&gt;
           &lt;dcterms:title&gt;Respiration rate&lt;/dcterms:title&gt;
           &lt;sp:code&gt;
-            &lt;spcode:VitalSign rdf:about=&quot;http://loinc.org/codes/9279-1&quot;&gt;
+            &lt;spcode:VitalSign rdf:about=&quot;http://purl.bioontology.org/ontology/LNC/9279-1&quot;&gt;
               &lt;rdf:type rdf:resource=&quot;http://smartplatforms.org/terms#Code&quot; /&gt; 
               &lt;dcterms:title&gt;Respiration rate&lt;/dcterms:title&gt;
-              &lt;sp:system&gt;http://loinc.org/codes/&lt;/sp:system&gt;
+              &lt;sp:system&gt;http://purl.bioontology.org/ontology/LNC/&lt;/sp:system&gt;
               &lt;dcterms:identifier&gt;9279-1&lt;/dcterms:identifier&gt; 
             &lt;/spcode:VitalSign&gt;    
           &lt;/sp:code&gt;
@@ -4185,10 +4186,10 @@ A single fulfillment event (that is, the medication was dispensed to the patient
         &lt;sp:CodedValue&gt;
           &lt;dcterms:title&gt;Heart rate&lt;/dcterms:title&gt;
           &lt;sp:code&gt;
-             &lt;spcode:VitalSign rdf:about=&quot;http://loinc.org/codes/8867-4&quot;&gt;
+             &lt;spcode:VitalSign rdf:about=&quot;http://purl.bioontology.org/ontology/LNC/8867-4&quot;&gt;
                &lt;rdf:type rdf:resource=&quot;http://smartplatforms.org/terms#Code&quot; /&gt; 
                &lt;dcterms:title&gt;Heart rate&lt;/dcterms:title&gt;
-               &lt;sp:system&gt;http://loinc.org/codes/&lt;/sp:system&gt;
+               &lt;sp:system&gt;http://purl.bioontology.org/ontology/LNC/&lt;/sp:system&gt;
                &lt;dcterms:identifier&gt;8867-4&lt;/dcterms:identifier&gt; 
              &lt;/spcode:VitalSign&gt;
           &lt;/sp:code&gt;
@@ -4204,10 +4205,10 @@ A single fulfillment event (that is, the medication was dispensed to the patient
         &lt;sp:CodedValue&gt;
           &lt;dcterms:title&gt;Oxygen saturation&lt;/dcterms:title&gt;
           &lt;sp:code&gt;
-            &lt;spcode:VitalSign rdf:about=&quot;http://loinc.org/codes/2710-2&quot;&gt;
+            &lt;spcode:VitalSign rdf:about=&quot;http://purl.bioontology.org/ontology/LNC/2710-2&quot;&gt;
               &lt;rdf:type rdf:resource=&quot;http://smartplatforms.org/terms#Code&quot; /&gt; 
               &lt;dcterms:title&gt;Oxygen saturation&lt;/dcterms:title&gt;
-              &lt;sp:system&gt;http://loinc.org/codes/&lt;/sp:system&gt;
+              &lt;sp:system&gt;http://purl.bioontology.org/ontology/LNC/&lt;/sp:system&gt;
               &lt;dcterms:identifier&gt;2710-2&lt;/dcterms:identifier&gt; 
             &lt;/spcode:VitalSign&gt;        
           &lt;/sp:code&gt;
@@ -4223,10 +4224,10 @@ A single fulfillment event (that is, the medication was dispensed to the patient
         &lt;sp:CodedValue&gt;
           &lt;dcterms:title&gt;Body temperature&lt;/dcterms:title&gt;
           &lt;sp:code&gt;
-            &lt;spcode:VitalSign rdf:about=&quot;http://loinc.org/codes/8310-5&quot;&gt;
+            &lt;spcode:VitalSign rdf:about=&quot;http://purl.bioontology.org/ontology/LNC/8310-5&quot;&gt;
               &lt;rdf:type rdf:resource=&quot;http://smartplatforms.org/terms#Code&quot; /&gt; 
               &lt;dcterms:title&gt;Body temperature&lt;/dcterms:title&gt;
-              &lt;sp:system&gt;http://loinc.org/codes/&lt;/sp:system&gt;
+              &lt;sp:system&gt;http://purl.bioontology.org/ontology/LNC/&lt;/sp:system&gt;
               &lt;dcterms:identifier&gt;8310-5&lt;/dcterms:identifier&gt; 
             &lt;/spcode:VitalSign&gt;        
           &lt;/sp:code&gt;
@@ -4244,10 +4245,10 @@ A single fulfillment event (that is, the medication was dispensed to the patient
         &lt;sp:CodedValue&gt;
           &lt;dcterms:title&gt;Systolic blood pressure&lt;/dcterms:title&gt;
           &lt;sp:code&gt;
-            &lt;spcode:VitalSign rdf:about=&quot;http://loinc.org/codes/8480-6&quot;&gt;
+            &lt;spcode:VitalSign rdf:about=&quot;http://purl.bioontology.org/ontology/LNC/8480-6&quot;&gt;
               &lt;rdf:type rdf:resource=&quot;http://smartplatforms.org/terms#Code&quot; /&gt; 
               &lt;dcterms:title&gt;Systolic blood pressure&lt;/dcterms:title&gt;
-              &lt;sp:system&gt;http://loinc.org/codes/&lt;/sp:system&gt;
+              &lt;sp:system&gt;http://purl.bioontology.org/ontology/LNC/&lt;/sp:system&gt;
               &lt;dcterms:identifier&gt;8480-6&lt;/dcterms:identifier&gt; 
             &lt;/spcode:VitalSign&gt;        
           &lt;/sp:code&gt;
@@ -4263,10 +4264,10 @@ A single fulfillment event (that is, the medication was dispensed to the patient
         &lt;sp:CodedValue&gt;
          &lt;dcterms:title&gt;Diastolic blood pressure&lt;/dcterms:title&gt;
           &lt;sp:code&gt;
-            &lt;spcode:VitalSign rdf:about=&quot;http://loinc.org/codes/8462-4&quot;&gt;
+            &lt;spcode:VitalSign rdf:about=&quot;http://purl.bioontology.org/ontology/LNC/8462-4&quot;&gt;
               &lt;rdf:type rdf:resource=&quot;http://smartplatforms.org/terms#Code&quot; /&gt; 
               &lt;dcterms:title&gt;Diastolic blood pressure&lt;/dcterms:title&gt;
-              &lt;sp:system&gt;http://loinc.org/codes/&lt;/sp:system&gt;
+              &lt;sp:system&gt;http://purl.bioontology.org/ontology/LNC/&lt;/sp:system&gt;
               &lt;dcterms:identifier&gt;8462-4&lt;/dcterms:identifier&gt; 
             &lt;/spcode:VitalSign&gt;        
           &lt;/sp:code&gt;
@@ -4280,10 +4281,10 @@ A single fulfillment event (that is, the medication was dispensed to the patient
         &lt;sp:CodedValue&gt;
             &lt;dcterms:title&gt;Sitting&lt;/dcterms:title&gt;
           &lt;sp:code&gt;
-              &lt;spcode:BloodPressureBodyPosition rdf:about=&quot;http://www.ihtsdo.org/snomed-ct/concepts/33586001&quot; &gt;
+              &lt;spcode:BloodPressureBodyPosition rdf:about=&quot;http://purl.bioontology.org/ontology/SNOMEDCT/33586001&quot; &gt;
                 &lt;rdf:type rdf:resource=&quot;http://smartplatforms.org/terms#Code&quot; /&gt; 
                 &lt;dcterms:title&gt;Sitting&lt;/dcterms:title&gt;
-                &lt;sp:system&gt;http://www.ihtsdo.org/snomed-ct/concepts/&lt;/sp:system&gt;
+                &lt;sp:system&gt;http://purl.bioontology.org/ontology/SNOMEDCT/&lt;/sp:system&gt;
                 &lt;dcterms:identifier&gt;33586001&lt;/dcterms:identifier&gt; 
               &lt;/spcode:BloodPressureBodyPosition&gt;        
           &lt;/sp:code&gt;
@@ -4293,10 +4294,10 @@ A single fulfillment event (that is, the medication was dispensed to the patient
         &lt;sp:CodedValue&gt;
           &lt;dcterms:title&gt;Right arm&lt;/dcterms:title&gt;
           &lt;sp:code&gt;
-            &lt;spcode:BloodPressureBodyPosition rdf:about=&quot;http://www.ihtsdo.org/snomed-ct/concepts/368209003&quot; &gt;
+            &lt;spcode:BloodPressureBodyPosition rdf:about=&quot;http://purl.bioontology.org/ontology/SNOMEDCT/368209003&quot; &gt;
               &lt;rdf:type rdf:resource=&quot;http://smartplatforms.org/terms#Code&quot; /&gt; 
               &lt;dcterms:title&gt;Right arm&lt;/dcterms:title&gt;
-              &lt;sp:system&gt;http://www.ihtsdo.org/snomed-ct/concepts/&lt;/sp:system&gt;
+              &lt;sp:system&gt;http://purl.bioontology.org/ontology/SNOMEDCT/&lt;/sp:system&gt;
               &lt;dcterms:identifier&gt;368209003&lt;/dcterms:identifier&gt; 
             &lt;/spcode:BloodPressureBodyPosition&gt;        
           &lt;/sp:code&gt;
@@ -4452,11 +4453,11 @@ A single fulfillment event (that is, the medication was dispensed to the patient
         <owl:equivalentClass>
             <owl:Class>
                 <owl:oneOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="http://www.ihtsdo.org/snomed-ct/concepts/59037007"/>
-                    <rdf:Description rdf:about="http://www.ihtsdo.org/snomed-ct/concepts/416098002"/>
-                    <rdf:Description rdf:about="http://www.ihtsdo.org/snomed-ct/concepts/235719002"/>
-                    <rdf:Description rdf:about="http://www.ihtsdo.org/snomed-ct/concepts/426232007"/>
-                    <rdf:Description rdf:about="http://www.ihtsdo.org/snomed-ct/concepts/414285001"/>
+                    <rdf:Description rdf:about="http://purl.bioontology.org/ontology/SNOMEDCT/59037007"/>
+                    <rdf:Description rdf:about="http://purl.bioontology.org/ontology/SNOMEDCT/416098002"/>
+                    <rdf:Description rdf:about="http://purl.bioontology.org/ontology/SNOMEDCT/235719002"/>
+                    <rdf:Description rdf:about="http://purl.bioontology.org/ontology/SNOMEDCT/426232007"/>
+                    <rdf:Description rdf:about="http://purl.bioontology.org/ontology/SNOMEDCT/414285001"/>
                 </owl:oneOf>
             </owl:Class>
         </owl:equivalentClass>
@@ -4471,10 +4472,10 @@ A single fulfillment event (that is, the medication was dispensed to the patient
         <owl:equivalentClass>
             <owl:Class>
                 <owl:oneOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="http://www.ihtsdo.org/snomed-ct/concepts/428607008"/>
-                    <rdf:Description rdf:about="http://www.ihtsdo.org/snomed-ct/concepts/160244002"/>
-                    <rdf:Description rdf:about="http://www.ihtsdo.org/snomed-ct/concepts/409137002"/>
-                    <rdf:Description rdf:about="http://www.ihtsdo.org/snomed-ct/concepts/429625007"/>
+                    <rdf:Description rdf:about="http://purl.bioontology.org/ontology/SNOMEDCT/428607008"/>
+                    <rdf:Description rdf:about="http://purl.bioontology.org/ontology/SNOMEDCT/160244002"/>
+                    <rdf:Description rdf:about="http://purl.bioontology.org/ontology/SNOMEDCT/409137002"/>
+                    <rdf:Description rdf:about="http://purl.bioontology.org/ontology/SNOMEDCT/429625007"/>
                 </owl:oneOf>
             </owl:Class>
         </owl:equivalentClass>
@@ -4489,11 +4490,11 @@ A single fulfillment event (that is, the medication was dispensed to the patient
         <owl:equivalentClass>
             <owl:Class>
                 <owl:oneOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="http://www.ihtsdo.org/snomed-ct/concepts/442452003"/>
-                    <rdf:Description rdf:about="http://www.ihtsdo.org/snomed-ct/concepts/24484000"/>
-                    <rdf:Description rdf:about="http://www.ihtsdo.org/snomed-ct/concepts/6736007"/>
-                    <rdf:Description rdf:about="http://www.ihtsdo.org/snomed-ct/concepts/255604002"/>
-                    <rdf:Description rdf:about="http://www.ihtsdo.org/snomed-ct/concepts/399166001"/>
+                    <rdf:Description rdf:about="http://purl.bioontology.org/ontology/SNOMEDCT/442452003"/>
+                    <rdf:Description rdf:about="http://purl.bioontology.org/ontology/SNOMEDCT/24484000"/>
+                    <rdf:Description rdf:about="http://purl.bioontology.org/ontology/SNOMEDCT/6736007"/>
+                    <rdf:Description rdf:about="http://purl.bioontology.org/ontology/SNOMEDCT/255604002"/>
+                    <rdf:Description rdf:about="http://purl.bioontology.org/ontology/SNOMEDCT/399166001"/>
                 </owl:oneOf>
             </owl:Class>
         </owl:equivalentClass>
@@ -4508,9 +4509,9 @@ A single fulfillment event (that is, the medication was dispensed to the patient
         <owl:equivalentClass>
             <owl:Class>
                 <owl:oneOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="http://www.ihtsdo.org/snomed-ct/concepts/10904000"/>
-                    <rdf:Description rdf:about="http://www.ihtsdo.org/snomed-ct/concepts/33586001"/>
-                    <rdf:Description rdf:about="http://www.ihtsdo.org/snomed-ct/concepts/40199007"/>
+                    <rdf:Description rdf:about="http://purl.bioontology.org/ontology/SNOMEDCT/10904000"/>
+                    <rdf:Description rdf:about="http://purl.bioontology.org/ontology/SNOMEDCT/33586001"/>
+                    <rdf:Description rdf:about="http://purl.bioontology.org/ontology/SNOMEDCT/40199007"/>
                 </owl:oneOf>
             </owl:Class>
         </owl:equivalentClass>
@@ -4526,10 +4527,10 @@ A single fulfillment event (that is, the medication was dispensed to the patient
         <owl:equivalentClass>
             <owl:Class>
                 <owl:oneOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="http://www.ihtsdo.org/snomed-ct/concepts/61396006"/>
-                    <rdf:Description rdf:about="http://www.ihtsdo.org/snomed-ct/concepts/11207009"/>
-                    <rdf:Description rdf:about="http://www.ihtsdo.org/snomed-ct/concepts/368208006"/>
-                    <rdf:Description rdf:about="http://www.ihtsdo.org/snomed-ct/concepts/368209003"/>
+                    <rdf:Description rdf:about="http://purl.bioontology.org/ontology/SNOMEDCT/61396006"/>
+                    <rdf:Description rdf:about="http://purl.bioontology.org/ontology/SNOMEDCT/11207009"/>
+                    <rdf:Description rdf:about="http://purl.bioontology.org/ontology/SNOMEDCT/368208006"/>
+                    <rdf:Description rdf:about="http://purl.bioontology.org/ontology/SNOMEDCT/368209003"/>
                 </owl:oneOf>
             </owl:Class>
         </owl:equivalentClass>
@@ -4651,7 +4652,7 @@ system = http://www2a.cdc.gov/nip/IIS/IISStandards/vaccines.asp?rpt=cvx#</rdfs:c
 
     <owl:Class rdf:about="&spcode;LOINC">
         <rdfs:subClassOf rdf:resource="http://smartplatforms.org/terms#Code"/>
-        <rdfs:comment>LOINC code where URI matches:  http://loinc.org/codes/{loinc_code}</rdfs:comment>
+        <rdfs:comment>LOINC code where URI matches:  http://purl.bioontology.org/ontology/LNC/{loinc_code}</rdfs:comment>
     </owl:Class>
     
 
@@ -4755,7 +4756,7 @@ system = http://www2a.cdc.gov/nip/IIS/IISStandards/vaccines.asp?rpt=cvx#</rdfs:c
 
     <owl:Class rdf:about="&spcode;SNOMED">
         <rdfs:subClassOf rdf:resource="http://smartplatforms.org/terms#Code"/>
-        <rdfs:comment>SNOMED code with URI matchign http://www.ihtsdo.org/snomed-ct/concepts/{snomed_concept_id}</rdfs:comment>
+        <rdfs:comment>SNOMED code with URI matchign http://purl.bioontology.org/ontology/SNOMEDCT/{snomed_concept_id}</rdfs:comment>
     </owl:Class>
     
 
@@ -4792,16 +4793,16 @@ system = http://www2a.cdc.gov/nip/IIS/IISStandards/vaccines.asp?rpt=cvx#</rdfs:c
         <owl:equivalentClass>
             <owl:Class>
                 <owl:oneOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="http://loinc.org/codes/8306-3"/>
-                    <rdf:Description rdf:about="http://loinc.org/codes/8867-4"/>
-                    <rdf:Description rdf:about="http://loinc.org/codes/3141-9"/>
-                    <rdf:Description rdf:about="http://loinc.org/codes/8462-4"/>
-                    <rdf:Description rdf:about="http://loinc.org/codes/9279-1"/>
-                    <rdf:Description rdf:about="http://loinc.org/codes/39156-5"/>
-                    <rdf:Description rdf:about="http://loinc.org/codes/8310-5"/>
-                    <rdf:Description rdf:about="http://loinc.org/codes/8480-6"/>
-                    <rdf:Description rdf:about="http://loinc.org/codes/2710-2"/>
-                    <rdf:Description rdf:about="http://loinc.org/codes/8302-2"/>
+                    <rdf:Description rdf:about="http://purl.bioontology.org/ontology/LNC/8306-3"/>
+                    <rdf:Description rdf:about="http://purl.bioontology.org/ontology/LNC/8867-4"/>
+                    <rdf:Description rdf:about="http://purl.bioontology.org/ontology/LNC/3141-9"/>
+                    <rdf:Description rdf:about="http://purl.bioontology.org/ontology/LNC/8462-4"/>
+                    <rdf:Description rdf:about="http://purl.bioontology.org/ontology/LNC/9279-1"/>
+                    <rdf:Description rdf:about="http://purl.bioontology.org/ontology/LNC/39156-5"/>
+                    <rdf:Description rdf:about="http://purl.bioontology.org/ontology/LNC/8310-5"/>
+                    <rdf:Description rdf:about="http://purl.bioontology.org/ontology/LNC/8480-6"/>
+                    <rdf:Description rdf:about="http://purl.bioontology.org/ontology/LNC/2710-2"/>
+                    <rdf:Description rdf:about="http://purl.bioontology.org/ontology/LNC/8302-2"/>
                 </owl:oneOf>
             </owl:Class>
         </owl:equivalentClass>
@@ -5098,90 +5099,90 @@ system = http://www2a.cdc.gov/nip/IIS/IISStandards/vaccines.asp?rpt=cvx#</rdfs:c
     
 
 
-    <!-- http://loinc.org/codes/2710-2 -->
+    <!-- http://purl.bioontology.org/ontology/LNC/2710-2 -->
 
-    <owl:NamedIndividual rdf:about="http://loinc.org/codes/2710-2">
+    <owl:NamedIndividual rdf:about="http://purl.bioontology.org/ontology/LNC/2710-2">
         <rdf:type rdf:resource="&spcode;VitalSign"/>
         <dcterms:title>Oxygen saturation</dcterms:title>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://loinc.org/codes/3141-9 -->
+    <!-- http://purl.bioontology.org/ontology/LNC/3141-9 -->
 
-    <owl:NamedIndividual rdf:about="http://loinc.org/codes/3141-9">
+    <owl:NamedIndividual rdf:about="http://purl.bioontology.org/ontology/LNC/3141-9">
         <rdf:type rdf:resource="&spcode;VitalSign"/>
         <dcterms:title>Body weight</dcterms:title>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://loinc.org/codes/39156-5 -->
+    <!-- http://purl.bioontology.org/ontology/LNC/39156-5 -->
 
-    <owl:NamedIndividual rdf:about="http://loinc.org/codes/39156-5">
+    <owl:NamedIndividual rdf:about="http://purl.bioontology.org/ontology/LNC/39156-5">
         <rdf:type rdf:resource="&spcode;VitalSign"/>
         <dcterms:title>Body mass index</dcterms:title>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://loinc.org/codes/8302-2 -->
+    <!-- http://purl.bioontology.org/ontology/LNC/8302-2 -->
 
-    <owl:NamedIndividual rdf:about="http://loinc.org/codes/8302-2">
+    <owl:NamedIndividual rdf:about="http://purl.bioontology.org/ontology/LNC/8302-2">
         <rdf:type rdf:resource="&spcode;VitalSign"/>
         <dcterms:title>Body height</dcterms:title>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://loinc.org/codes/8306-3 -->
+    <!-- http://purl.bioontology.org/ontology/LNC/8306-3 -->
 
-    <owl:NamedIndividual rdf:about="http://loinc.org/codes/8306-3">
+    <owl:NamedIndividual rdf:about="http://purl.bioontology.org/ontology/LNC/8306-3">
         <rdf:type rdf:resource="&spcode;VitalSign"/>
         <dcterms:title>Body height (lying)</dcterms:title>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://loinc.org/codes/8310-5 -->
+    <!-- http://purl.bioontology.org/ontology/LNC/8310-5 -->
 
-    <owl:NamedIndividual rdf:about="http://loinc.org/codes/8310-5">
+    <owl:NamedIndividual rdf:about="http://purl.bioontology.org/ontology/LNC/8310-5">
         <rdf:type rdf:resource="&spcode;VitalSign"/>
         <dcterms:title>Body temperature</dcterms:title>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://loinc.org/codes/8462-4 -->
+    <!-- http://purl.bioontology.org/ontology/LNC/8462-4 -->
 
-    <owl:NamedIndividual rdf:about="http://loinc.org/codes/8462-4">
+    <owl:NamedIndividual rdf:about="http://purl.bioontology.org/ontology/LNC/8462-4">
         <rdf:type rdf:resource="&spcode;VitalSign"/>
         <dcterms:title>Intravascular diastolic</dcterms:title>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://loinc.org/codes/8480-6 -->
+    <!-- http://purl.bioontology.org/ontology/LNC/8480-6 -->
 
-    <owl:NamedIndividual rdf:about="http://loinc.org/codes/8480-6">
+    <owl:NamedIndividual rdf:about="http://purl.bioontology.org/ontology/LNC/8480-6">
         <rdf:type rdf:resource="&spcode;VitalSign"/>
         <dcterms:title>Intravascular systolic</dcterms:title>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://loinc.org/codes/8867-4 -->
+    <!-- http://purl.bioontology.org/ontology/LNC/8867-4 -->
 
-    <owl:NamedIndividual rdf:about="http://loinc.org/codes/8867-4">
+    <owl:NamedIndividual rdf:about="http://purl.bioontology.org/ontology/LNC/8867-4">
         <rdf:type rdf:resource="&spcode;VitalSign"/>
         <dcterms:title>Heart rate</dcterms:title>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://loinc.org/codes/9279-1 -->
+    <!-- http://purl.bioontology.org/ontology/LNC/9279-1 -->
 
-    <owl:NamedIndividual rdf:about="http://loinc.org/codes/9279-1">
+    <owl:NamedIndividual rdf:about="http://purl.bioontology.org/ontology/LNC/9279-1">
         <rdf:type rdf:resource="&spcode;VitalSign"/>
         <dcterms:title>Respiration rate</dcterms:title>
     </owl:NamedIndividual>
@@ -6113,189 +6114,189 @@ system = http://www2a.cdc.gov/nip/IIS/IISStandards/vaccines.asp?rpt=cvx#</rdfs:c
     
 
 
-    <!-- http://www.ihtsdo.org/snomed-ct/concepts/10904000 -->
+    <!-- http://purl.bioontology.org/ontology/SNOMEDCT/10904000 -->
 
-    <owl:NamedIndividual rdf:about="http://www.ihtsdo.org/snomed-ct/concepts/10904000">
+    <owl:NamedIndividual rdf:about="http://purl.bioontology.org/ontology/SNOMEDCT/10904000">
         <rdf:type rdf:resource="&spcode;BloodPressureBodyPosition"/>
         <dcterms:title>Standing</dcterms:title>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.ihtsdo.org/snomed-ct/concepts/11207009 -->
+    <!-- http://purl.bioontology.org/ontology/SNOMEDCT/11207009 -->
 
-    <owl:NamedIndividual rdf:about="http://www.ihtsdo.org/snomed-ct/concepts/11207009">
+    <owl:NamedIndividual rdf:about="http://purl.bioontology.org/ontology/SNOMEDCT/11207009">
         <rdf:type rdf:resource="&spcode;BloodPressureBodySite"/>
         <dcterms:title>Right thigh</dcterms:title>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.ihtsdo.org/snomed-ct/concepts/160244002 -->
+    <!-- http://purl.bioontology.org/ontology/SNOMEDCT/160244002 -->
 
-    <owl:NamedIndividual rdf:about="http://www.ihtsdo.org/snomed-ct/concepts/160244002">
+    <owl:NamedIndividual rdf:about="http://purl.bioontology.org/ontology/SNOMEDCT/160244002">
         <rdf:type rdf:resource="&spcode;AllergyExclusion"/>
         <dcterms:title>No known allergies</dcterms:title>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.ihtsdo.org/snomed-ct/concepts/235719002 -->
+    <!-- http://purl.bioontology.org/ontology/SNOMEDCT/235719002 -->
 
-    <owl:NamedIndividual rdf:about="http://www.ihtsdo.org/snomed-ct/concepts/235719002">
+    <owl:NamedIndividual rdf:about="http://purl.bioontology.org/ontology/SNOMEDCT/235719002">
         <rdf:type rdf:resource="&spcode;AllergyCategory"/>
         <dcterms:title>Food intolerance</dcterms:title>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.ihtsdo.org/snomed-ct/concepts/24484000 -->
+    <!-- http://purl.bioontology.org/ontology/SNOMEDCT/24484000 -->
 
-    <owl:NamedIndividual rdf:about="http://www.ihtsdo.org/snomed-ct/concepts/24484000">
+    <owl:NamedIndividual rdf:about="http://purl.bioontology.org/ontology/SNOMEDCT/24484000">
         <rdf:type rdf:resource="&spcode;AllergySeverity"/>
         <dcterms:title>Severe</dcterms:title>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.ihtsdo.org/snomed-ct/concepts/255604002 -->
+    <!-- http://purl.bioontology.org/ontology/SNOMEDCT/255604002 -->
 
-    <owl:NamedIndividual rdf:about="http://www.ihtsdo.org/snomed-ct/concepts/255604002">
+    <owl:NamedIndividual rdf:about="http://purl.bioontology.org/ontology/SNOMEDCT/255604002">
         <rdf:type rdf:resource="&spcode;AllergySeverity"/>
         <dcterms:title>Mild</dcterms:title>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.ihtsdo.org/snomed-ct/concepts/33586001 -->
+    <!-- http://purl.bioontology.org/ontology/SNOMEDCT/33586001 -->
 
-    <owl:NamedIndividual rdf:about="http://www.ihtsdo.org/snomed-ct/concepts/33586001">
+    <owl:NamedIndividual rdf:about="http://purl.bioontology.org/ontology/SNOMEDCT/33586001">
         <rdf:type rdf:resource="&spcode;BloodPressureBodyPosition"/>
         <dcterms:title>Sitting</dcterms:title>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.ihtsdo.org/snomed-ct/concepts/368208006 -->
+    <!-- http://purl.bioontology.org/ontology/SNOMEDCT/368208006 -->
 
-    <owl:NamedIndividual rdf:about="http://www.ihtsdo.org/snomed-ct/concepts/368208006">
+    <owl:NamedIndividual rdf:about="http://purl.bioontology.org/ontology/SNOMEDCT/368208006">
         <rdf:type rdf:resource="&spcode;BloodPressureBodySite"/>
         <dcterms:title>Left arm</dcterms:title>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.ihtsdo.org/snomed-ct/concepts/368209003 -->
+    <!-- http://purl.bioontology.org/ontology/SNOMEDCT/368209003 -->
 
-    <owl:NamedIndividual rdf:about="http://www.ihtsdo.org/snomed-ct/concepts/368209003">
+    <owl:NamedIndividual rdf:about="http://purl.bioontology.org/ontology/SNOMEDCT/368209003">
         <rdf:type rdf:resource="&spcode;BloodPressureBodySite"/>
         <dcterms:title>Right arm</dcterms:title>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.ihtsdo.org/snomed-ct/concepts/399166001 -->
+    <!-- http://purl.bioontology.org/ontology/SNOMEDCT/399166001 -->
 
-    <owl:NamedIndividual rdf:about="http://www.ihtsdo.org/snomed-ct/concepts/399166001">
+    <owl:NamedIndividual rdf:about="http://purl.bioontology.org/ontology/SNOMEDCT/399166001">
         <rdf:type rdf:resource="&spcode;AllergySeverity"/>
         <dcterms:title>Fatal</dcterms:title>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.ihtsdo.org/snomed-ct/concepts/40199007 -->
+    <!-- http://purl.bioontology.org/ontology/SNOMEDCT/40199007 -->
 
-    <owl:NamedIndividual rdf:about="http://www.ihtsdo.org/snomed-ct/concepts/40199007">
+    <owl:NamedIndividual rdf:about="http://purl.bioontology.org/ontology/SNOMEDCT/40199007">
         <rdf:type rdf:resource="&spcode;BloodPressureBodyPosition"/>
         <dcterms:title>Supine</dcterms:title>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.ihtsdo.org/snomed-ct/concepts/409137002 -->
+    <!-- http://purl.bioontology.org/ontology/SNOMEDCT/409137002 -->
 
-    <owl:NamedIndividual rdf:about="http://www.ihtsdo.org/snomed-ct/concepts/409137002">
+    <owl:NamedIndividual rdf:about="http://purl.bioontology.org/ontology/SNOMEDCT/409137002">
         <rdf:type rdf:resource="&spcode;AllergyExclusion"/>
         <dcterms:title>No known history of drug allergy</dcterms:title>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.ihtsdo.org/snomed-ct/concepts/414285001 -->
+    <!-- http://purl.bioontology.org/ontology/SNOMEDCT/414285001 -->
 
-    <owl:NamedIndividual rdf:about="http://www.ihtsdo.org/snomed-ct/concepts/414285001">
+    <owl:NamedIndividual rdf:about="http://purl.bioontology.org/ontology/SNOMEDCT/414285001">
         <rdf:type rdf:resource="&spcode;AllergyCategory"/>
         <dcterms:title>Food allergy</dcterms:title>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.ihtsdo.org/snomed-ct/concepts/416098002 -->
+    <!-- http://purl.bioontology.org/ontology/SNOMEDCT/416098002 -->
 
-    <owl:NamedIndividual rdf:about="http://www.ihtsdo.org/snomed-ct/concepts/416098002">
+    <owl:NamedIndividual rdf:about="http://purl.bioontology.org/ontology/SNOMEDCT/416098002">
         <rdf:type rdf:resource="&spcode;AllergyCategory"/>
         <dcterms:title>Drug allergy</dcterms:title>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.ihtsdo.org/snomed-ct/concepts/426232007 -->
+    <!-- http://purl.bioontology.org/ontology/SNOMEDCT/426232007 -->
 
-    <owl:NamedIndividual rdf:about="http://www.ihtsdo.org/snomed-ct/concepts/426232007">
+    <owl:NamedIndividual rdf:about="http://purl.bioontology.org/ontology/SNOMEDCT/426232007">
         <rdf:type rdf:resource="&spcode;AllergyCategory"/>
         <dcterms:title>Environmental allergy</dcterms:title>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.ihtsdo.org/snomed-ct/concepts/428607008 -->
+    <!-- http://purl.bioontology.org/ontology/SNOMEDCT/428607008 -->
 
-    <owl:NamedIndividual rdf:about="http://www.ihtsdo.org/snomed-ct/concepts/428607008">
+    <owl:NamedIndividual rdf:about="http://purl.bioontology.org/ontology/SNOMEDCT/428607008">
         <rdf:type rdf:resource="&spcode;AllergyExclusion"/>
         <dcterms:title>No known environmental allergy</dcterms:title>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.ihtsdo.org/snomed-ct/concepts/429625007 -->
+    <!-- http://purl.bioontology.org/ontology/SNOMEDCT/429625007 -->
 
-    <owl:NamedIndividual rdf:about="http://www.ihtsdo.org/snomed-ct/concepts/429625007">
+    <owl:NamedIndividual rdf:about="http://purl.bioontology.org/ontology/SNOMEDCT/429625007">
         <rdf:type rdf:resource="&spcode;AllergyExclusion"/>
         <dcterms:title>No known food allergy</dcterms:title>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.ihtsdo.org/snomed-ct/concepts/442452003 -->
+    <!-- http://purl.bioontology.org/ontology/SNOMEDCT/442452003 -->
 
-    <owl:NamedIndividual rdf:about="http://www.ihtsdo.org/snomed-ct/concepts/442452003">
+    <owl:NamedIndividual rdf:about="http://purl.bioontology.org/ontology/SNOMEDCT/442452003">
         <rdf:type rdf:resource="&spcode;AllergySeverity"/>
         <dcterms:title>Life threatening</dcterms:title>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.ihtsdo.org/snomed-ct/concepts/59037007 -->
+    <!-- http://purl.bioontology.org/ontology/SNOMEDCT/59037007 -->
 
-    <owl:NamedIndividual rdf:about="http://www.ihtsdo.org/snomed-ct/concepts/59037007">
+    <owl:NamedIndividual rdf:about="http://purl.bioontology.org/ontology/SNOMEDCT/59037007">
         <rdf:type rdf:resource="&spcode;AllergyCategory"/>
         <dcterms:title>Drug intolerance</dcterms:title>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.ihtsdo.org/snomed-ct/concepts/61396006 -->
+    <!-- http://purl.bioontology.org/ontology/SNOMEDCT/61396006 -->
 
-    <owl:NamedIndividual rdf:about="http://www.ihtsdo.org/snomed-ct/concepts/61396006">
+    <owl:NamedIndividual rdf:about="http://purl.bioontology.org/ontology/SNOMEDCT/61396006">
         <rdf:type rdf:resource="&spcode;BloodPressureBodySite"/>
         <dcterms:title>Left thigh</dcterms:title>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.ihtsdo.org/snomed-ct/concepts/6736007 -->
+    <!-- http://purl.bioontology.org/ontology/SNOMEDCT/6736007 -->
 
-    <owl:NamedIndividual rdf:about="http://www.ihtsdo.org/snomed-ct/concepts/6736007">
+    <owl:NamedIndividual rdf:about="http://purl.bioontology.org/ontology/SNOMEDCT/6736007">
         <rdf:type rdf:resource="&spcode;AllergySeverity"/>
         <dcterms:title>Moderate</dcterms:title>
     </owl:NamedIndividual>
