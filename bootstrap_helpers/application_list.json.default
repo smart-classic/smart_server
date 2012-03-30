@@ -9,6 +9,6 @@
    "http://localhost:8001/framework/background_app/smart_manifest.json" :  {"enabled_by_default": false, "admin_p": true},
    "http://localhost:8001/framework/api_playground/smart_manifest.json" : {"enabled_by_default": true},
    "http://localhost:8001/framework/cardio_risk_viz/smart_manifest.json" : {"enabled_by_default": false},
-   "http://localhost:8001/framework/pedi_bpc/smart_manifest.json" : {"enabled_by_default": false}
+   "http://localhost:8001/framework/bpc/smart_manifest.json" : {"enabled_by_default": false}
  }
 }
