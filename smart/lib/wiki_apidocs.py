@@ -107,8 +107,9 @@ def wiki_properties_for_type(t):
                     pc = avf.all_values_from
                     pc = type_name_string(pc)
                     desc += "\n''where'' '''"+ p +   "''' comes from '''%s''' [[#%s code RDF | (details...)]]"%(pc,pc)
-		if c.description:
-		  desc += "\n\n" + c.description
+
+        if c.description:
+            desc += "\n\n" + c.description
 
         elif type(c) is OWL_DataProperty:
             avf = filter(lambda x: x.all_values_from, c.restrictions)
