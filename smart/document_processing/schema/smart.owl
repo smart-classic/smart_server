@@ -4736,7 +4736,8 @@ system = http://www2a.cdc.gov/nip/IIS/IISStandards/vaccines.asp?rpt=cvx#</rdfs:c
                     <rdf:Description rdf:about="&spcode;ImmunizationRefusalReason#previouslyVaccinated"/>
                     <rdf:Description rdf:about="&spcode;ImmunizationRefusalReason#contraindicated"/>
                     <rdf:Description rdf:about="&spcode;ImmunizationRefusalReason#patientOrParentRefused"/>
-                    <rdf:Description rdf:about="&spcode;ImmunizationRefusalReason#possiblePriorAllergy"/>
+                    <rdf:Description rdf:about="&spcode;ImmunizationRefusalReason#vaccineUnavailable"/>
+                    <rdf:Description rdf:about="&spcode;ImmunizationRefusalReason#possiblePriorAllergyOrReaction"/>
                     <rdf:Description rdf:about="&spcode;ImmunizationRefusalReason#comfortMeasuresOnly"/>
                     <rdf:Description rdf:about="&spcode;ImmunizationRefusalReason#recentOrganOrStemCellTransplant"/>
                 </owl:oneOf>
@@ -6227,17 +6228,23 @@ system = http://www2a.cdc.gov/nip/IIS/IISStandards/vaccines.asp?rpt=cvx#</rdfs:c
     <owl:NamedIndividual rdf:about="&spcode;ImmunizationRefusalReason#patientUndergoingDesensitizationTherapy">
         <rdf:type rdf:resource="&spcode;ImmunizationRefusalReason"/>
         <dcterms:title>Patient undergoing desensitization therapy</dcterms:title>
-    </owl:NamedIndividual>
-    
+    </owl:NamedIndividual>  
 
 
-    <!-- http://smartplatforms.org/terms/codes/ImmunizationRefusalReason#possiblePriorAllergy -->
+    <!-- http://smartplatforms.org/terms/codes/ImmunizationRefusalReason#possiblePriorAllergyOrReaction -->
 
-    <owl:NamedIndividual rdf:about="&spcode;ImmunizationRefusalReason#possiblePriorAllergy">
+    <owl:NamedIndividual rdf:about="&spcode;ImmunizationRefusalReason#possiblePriorAllergyOrReaction">
         <rdf:type rdf:resource="&spcode;ImmunizationRefusalReason"/>
         <dcterms:title>Possible allergy/reaction to prior dose</dcterms:title>
     </owl:NamedIndividual>
-    
+
+
+    <!-- http://smartplatforms.org/terms/codes/ImmunizationRefusalReason#vaccineUnavailable -->
+
+    <owl:NamedIndividual rdf:about="&spcode;ImmunizationRefusalReason#vaccineUnavailable">
+        <rdf:type rdf:resource="&spcode;ImmunizationRefusalReason"/>
+        <dcterms:title>Vaccine unavailable at visit</dcterms:title>
+    </owl:NamedIndividual>
 
 
     <!-- http://smartplatforms.org/terms/codes/ImmunizationRefusalReason#previouslyVaccinated -->
