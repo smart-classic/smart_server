@@ -41,6 +41,11 @@ These instructions apply to each of three github repositories that you'll need i
      sudo apt-get install postgresql
 </pre>
 
+* git
+<pre>
+     sudo apt-get install git
+</pre>
+
 # Setup Database
 
 You'll have the easiest time naming your database <tt>smart</tt>
@@ -114,12 +119,6 @@ To limit servlet access to localhost, make two tomcat configuration changes:
 </pre>
 
 You'll need to restart Tomcat again if you make these changes
-
-# Install GIT 
-(NOTE: try "sudo apt-get install git-core" if the git package is not found)
-<pre>
-     sudo apt-get install git
-</pre>
 
 # Download, Install, and Configure SMART Server Components (automated)
 

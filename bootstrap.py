@@ -13,5 +13,4 @@ MachineApp.objects.create(name='chrome',
                           email='chrome@apps.smart-project.org')
 
 # then add additional apps by manifest
-from bootstrap_helpers import bootstrap_codingsystems
 from bootstrap_helpers import bootstrap_applications

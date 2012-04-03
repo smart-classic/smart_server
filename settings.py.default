@@ -36,8 +36,6 @@ EMAIL_SUPPORT_NAME = "E-mail Support"
 EMAIL_SUPPORT_ADDRESS = "e-mail-support-address@host.com"
 
 RECORD_SPARQL_ENDPOINT = 'http://localhost:8080/openrdf-sesame/repositories/record_rdf'
-TEMP_SPARQL_ENDPOINT = 'http://localhost:8080/openrdf-sesame/repositories/temp_rdf'
-PHA_SPARQL_ENDPOINT = 'http://localhost:8080/openrdf-sesame/repositories/pha_rdf'
 
 DATABASE_ENGINE = 'postgresql_psycopg2'           # 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
 DATABASE_NAME = 'smart'             # Or path to database file if using sqlite3.
@@ -45,7 +43,6 @@ DATABASE_USER = 'smart'             # Not used with sqlite3.
 DATABASE_PASSWORD = 'smart'         # Not used with sqlite3.
 DATABASE_HOST = ''             # Set to empty string for localhost. Not used with sqlite3.
 DATABASE_PORT = ''             # Set to empty string for default. Not used with sqlite3.
-DATABASE_RXN = 'rxnorm'
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -112,9 +109,7 @@ INSTALLED_APPS = (
     'django.contrib.contenttypes',
     'django.contrib.sites',
     'django.contrib.admin',
-    'smart_server.smart',
-    'smart_server.codingsystems',
-    'smart_server.structured_product_label'
+    'smart_server.smart'
 )
 
 # FIXME: still necessary?
