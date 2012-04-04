@@ -129,6 +129,10 @@ At this point you are ready to install the SMART server components. There are tw
   python smart_manager.py -a
 </pre>
 
+(Note:  if you'd like to run the bleeding-edge SMART development branch, replace `master` with `dev` in the `wget`
+command above and pass the `-d` flag to `smart_manager.py`.  If you're unsure, you probably want to stick with the
+master branch!)
+
 # Download, Install, and Configure SMART Backend Server (manual steps)
 
 * get the code
