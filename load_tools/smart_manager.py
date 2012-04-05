@@ -251,7 +251,7 @@ def main():
     if args.run_app_server:
         port = get_port(app_server)
         print "port:", port
-        call_command("cd smart_sample_apps && python manage.py runconcurrentserver 0.0.0.0:%s --noreload &"%port, 
+        call_command("cd smart_sample_apps && python manage.py runconcurrentserver 0.0.0.0:%s &"%port, 
                      print_output=True)
 
         print "App Server running."
@@ -289,17 +289,18 @@ def main():
                      "cd ..;", print_output=True)
 
     if args.run_api_servers:
-        port = get_port(ui_server)
-        print "port:", port
-        call_command("cd smart_ui_server; python manage.py runconcurrentserver 0.0.0.0:%s --noreload &"%port, 
-                     print_output=True)
 
         port = get_port(api_server)
         print "port:", port
-        call_command("cd smart_server; python manage.py runserver 0.0.0.0:%s --noreload &"%port, 
+        call_command("cd smart_server && python manage.py runconcurrentserver 0.0.0.0:%s &"%port, 
                      print_output=True)
 
         print "API Servers running."
+
+        port = get_port(ui_server)
+        print "port:", port
+        call_command("cd smart_ui_server && python manage.py runconcurrentserver 0.0.0.0:%s &"%port, 
+                     print_output=True)
 
 def get_port(url):
     server = urlparse.urlparse(url)
@@ -312,7 +313,6 @@ def call_command(command, print_output=False):
     print command
 
     if print_output: 
-        out = sys.stdout
         ret = os.system(command)
         
     else: 
