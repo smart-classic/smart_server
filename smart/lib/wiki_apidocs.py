@@ -108,12 +108,12 @@ def wiki_properties_for_type(t):
                     pc = type_name_string(pc)
                     desc += "\n''where'' '''"+ p +   "''' comes from '''%s''' [[#%s code RDF | (details...)]]"%(pc,pc)
 
-        if c.description:
-            desc += "\n\n" + c.description
+            if c.description:
+                desc += "\n\n" + c.description
 
         elif type(c) is OWL_DataProperty:
             avf = filter(lambda x: x.all_values_from, c.restrictions)
-            if len(avf) >0: d = avf[0].all_values_from.uri.n3()
+            if len(avf) >0: d = str(avf[0].all_values_from.uri)
             else: d = str(rdfs.Literal)
             desc += " "+ d
         cardinality = cardinalities[c.cardinality_string]
