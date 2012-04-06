@@ -47,8 +47,6 @@ def grant(accesstoken, permset):
     permset.grant(record_get_all_objects, [check_token_for_record])
 
     permset.grant(record_get_object, [check_token_for_record])
-
-    permset.grant(record_get_filtered_labs, [check_token_for_record])
     permset.grant(record_get_allergies, [check_token_for_record])
 
     try:

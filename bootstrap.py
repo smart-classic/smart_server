@@ -12,5 +12,14 @@ MachineApp.objects.create(name='chrome',
                           app_type='chrome',
                           email='chrome@apps.smart-project.org')
 
+s = os.system
+
+if settings.TRIPLESTORE['engine'] == "sesame":
+    s("""wget --post-data='context='  http://localhost:8080/openrdf-workbench/repositories/$RECORD_SPARQL_REPOSITORY/clear -O /dev/null""")
+    s("""wget --post-data='type=native&Repository+ID='$RECORD_SPARQL_REPOSITORY'&Repository+title=Record-level+RDF+by+context&Triple+indexes=spoc%2Cposc%2Ccspo'  http://localhost:8080/openrdf-workbench/repositories/NONE/create -O /dev/null""")
+elif settings.TRIPLESTORE['engine'] == "stardog":
+    s("""stardog-admin drop -n record_rdf""")
+    s("""stardog-admin create -n record_rdf -t D -u admin -p admin --server snarl://localhost:5820""")
+
 # then add additional apps by manifest
 from bootstrap_helpers import bootstrap_applications

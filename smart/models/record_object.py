@@ -3,7 +3,7 @@ from django.conf import settings
 from smart.client.common.rdf_ontology import api_types, api_calls, ontology, SMART_Class
 from smart.client.common.query_builder import SMART_Querier
 from rdf_rest_operations import *
-from smart.client.common.util import remap_node, parse_rdf, get_property, LookupType, URIRef, sp, rdf, default_ns
+from smart.client.common.util import remap_node, parse_rdf, get_property, LookupType, BNode, Literal, URIRef, sp, rdf, default_ns
 from ontology_url_patterns import CallMapper, BasicCallMapper
 
 class RecordObject(object):
@@ -51,29 +51,7 @@ class RecordObject(object):
         if v: return str(v)
         return None    
          
-    def internal_id(self, record_connector, external_id):
-        idquery = """
-            PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-            CONSTRUCT {%s <http://smartplatforms.org/terms#externalIDFor> ?o.}
-            FROM $context
-            WHERE {
-                    %s <http://smartplatforms.org/terms#externalIDFor> ?o.
-                  }  """%(external_id.n3(), external_id.n3())
-        id_graph = parse_rdf(record_connector.sparql(idquery))
-
-
-        l = list(id_graph)
-        if len(l) > 1:
-            raise Exception( "MORE THAN ONE ENTITY WITH EXTERNAL ID %s : %s"%(external_id, ", ".join([str(x[0]) for x in l])))
-
-        try:
-            s =  l[0][2]
-            return s
-        except: 
-            return None
-        
     def path_var_bindings(self, request_path):
-        print request_path, self.path
         var_names =  re.findall("{(.*?)}",self.path)
         
         match_string = self.path
@@ -104,31 +82,28 @@ class RecordObject(object):
         
         return URIRef(ret)    
 
-    def determine_remap_target(self,g,c,s,var_bindings):
-        full_path = None
-
-        if type(s) == Literal: return None
-
-        node_type_candidates = list(g.triples((s, rdf.type, None)))
+    def statement_type(self, g, n):
+        node_type_candidates = list(g.triples((n, rdf.type, None)))
         node_type = None
         for c in node_type_candidates:
             t = SMART_Class[c[2]]
             if t.is_statement or t.uri == sp.MedicalRecord:
                 assert node_type==None, "Got multiple node types for %s"%[x[2] for x in node_type]
                 node_type  = t.uri
+        return node_type
 
-        if type(s) == BNode and not node_type: return None
-        elif type(s) == URIRef:
-            subject_uri = str(s)        
-            if subject_uri.startswith("urn:smart_external_id:"):
-                full_path = self.internal_id(c, s)
-                assert full_path or node_type != None, "%s is a new external URI node with no type"%s.n3()
-            else:
-                return None
 
-        # If we got here, we need to remap the node "s".
-        if full_path == None:
-            full_path = RecordObject[node_type].determine_full_path(var_bindings)
+    def determine_remap_target(self,g,c,s,var_bindings):
+        if type(s) != BNode: 
+            return None
+
+        node_type = self.statement_type(g,s)
+
+        if node_type == None:
+            return None
+
+        # We need to remap the node
+        full_path = RecordObject[node_type].determine_full_path(var_bindings)
         return full_path
 
     def generate_uris(self, g, c, var_bindings=None):   
@@ -141,9 +116,6 @@ class RecordObject(object):
 
         for (old_node, new_node) in node_map.iteritems():
             remap_node(g, old_node, new_node)
-            if type(old_node) == URIRef:
-                g.add((old_node, sp.externalIDFor, new_node))
-
 
         return node_map.values()
 
@@ -160,6 +132,7 @@ class RecordObject(object):
             if (not t.base_path.startswith("/records")): continue
             if (n == recordURI): continue # don't assert that the record has itself as an element
             
+            g.add((n, sp.belongsTo, recordURI))
             g.add((recordURI, sp.hasStatement, n))
             g.add((recordURI, rdf.type, sp.MedicalRecord))
 
@@ -167,13 +140,8 @@ class RecordObject(object):
         new_uris = self.generate_uris(g, c, var_bindings)
         self.attach_statements_to_record(g, new_uris, var_bindings)
 
-
-    def query_one(self, id):
-        ret = SMART_Querier.query_one(self.smart_type, id=id)
-        return ret
-
-    def query_all(self):
-        ret = SMART_Querier.query_all(self.smart_type)
+    def query(self, *args, **kwargs):
+        ret = SMART_Querier.query(self.smart_type, *args, **kwargs)
         return ret
 
 for t in api_types:
@@ -239,43 +207,22 @@ class RecordItemCallMapper(RecordCallMapper):
 
 @CallMapper.register(category="record_items",
                      method="GET",
-                     target="http://smartplatforms.org/terms#LabResult",
-                     filter_func=lambda c: str(c.path).find("loinc")>-1)
-def record_get_filtered_labs(request, *args, **kwargs):
-      record_id = kwargs['record_id']
-      loincs = kwargs['comma_separated_loincs'].split(",")
-
-      filters = " || ".join (["?filteredLoinc = <http://loinc.org/codes/%s>"%s 
-                              for s in loincs])
-
-      l = RecordObject["http://smartplatforms.org/terms#LabResult"]
-      c = RecordStoreConnector(Record.objects.get(id=record_id))
-      q =  l.query_all(filter_clause="""
-        {
-          ?root_subject <http://smartplatforms.org/terms#labName> ?filteredLab.
-          ?filteredLab <http://smartplatforms.org/terms#code> ?filteredLoinc.
-        }  FILTER (%s)"""%filters
-           )
-      return rdf_response(c.sparql(q))
-
-
-
-@CallMapper.register(category="record_items",
-                     method="GET",
                      target="http://smartplatforms.org/terms#Allergy")
 def record_get_allergies(request, *args, **kwargs):
-      record_id = kwargs['record_id']
-      a = RecordObject["http://smartplatforms.org/terms#Allergy"]
-      ae = RecordObject["http://smartplatforms.org/terms#AllergyExclusion"]
-      c = RecordStoreConnector(Record.objects.get(id=record_id))
+    record_id = kwargs['record_id']
+    a = RecordObject["http://smartplatforms.org/terms#Allergy"]
+    ae = RecordObject["http://smartplatforms.org/terms#AllergyExclusion"]
 
-      ma = c.sparql(a.query_all())
-      m = parse_rdf(ma)
+    c = RecordTripleStore(Record.objects.get(id=record_id))
+    allergy_graph = c.get_objects(a)
+    exclusion_graph = c.get_objects(ae)
+    
 
-      mae = c.sparql(ae.query_all())
-      parse_rdf(mae, model=m)
+    a = parse_rdf(allergy_graph)
+    ae = parse_rdf(exclusion_graph)
 
-      return rdf_response(serialize_rdf(m))
+    a += ae
+    return rdf_response(serialize_rdf(a))
 
 @CallMapper.register(category="record_item",
                      method="POST",
