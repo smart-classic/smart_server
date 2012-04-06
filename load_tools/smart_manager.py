@@ -109,7 +109,8 @@ def main():
 
     if args.branch_dev:
         args.using_branch = "dev"
-    print "USING BRANCH", args.using_branch
+    if args.using_branch:
+       print "USING BRANCH", args.using_branch
     if not args.all_steps and not ( 
         args.clone_git or
         args.update_git or
