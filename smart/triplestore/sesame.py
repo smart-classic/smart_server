@@ -132,6 +132,11 @@ class SesameConnector(object):
         return ret
 
     def get_contexts(self, bindings):
+
+        if len(bindings) == 0:
+            g = ConjunctiveGraph()
+            return g.serialize(format="xml")
+
         q = """    PREFIX : <http://smartplatforms.org/terms#>
         CONSTRUCT{
             ?s ?p ?o. 

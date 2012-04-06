@@ -15,8 +15,8 @@ MachineApp.objects.create(name='chrome',
 s = os.system
 
 if settings.TRIPLESTORE['engine'] == "sesame":
-    s("""wget --post-data='context='  http://localhost:8080/openrdf-workbench/repositories/$RECORD_SPARQL_REPOSITORY/clear -O /dev/null""")
-    s("""wget --post-data='type=native&Repository+ID='$RECORD_SPARQL_REPOSITORY'&Repository+title=Record-level+RDF+by+context&Triple+indexes=spoc%2Cposc%2Ccspo'  http://localhost:8080/openrdf-workbench/repositories/NONE/create -O /dev/null""")
+    s("""wget --post-data='context='  http://localhost:8080/openrdf-workbench/repositories/record_rdf/clear -O /dev/null""")
+    s("""wget --post-data='type=native&Repository+ID='record_rdf'&Repository+title=Record-level+RDF+by+context&Triple+indexes=spoc%2Cposc%2Ccspo'  http://localhost:8080/openrdf-workbench/repositories/NONE/create -O /dev/null""")
 elif settings.TRIPLESTORE['engine'] == "stardog":
     s("""stardog-admin drop -n record_rdf""")
     s("""stardog-admin create -n record_rdf -t D -u admin -p admin --server snarl://localhost:5820""")
