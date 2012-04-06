@@ -46,7 +46,7 @@ def main():
                       "load sample data, run api servers")
 
     parser.add_argument("-b", "--branch", dest="using_branch",
-                    default="master",
+                    default=False,
                     help="Use a specific branch for checkouts and updates")
 
     parser.add_argument("-d", "--development-branch", dest="branch_dev",
@@ -136,6 +136,8 @@ def main():
         args.run_api_servers = True
 
     if args.clone_git:
+        if not args.using_branch:
+            args.using_branch = "master"
         print "Cloning (4) SMART git repositories..."
         for r in repos:
             call_command("git clone --recursive https://github.com/chb/"+r+".git", 
@@ -146,8 +148,9 @@ def main():
 
     if args.update_git:
         for r in repos:
+            if args.using_branch:
+                call_command("cd "+r+"; git checkout "+args.using_branch+"; cd ..")
             call_command("cd "+r+"; " +
-                     "git checkout " + args.using_branch + "; "+
                      "git pull; " +
                      "git submodule init; " +
                      "git submodule update; " +
