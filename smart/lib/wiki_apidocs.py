@@ -126,8 +126,10 @@ def wiki_properties_for_type(t):
 
         elif type(c) is OWL_DataProperty:
             avf = filter(lambda x: x.all_values_from, c.restrictions)
-            if len(avf) >0: d = str(avf[0].all_values_from.uri)
-            else: d =  '['+str(rdfs.Literal)+' &#91;'+m.normalizeUri(rdfs.Literal)+'&#93;]'
+            if len(avf) >0:
+              u = avf[0].all_values_from.uri
+              d = '&#91;['+str(u)+' '+m.normalizeUri(u)+']&#93;'
+            else: d =  '&#91;['+str(rdfs.Literal)+' '+m.normalizeUri(rdfs.Literal)+']&#93;'
             desc += " "+ d
             
         cardinality = cardinalities[c.cardinality_string]
