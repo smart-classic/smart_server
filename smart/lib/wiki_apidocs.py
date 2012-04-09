@@ -10,6 +10,7 @@ import copy
 stdout = sys.stdout
 sys.stdout = sys.stderr
 from smart.client.common.rdf_ontology import *
+from smart.client.common.util import bound_graph, URIRef
 sys.stdout = stdout
 
 def strip_smart(s):
@@ -35,7 +36,7 @@ def type_start(t):
 
     if t.equivalent_classes:
         ec = filter(lambda x: x.one_of, t.equivalent_classes)
-        print "''Constrained to one of:'' \n<pre>"
+        print "''Constrained to one of:'' \n<pre class='code'>"
         for member in [x for c in ec for x in c.one_of]:
             ts  = filter(lambda x: x != owl.NamedIndividual, member.type)
             identifier = split_uri(member.uri)
@@ -54,17 +55,16 @@ def type_start(t):
 
 
 def properties_start(type):
-    print """{| style="table-layout: fixed; width: 50em; word-wrap: break-word;"
+    print """{| class='datamodel'
               |+ align="bottom" |''%s Properties''
               |-""" % (type)
 
 
 def properties_row(property, name,card, description, required_p):
-    # card = "{{nobr|" + card + "}}"
     if required_p:
-      print "|width='26%%'|'''%s'''<br /><small>%s</small>\n|<small>%s</small>\n|%s\n|-"%(property, card, name, description)
+      print "|width='30%%'|'''%s'''<br /><small>%s</small>\n|width='20%%'|<small>&#91;%s&#93;</small>\n|width='50%%'|%s\n|-"%(property, card, name, description)
     else:
-      print "|width='26%%'|%s<br /><small>%s</small>\n|<small>%s</small>\n|%s\n|-"%(property, card, name, description)
+      print "|width='30%%'|%s<br /><small>%s</small>\n|width='20%%'|<small>&#91;%s&#93;</small>\n|width='50%%'|%s\n|-"%(property, card, name, description)
 
 def properties_end():
     print """|}"""
@@ -102,6 +102,9 @@ def wiki_properties_for_type(t):
     for c in sorted(t.object_properties + t.data_properties, key=lambda r: str(r.uri)):
         name = type_name_string(c)
         desc = c.description
+        m = bound_graph().namespace_manager
+        uri = '['+str(t.uri)+' '+m.normalizeUri(t.uri)+']'
+
         if type(c) is OWL_ObjectProperty:
             is_code = sp.Code in [p.uri for p in c.to_class.parents] and " code" or ""
             targetname = type_name_string(c.to_class)+ is_code
@@ -124,14 +127,15 @@ def wiki_properties_for_type(t):
         elif type(c) is OWL_DataProperty:
             avf = filter(lambda x: x.all_values_from, c.restrictions)
             if len(avf) >0: d = str(avf[0].all_values_from.uri)
-            else: d = str(rdfs.Literal)
+            else: d =  '['+str(rdfs.Literal)+' &#91;'+m.normalizeUri(rdfs.Literal)+'&#93;]'
             desc += " "+ d
+            
         cardinality = cardinalities[c.cardinality_string]
         required_p = False
         if c.cardinality_string[0] == '1':
           required_p = True
-
-        properties_row(name, c.uri.n3(), cardinality, desc, required_p)
+          
+        properties_row(name, uri, cardinality, desc, required_p)
     properties_end()
     
 def wiki_api_for_type(t, calls_for_t):
