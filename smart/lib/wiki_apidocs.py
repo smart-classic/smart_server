@@ -1,3 +1,10 @@
+# how to run
+# from smart_server dir
+# (bash) export PYTHONPATH=.:..
+# python smart/lib/wiki_apidocs.py payload > payload
+# or
+# python smart/lib/wiki_apidocs.py api > api
+
 import sys
 import copy
 stdout = sys.stdout
@@ -21,7 +28,7 @@ def type_start(t):
         print "%s is a subtype of and inherits properties from:"%type_name_string(t)
         parents = []
         for p in sorted(t.parents, key=lambda x: type_name_string(x)):
-            parents.append("[[#%s RDF| %s]] "%( type_name_string(p),type_name_string(p)))
+            parents.append("[[#%s RDF| %s]]"%( type_name_string(p),type_name_string(p)))
         print ", ".join(parents)
         print "\n" 
     if description: print "%s"%description+"\n"
@@ -43,18 +50,21 @@ def type_start(t):
         print "</pre>"
 
     if example:
-        print "<pre>%s</pre>\n"%example
+        print "<pre class='code'>%s</pre>\n"%example
 
 
 def properties_start(type):
-    print """'''%s Properties'''\n{| border="1" cellpadding="20" cellspacing="0"
-|+ align="bottom" style="color:#e76700;" |''%s Properties''
-|-""" % (type, type)
+    print """{| style="table-layout: fixed; width: 50em; word-wrap: break-word;"
+              |+ align="bottom" |''%s Properties''
+              |-""" % (type)
 
 
-def properties_row(property, name,card, description):
-    card = "{{nobr|" + card + "}}"
-    print "|%s\n|%s\n|%s\n|%s\n|-"%(property,name, card,description)
+def properties_row(property, name,card, description, required_p):
+    # card = "{{nobr|" + card + "}}"
+    if required_p:
+      print "|width='26%%'|'''%s'''<br /><small>%s</small>\n|<small>%s</small>\n|%s\n|-"%(property, card, name, description)
+    else:
+      print "|width='26%%'|%s<br /><small>%s</small>\n|<small>%s</small>\n|%s\n|-"%(property, card, name, description)
 
 def properties_end():
     print """|}"""
@@ -80,10 +90,10 @@ def wiki_payload_for_type(t):
     type_start(t)    
     wiki_properties_for_type(t)
 
-cardinalities  = {"0 - 1": "Optional (0 or 1)", 
-                  "0 - Many": "Optional (0 or more)", 
-                  "1": "Required (exactly 1)", 
-                  "1 - Many": "Required (1 or more)"}
+cardinalities  = {"0 - 1": "Optional: 0 or 1", 
+                  "0 - Many": "Optional: 0 or more", 
+                  "1": "Required: exactly 1", 
+                  "1 - Many": "Required: 1 or more"}
     
 def wiki_properties_for_type(t):
     if len(t.object_properties) + len(t.data_properties) == 0:
@@ -96,17 +106,17 @@ def wiki_properties_for_type(t):
             is_code = sp.Code in [p.uri for p in c.to_class.parents] and " code" or ""
             targetname = type_name_string(c.to_class)+ is_code
 
-            desc = "'''%s'''[[#%s RDF | (details...)]]"%(targetname, targetname)
+            desc = "[[#%s RDF | %s]]"%(targetname, targetname)
             further = filter(lambda x: isinstance(x.all_values_from, OWL_Restriction), c.restrictions)
             for f in further:
                 p = split_uri(str(f.all_values_from.on_property))
                 avf = f.all_values_from
                 if avf.has_value:
-                    desc += "\n''where'' '''"+ p +   "''' has value: '''%s'''"%avf.has_value
+                    desc += "where "+ p +   " has value: %s"%avf.has_value
                 else:
                     pc = avf.all_values_from
                     pc = type_name_string(pc)
-                    desc += "\n''where'' '''"+ p +   "''' comes from '''%s''' [[#%s code RDF | (details...)]]"%(pc,pc)
+                    desc += " where "+ p +   " comes from [[#%s code RDF | %s]]"%(pc,pc)
 
             if c.description:
                 desc += "\n\n" + c.description
@@ -117,8 +127,11 @@ def wiki_properties_for_type(t):
             else: d = str(rdfs.Literal)
             desc += " "+ d
         cardinality = cardinalities[c.cardinality_string]
+        required_p = False
+        if c.cardinality_string[0] == '1':
+          required_p = True
 
-        properties_row(name, c.uri.n3(), cardinality, desc)
+        properties_row(name, c.uri.n3(), cardinality, desc, required_p)
     properties_end()
     
 def wiki_api_for_type(t, calls_for_t):
