@@ -2,6 +2,7 @@
 
 import sys
 import os
+import platform
 import re
 import imp
 import subprocess
@@ -26,7 +27,12 @@ def get_input(p, d):
 
 def do_sed(t,n,v):
     v =  re.sub("/", r'\/', v)
-    c = "sed -i -e's/%s/%s/' %s" % (n, v, t)
+
+    if platform.system() == 'Darwin':
+      c = "sed -i '' -e's/%s/%s/' %s" % (n, v, t)
+    else:
+      c = "sed -i -e's/%s/%s/' %s" % (n, v, t)
+
     o, s = call_command(c)
     print o, s
     return o
