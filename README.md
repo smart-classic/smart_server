@@ -87,15 +87,15 @@ This should be the second uncommented line in your default config. Change <tt>id
 * get Tomcat and OpenRDF-Sesame:
 <pre>
  sudo apt-get install tomcat7
- wget http://downloads.sourceforge.net/project/sesame/Sesame%202/2.5.1/openrdf-sesame-2.5.1-sdk.tar.gz
+ wget http://downloads.sourceforge.net/project/sesame/Sesame%202/2.6.5/openrdf-sesame-2.6.5-sdk.tar.gz
 </pre>
 
 * install OpenRDF Sesame as a Tomcat web application
 <pre>
- tar -xzvf openrdf-sesame-2.5.1-sdk.tar.gz
+ tar -xzvf openrdf-sesame-2.6.5-sdk.tar.gz
  sudo mkdir /usr/share/tomcat7/.aduna
  sudo chown tomcat7.tomcat7 /usr/share/tomcat7/.aduna/
- sudo cp -r openrdf-sesame-2.5.1/war/* /var/lib/tomcat7/webapps/
+ sudo cp -r openrdf-sesame-2.6.5/war/* /var/lib/tomcat7/webapps/
 </pre>
 
 * restart Tomcat (optional since autoDeploy is typically enabled in Tomcat by default)
