@@ -224,8 +224,10 @@ PREFIX  sp:  <http://smartplatforms.org/terms#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 CONSTRUCT {?person rdf:type sp:Demographics} 
 WHERE   {
+graph ?g {
 ?person rdf:type sp:Demographics. 
 $statements
+}
 }
 order by ?ln""")
 

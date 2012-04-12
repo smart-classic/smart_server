@@ -198,6 +198,10 @@ def url_request_execute(req):
         conn.close()
         return True
     else:
+        print r.status
+        print r.getheaders()
+        print r.read()
+
         raise URLFetchException(r.status, r.read())
 
 def rdf_response(s):

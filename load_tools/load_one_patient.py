@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
-from smart.models.rdf_store import TemporaryStoreConnector, RecordStoreConnector
+from smart.triplestore import TripleStore 
 from smart.models.record_object import api_types, Record, RecordObject
-from smart.client.common.util import parse_rdf, serialize_rdf, remap_node, bound_graph, URIRef, BNode, sp
+from smart.client.common.util import parse_rdf, serialize_rdf, remap_node, bound_graph, URIRef, Literal, BNode, sp, rdf
 from django.conf import settings
 import sys
 
@@ -23,27 +23,56 @@ class RecordImporter(object):
 
         # 1. For each known data type, extract relevant nodes
         var_bindings = {'record_id': self.target_id}
-        ro = RecordObject[sp.Statement]    
-        ro.prepare_graph(self.data, None, var_bindings)
-            
+        self.ro = RecordObject[sp.Statement]    
+        self.ro.prepare_graph(self.data, None, var_bindings)
+        print "Default context", len(self.data.default_context)
+        
+        record_node = list(self.data.triples((None, rdf.type, sp.MedicalRecord)))
+        assert len(record_node) == 1, "Found statements about >1 patient in file: %s" % record_node
+        record_node = record_node[0][0]
+        self.record_node = record_node
+        self.segregate_nodes(record_node, record_node)
+        self.data.remove_context(self.data.default_context)
+
         # 2. Copy extracted nodes to permanent RDF store
         self.write_to_record()
-     
+        print self.data.default_context.identifier.n3()
+            
+    def segregate_nodes(self, r, context):
+
+        # Recursion base case:  we've already started evaluating
+        # this node as a root before --> don't evaluate it again!
+        if r==context and len(self.data.get_context(context)) >0:
+            return
+
+        nodes_to_recurse = {}
+        for s,p,o in self.data.triples((r, None, None)):
+            self.data.get_context(context).add((s,p,o))
+            
+            if type(o) == Literal:
+                continue
+
+            nodes_to_recurse[o] = o
+            if not self.ro.statement_type(self.data, o):
+                nodes_to_recurse[o] = context
+           
+        for node, context in nodes_to_recurse.iteritems():
+            self.segregate_nodes(node, context)
+
+        return
+
     def write_to_record(self):
+            rconn =TripleStore()
+            rconn.transaction_begin() 
             r, created = Record.objects.get_or_create(id=self.target_id)
-            rconn = RecordStoreConnector(r)
-            if not created:
-                print "DESTROYING existing record"
-                rconn.destroy_triples()
-                
-            self.add_all(rconn, self.data)
-            print "adds: ",len(rconn.pending_adds)
-            rconn.execute_transaction()
-        
-    @staticmethod
-    def add_all(connector, model):
-        for a in model:
-            connector.pending_adds.append(a)
+            print "Wiping record", self.record_node.n3()
+            rconn.destroy_context_and_neighbors(self.record_node)
+
+            # TODO:  clear any elements in this record that may still exist
+            rconn.replace_conjunctive_graph(self.data)
+
+            print "adds: ",len(self.data)
+            rconn.transaction_commit() 
 
 if __name__ == "__main__":
     import string

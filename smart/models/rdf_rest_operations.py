@@ -1,37 +1,31 @@
-from smart.models.rdf_store import *
+from smart.triplestore import *
 from smart.models.records import *
 from smart.lib.utils import *
-
+from smart.client.common.util import URIRef, bound_graph
+from string import Template
 import re
 
 def record_get_object(request, record_id, obj,  **kwargs):
-    c = RecordStoreConnector(Record.objects.get(id=record_id))
-    id = smart_path(request.path)                
-    if ('external_id' in kwargs):
-        id = obj.internal_id(c, kwargs['external_id'])
-        assert (id != None), "No %s was found with external_id %s"%(obj.type, kwargs['external_id'])
-    
-    return rdf_get(c, obj.query_one("<%s>"%id.encode()))
+    c = RecordTripleStore(Record.objects.get(id=record_id))
+    item_id = URIRef(smart_path(request.path))
+    return rdf_response(c.get_objects(obj, [item_id]))
 
 def record_delete_object(request,  record_id, obj, **kwargs):
-    c = RecordStoreConnector(Record.objects.get(id=record_id))
+    c = RecordTripleStore(Record.objects.get(id=record_id))
     id = smart_path(request.path)                
-    if ('external_id' in kwargs):            
-        id = obj.internal_id(c, kwargs['external_id'])
-        assert (id != None), "No %s was found with external_id %s"%(obj.type, kwargs['external_id'])
-    return rdf_delete(c, obj.query_one("<%s>"%id.encode()))
+    return rdf_delete(c, get_statements_by_context(bindings=["<%s>"%id.encode()]))
 
 def record_get_all_objects(request, record_id, obj, **kwargs):
-    c = RecordStoreConnector(Record.objects.get(id=record_id))
-    return rdf_get(c, obj.query_all())
+    c = RecordTripleStore(Record.objects.get(id=record_id))
+    return rdf_response(c.get_objects(obj))
 
 def record_delete_all_objects(request, record_id, obj, **kwargs):
     
-    c = RecordStoreConnector(Record.objects.get(id=record_id))
-    return rdf_delete(c, obj.query_all())
+    c = RecordTripleStore(Record.objects.get(id=record_id))
+    return rdf_delete(c, obj.query(patient=c.patient))
 
 def record_post_objects(request, record_id, obj,  **kwargs):
-    c = RecordStoreConnector(Record.objects.get(id=record_id))
+    c = RecordTripleStore(Record.objects.get(id=record_id))
     path = smart_path(request.path)
 
     g = parse_rdf(request.raw_post_data)

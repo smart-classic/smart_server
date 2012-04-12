@@ -236,6 +236,11 @@ def main():
             print "yes standalone"
             fill_field('smart_server/settings.py', 'use_proxy', 'False')
 
+        fill_field('smart_server/settings.py', 'triplestore_engine', 'sesame')
+
+        fill_field('smart_server/settings.py', 'triplestore_endpoint',
+                'http://localhost:8080/openrdf-sesame/repositories/record_rdf')
+
     if args.run_app_server or args.run_api_servers:
         args.kill_servers = True
         server_settings = imp.load_source("settings", "smart_server/settings.py")
