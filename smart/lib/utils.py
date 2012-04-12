@@ -10,7 +10,6 @@ from django.template import Context, loader
 from django.conf import settings
 from django import http
 from django.utils import simplejson
-from xml.dom import minidom
 from oauth.oauth import HTTPRequest
 try:
   from django.forms.fields import email_re
