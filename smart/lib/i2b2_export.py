@@ -1,5 +1,4 @@
 from xml.dom import minidom
-import libxml2, libxslt
 from django.conf import settings
 import django.core.mail as mail
 import logging

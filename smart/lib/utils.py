@@ -10,8 +10,6 @@ from django.template import Context, loader
 from django.conf import settings
 from django import http
 from django.utils import simplejson
-from xml.dom import minidom
-import libxml2, libxslt
 from oauth.oauth import HTTPRequest
 try:
   from django.forms.fields import email_re
@@ -136,10 +134,6 @@ def django_json(func):
     return x_domain(HttpResponse(simplejson.dumps(return_value), mimetype='text/plain'))
   functools.update_wrapper(func_with_json_conversion, func)
   return func_with_json_conversion
-
-def apply_xslt(sourceDOM, stylesheetDOM):
-    style = libxslt.parseStylesheetDoc(stylesheetDOM)
-    return style.applyStylesheet(sourceDOM, None).serialize()
 
 def smart_path(path):
     ret = settings.SITE_URL_PREFIX + path

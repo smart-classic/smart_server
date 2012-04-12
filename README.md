@@ -24,9 +24,9 @@ These instructions apply to each of three github repositories that you'll need i
     sudo apt-get update
 </pre>
 
-* Python 2.7 with package <tt>psycopg2</tt> and <tt>libxslt1</tt>
+* Python 2.7 with package <tt>psycopg2</tt>
 <pre>
-    sudo apt-get install python-psycopg2 python-libxslt1 python-m2crypto python-simplejson python-argparse python-setuptools python-pyparsing
+    sudo apt-get install python-psycopg2 python-m2crypto python-simplejson python-argparse python-setuptools python-pyparsing
 
     sudo easy_install -U "rdflib>=3.0.0"  rdfextras
 </pre>
