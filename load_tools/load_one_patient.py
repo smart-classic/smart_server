@@ -30,36 +30,15 @@ class RecordImporter(object):
         record_node = list(self.data.triples((None, rdf.type, sp.MedicalRecord)))
         assert len(record_node) == 1, "Found statements about >1 patient in file: %s" % record_node
         record_node = record_node[0][0]
+
         self.record_node = record_node
-        self.segregate_nodes(record_node, record_node)
+        self.ro.segregate_nodes(self.data, record_node)
         self.data.remove_context(self.data.default_context)
 
         # 2. Copy extracted nodes to permanent RDF store
         self.write_to_record()
         print self.data.default_context.identifier.n3()
             
-    def segregate_nodes(self, r, context):
-
-        # Recursion base case:  we've already started evaluating
-        # this node as a root before --> don't evaluate it again!
-        if r==context and len(self.data.get_context(context)) >0:
-            return
-
-        nodes_to_recurse = {}
-        for s,p,o in self.data.triples((r, None, None)):
-            self.data.get_context(context).add((s,p,o))
-            
-            if type(o) == Literal:
-                continue
-
-            nodes_to_recurse[o] = o
-            if not self.ro.statement_type(self.data, o):
-                nodes_to_recurse[o] = context
-           
-        for node, context in nodes_to_recurse.iteritems():
-            self.segregate_nodes(node, context)
-
-        return
 
     def write_to_record(self):
             rconn =TripleStore()

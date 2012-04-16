@@ -10,6 +10,7 @@ import logging
 import argparse
 import string
 import urlparse
+import django
 
 from random import choice
 
@@ -113,6 +114,10 @@ def main():
     args = parser.parse_args()
     repos = ["smart_server", "smart_ui_server", "smart_sample_patients", "smart_sample_apps"]
 
+    reloadflag = ""
+    if django.VERSION[:3] <= (1,3,0):
+        reloadflag = " --noreload "
+
     if args.branch_dev:
         args.using_branch = "dev"
     if args.using_branch:
@@ -145,6 +150,7 @@ def main():
     if args.clone_git:
         if not args.using_branch:
             args.using_branch = "master"
+
         print "Cloning (4) SMART git repositories..."
         for r in repos:
             call_command("git clone --recursive https://github.com/chb/"+r+".git", 
@@ -155,8 +161,10 @@ def main():
 
     if args.update_git:
         for r in repos:
+
             if args.using_branch:
                 call_command("cd "+r+"; git checkout "+args.using_branch+"; cd ..")
+
             call_command("cd "+r+"; " +
                      "git pull; " +
                      "git submodule init; " +
@@ -266,14 +274,15 @@ def main():
     if args.run_app_server:
         port = get_port(app_server)
         print "port:", port
-        call_command("cd smart_sample_apps && python manage.py runconcurrentserver 0.0.0.0:%s &"%port, 
+        call_command("cd smart_sample_apps && python manage.py runconcurrentserver %s 0.0.0.0:%s &"%(reloadflag, port), 
                      print_output=True)
+        call_command("sleep 3")
 
         print "App Server running."
 
     if args.reset_servers:
         print "Resetting the SMART server..."
-        print "Note: Enter the SMART databse password when prompted (3 times)."
+        print "Note: Enter the SMART databse password when prompted (2 times)."
         print "      It is 'smart' by default."
         call_command("cd smart_server && "+
                      "sh ./reset.sh;"+
@@ -307,15 +316,15 @@ def main():
 
         port = get_port(api_server)
         print "port:", port
-        call_command("cd smart_server && python manage.py runconcurrentserver 0.0.0.0:%s &"%port, 
+        call_command("cd smart_server && python manage.py runconcurrentserver %s 0.0.0.0:%s &"%(reloadflag, port), 
                      print_output=True)
-
         print "API Servers running."
 
         port = get_port(ui_server)
         print "port:", port
-        call_command("cd smart_ui_server && python manage.py runconcurrentserver 0.0.0.0:%s &"%port, 
+        call_command("cd smart_ui_server && python manage.py runconcurrentserver %s 0.0.0.0:%s &"%(reloadflag, port), 
                      print_output=True)
+        call_command("sleep 3")
 
 def get_port(url):
     server = urlparse.urlparse(url)

@@ -136,6 +136,32 @@ class RecordObject(object):
             g.add((recordURI, sp.hasStatement, n))
             g.add((recordURI, rdf.type, sp.MedicalRecord))
 
+    def segregate_nodes(self, data, r, context=None):
+
+        if context==None:
+            context = r
+
+        # Recursion base case:  we've already started evaluating
+        # this node as a root before --> don't evaluate it again!
+        if r==context and len(data.get_context(context)) >0:
+            return
+
+        nodes_to_recurse = {}
+        for s,p,o in data.triples((r, None, None)):
+            data.get_context(context).add((s,p,o))
+            
+            if type(o) == Literal:
+                continue
+
+            nodes_to_recurse[o] = o
+            if not self.statement_type(data, o):
+                nodes_to_recurse[o] = context
+           
+        for node, context in nodes_to_recurse.iteritems():
+            self.segregate_nodes(data, node, context)
+
+        return
+
     def prepare_graph(self, g, c, var_bindings=None):
         new_uris = self.generate_uris(g, c, var_bindings)
         self.attach_statements_to_record(g, new_uris, var_bindings)
