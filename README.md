@@ -133,7 +133,7 @@ At this point you are ready to install the SMART server components. There are tw
 command above and pass the `-d` flag to `smart_manager.py`.  If you're unsure, you probably want to stick with the
 master branch!)
 
-## `smart_manager.py` usage examples
+## Usage examples for smart_manager.py
 
 Kill and restart the development servers
 
