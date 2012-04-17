@@ -1,14 +1,46 @@
+[
 {
-"app_list" : 
- {
-   "http://localhost:8001/framework/med_calendar/smart_manifest.json" :  {"enabled_by_default": false},
-   "http://localhost:8001/framework/med_list/smart_manifest.json" :  {"enabled_by_default": true},
-   "http://localhost:8001/framework/med_adherence/smart_manifest.json" :  {"enabled_by_default": false},
-   "http://localhost:8001/framework/problem_list/smart_manifest.json" :  {"enabled_by_default": true},
-   "http://localhost:8001/framework/got_statins/smart_manifest.json" : {"enabled_by_default": false},
-   "http://localhost:8001/framework/background_app/smart_manifest.json" :  {"enabled_by_default": false, "admin_p": true},
-   "http://localhost:8001/framework/api_playground/smart_manifest.json" : {"enabled_by_default": true},
-   "http://localhost:8001/framework/cardio_risk_viz/smart_manifest.json" : {"enabled_by_default": false},
-   "http://localhost:8001/framework/bp_centiles/smart_manifest.json" : {"enabled_by_default": false}
- }
+    "manifest":"http://localhost:8001/framework/bp_centiles/smart_manifest.json",
+    "override_index": "http://localhost:8001/framework/bp_centiles/index.html",
+    "override_icon": "http://localhost:8001/framework/bp_centiles/icon.png",
+    "enabled_by_default": true
+}, {
+    "manifest":"http://localhost:8001/framework/cardio_risk_viz/smart_manifest.json",
+    "override_index": "http://localhost:8001/framework/cardio_risk_viz/index.html",
+    "override_icon": "http://localhost:8001/framework/cardio_risk_viz/icon.png",
+    "enabled_by_default": true
+}, {
+    "manifest":"http://localhost:8001/framework/api_playground/smart_manifest.json",
+    "override_index": "http://localhost:8001/framework/api_playground/index.html",
+    "override_icon": "http://localhost:8001/framework/api_playground/icon.png",
+    "enabled_by_default": true
+}, {
+    "manifest":"http://localhost:8001/framework/background_app/smart_manifest.json",
+    "enabled_by_default": false 
+}, {
+    "manifest":"http://localhost:8001/framework/got_statins/smart_manifest.json",
+    "override_index": "http://localhost:8001/framework/got_statins/index.html",
+    "override_icon": "http://localhost:8001/framework/got_statins/icon.png",
+    "enabled_by_default": false 
+}, {
+    "manifest":"http://localhost:8001/framework/problem_list/smart_manifest.json",
+    "override_index": "http://localhost:8001/framework/problem_list/index.html",
+    "override_icon": "http://localhost:8001/framework/problem_list/icon.png",
+    "enabled_by_default": true
+}, {
+    "manifest":"http://localhost:8001/framework/med_adherence/smart_manifest.json",
+    "override_index": "http://localhost:8001/framework/med_adherence/index.html",
+    "override_icon": "http://localhost:8001/framework/med_adherence/icon.png",
+    "enabled_by_default": false 
+}, {
+    "manifest":"http://localhost:8001/framework/med_list/smart_manifest.json",
+    "override_index": "http://localhost:8001/framework/med_list/index.html",
+    "override_icon": "http://localhost:8001/framework/med_list/icon.png",
+    "enabled_by_default": true
+}, {
+    "manifest":"http://localhost:8001/framework/med_calendar/smart_manifest.json",
+    "override_index": "http://localhost:8001/framework/med_calendar/index.html",
+    "override_icon": "http://localhost:8001/framework/med_calendar/icon.png",
+    "enabled_by_default": false 
 }
+]

@@ -276,7 +276,7 @@ def main():
         print "port:", port
         call_command("cd smart_sample_apps && python manage.py runconcurrentserver %s 0.0.0.0:%s &"%(reloadflag, port), 
                      print_output=True)
-        call_command("sleep 3")
+        call_command("sleep 2")
 
         print "App Server running."
 
@@ -324,7 +324,7 @@ def main():
         print "port:", port
         call_command("cd smart_ui_server && python manage.py runconcurrentserver %s 0.0.0.0:%s &"%(reloadflag, port), 
                      print_output=True)
-        call_command("sleep 3")
+        call_command("sleep 2")
 
 def get_port(url):
     server = urlparse.urlparse(url)
