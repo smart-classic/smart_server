@@ -21,7 +21,13 @@ def check_frame_mode_wrapper(token):
     def r(request, view_func, view_args, view_kwargs):
         return pha.mode == "frame_ui"
     return r
-
+    
+def check_token_for_account_app_wrapper(token):
+        def check_token_for_account_app(request, view_func, view_args, view_kwargs):
+            pha = PHA.objects.get(id=token.share.with_app.id)
+            acc = Account.objects.get(id=token.share.authorized_by.id)
+            return pha.email == view_kwargs['pha_email'] and acc.email == view_kwargs['account_email']
+        return check_token_for_account_app
 
 def grant(accesstoken, permset):
     """
@@ -41,8 +47,6 @@ def grant(accesstoken, permset):
     permset.grant(record_get_all_objects, [check_token_for_record])
 
     permset.grant(record_get_object, [check_token_for_record])
-
-    permset.grant(record_get_filtered_labs, [check_token_for_record])
     permset.grant(record_get_allergies, [check_token_for_record])
 
     try:
@@ -58,6 +62,11 @@ def grant(accesstoken, permset):
 
     check_frame_mode = check_frame_mode_wrapper(accesstoken)
     permset.grant(resolve_activity_with_app, [])
-    permset.grant(resolve_manifest, [check_frame_mode])
-    permset.grant(all_manifests, [check_frame_mode])
+    permset.grant(resolve_manifest, [])
+    permset.grant(all_manifests, [])
     permset.grant(record_search, [check_frame_mode])
+
+    check_token_for_account_app = check_token_for_account_app_wrapper(accesstoken)
+    permset.grant(preferences_get, [check_token_for_account_app])
+    permset.grant(preferences_put, [check_token_for_account_app])
+    permset.grant(preferences_delete, [check_token_for_account_app])

@@ -10,4 +10,4 @@ from accounts import *
 from apps import *
 from records import *
 from shares import *
-from rdf_store import *
+from preferences import *

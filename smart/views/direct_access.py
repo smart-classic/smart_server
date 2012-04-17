@@ -15,7 +15,7 @@ Josh Mandel
 from base import *
 from smart.lib import utils
 from django.core.exceptions import PermissionDenied
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseForbidden
 from django.conf import settings
 from smart.models import *
 import datetime
@@ -71,7 +71,7 @@ def session_from_direct_url(request):
 
     # TODO: move this to security function on chrome consumer
     if (datetime.datetime.utcnow() > login_token.expires_at):
-        raise Exception("Expired token %s"%t)
+        return HttpResponseForbidden("Expired token %s"%token)
     
     session_token = SESSION_OAUTH_SERVER.generate_and_preauthorize_access_token(request.principal, user=login_token.account)
     session_token.save()

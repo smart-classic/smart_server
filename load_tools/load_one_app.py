@@ -2,6 +2,7 @@
 
 from django.conf import settings
 from smart.models import *
+from smart.lib.utils import get_capabilities
 from string import Template
 import re
 import sys
@@ -13,31 +14,35 @@ import urllib2
 def sub(str, var, val):
     return str.replace("{%s}"%var, val)
 
-def LoadApp(app, enabled_by_default=False):
+def LoadApp(app_params):
     # Some basic apps and a couple of accounts to get things going.
+  app = app_params["manifest"]
   print app
   if not app.startswith("http"):
       s = open(app)
-      base_url = None
   else:
-      base_url = re.search("https?://.*?[/$]", app).group()[:-1]
       s = urllib2.urlopen(app)
 
   manifest_string = s.read()
   s.close() 
-  LoadAppFromJSON(manifest_string, enabled_by_default, base_url)
-
-def LoadAppFromJSON(manifest_string, enabled_by_default, base_url=None):
-  r = simplejson.loads(manifest_string)
-  if base_url == None:
-      try:
-          base_url = r["base_url"]
-      except:
-          base_url = "unknown"
+  LoadAppFromJSON(manifest_string, app_params)
   
-  manifest_string = manifest_string.replace("{base_url}", base_url)
+def LoadAppFromJSON(manifest_string, app_params):
+  r = simplejson.loads(manifest_string)
 
-  if r["mode"] == "background" or r["mode"] == "helper":
+  if "override_index" in app_params:
+      r["index"] = app_params["override_index"]
+
+  if "override_icon" in app_params:
+      r["icon"] = app_params["override_icon"]
+
+  enabled_by_default = False
+  if "enabled_by_default" in app_params:
+      enabled_by_default = app_params["enabled_by_default"]
+
+  manifest_string = json.dumps(r, sort_keys=True, indent=4)
+
+  if r["mode"] in ("background", "helper"):
       a = HelperApp.objects.create(
                        description = r["description"],
                        consumer_key = r["id"],
@@ -46,7 +51,7 @@ def LoadAppFromJSON(manifest_string, enabled_by_default, base_url=None):
                        email=r["id"],
                        manifest=manifest_string)
       
-  elif r["mode"] == "ui" or r["mode"] == "frame_ui":
+  elif r["mode"] in ("ui", "frame_ui"):
 
       if "optimalBrowserEnvironments" not in r:
           r["optimalBrowserEnvironments"] = ["desktop"]
@@ -67,25 +72,32 @@ def LoadAppFromJSON(manifest_string, enabled_by_default, base_url=None):
                        name =r["name"],
                        email=r["id"],
                        mode=r["mode"],
-                       icon_url=sub(r["icon"], "base_url", base_url),
+                       icon_url=r["icon"],
                        enabled_by_default=enabled_by_default,
                        optimal_environments=",".join(r["optimalBrowserEnvironments"]),
                        supported_environments=",".join(r["supportedBrowserEnvironments"]),
                        manifest=manifest_string)
   else: a = None
 
-  if "index" in r.keys():
+  if "index" in r:
       act_name = "main"
       act_url  = r["index"]
       AppActivity.objects.create(app=a, name=act_name, url=act_url)
   
-      if "intents" in r.keys():
-          for k in r["intents"]:
-              AppActivity.objects.create(app=a, name=k, url=act_url)
+  if "requires" in r:  
+    capabilities = get_capabilities()
+    for k in r["requires"]:
+        for m in r["requires"][k]["methods"]:
+            if m not in capabilities[k]["methods"]:
+                print "WARNING! This app requires an unsupported method:", k, m
+                
+  if "smart_version" in r:  
+    if r["smart_version"] != settings.VERSION:
+        print "WARNING! This app requires SMART version", r["smart_version"]
 
-  if "web_hooks" in r.keys():
+  if "web_hooks" in r:
     for (hook_name, hook_data) in r["web_hooks"].iteritems():
-      hook_url = sub(hook_data["url"], "base_url", base_url)
+      hook_url = hook_data["url"]
 
       try: rpc = hook_data['requires_patient_context']
       except: rpc = False
@@ -99,5 +111,10 @@ if __name__ == "__main__":
     import string
     for v in sys.argv[1:]:
         print "Loading app: %s"%v
-        LoadApp(v)
+
+        app_params = {
+            "manifest": v        
+        }
+
+        LoadApp(app_params)
 

@@ -1,6 +1,9 @@
 import os
 # Django settings for smart project.
 
+# SMART version identifier
+VERSION = '0.4'
+
 # base URL for the app
 APP_HOME = '{{path_to_smart_server}}'
 
@@ -10,13 +13,19 @@ SITE_URL_PREFIX = '{{api_server_base_url}}' # e.g. http://localhost:7000
 CHROME_CONSUMER='{{chrome_consumer}}'
 CHROME_SECRET='{{chrome_secret}}'
 
-
 # SMART UI Server base URL
 SMART_UI_SERVER_LOCATION = '{{ui_server_base_url}}' # e.g. http://localhost:7001
 
 PLUGIN_USE_PROXY = {{use_proxy}} # Enable PROXY_MODE: True or False
 PROXY_USER_ID = '{{proxy_user_email}}' # only needed if running in PROXY MODE
 PROXY_BASE = '{{proxy_base_url}}' # only needed if running in PROXY MODE
+
+TRIPLESTORE = {
+        'engine': '{{triplestore_engine}}',
+        'record_endpoint': '{{triplestore_endpoint}}',
+        'username': '{{triplestore_username}}',
+        'password': '{{triplestore_password}}'
+        }
 
 ONTOLOGY_FILE = os.path.join(APP_HOME, "smart/document_processing/schema/smart.owl")
 
@@ -32,17 +41,12 @@ MANAGERS = ADMINS
 EMAIL_SUPPORT_NAME = "E-mail Support"
 EMAIL_SUPPORT_ADDRESS = "e-mail-support-address@host.com"
 
-RECORD_SPARQL_ENDPOINT = 'http://localhost:8080/openrdf-sesame/repositories/record_rdf'
-TEMP_SPARQL_ENDPOINT = 'http://localhost:8080/openrdf-sesame/repositories/temp_rdf'
-PHA_SPARQL_ENDPOINT = 'http://localhost:8080/openrdf-sesame/repositories/pha_rdf'
-
 DATABASE_ENGINE = 'postgresql_psycopg2'           # 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
 DATABASE_NAME = 'smart'             # Or path to database file if using sqlite3.
 DATABASE_USER = 'smart'             # Not used with sqlite3.
 DATABASE_PASSWORD = 'smart'         # Not used with sqlite3.
 DATABASE_HOST = ''             # Set to empty string for localhost. Not used with sqlite3.
 DATABASE_PORT = ''             # Set to empty string for default. Not used with sqlite3.
-DATABASE_RXN = 'rxnorm'
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -109,9 +113,7 @@ INSTALLED_APPS = (
     'django.contrib.contenttypes',
     'django.contrib.sites',
     'django.contrib.admin',
-    'smart_server.smart',
-    'smart_server.codingsystems',
-    'smart_server.structured_product_label'
+    'smart_server.smart'
 )
 
 # FIXME: still necessary?

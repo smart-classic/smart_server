@@ -10,14 +10,13 @@ from django.template import Context, loader
 from django.conf import settings
 from django import http
 from django.utils import simplejson
-from xml.dom import minidom
-import libxml2, libxslt
 from oauth.oauth import HTTPRequest
 try:
   from django.forms.fields import email_re
 except:
   from django.core.validators import email_re
 from smart.client.common.util import parse_rdf, serialize_rdf, bound_graph
+from smart.client.common import rdf_ontology
 import django.core.mail as mail
 import logging
 import string, random, re
@@ -26,6 +25,7 @@ import psycopg2
 import psycopg2.extras
 import httplib
 import time
+import django
 
 smart_base = "http://smartplatforms.org"
 
@@ -110,6 +110,22 @@ def get_content_type(request):
   if not content_type and request.META.has_key('HTTP_CONTENT_TYPE'):
     content_type = request.META['HTTP_CONTENT_TYPE']
   return content_type
+  
+def get_capabilities ():
+    capabilities = {}
+
+    for t in rdf_ontology.api_calls:
+
+        target = str(t.target)
+        method = str(t.method)
+
+        if target not in capabilities.keys():
+            capabilities[target] = {"methods": []}
+            
+        if method not in capabilities[target]["methods"]:
+            capabilities[target]["methods"].append(method)
+            
+    return capabilities
 
 # some decorators to make life easier
 def django_json(func):
@@ -118,10 +134,6 @@ def django_json(func):
     return x_domain(HttpResponse(simplejson.dumps(return_value), mimetype='text/plain'))
   functools.update_wrapper(func_with_json_conversion, func)
   return func_with_json_conversion
-
-def apply_xslt(sourceDOM, stylesheetDOM):
-    style = libxslt.parseStylesheetDoc(stylesheetDOM)
-    return style.applyStylesheet(sourceDOM, None).serialize()
 
 def smart_path(path):
     ret = settings.SITE_URL_PREFIX + path
@@ -139,6 +151,11 @@ def x_domain(r):
 
 def trim(p, n):
     return '/'.join(p.split('/')[:-n]).encode()
+
+class URLFetchException(Exception):
+    def __init__(self, status, body=""):
+        self.status = status
+        self.body = body
 
 def url_request(url,  method, headers, data=None):
     req = url_request_build(url,  method, headers, data)
@@ -174,9 +191,12 @@ def url_request_execute(req):
     elif (r.status == 204):
         conn.close()
         return True
-    
-    
-    else: raise Exception("Unexpected HTTP status %s"%r.status)
+    else:
+        print r.status
+        print r.getheaders()
+        print r.read()
+
+        raise URLFetchException(r.status, r.read())
 
 def rdf_response(s):
     return x_domain(HttpResponse(s, mimetype="application/rdf+xml"))
@@ -213,3 +233,50 @@ logging.basicConfig(
       level = logging.DEBUG,
       format = '%(asctime)s %(levelname)s %(message)s',
       )
+
+class DjangoVersionDependentExecutor(object):
+    """ class which will execute different code based on Django's version.
+
+    Syntax for a version requirement is ``{major}.{minor}.{revision}[+|-]``, 
+    where the optional ``+`` and ``-`` indicate whether to include versions 
+    after or before the given release, respectively.
+
+    """
+
+    def __init__(self, version_map, default_return_val=None):
+        """ create the object.
+
+        version_map is a dictionary of ``version_requirement:callable`` pairs.
+        When called, the object will execute all callables in the 
+        dictionary that corresponds to a version_requirement satisfied by the
+        current Django version.
+
+        If no such callables exist, calling the object will return
+        ``default_return_val``. Otherwise, the call will return the value
+        returned by the last callable to be executed. Note that, since there
+        is no specified ordering on the callables, this could be the result
+        of any passed callable. For this reason, it is a good idea to pass
+        callables that all return values of equivalent types.
+        
+        """
+        self.django_v = django.VERSION[0:3]
+        self.ret = default_return_val
+        self.funcs = []
+
+        for version_string, func in version_map.iteritems():
+            if version_string[-1] in ('+', '-'):
+                direction = version_string[-1]
+                version_string = version_string[:-1]
+
+            req_v = tuple(map(int, version_string.split('.'))[0:3])
+
+            if (req_v < self.django_v and direction == '+') \
+                    or (req_v > self.django_v and direction == '-') \
+                    or (req_v == self.django_v):
+                self.funcs.append(func)
+
+    def __call__(self, *args, **kwargs):
+        ret_val = self.ret
+        for func in self.funcs:
+            ret_val = func(*args, **kwargs)
+        return ret_val

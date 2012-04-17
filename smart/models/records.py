@@ -6,13 +6,13 @@ Ben Adida & Josh Mandel
 
 from base import *
 from django.utils import simplejson
-from smart.client.common.query_builder import SMART_Querier
+from django.conf import settings
 from smart.client.common.rdf_ontology import ontology
 from smart.client.common.util import rdf, foaf, vcard, sp, serialize_rdf, parse_rdf, bound_graph, URIRef, Namespace
 from smart.lib import utils
 from smart.models.apps import *
 from smart.models.accounts import *
-from smart.models.rdf_store import DemographicConnector, RecordStoreConnector
+from smart.triplestore import * 
 from string import Template
 import re, datetime
 
@@ -33,35 +33,14 @@ class Record(Object):
 
   @classmethod
   def search_records(cls, query):
-    c = DemographicConnector()
-    res = c.sparql(query)
-    m = parse_rdf(res)
+    c =TripleStore()
+    ids  = parse_rdf(c.sparql(query))
 
-    # for each person, look up their demographics object.
     from smart.models.record_object import RecordObject
-    people = m.triples((None, rdf['type'], sp.Demographics))
-    pobj = RecordObject[sp.Demographics] 
-
-    obtained = set()
-    return_graph = bound_graph()
-    for person in people:
-      p = person[0] # subject
-
-      # Connect to RDF Store
-      pid = re.search("\/records\/(.*?)\/demographics", str(p)).group(1)
-      if pid in obtained: continue
-
-      print "matched ", p," to ", pid
-      obtained.add(pid)
-      c = RecordStoreConnector(Record.objects.get(id=pid))
-
-      # Pull out demographics
-      p_uri = p.n3() # subject URI
-      p_subgraph = parse_rdf(c.sparql(pobj.query_one(p_uri)))
-      
-      # Append to search result graph
-      return_graph += p_subgraph
-    return serialize_rdf(return_graph)
+    demographics = RecordObject[sp.Demographics]
+    subjects = [p[0] for p in ids.triples((None, rdf['type'], sp.Demographics))]
+    ret = c.get_contexts(subjects)
+    return ret
 
   @classmethod
   def rdf_to_objects(cls, res):
@@ -93,7 +72,6 @@ WHERE {
  optional{  ?d v:adr ?a. 
             ?a v:postal-code ?zipcode.
     }
-
 }"""
 
     people = list(m.query(q))
@@ -129,8 +107,6 @@ class RecordDirectAccessToken(Object):
 
     if not self.token:
       self.token = utils.random_string(30)
-      print "RANDOM", self.token
-
 
     if self.expires_at == None:
       minutes_to_expire=30

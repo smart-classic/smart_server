@@ -24,9 +24,9 @@ These instructions apply to each of three github repositories that you'll need i
     sudo apt-get update
 </pre>
 
-* Python 2.7 with package <tt>psycopg2</tt> and <tt>libxslt1</tt>
+* Python 2.7 with package <tt>psycopg2</tt>
 <pre>
-    sudo apt-get install python-psycopg2 python-libxslt1 python-m2crypto python-simplejson python-argparse python-setuptools python-pyparsing
+    sudo apt-get install python-psycopg2 python-m2crypto python-simplejson python-argparse python-setuptools python-pyparsing
 
     sudo easy_install -U "rdflib>=3.0.0"  rdfextras
 </pre>
@@ -39,6 +39,11 @@ These instructions apply to each of three github repositories that you'll need i
 * PostgreSQL 8.3+
 <pre>
      sudo apt-get install postgresql
+</pre>
+
+* git
+<pre>
+     sudo apt-get install git
 </pre>
 
 # Setup Database
@@ -82,15 +87,15 @@ This should be the second uncommented line in your default config. Change <tt>id
 * get Tomcat and OpenRDF-Sesame:
 <pre>
  sudo apt-get install tomcat7
- wget http://downloads.sourceforge.net/project/sesame/Sesame%202/2.5.1/openrdf-sesame-2.5.1-sdk.tar.gz
+ wget http://downloads.sourceforge.net/project/sesame/Sesame%202/2.6.5/openrdf-sesame-2.6.5-sdk.tar.gz
 </pre>
 
 * install OpenRDF Sesame as a Tomcat web application
 <pre>
- tar -xzvf openrdf-sesame-2.5.1-sdk.tar.gz
+ tar -xzvf openrdf-sesame-2.6.5-sdk.tar.gz
  sudo mkdir /usr/share/tomcat7/.aduna
  sudo chown tomcat7.tomcat7 /usr/share/tomcat7/.aduna/
- sudo cp -r openrdf-sesame-2.5.1/war/* /var/lib/tomcat7/webapps/
+ sudo cp -r openrdf-sesame-2.6.5/war/* /var/lib/tomcat7/webapps/
 </pre>
 
 * restart Tomcat (optional since autoDeploy is typically enabled in Tomcat by default)
@@ -115,12 +120,6 @@ To limit servlet access to localhost, make two tomcat configuration changes:
 
 You'll need to restart Tomcat again if you make these changes
 
-# Install GIT 
-(NOTE: try "sudo apt-get install git-core" if the git package is not found)
-<pre>
-     sudo apt-get install git
-</pre>
-
 # Download, Install, and Configure SMART Server Components (automated)
 
 At this point you are ready to install the SMART server components. There are two ways to do this. You can either use the easy install script (described here) or skip this step and follow the manual setup steps. If you complete the installation via the automated script, there are no further steps that you need to do after running the script (your SMART server will be fully functional).
@@ -129,6 +128,21 @@ At this point you are ready to install the SMART server components. There are tw
   wget https://raw.github.com/chb/smart_server/master/load_tools/smart_manager.py
   python smart_manager.py -a
 </pre>
+
+(Note:  if you'd like to run the bleeding-edge SMART development branch, replace `master` with `dev` in the `wget`
+command above and pass the `-d` flag to `smart_manager.py`.  If you're unsure, you probably want to stick with the
+master branch!)
+
+## Usage examples for smart_manager.py
+
+Kill and restart the development servers
+
+    python smart_manager.py -k -v -w
+
+Reset the SMART server, regenerate sample data, and reload:
+
+    python smart_manager.py -r -p -l
+
 
 # Download, Install, and Configure SMART Backend Server (manual steps)
 

@@ -2,6 +2,7 @@
 
 import sys
 import os
+import platform
 import re
 import imp
 import subprocess
@@ -9,6 +10,7 @@ import logging
 import argparse
 import string
 import urlparse
+import django
 
 from random import choice
 
@@ -26,7 +28,12 @@ def get_input(p, d):
 
 def do_sed(t,n,v):
     v =  re.sub("/", r'\/', v)
-    c = "sed -i -e's/%s/%s/' %s" % (n, v, t)
+
+    if platform.system() == 'Darwin':
+      c = "sed -i '' -e's/%s/%s/' %s" % (n, v, t)
+    else:
+      c = "sed -i -e's/%s/%s/' %s" % (n, v, t)
+
     o, s = call_command(c)
     print o, s
     return o
@@ -45,10 +52,14 @@ def main():
                       "run app server, reset api server, "+
                       "load sample data, run api servers")
 
+    parser.add_argument("-b", "--branch", dest="using_branch",
+                    default=False,
+                    help="Use a specific branch for checkouts and updates")
+
     parser.add_argument("-d", "--development-branch", dest="branch_dev",
                     action="store_true",
                     default=False,
-                    help="Use development branch (in conjunction with -g)")
+                    help="Use development branch for checkous and updates")
                       
     parser.add_argument("-g", "--clone-git-repositories", dest="clone_git",
                     action="store_true",
@@ -101,7 +112,16 @@ def main():
                     help="Run api server (first kills all running SMART servers). Can be used conjunction with -v")
 
     args = parser.parse_args()
+    repos = ["smart_server", "smart_ui_server", "smart_sample_patients", "smart_sample_apps"]
 
+    reloadflag = ""
+    if django.VERSION[:3] <= (1,3,0):
+        reloadflag = " --noreload "
+
+    if args.branch_dev:
+        args.using_branch = "dev"
+    if args.using_branch:
+       print "USING BRANCH", args.using_branch
     if not args.all_steps and not ( 
         args.clone_git or
         args.update_git or
@@ -128,51 +148,29 @@ def main():
         args.run_api_servers = True
 
     if args.clone_git:
+        if not args.using_branch:
+            args.using_branch = "master"
+
         print "Cloning (4) SMART git repositories..."
-        call_command("git clone --recursive https://github.com/chb/smart_server.git", 
-                     print_output=True)
+        for r in repos:
+            call_command("git clone --recursive https://github.com/chb/"+r+".git", 
+                        print_output=True)
 
-        call_command("git clone --recursive https://github.com/chb/smart_ui_server.git", 
-                     print_output=True)
-
-        call_command("git clone --recursive https://github.com/chb/smart_sample_apps.git", 
-                     print_output=True)
-
-        call_command("git clone --recursive https://github.com/chb/smart_sample_patients.git", 
-                     print_output=True)
-
-        if args.branch_dev:
-            call_command("cd smart_server; git checkout dev; cd ..")
-            call_command("cd smart_ui_server; git checkout dev; cd ..")
-            call_command("cd smart_sample_patients; git checkout dev; cd ..")
-            call_command("cd smart_sample_apps; git checkout dev; cd ..")
-
-        call_command("cd smart_server; git submodule init && git submodule update; cd ..", print_output=True)
-        call_command("cd smart_ui_server; git submodule init && git submodule update; cd ..", print_output=True)
-        call_command("cd smart_sample_patients; git submodule init && git submodule update; cd ..", print_output=True)
-        call_command("cd smart_sample_apps; git submodule init && git submodule update; cd ..", print_output=True)
+            call_command("cd "+r+"; git checkout "+args.using_branch+"; cd ..")
+            call_command("cd "+r+"; git submodule init && git submodule update; cd ..", print_output=True)
 
     if args.update_git:
-        call_command("cd smart_server; " +
+        for r in repos:
+
+            if args.using_branch:
+                call_command("cd "+r+"; git checkout "+args.using_branch+"; cd ..")
+
+            call_command("cd "+r+"; " +
                      "git pull; " +
                      "git submodule init; " +
                      "git submodule update; " +
-                     "cd ..; " +
-                     "cd smart_ui_server; " +
-                     "git pull; " +
-                     "git submodule init; " +
-                     "git submodule update; " +
-                     "cd ..; " +
-                     "cd smart_sample_apps; " +
-                     "git pull; " +
-                     "git submodule init; " +
-                     "git submodule update; " +
-                     "cd ..; " +
-                     "cd smart_sample_patients; " +
-                     "git pull; " +
-                     "git submodule init; " +
-                     "git submodule update; " +
-                     "cd ..;", print_output=True)
+                     "cd ..; ",
+                      print_output=True)
         
     if args.generate_settings:
         print "Configuring SMART server settings..."
@@ -246,6 +244,11 @@ def main():
             print "yes standalone"
             fill_field('smart_server/settings.py', 'use_proxy', 'False')
 
+        fill_field('smart_server/settings.py', 'triplestore_engine', 'sesame')
+
+        fill_field('smart_server/settings.py', 'triplestore_endpoint',
+                'http://localhost:8080/openrdf-sesame/repositories/record_rdf')
+
     if args.run_app_server or args.run_api_servers:
         args.kill_servers = True
         server_settings = imp.load_source("settings", "smart_server/settings.py")
@@ -271,14 +274,15 @@ def main():
     if args.run_app_server:
         port = get_port(app_server)
         print "port:", port
-        call_command("cd smart_sample_apps && python manage.py runconcurrentserver 0.0.0.0:%s --noreload &"%port, 
+        call_command("cd smart_sample_apps && python manage.py runconcurrentserver %s 0.0.0.0:%s &"%(reloadflag, port), 
                      print_output=True)
+        call_command("sleep 2")
 
         print "App Server running."
 
     if args.reset_servers:
         print "Resetting the SMART server..."
-        print "Note: Enter the SMART databse password when prompted (3 times)."
+        print "Note: Enter the SMART databse password when prompted (2 times)."
         print "      It is 'smart' by default."
         call_command("cd smart_server && "+
                      "sh ./reset.sh;"+
@@ -309,17 +313,18 @@ def main():
                      "cd ..;", print_output=True)
 
     if args.run_api_servers:
-        port = get_port(ui_server)
-        print "port:", port
-        call_command("cd smart_ui_server; python manage.py runconcurrentserver 0.0.0.0:%s --noreload &"%port, 
-                     print_output=True)
 
         port = get_port(api_server)
         print "port:", port
-        call_command("cd smart_server; python manage.py runserver 0.0.0.0:%s --noreload &"%port, 
+        call_command("cd smart_server && python manage.py runconcurrentserver %s 0.0.0.0:%s &"%(reloadflag, port), 
                      print_output=True)
-
         print "API Servers running."
+
+        port = get_port(ui_server)
+        print "port:", port
+        call_command("cd smart_ui_server && python manage.py runconcurrentserver %s 0.0.0.0:%s &"%(reloadflag, port), 
+                     print_output=True)
+        call_command("sleep 2")
 
 def get_port(url):
     server = urlparse.urlparse(url)
@@ -332,7 +337,6 @@ def call_command(command, print_output=False):
     print command
 
     if print_output: 
-        out = sys.stdout
         ret = os.system(command)
         
     else: 

@@ -16,12 +16,8 @@ def sub(str, var, val):
 apps = simplejson.loads(open(os.path.join(settings.APP_HOME, 
                                           "bootstrap_helpers/application_list.json")).read())
 
-apps = apps["app_list"]
-for app,app_params in apps.iteritems():
-
-  enabled_by_default = app_params["enabled_by_default"] 
-
-  LoadApp(app, enabled_by_default)
+for app_params in apps:
+  LoadApp(app_params)
 
 
 my_app = """
@@ -38,4 +34,4 @@ my_app = """
 }
 """
 
-LoadAppFromJSON(my_app, True)
+LoadAppFromJSON(my_app, {"enabled_by_default": True})

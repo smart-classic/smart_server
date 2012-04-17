@@ -18,7 +18,4 @@ def grant(pha, permset):
 
     permset.grant(request_token, None)
     permset.grant(session_create, None)
-    permset.grant(pha_storage_get, [check_my_app])
-    permset.grant(pha_storage_post, [check_my_app])
-    permset.grant(pha_storage_delete, [check_my_app])
 

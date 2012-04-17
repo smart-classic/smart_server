@@ -16,7 +16,7 @@ from smart.models.record_object import RecordObject
 from smart.models.rdf_rest_operations import *
 from oauth.oauth import OAuthRequest
 from smart.models.ontology_url_patterns import CallMapper
-import datetime, urllib
+import datetime, urllib, json
 
 SAMPLE_NOTIFICATION = {
     'id' : 'foonotification',
@@ -30,22 +30,23 @@ sporg = Namespace("http://smartplatforms.org/")
 
 @CallMapper.register(method="GET",
                      category="container_items",
-                     target="http://smartplatforms.org/terms#Container")
+                     target="http://smartplatforms.org/terms#Capabilities")
 def container_capabilities(request, **kwargs):
-    m = bound_graph()
-    site = URIRef(settings.SITE_URL_PREFIX)
-    print "avail", dir(m)
-    m.add((site, rdf['type'], sp['Container']))
-
-    m.add((site, sp['capability'], sporg['capability/SNOMED/lookup']))
-
-    m.add((site, sp['capability'], sporg['capability/SPL/lookup']))
-
-    m.add((site,
-             sp['capability'],
-             sporg['capability/Pillbox/lookup']))
+    #m = bound_graph()
+    #site = URIRef(settings.SITE_URL_PREFIX)
+    #print "avail", dir(m)
     
-    return utils.x_domain(HttpResponse(utils.serialize_rdf(m), "application/rdf+xml"))
+    #m.add((site, rdf['type'], sp['Container']))
+    #m.add((site, sp['capability'], sporg['capability/SNOMED/lookup']))
+    #m.add((site, sp['capability'], sporg['capability/SPL/lookup']))
+    #m.add((site, sp['capability'], sporg['capability/Pillbox/lookup']))
+    
+    #return utils.x_domain(HttpResponse(utils.serialize_rdf(m), "application/rdf+xml"))
+    
+    capabilities = get_capabilities()
+    return utils.x_domain(HttpResponse(json.dumps(capabilities, sort_keys=True, indent=4), "application/json"))
+    
+def get_version(request): return HttpResponse(settings.VERSION, "text/plain")
 
 @paramloader()
 def record_list(request, account):
@@ -223,8 +224,10 @@ PREFIX  sp:  <http://smartplatforms.org/terms#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 CONSTRUCT {?person rdf:type sp:Demographics} 
 WHERE   {
+graph ?g {
 ?person rdf:type sp:Demographics. 
 $statements
+}
 }
 order by ?ln""")
 
