@@ -30,7 +30,7 @@ sporg = Namespace("http://smartplatforms.org/")
 
 @CallMapper.register(method="GET",
                      category="container_items",
-                     target="http://smartplatforms.org/terms#Container")
+                     target="http://smartplatforms.org/terms#Capabilities")
 def container_capabilities(request, **kwargs):
     #m = bound_graph()
     #site = URIRef(settings.SITE_URL_PREFIX)
