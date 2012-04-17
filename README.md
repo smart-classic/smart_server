@@ -133,6 +133,17 @@ At this point you are ready to install the SMART server components. There are tw
 command above and pass the `-d` flag to `smart_manager.py`.  If you're unsure, you probably want to stick with the
 master branch!)
 
+## `smart_manager.py` usage examples
+
+Kill and restart the development servers
+
+    python smart_manager.py -k -v -w
+
+Reset the SMART server, regenerate sample data, and reload:
+
+    python smart_manager.py -r -p -l
+
+
 # Download, Install, and Configure SMART Backend Server (manual steps)
 
 * get the code
