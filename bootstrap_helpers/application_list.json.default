@@ -10,6 +10,11 @@
     "override_icon": "http://localhost:8001/framework/cardio_risk_viz/icon.png",
     "enabled_by_default": true
 }, {
+    "manifest":"http://localhost:8001/framework/frame_ui_example/smart_manifest.json",
+    "override_index": "http://localhost:8001/frame_ui_example/got_statins/index.html",
+    "override_icon": "http://localhost:8001/frame_ui_example/got_statins/icon.png",
+    "enabled_by_default": false
+}, {
     "manifest":"http://localhost:8001/framework/api_playground/smart_manifest.json",
     "override_index": "http://localhost:8001/framework/api_playground/index.html",
     "override_icon": "http://localhost:8001/framework/api_playground/icon.png",
