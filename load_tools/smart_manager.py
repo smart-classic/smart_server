@@ -258,6 +258,13 @@ def main():
         ui_server = server_settings.SMART_UI_SERVER_LOCATION
 
     if args.kill_servers:
+      if platform.system() == 'Darwin':
+        call_command("ps ax | "+
+                     "grep -i 'python' | "+
+                     "grep -i 'manage.py' | "+
+                     "egrep  -o '^[0-9]+' | "+
+                     "xargs -t  kill")
+      else:
         call_command("ps -ah | "+
                      "grep -i 'python' | "+
                      "grep -i 'manage.py' | "+
