@@ -5,11 +5,8 @@
 These instructions apply to each of three github repositories that you'll need in order to run the SMART Reference EMR in your own environment:
 
 * https://github.com/chb/smart_server.git
-
 * https://github.com/chb/smart_ui_server.git
-
 * https://github.com/chb/smart_sample_apps.git
-
 * https://github.com/chb/smart_sample_patients.git
 
 # System setup
@@ -31,7 +28,7 @@ These instructions apply to each of three github repositories that you'll need i
     sudo easy_install -U "rdflib>=3.0.0"  rdfextras
 </pre>
 
-* Django 1.1
+* Django 1.3+
 <pre>
     sudo apt-get install python-django
 </pre>
@@ -76,12 +73,6 @@ This should be the second uncommented line in your default config. Change <tt>id
  postgres=# \q
  </pre>
 
-* Create the Database and make the smart user its owner.
- <pre>
- createdb -O smart smart
- exit
- </pre>
-
 # Install openrdf-sesame (and Tomcat)  
 
 * get Tomcat and OpenRDF-Sesame:
@@ -120,7 +111,7 @@ To limit servlet access to localhost, make two tomcat configuration changes:
 
 You'll need to restart Tomcat again if you make these changes
 
-# Download, Install, and Configure SMART Server Components (automated)
+# Automated approach: Download, Install, and Configure SMART Server Components
 
 At this point you are ready to install the SMART server components. There are two ways to do this. You can either use the easy install script (described here) or skip this step and follow the manual setup steps. If you complete the installation via the automated script, there are no further steps that you need to do after running the script (your SMART server will be fully functional).
 
@@ -144,7 +135,9 @@ Reset the SMART server, regenerate sample data, and reload:
     python smart_manager.py -r -p -l
 
 
-# Download, Install, and Configure SMART Backend Server (manual steps)
+# Manual steps: if you don't take the automated approach...
+
+## 1. Download, Install, and Configure SMART Backend Server
 
 * get the code
  <pre>
@@ -164,7 +157,7 @@ Reset the SMART server, regenerate sample data, and reload:
 
 * update the database and repository settings in <tt>reset.sh</tt> (if you changed the default DB and repository endpoints in <tt>settings.py</tt>)
 
-* set things up (supplying the smart db password when prompted a few times)
+* set things up (supplying the smart db password when prompted twice)
  <pre>
  ./reset.sh
  </pre>
@@ -180,7 +173,7 @@ Reset the SMART server, regenerate sample data, and reload:
    
    IMPORTANT: if you've enabled apps that are part of the sample apps below, you should <em>wait</em> to run <tt>reset.sh</tt> until you've got the sample apps server running. The SMART Reference EMR attempts to download the apps' manifest files, and if they're not available over HTTP, <tt>reset.sh</tt> won't complete successfully. If you mistakenly run <tt>reset.sh</tt> before setting up the SMART Sample Apps, don't worry, just set up the SMART Sample Apps server, and run <tt>reset.sh</tt> again.
    
-# Download, Install, and Configure SMART UI Server (manual steps)
+## 2. Download, Install, and Configure SMART UI Server
 
 * get the code
 
@@ -192,10 +185,16 @@ Reset the SMART server, regenerate sample data, and reload:
  </pre>
 
 * copy <tt>settings.py.default</tt> to <tt>settings.py</tt> and update:
+    * set <tt>DATABASE_USER</tt> to the username you chose, in this documentation <tt>smart</tt>, and set <tt>DATABASE_PASSWORD</tt> accordingly.
     * set <tt>SMART_UI_BASE</tt> to the complete path to the location where you've installed <tt>smart_ui_server</tt>, e.g. <tt>/web/smart_ui_server</tt>
     * set <tt>SMART_SERVER_LOCATION</tt>, <tt>CONSUMER_KEY</tt>, <tt>CONSUMER_SECRET</tt> appropriately to match the SMART Server's location and chrome credentials. (Check your <tt>bootstrap.py</tt> within <tt>smart_server</tt> for those credentials. If you change them, you'll need to run <tt>reset.sh</tt> again on the SMART server. If you never changed <tt>bootstrap.py</tt>, then your <tt>CONSUMER_KEY</tt> and <tt>CONSUMER_SECRET</tt> are both <tt>chrome</tt>, and you don't need to change their value in the UI server default settings file.)
 
-# Download, Install, and Configure SMART Sample Apps (manual steps)
+* set things up (supplying the smart db password when prompted twice)
+ <pre>
+ ./reset.sh
+ </pre>
+
+## 3. Download, Install, and Configure SMART Sample Apps
 
 * get the source code
  <pre>
@@ -209,7 +208,7 @@ Reset the SMART server, regenerate sample data, and reload:
     * set <tt>APP_HOME</tt> to the complete path to the location where you've installed <tt>smart_sample_apps</tt>, e.g. <tt>/web/smart_sample_apps</tt>
     * set <tt>SMART_SERVER_PARAMS</tt> to point to the location of the SMART Server. If you are running the SMART server on <tt>localhost:7000</tt> as we suggest, there's no need to change anything.
 
-# Generate Sample Patient Records and Load Them in the SMART EMR (manual steps)
+## 4. Manual steps: Generate Sample Patient Records and Load Them in the SMART EMR
 
 * get the source code and generate sample data
  <pre>
@@ -228,7 +227,7 @@ Reset the SMART server, regenerate sample data, and reload:
  
  Expect this to take a few minutes.
 
-#Running the Development Servers (manual steps)
+## 5.Running the Development Servers
 
 The Django development servers are easy to run at the prompt.
 
@@ -254,4 +253,4 @@ And finally, the Sample Apps:
 
 * Note: In the above examples the console output is suppressed. If you are having trouble with the server, you may want to redirect the output to the console or a log file.
 
-#The SMART EMR is now at: http://localhost:7001/login
+## The SMART EMR is now at: http://localhost:7001/login

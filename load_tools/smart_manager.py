@@ -294,6 +294,14 @@ def main():
         call_command("cd smart_server && "+
                      "sh ./reset.sh;"+
                      "cd ../..;", print_output=True)
+        
+        print "Resetting the SMART UI server..."
+        print "Note: Enter the SMART databse password when prompted (2 times)."
+        print "      It is 'smart' by default."
+        call_command("cd smart_ui_server && "+
+                     "sh ./reset.sh;"+
+                     "cd ../..;", print_output=True)
+
 
     if args.load_sample_data:
         call_command("cd smart_server; " + 
