@@ -14,7 +14,7 @@ MachineApp.objects.create(name='chrome',
 
 s = os.system
 
-endpoint = settings.TRIPLESTORE['record_endpoint']
+endpoint = settings.TRIPLESTORE['record_endpoint'].replace("openrdf-sesame","openrdf-workbench")
 repo = endpoint.split("/")[-1]
 base_url = endpoint.replace(repo, "")
 
