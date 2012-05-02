@@ -192,11 +192,8 @@ def url_request_execute(req):
         conn.close()
         return True
     else:
-        print r.status
-        print r.getheaders()
-        print r.read()
-
-        raise URLFetchException(r.status, r.read())
+        data = r.read()
+        raise URLFetchException(r.status, data)
 
 def rdf_response(s):
     return x_domain(HttpResponse(s, mimetype="application/rdf+xml"))

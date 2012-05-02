@@ -14,12 +14,16 @@ MachineApp.objects.create(name='chrome',
 
 s = os.system
 
+endpoint = settings.TRIPLESTORE['record_endpoint'].replace("openrdf-sesame","openrdf-workbench")
+repo = endpoint.split("/")[-1]
+base_url = endpoint.replace(repo, "")
+
 if settings.TRIPLESTORE['engine'] == "sesame":
-    s("""wget --post-data='context='  http://localhost:8080/openrdf-workbench/repositories/record_rdf/clear -O /dev/null""")
-    s("""wget --post-data='type=native&Repository+ID='record_rdf'&Repository+title=Record-level+RDF+by+context&Triple+indexes=spoc%2Cposc%2Ccspo'  http://localhost:8080/openrdf-workbench/repositories/NONE/create -O /dev/null""")
+    s("""wget --post-data='context='  %s/clear -O /dev/null""" % endpoint)
+    s("""wget --post-data='type=native&Repository+ID='%s'&Repository+title=Record-level+RDF+by+context&Triple+indexes=spoc%%2Cposc%%2Ccspo'  %sNONE/create -O /dev/null""" % (repo, base_url))
 elif settings.TRIPLESTORE['engine'] == "stardog":
-    s("""stardog-admin drop -n record_rdf""")
-    s("""stardog-admin create -n record_rdf -t D -u admin -p admin --server snarl://localhost:5820""")
+    s("""stardog-admin drop -n %s""" % repo)
+    s("""stardog-admin create -n %s -t D -u admin -p admin --server snarl://localhost:5820""" % repo)
 
 # then add additional apps by manifest
 from bootstrap_helpers import bootstrap_applications

@@ -258,6 +258,13 @@ def main():
         ui_server = server_settings.SMART_UI_SERVER_LOCATION
 
     if args.kill_servers:
+      if platform.system() == 'Darwin':
+        call_command("ps ax | "+
+                     "grep -i 'python' | "+
+                     "grep -i 'manage.py' | "+
+                     "egrep  -o '^[0-9]+' | "+
+                     "xargs -t  kill")
+      else:
         call_command("ps -ah | "+
                      "grep -i 'python' | "+
                      "grep -i 'manage.py' | "+
@@ -287,6 +294,14 @@ def main():
         call_command("cd smart_server && "+
                      "sh ./reset.sh;"+
                      "cd ../..;", print_output=True)
+        
+        print "Resetting the SMART UI server..."
+        print "Note: Enter the SMART databse password when prompted (2 times)."
+        print "      It is 'smart' by default."
+        call_command("cd smart_ui_server && "+
+                     "sh ./reset.sh;"+
+                     "cd ../..;", print_output=True)
+
 
     if args.load_sample_data:
         call_command("cd smart_server; " + 
