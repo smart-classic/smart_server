@@ -10,6 +10,7 @@ import os
 from django.utils import simplejson
 import urllib2
 
+from tests import runTest, getMessages
 
 def sub(str, var, val):
     return str.replace("{%s}"%var, val)
@@ -28,6 +29,13 @@ def LoadApp(app_params):
   LoadAppFromJSON(manifest_string, app_params)
   
 def LoadAppFromJSON(manifest_string, app_params):
+
+  messages = getMessages(runTest("Manifest",manifest_string,"application/json"))
+  if len(messages) > 0:
+      print "WARNING! This app manifest is invalid"
+      for m in messages:
+        print m
+
   r = simplejson.loads(manifest_string)
 
   if "override_index" in app_params:
