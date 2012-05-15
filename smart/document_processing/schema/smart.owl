@@ -6152,7 +6152,7 @@ system = http://www2a.cdc.gov/nip/IIS/IISStandards/vaccines.asp?rpt=cvx#</rdfs:c
 
     <owl:NamedIndividual rdf:about="&spcode;ImmunizationRefusalReason#recentOrganOrStemCellTransplant">
         <rdf:type rdf:resource="&spcode;ImmunizationRefusalReason"/>
-        <dcterms:title>Recent oragan/stem cell transplant</dcterms:title>
+        <dcterms:title>Recent organ/stem cell transplant</dcterms:title>
     </owl:NamedIndividual>
     
 
