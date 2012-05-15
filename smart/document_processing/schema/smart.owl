@@ -1085,7 +1085,7 @@
                 <owl:maxCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:maxCardinality>
             </owl:Restriction>
         </rdfs:subClassOf>
-        <rdfs:comment>SMART provides structure for representing alleriges accoring to well-specified standard vocabularies. A patient with no known allergies produces an AllergyException providing further details (see below). Otherwise, each allergy has a category (drug, food, etc.), a severity, a reaction, and a substance or class of substances. Since we want these allergies to work as inputs to automated computations, we require specific coding systems to represent substances and classes of substances.
+        <rdfs:comment>SMART provides structure for representing alleriges accoring to well-specified standard vocabularies. A patient with no known allergies produces an AllergyExclusion providing further details (see below). Otherwise, each allergy has a category (drug, food, etc.), a severity, a reaction, and a substance or class of substances. Since we want these allergies to work as inputs to automated computations, we require specific coding systems to represent substances and classes of substances.
 
 1. A drug allergy to a particular drug (e.g. cephalexin) must define a &quot;substance&quot; field with an ingredient-type RxNorm code (tty=&quot;IN&quot;). (This is to avoid overly-specific statements like &quot;the patient is allergic to a 500mg cephalexin oral tablet&quot;!)
 
@@ -1345,8 +1345,11 @@ For instance, below are two allergies: first, an allergy to the entire class of 
 &lt;/sp:AllergyExclusion&gt;
 &lt;/rdf:RDF&gt;</api:example>
         <api:base_path>/records/{record_id}/allergy_exclusions/{allergy_exclusion_id}</api:base_path>
-        <rdfs:comment>AllergyExceptions are used for a patient with no known allergies (or no known allergies of a particular type). For example, &#39;No known allergies&#39; looks like:
-</rdfs:comment>
+    	<rdfs:comment>
+		In clinical documentation, asserting that a patient has "No known allergies" is very different from not mentioning whether a patient has any allergies.  It's a positive affirmation that a question was asked and answered.  SMART models this information as an explicit clinical statement of the type AllergyExclusion.
+
+		While it might seem inelegant to expose explicit AllergyExclusion statements, this model is designed to combat a clinical modeling pattern where a single flag ("isNegated" or "negationIndicator" for example) negates the meaning of an entire statement.  Interpreting statements in a world where negation flags exist can be tricky.  Every app has to understand the subtlety of this flag -- and it's not always clear what it means to negate a statement with multiple parts.  For more information about exclusion statements in clinical modeling, see http://omowizard.wordpress.com/2011/06/06/unambiguous-data-positive-presence-positive-absence/.
+	</rdfs:comment>
     </owl:Class>
     <owl:Axiom>
         <rdfs:comment>Nature of the allergy exclusion.</rdfs:comment>
