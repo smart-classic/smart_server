@@ -2152,7 +2152,12 @@ For instance, below are two allergies: first, an allergy to the entire class of 
       &lt;/sp:Pharmacy&gt;
     &lt;/sp:pharmacy&gt;
     &lt;sp:pbm&gt;T00000000001011&lt;/sp:pbm&gt;
-    &lt;sp:dispenseQuantity&gt;60&lt;/sp:dispenseQuantity&gt;
+    &lt;sp:quantityDispensed&gt;
+      &lt;sp:ValueAndUnit&gt;
+        &lt;sp:value&gt;60&lt;/sp:value&gt;
+        &lt;sp:unit&gt;{tablet}&lt;/sp:unit&gt;
+      &lt;/sp:ValueAndUnit&gt;
+    &lt;/sp:quantityDispensed&gt;
     &lt;sp:dispenseDaysSupply&gt;30&lt;/sp:dispenseDaysSupply&gt;
  &lt;/sp:Fulfillment&gt;
 &lt;/rdf:RDF&gt;</api:example>
