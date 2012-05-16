@@ -262,7 +262,7 @@ def main():
         call_command("ps ax | "+
                      "grep -i 'python' | "+
                      "grep -i 'manage.py' | "+
-                     "egrep  -o '^[0-9]+' | "+
+                     "egrep  -o '^[ 0-9]+' | "+
                      "xargs -t  kill")
       else:
         call_command("ps -ah | "+
