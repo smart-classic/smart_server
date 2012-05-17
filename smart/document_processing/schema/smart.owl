@@ -6471,7 +6471,7 @@ system = http://www2a.cdc.gov/nip/IIS/IISStandards/vaccines.asp?rpt=cvx#</rdfs:c
 
     <owl:NamedIndividual rdf:about="&spcode;TranslationFidelity#verified">
         <rdf:type rdf:resource="&spcode;TranslationFidelity"/>
-        <dcterms:title>Preliminary</dcterms:title>
+        <dcterms:title>Verified</dcterms:title>
     </owl:NamedIndividual>
     
 
