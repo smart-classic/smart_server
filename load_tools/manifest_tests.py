@@ -1,1 +1,1 @@
-../../smart_sample_apps/api_verify/manifest_tests.py
+../smart/common/utils/manifest_tests.py
