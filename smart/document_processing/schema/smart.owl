@@ -2617,23 +2617,23 @@ http://www2a.cdc.gov/nip/IIS/IISStandards/vaccines.asp?rpt=cvx#54</rdfs:comment>
   &lt;sp:LabResult&gt;
       &lt;sp:belongsTo rdf:resource=&quot;http://sandbox-api.smartplatforms.org/records/2169591&quot; /&gt;
       &lt;sp:labName&gt;
- 	&lt;sp:CodedValue&gt;
+    &lt;sp:CodedValue&gt;
             &lt;dcterms:title&gt;Serum sodium&lt;/dcterms:title&gt;
             &lt;sp:provenance&gt;
-              &lt;sp:Provenance&gt;
+              &lt;sp:CodeProvenance&gt;
                 &lt;sp:sourceCode rdf:resource=&quot;http://my.local.coding.system/01234&quot; /&gt;
                 &lt;dcterms:title&gt;Random blood sodium level&lt;/dcterms:title&gt;
                 &lt;sp:translationFidelity rdf:resource=&quot;http://smartplatforms.org/terms/codes/TranslationFidelity#verified&quot;/&gt;
-              &lt;/sp:Provenance&gt;
+              &lt;/sp:CodeProvenance&gt;
             &lt;/sp:provenance&gt;
-	    &lt;sp:code&gt;
+        &lt;sp:code&gt;
               &lt;spcode:LOINC rdf:about=&quot;http://purl.bioontology.org/ontology/LNC/2951-2&quot;&gt;
                 &lt;rdf:type rdf:resource=&quot;http://smartplatforms.org/terms#Code&quot; /&gt; 
                 &lt;dcterms:title&gt;Serum sodium&lt;/dcterms:title&gt;
                 &lt;sp:system&gt;http://purl.bioontology.org/ontology/LNC/&lt;/sp:system&gt;
                 &lt;dcterms:identifier&gt;2951-2&lt;/dcterms:identifier&gt; 
               &lt;/spcode:LOINC&gt;    
-	      &lt;/sp:code&gt;
+          &lt;/sp:code&gt;
         &lt;/sp:CodedValue&gt;
       &lt;/sp:labName&gt;
 
@@ -2686,7 +2686,7 @@ http://www2a.cdc.gov/nip/IIS/IISStandards/vaccines.asp?rpt=cvx#54</rdfs:comment>
       &lt;sp:code&gt;
         &lt;spcode:LabResultStatus rdf:about=&quot;http://smartplatforms.org/terms/codes/LabStatus#final&quot;&gt;
           &lt;rdf:type rdf:resource=&quot;http://smartplatforms.org/terms#Code&quot; /&gt; 
-          &lt;dcterms:title&gt;Final results: complete and verified&lt;/dcterms:title&gt;      
+          &lt;dcterms:title&gt;Final&lt;/dcterms:title&gt;      
           &lt;sp:system&gt;http://smartplatforms.org/terms/codes/LabStatus#&lt;/sp:system&gt;
           &lt;dcterms:identifier&gt;final&lt;/dcterms:identifier&gt; 
         &lt;/spcode:LabResultStatus&gt;    
@@ -2711,27 +2711,6 @@ http://www2a.cdc.gov/nip/IIS/IISStandards/vaccines.asp?rpt=cvx#54</rdfs:comment>
       &lt;sp:specimenCollected&gt;
         &lt;sp:Attribution&gt;
           &lt;sp:startDate&gt;2010-12-27T17:00:00&lt;/sp:startDate&gt;
-          &lt;sp:participant&gt;
-            &lt;sp:Participant&gt;
-              &lt;sp:person&gt;
-                &lt;sp:Person&gt;&lt;foaf:name&gt;Tad Finnialispi&lt;/foaf:name&gt;&lt;/sp:Person&gt;
-              &lt;/sp:person&gt;
-              &lt;sp:organization&gt;
-                &lt;sp:Organization&gt;
-                  &lt;foaf:name&gt;City Lab&lt;/foaf:name&gt;
-                  &lt;sp:address&gt;
-                    &lt;sp:Address&gt;
-                      &lt;v:street-address&gt;20 Elm St&lt;/v:street-address&gt;
-                      &lt;v:locality&gt;Springfield&lt;/v:locality&gt;
-                      &lt;v:postal-code&gt;11111&lt;/v:postal-code&gt;
-                      &lt;v:country-name&gt;USA&lt;/v:country-name&gt;
-                    &lt;/sp:Address&gt;
-                  &lt;/sp:address&gt;
-                &lt;/sp:Organization&gt;
-              &lt;/sp:organization&gt;
-              &lt;sp:role&gt;Laboratory Technologist&lt;/sp:role&gt;
-            &lt;/sp:Participant&gt;
-          &lt;/sp:participant&gt;
         &lt;/sp:Attribution&gt;
       &lt;/sp:specimenCollected&gt;
       &lt;sp:notes&gt;Blood sample appears to have hemolyzed&lt;/sp:notes&gt;
@@ -3690,8 +3669,7 @@ For a medication with a simple dosing schedule, record the amount to take with e
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://smartplatforms.org/terms#valueAndUnit"/>
-                <owl:onClass rdf:resource="http://smartplatforms.org/terms#ValueAndUnit"/>
-                <owl:qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:cardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:cardinality>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
@@ -3865,15 +3843,13 @@ For a medication with a simple dosing schedule, record the amount to take with e
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://smartplatforms.org/terms#minimum"/>
-                <owl:onClass rdf:resource="http://smartplatforms.org/terms#ValueAndUnit"/>
-                <owl:qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:cardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:cardinality>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://smartplatforms.org/terms#maximum"/>
-                <owl:onClass rdf:resource="http://smartplatforms.org/terms#ValueAndUnit"/>
-                <owl:qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:cardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:cardinality>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
@@ -3921,8 +3897,7 @@ For a medication with a simple dosing schedule, record the amount to take with e
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://smartplatforms.org/terms#numerator"/>
-                <owl:onClass rdf:resource="http://smartplatforms.org/terms#ValueAndUnit"/>
-                <owl:qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:cardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:cardinality>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
@@ -3934,8 +3909,7 @@ For a medication with a simple dosing schedule, record the amount to take with e
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://smartplatforms.org/terms#denominator"/>
-                <owl:onClass rdf:resource="http://smartplatforms.org/terms#ValueAndUnit"/>
-                <owl:qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:cardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:cardinality>
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
@@ -6451,7 +6425,7 @@ system = http://www2a.cdc.gov/nip/IIS/IISStandards/vaccines.asp?rpt=cvx#</rdfs:c
 
     <owl:NamedIndividual rdf:about="&spcode;TranslationFidelity#verified">
         <rdf:type rdf:resource="&spcode;TranslationFidelity"/>
-        <dcterms:title>Preliminary</dcterms:title>
+        <dcterms:title>Verified</dcterms:title>
     </owl:NamedIndividual>
     
 
