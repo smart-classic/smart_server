@@ -1085,7 +1085,7 @@
                 <owl:maxCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:maxCardinality>
             </owl:Restriction>
         </rdfs:subClassOf>
-        <rdfs:comment>SMART provides structure for representing alleriges accoring to well-specified standard vocabularies. A patient with no known allergies produces an AllergyException providing further details (see below). Otherwise, each allergy has a category (drug, food, etc.), a severity, a reaction, and a substance or class of substances. Since we want these allergies to work as inputs to automated computations, we require specific coding systems to represent substances and classes of substances.
+        <rdfs:comment>SMART provides structure for representing alleriges accoring to well-specified standard vocabularies. A patient with no known allergies produces an AllergyExclusion providing further details (see below). Otherwise, each allergy has a category (drug, food, etc.), a severity, a reaction, and a substance or class of substances. Since we want these allergies to work as inputs to automated computations, we require specific coding systems to represent substances and classes of substances.
 
 1. A drug allergy to a particular drug (e.g. cephalexin) must define a &quot;substance&quot; field with an ingredient-type RxNorm code (tty=&quot;IN&quot;). (This is to avoid overly-specific statements like &quot;the patient is allergic to a 500mg cephalexin oral tablet&quot;!)
 
@@ -1345,8 +1345,11 @@ For instance, below are two allergies: first, an allergy to the entire class of 
 &lt;/sp:AllergyExclusion&gt;
 &lt;/rdf:RDF&gt;</api:example>
         <api:base_path>/records/{record_id}/allergy_exclusions/{allergy_exclusion_id}</api:base_path>
-        <rdfs:comment>AllergyExceptions are used for a patient with no known allergies (or no known allergies of a particular type). For example, &#39;No known allergies&#39; looks like:
-</rdfs:comment>
+    	<rdfs:comment>
+		In clinical documentation, asserting that a patient has "No known allergies" is very different from not mentioning whether a patient has any allergies.  It's a positive affirmation that a question was asked and answered.  SMART models this information as an explicit clinical statement of the type AllergyExclusion.
+
+		While it might seem inelegant to expose explicit AllergyExclusion statements, this model is designed to combat a clinical modeling pattern where a single flag ("isNegated" or "negationIndicator" for example) negates the meaning of an entire statement.  Interpreting statements in a world where negation flags exist can be tricky.  Every app has to understand the subtlety of this flag -- and it's not always clear what it means to negate a statement with multiple parts.  For more information about exclusion statements in clinical modeling, see http://omowizard.wordpress.com/2011/06/06/unambiguous-data-positive-presence-positive-absence/.
+	</rdfs:comment>
     </owl:Class>
     <owl:Axiom>
         <rdfs:comment>Nature of the allergy exclusion.</rdfs:comment>
@@ -2154,7 +2157,7 @@ For instance, below are two allergies: first, an allergy to the entire class of 
         &lt;sp:value&gt;60&lt;/sp:value&gt;
         &lt;sp:unit&gt;{tablet}&lt;/sp:unit&gt;
       &lt;/sp:ValueAndUnit&gt;
-    &lt;/sp:dispenseQuantity&gt;
+    &lt;/sp:quantityDispensed&gt;
     &lt;sp:dispenseDaysSupply&gt;30&lt;/sp:dispenseDaysSupply&gt;
  &lt;/sp:Fulfillment&gt;
 &lt;/rdf:RDF&gt;</api:example>
@@ -2614,23 +2617,23 @@ http://www2a.cdc.gov/nip/IIS/IISStandards/vaccines.asp?rpt=cvx#54</rdfs:comment>
   &lt;sp:LabResult&gt;
       &lt;sp:belongsTo rdf:resource=&quot;http://sandbox-api.smartplatforms.org/records/2169591&quot; /&gt;
       &lt;sp:labName&gt;
- 	&lt;sp:CodedValue&gt;
+    &lt;sp:CodedValue&gt;
             &lt;dcterms:title&gt;Serum sodium&lt;/dcterms:title&gt;
             &lt;sp:provenance&gt;
-              &lt;sp:Provenance&gt;
+              &lt;sp:CodeProvenance&gt;
                 &lt;sp:sourceCode rdf:resource=&quot;http://my.local.coding.system/01234&quot; /&gt;
                 &lt;dcterms:title&gt;Random blood sodium level&lt;/dcterms:title&gt;
                 &lt;sp:translationFidelity rdf:resource=&quot;http://smartplatforms.org/terms/codes/TranslationFidelity#verified&quot;/&gt;
-              &lt;/sp:Provenance&gt;
+              &lt;/sp:CodeProvenance&gt;
             &lt;/sp:provenance&gt;
-	    &lt;sp:code&gt;
+        &lt;sp:code&gt;
               &lt;spcode:LOINC rdf:about=&quot;http://purl.bioontology.org/ontology/LNC/2951-2&quot;&gt;
                 &lt;rdf:type rdf:resource=&quot;http://smartplatforms.org/terms#Code&quot; /&gt; 
                 &lt;dcterms:title&gt;Serum sodium&lt;/dcterms:title&gt;
                 &lt;sp:system&gt;http://purl.bioontology.org/ontology/LNC/&lt;/sp:system&gt;
                 &lt;dcterms:identifier&gt;2951-2&lt;/dcterms:identifier&gt; 
               &lt;/spcode:LOINC&gt;    
-	      &lt;/sp:code&gt;
+          &lt;/sp:code&gt;
         &lt;/sp:CodedValue&gt;
       &lt;/sp:labName&gt;
 
@@ -2683,7 +2686,7 @@ http://www2a.cdc.gov/nip/IIS/IISStandards/vaccines.asp?rpt=cvx#54</rdfs:comment>
       &lt;sp:code&gt;
         &lt;spcode:LabResultStatus rdf:about=&quot;http://smartplatforms.org/terms/codes/LabStatus#final&quot;&gt;
           &lt;rdf:type rdf:resource=&quot;http://smartplatforms.org/terms#Code&quot; /&gt; 
-          &lt;dcterms:title&gt;Final results: complete and verified&lt;/dcterms:title&gt;      
+          &lt;dcterms:title&gt;Final&lt;/dcterms:title&gt;      
           &lt;sp:system&gt;http://smartplatforms.org/terms/codes/LabStatus#&lt;/sp:system&gt;
           &lt;dcterms:identifier&gt;final&lt;/dcterms:identifier&gt; 
         &lt;/spcode:LabResultStatus&gt;    
@@ -2708,27 +2711,6 @@ http://www2a.cdc.gov/nip/IIS/IISStandards/vaccines.asp?rpt=cvx#54</rdfs:comment>
       &lt;sp:specimenCollected&gt;
         &lt;sp:Attribution&gt;
           &lt;sp:startDate&gt;2010-12-27T17:00:00&lt;/sp:startDate&gt;
-          &lt;sp:participant&gt;
-            &lt;sp:Participant&gt;
-              &lt;sp:person&gt;
-                &lt;sp:Person&gt;&lt;foaf:name&gt;Tad Finnialispi&lt;/foaf:name&gt;&lt;/sp:Person&gt;
-              &lt;/sp:person&gt;
-              &lt;sp:organization&gt;
-                &lt;sp:Organization&gt;
-                  &lt;foaf:name&gt;City Lab&lt;/foaf:name&gt;
-                  &lt;sp:address&gt;
-                    &lt;sp:Address&gt;
-                      &lt;v:street-address&gt;20 Elm St&lt;/v:street-address&gt;
-                      &lt;v:locality&gt;Springfield&lt;/v:locality&gt;
-                      &lt;v:postal-code&gt;11111&lt;/v:postal-code&gt;
-                      &lt;v:country-name&gt;USA&lt;/v:country-name&gt;
-                    &lt;/sp:Address&gt;
-                  &lt;/sp:address&gt;
-                &lt;/sp:Organization&gt;
-              &lt;/sp:organization&gt;
-              &lt;sp:role&gt;Laboratory Technologist&lt;/sp:role&gt;
-            &lt;/sp:Participant&gt;
-          &lt;/sp:participant&gt;
         &lt;/sp:Attribution&gt;
       &lt;/sp:specimenCollected&gt;
       &lt;sp:notes&gt;Blood sample appears to have hemolyzed&lt;/sp:notes&gt;
@@ -3687,8 +3669,7 @@ For a medication with a simple dosing schedule, record the amount to take with e
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://smartplatforms.org/terms#valueAndUnit"/>
-                <owl:onClass rdf:resource="http://smartplatforms.org/terms#ValueAndUnit"/>
-                <owl:qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:cardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:cardinality>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
@@ -3862,15 +3843,13 @@ For a medication with a simple dosing schedule, record the amount to take with e
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://smartplatforms.org/terms#minimum"/>
-                <owl:onClass rdf:resource="http://smartplatforms.org/terms#ValueAndUnit"/>
-                <owl:qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:cardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:cardinality>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://smartplatforms.org/terms#maximum"/>
-                <owl:onClass rdf:resource="http://smartplatforms.org/terms#ValueAndUnit"/>
-                <owl:qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:cardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:cardinality>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
@@ -3918,8 +3897,7 @@ For a medication with a simple dosing schedule, record the amount to take with e
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://smartplatforms.org/terms#numerator"/>
-                <owl:onClass rdf:resource="http://smartplatforms.org/terms#ValueAndUnit"/>
-                <owl:qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:cardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:cardinality>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
@@ -3931,8 +3909,7 @@ For a medication with a simple dosing schedule, record the amount to take with e
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://smartplatforms.org/terms#denominator"/>
-                <owl:onClass rdf:resource="http://smartplatforms.org/terms#ValueAndUnit"/>
-                <owl:qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:cardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:cardinality>
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
@@ -6313,7 +6290,7 @@ system = http://www2a.cdc.gov/nip/IIS/IISStandards/vaccines.asp?rpt=cvx#</rdfs:c
 
     <owl:NamedIndividual rdf:about="&spcode;ImmunizationRefusalReason#recentOrganOrStemCellTransplant">
         <rdf:type rdf:resource="&spcode;ImmunizationRefusalReason"/>
-        <dcterms:title>Recent oragan/stem cell transplant</dcterms:title>
+        <dcterms:title>Recent organ/stem cell transplant</dcterms:title>
     </owl:NamedIndividual>
     
 
@@ -6448,7 +6425,7 @@ system = http://www2a.cdc.gov/nip/IIS/IISStandards/vaccines.asp?rpt=cvx#</rdfs:c
 
     <owl:NamedIndividual rdf:about="&spcode;TranslationFidelity#verified">
         <rdf:type rdf:resource="&spcode;TranslationFidelity"/>
-        <dcterms:title>Preliminary</dcterms:title>
+        <dcterms:title>Verified</dcterms:title>
     </owl:NamedIndividual>
     
 
