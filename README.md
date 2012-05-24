@@ -141,10 +141,7 @@ Reset the SMART server, regenerate sample data, and reload:
 
 * get the code
  <pre>
- git clone https://github.com/chb/smart_server.git
- cd smart_server
- git submodule init
- git submodule update
+ git clone --recursive https://github.com/chb/smart_server.git
  </pre>
 
 * copy <tt>settings.py.default</tt> to <tt>settings.py</tt> and update it:
@@ -178,10 +175,7 @@ Reset the SMART server, regenerate sample data, and reload:
 * get the code
 
  <pre>
- git clone https://github.com/chb/smart_ui_server.git
- cd smart_ui_server
- git submodule init
- git submodule update
+ git clone --recursive https://github.com/chb/smart_ui_server.git
  </pre>
 
 * copy <tt>settings.py.default</tt> to <tt>settings.py</tt> and update:
@@ -198,10 +192,7 @@ Reset the SMART server, regenerate sample data, and reload:
 
 * get the source code
  <pre>
- git clone https://github.com/chb/smart_sample_apps.git
- cd smart_sample_apps
- git submodule init
- git submodule update
+ git clone --recursive https://github.com/chb/smart_sample_apps.git
 </pre>
 
 * copy settings.py.default to settings.py and update:
@@ -212,7 +203,7 @@ Reset the SMART server, regenerate sample data, and reload:
 
 * get the source code and generate sample data
  <pre>
- git clone https://github.com/chb/smart_sample_patients.git
+ git clone --recursive https://github.com/chb/smart_sample_patients.git
  cd smart_sample_patients/bin
  python generate.py --write ../test-data/
  </pre>
