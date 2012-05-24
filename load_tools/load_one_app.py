@@ -11,7 +11,7 @@ from django.utils import simplejson
 import urllib2
 
 # Import the manifest validator function
-from manifest_tests import manifest_structure_validator
+from smart.common.utils.manifest_tests import manifest_structure_validator
 
 def sub(str, var, val):
     return str.replace("{%s}"%var, val)
