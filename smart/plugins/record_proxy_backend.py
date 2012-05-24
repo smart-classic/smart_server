@@ -1,6 +1,6 @@
 from django.conf import settings
-from smart.client.common.util import remap_node, parse_rdf, LookupType
-from smart.client.common.rdf_ontology import api_types, api_calls, ontology
+from smart.common.rdf_tools.util import remap_node, parse_rdf, LookupType
+from smart.common.rdf_tools.rdf_ontology import api_types, api_calls, ontology
 from smart.lib.utils import url_request, URLFetchException
 from smart.models.rdf_rest_operations import *
 from smart.models.ontology_url_patterns import CallMapper, BasicCallMapper

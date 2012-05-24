@@ -2,7 +2,7 @@
 
 from smart.triplestore import TripleStore 
 from smart.models.record_object import api_types, Record, RecordObject
-from smart.client.common.util import parse_rdf, serialize_rdf, remap_node, bound_graph, URIRef, Literal, BNode, sp, rdf
+from smart.common.rdf_tools.util import parse_rdf, serialize_rdf, remap_node, bound_graph, URIRef, Literal, BNode, sp, rdf
 from django.conf import settings
 import sys
 
