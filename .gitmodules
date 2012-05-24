@@ -1,9 +1,6 @@
 [submodule "oauth"]
 	path = oauth
 	url = https://github.com/chb/oauth_py.git
-[submodule "smart/client"]
-	path = smart/client
-	url = https://github.com/chb/smart_client_python.git
 [submodule "smart/common"]
 	path = smart/common
 	url = https://github.com/chb/smart_common.git
