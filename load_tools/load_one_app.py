@@ -10,6 +10,8 @@ import os
 from django.utils import simplejson
 import urllib2
 
+# Import the manifest validator function
+from smart.common.utils.manifest_tests import manifest_structure_validator
 
 def sub(str, var, val):
     return str.replace("{%s}"%var, val)
@@ -28,7 +30,14 @@ def LoadApp(app_params):
   LoadAppFromJSON(manifest_string, app_params)
   
 def LoadAppFromJSON(manifest_string, app_params):
+
   r = simplejson.loads(manifest_string)
+  
+  messages = manifest_structure_validator(r)
+  if len(messages) > 0:
+      print "WARNING! This app manifest is invalid"
+      for m in messages:
+        print m
 
   if "override_index" in app_params:
       r["index"] = app_params["override_index"]

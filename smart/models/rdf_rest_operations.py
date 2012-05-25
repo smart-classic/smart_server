@@ -1,7 +1,7 @@
 from smart.triplestore import *
 from smart.models.records import *
 from smart.lib.utils import *
-from smart.client.common.util import URIRef, bound_graph
+from smart.common.rdf_tools.util import URIRef, bound_graph
 from string import Template
 import re
 

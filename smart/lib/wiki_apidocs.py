@@ -9,8 +9,8 @@ import sys
 import copy
 stdout = sys.stdout
 sys.stdout = sys.stderr
-from smart.client.common.rdf_ontology import *
-from smart.client.common.util import bound_graph, URIRef
+from smart.common.rdf_tools.rdf_ontology import *
+from smart.common.rdf_tools.util import bound_graph, URIRef
 sys.stdout = stdout
 
 def strip_smart(s):
