@@ -20,6 +20,13 @@ PLUGIN_USE_PROXY = {{use_proxy}} # Enable PROXY_MODE: True or False
 PROXY_USER_ID = '{{proxy_user_email}}' # only needed if running in PROXY MODE
 PROXY_BASE = '{{proxy_base_url}}' # only needed if running in PROXY MODE
 
+PROXY_ERROR_NOTIFICATION = False
+PROXY_NOTIFICATION_FROM = '{{proxy_notification_from}}'
+PROXY_NOTIFICATION_TO = '{{proxy_notification_to}}'
+PROXY_NOTIFICATION_SUBJECT = '{{proxy_notification_subject}}'
+PROXY_NOTIFICATION_SMTP_SERVER = '{{proxy_notification_smtp_server}}'
+PROXY_ERROR_MESSAGE_OVERRIDE = '{{proxy_error_message_override}}'
+
 TRIPLESTORE = {
         'engine': '{{triplestore_engine}}',
         'record_endpoint': '{{triplestore_endpoint}}',
