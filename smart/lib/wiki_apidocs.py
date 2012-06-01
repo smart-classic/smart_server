@@ -60,11 +60,11 @@ def properties_start(type):
               |-""" % (type)
 
 
-def properties_row(property, name,card, description, required_p):
+def properties_row(property, uri,card, description, required_p):
     if required_p:
-      print "|width='30%%'|'''%s'''<br /><small>%s</small>\n|width='20%%'|<small>&#91;%s&#93;</small>\n|width='50%%'|%s\n|-"%(property, card, name, description)
+      print "|width='30%%'|'''%s'''<br /><small>%s</small>\n|width='70%%'|<small>%s</small><br />%s\n|-"%(property, card, uri, description)
     else:
-      print "|width='30%%'|%s<br /><small>%s</small>\n|width='20%%'|<small>&#91;%s&#93;</small>\n|width='50%%'|%s\n|-"%(property, card, name, description)
+      print "|width='30%%'|%s<br /><small>%s</small>\n|width='70%%'|<small>%s</small><br />%s\n|-"%(property, card, uri, description)
 
 def properties_end():
     print """|}"""
@@ -137,7 +137,7 @@ def wiki_properties_for_type(t):
         if c.cardinality_string[0] == '1':
           required_p = True
           
-        properties_row(name, uri, cardinality, desc, required_p)
+        properties_row(name, c.uri, cardinality, desc, required_p)
     properties_end()
     
 def wiki_api_for_type(t, calls_for_t):
