@@ -4,13 +4,30 @@
 # python smart/lib/wiki_apidocs.py payload > payload
 # or
 # python smart/lib/wiki_apidocs.py api > api
+#
+# notes
+# git clone git://github.com/RDFLib/rdfextras.git
+# git clone git://github.com/RDFLib/rdflib-jsonld.git
+
 
 import sys
+
+sys.path.insert(0, './smart/lib/rdfextras')
+sys.path.insert(0, './smart/lib/rdflib-jsonld')
+
+import rdfextras
+import rdflib_jsonld
+
+from rdflib import plugin
+from rdflib.serializer import Serializer
+
+plugin.register('json-ld', Serializer, 'rdflib_jsonld.jsonld_serializer', 'JsonLDSerializer')
+
 import copy
 stdout = sys.stdout
 sys.stdout = sys.stderr
-from smart.common.rdf_tools.rdf_ontology import *
-from smart.common.rdf_tools.util import bound_graph, URIRef
+from smart.client.common.rdf_ontology import *
+from smart.client.common.util import bound_graph, URIRef
 sys.stdout = stdout
 
 def strip_smart(s):
@@ -51,8 +68,14 @@ def type_start(t):
         print "</pre>"
 
     if example:
-        print "<pre class='code'>%s</pre>\n"%example
-
+        print "<pre class='code rdfxml'>\n%s\n</pre>\n"%example
+        try:
+            ex_graph = parse_rdf(example)
+        except:
+            return
+        print "<pre class='code nt'>\n%s\n</pre>\n\n"%ex_graph.serialize(format='nt')
+        print "<pre class='code turtle'>\n%s\n</pre>\n\n"%ex_graph.serialize(format='turtle')
+        print "<pre class='code jsonld'>\n%s\n</pre>\n\n"%ex_graph.serialize(format='json-ld', indent=4)
 
 def properties_start(type):
     print """{| class='datamodel'
@@ -136,7 +159,7 @@ def wiki_properties_for_type(t):
         required_p = False
         if c.cardinality_string[0] == '1':
           required_p = True
-          
+
         properties_row(name, c.uri, cardinality, desc, required_p)
     properties_end()
     
