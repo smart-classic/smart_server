@@ -68,14 +68,24 @@ def type_start(t):
         print "</pre>"
 
     if example:
-        print "<pre class='code rdfxml'>\n%s\n</pre>\n"%example
+        print """
+        <ul class="tabs">
+            <li>[[#none|RDF/XML]]</li>
+            <li>[[#none|N-Triples]]</li>
+            <li>[[#none|Turtle]]</li>
+            <li>[[#none|JSON-LD]]</li>
+        </ul>
+        <div class='panes'>
+        """
+        print "<div><pre class='code rdfxml'>\n%s\n</pre>\n</div>\n"%example
         try:
             ex_graph = parse_rdf(example)
         except:
             return
-        print "<pre class='code nt'>\n%s\n</pre>\n\n"%ex_graph.serialize(format='nt')
-        print "<pre class='code turtle'>\n%s\n</pre>\n\n"%ex_graph.serialize(format='turtle')
-        print "<pre class='code jsonld'>\n%s\n</pre>\n\n"%ex_graph.serialize(format='json-ld', indent=4)
+        print "<div><pre class='code nt'>\n%s\n</pre>\n</div>\n"%ex_graph.serialize(format='nt')
+        print "<div><pre class='code turtle'>\n%s\n</pre>\n</div>\n"%ex_graph.serialize(format='turtle')
+        print "<div><pre class='code jsonld'>\n%s\n</pre>\n</div>\n"%ex_graph.serialize(format='json-ld', indent=4)
+        print "</div>"
 
 def properties_start(type):
     print """{| class='datamodel'
