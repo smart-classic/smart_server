@@ -29,7 +29,7 @@ def LoadApp(app_params):
   s.close() 
   LoadAppFromJSON(manifest_string, app_params)
   
-def LoadAppFromJSON(manifest_string, app_params):
+def LoadAppFromJSON(manifest_string, app_params={}):
 
   r = simplejson.loads(manifest_string)
   

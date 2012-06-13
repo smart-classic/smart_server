@@ -9,7 +9,7 @@ from base import *
 from smart.lib import utils
 from smart.lib.utils import *
 from smart.common.rdf_tools.util import rdf, sp, bound_graph, URIRef, Namespace
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404
 from django.conf import settings
 from smart.models import *
 from smart.models.record_object import RecordObject
@@ -17,6 +17,8 @@ from smart.models.rdf_rest_operations import *
 from oauth.oauth import OAuthRequest
 from smart.models.ontology_url_patterns import CallMapper
 import datetime, urllib, json
+
+from load_tools.load_one_app import LoadAppFromJSON
 
 SAMPLE_NOTIFICATION = {
     'id' : 'foonotification',
@@ -341,7 +343,21 @@ def put_demographics(request, *args, **kwargs):
     Record.objects.create(id=record_id)
     return record_post_objects(request, record_id, obj, **kwargs)
 
-
+def manifest_put (request, descriptor):
+    try:
+        data = request.raw_post_data
+        LoadAppFromJSON(data)
+        return HttpResponse("ok")
+    except:
+        raise Http404
+    
+def manifest_delete(request, descriptor): 
+    try:
+        app = PHA.objects.get(consumer_key=descriptor)
+        app.delete()
+        return HttpResponse("ok")
+    except:
+        raise Http404  
 
 def debug_oauth(request, **kwargs):
     from smart.accesscontrol.oauth_servers import OAUTH_SERVER
