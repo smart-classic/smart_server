@@ -8,7 +8,8 @@ import smtplib
 from email.mime.text import MIMEText
 
 def proxy_get(request, *args, **kwargs):
-    print "proxying request", request.path, args, kwargs
+    logmsg = " ".join("proxying request", request.path, args, kwargs)
+    print logmsg
     url = settings.PROXY_BASE + request.path    
     try:
         ret = url_request(url, "GET", {})
@@ -19,7 +20,7 @@ def proxy_get(request, *args, **kwargs):
             me = settings.PROXY_NOTIFICATION_FROM
             you = settings.PROXY_NOTIFICATION_TO
 
-            msg = MIMEText(e.body)
+            msg = MIMEText(logmsg + "\n" + e.body)
             msg['Subject'] = settings.PROXY_NOTIFICATION_SUBJECT
             msg['From'] = me
             msg['To'] = you
