@@ -346,10 +346,19 @@ def put_demographics(request, *args, **kwargs):
 def manifest_put (request, descriptor):
     try:
         data = request.raw_post_data
-        LoadAppFromJSON(data)
-        return HttpResponse("ok")
+        manifest = json.loads(data)
+        id = manifest["id"]
+        
+        if id == descriptor:
+            LoadAppFromJSON(data)
+            return HttpResponse("ok")
+        else:
+            msg = "The manifest id '%s' must match the app descriptor '%s'" % (id, descriptor)
+            print msg
     except:
-        raise Http404
+        pass
+        
+    raise Http404
     
 def manifest_delete(request, descriptor): 
     try:
