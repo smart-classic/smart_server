@@ -19,3 +19,8 @@ def grant(machineapp, permset):
     permset.grant(create_proxied_record, None)
     permset.grant(generate_direct_url, None)
     permset.grant(session_from_direct_url, None)
+    
+    permset.grant(resolve_manifest, None)
+    permset.grant(manifest_delete, None)
+    permset.grant(manifest_put, None)
+    permset.grant(all_manifests, None)
