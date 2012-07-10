@@ -134,6 +134,10 @@ Reset the SMART server, regenerate sample data, and reload:
 
     python smart_manager.py -r -p -l
 
+## Loading additional apps
+    cd smart_server
+    # file path can be a URL or local file; OAuth secret can be any string
+    python manage.py load_app http://path/to/manifest.json smartapp-secret
 
 # Manual steps: if you don't take the automated approach...
 
