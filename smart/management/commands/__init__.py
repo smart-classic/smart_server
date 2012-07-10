@@ -1,3 +1,3 @@
 """
-commands for Indivo
+commands for SMART
 """

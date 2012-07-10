@@ -2,7 +2,7 @@
 
 from django.conf import settings
 from smart.models import *
-from smart.lib.utils import get_capabilities
+from smart.lib.utils import get_capabilities, random_string
 from string import Template
 import re
 import sys
@@ -27,12 +27,19 @@ def LoadApp(app_params):
 
   manifest_string = s.read()
   s.close() 
-  LoadAppFromJSON(manifest_string, app_params)
+  return LoadAppFromJSON(manifest_string, app_params)
   
-def LoadAppFromJSON(manifest_string, app_params):
+def LoadAppFromJSON(manifest_string, app_params=None):
 
+  if app_params == None: app_params = {}
+
+  if "secret" not in app_params:
+    app_params["secret"] =  random_string(16)
+
+  assert app_params != None, "Expected a consumer secret among the app params"
   r = simplejson.loads(manifest_string)
-  
+  secret = app_params["secret"]
+ 
   messages = manifest_structure_validator(r)
   if len(messages) > 0:
       print "WARNING! This app manifest is invalid"
@@ -55,7 +62,7 @@ def LoadAppFromJSON(manifest_string, app_params):
       a = HelperApp.objects.create(
                        description = r["description"],
                        consumer_key = r["id"],
-                       secret = 'smartapp-secret',
+                       secret = secret,
                        name =r["name"],
                        email=r["id"],
                        manifest=manifest_string)
@@ -77,7 +84,7 @@ def LoadAppFromJSON(manifest_string, app_params):
       a = PHA.objects.create(
                        description = r["description"],
                        consumer_key = r["id"],
-                       secret = 'smartapp-secret',
+                       secret = secret,
                        name =r["name"],
                        email=r["id"],
                        mode=r["mode"],
@@ -116,14 +123,24 @@ def LoadAppFromJSON(manifest_string, app_params):
                               description=hook_data["description"],
                               url=hook_url,
                               requires_patient_context=rpc)
+  return a
+
 if __name__ == "__main__":
     import string
-    for v in sys.argv[1:]:
-        print "Loading app: %s"%v
+    v = sys.argv[1]
+    secret = None
 
-        app_params = {
-            "manifest": v        
-        }
+    if len(sys.argv)>2:
+        secret = sys.argv[2]
 
-        LoadApp(app_params)
+    print "Loading apps via load_one_app is deprecated.  Please use 'python manage.py load_app' instead."
+    print "Loading app: %s"%v
 
+    app_params = {
+        "manifest": v,
+    }
+    if secret:
+        app_params["secret"] = secret
+
+    a = LoadApp(app_params)
+    print "Loaded app with secret: %s"%a.secret
