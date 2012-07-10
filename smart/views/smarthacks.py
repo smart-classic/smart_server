@@ -218,8 +218,27 @@ def remove_app(request, account, app):
 @CallMapper.register(method="GET",
                      category="container_items",
                      target="http://smartplatforms.org/terms#Demographics")
-def record_search(request):
 
+
+def _record_sparql_from_request(request):
+    """Composes a SPARQL query from a request's GET params
+    
+    If the request contains a 'sparql' attribute, the value of that attribute is assumed to be complete SPARQL and returned. Otherwise, a query is generated
+    from the possible attributes:
+        - family_name
+        - given_name
+        - gender
+        - medical_record_number
+        - zipcode
+        - birthday
+    """
+    
+    # did we get a complete sparql query? If so, just return it
+    sparql = request.GET.get('sparql', None)
+    if sparql:
+        return sparql
+    
+    # nope, compose one from the parameters
     sparql = Template("""PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX  foaf:  <http://xmlns.com/foaf/0.1/>
 PREFIX  sp:  <http://smartplatforms.org/terms#>
@@ -233,8 +252,8 @@ $statements
 }
 }
 order by ?ln""")
-
-
+    
+    # collect the statements
     statements = []
     fn = request.GET.get('family_name', None)
     if fn:
@@ -246,18 +265,15 @@ order by ?ln""")
         gn = string_to_alphanumeric(gn)
         statements += [""" ?person v:n/v:given-name ?givenName. FILTER  regex(?givenName, "^%s","i") """%gn]
 
-
     gender = request.GET.get('gender', None)
     if gender:
         gender = string_to_alphanumeric(gender)
         statements += [""" ?person foaf:gender ?gender. FILTER  regex(?gender, "^%s","i") """%gender]
-
+    
     mrn = request.GET.get('medical_record_number', None)
     if mrn:
         mrn = string_to_alphanumeric(mrn)
         statements += [""" ?person sp:medicalRecordNumber/dcterms:identifier ?mrnid. FILTER  regex(?mrnid, "^%s$","i") """%mrn]
-
-
     zipcode = request.GET.get('zipcode', None)
     if zipcode:
         zipcode = string_to_alphanumeric(zipcode)
@@ -267,14 +283,18 @@ order by ?ln""")
     if birthday:
         birthday = string_to_alphanumeric(birthday)
         statements += [""" ?person v:bday ?birthday. FILTER  regex(?birthday, "^%s$","i") """%birthday]
-
     statements = " ".join(statements)
-    q = sparql.substitute(statements=statements)
+    return sparql.substitute(statements=statements)
+
+
+def record_search(request):
+    q = _record_sparql_from_request(request)
     record_list = Record.search_records(q)
     return HttpResponse(record_list, mimetype="application/rdf+xml")
 
+
 def record_search_xml(request):
-    q = request.GET.get('sparql', None)
+    q = _record_sparql_from_request(request)
     record_list = Record.search_records(q)
     record_list = Record.rdf_to_objects(record_list)
     return render_template('record_list', {'records': record_list}, type='xml')
