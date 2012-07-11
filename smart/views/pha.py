@@ -43,6 +43,8 @@ def resolve_manifest(request, descriptor):
 
 def resolve_manifest_with_app(request, activity_name, app_id):
   act = resolve_activity_helper(request, activity_name, app_id)
+  if act == None:
+    raise Http404
 
   manifest = act.app.manifest
   if (act.remapped):
@@ -64,10 +66,15 @@ def resolve_activity_helper(request, activity_name, app_id):
   act = None
   
   if (app_id != None):
-      act = AppActivity.objects.filter(name=activity_name, app__email=app_id)[0]
+      act = AppActivity.objects.filter(name=activity_name, app__email=app_id)
   else:
-      act = AppActivity.objects.filter(name=activity_name)[0]
-      
+      act = AppActivity.objects.filter(name=activity_name)
+  
+  if len(act) == 0: 
+      return None
+
+  act = act[0]
+ 
   if (act.url == None):
     act.url = PHA.objects.get(id=act.app.id).start_url_template
     
@@ -80,7 +87,6 @@ def resolve_activity_helper(request, activity_name, app_id):
   except:
       act.remapped = False
 
-  print "mapped ", request.principal, activity_name, app_id, " to: ", act
   return act
 
   
