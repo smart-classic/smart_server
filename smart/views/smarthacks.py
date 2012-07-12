@@ -405,18 +405,18 @@ def debug_oauth(request, **kwargs):
     ret += "\n"
 
     try:
-      oauth_request = OAUTH_SERVER.extract_oauth_request(djangoutils.extract_request(request))
-      ret += "OAuth Debugging: \n\n"
-      ret += "SBS: \n"
-      sbs = oauth_request.get_signature_base_string()
-      ret += sbs
-      ret += "Expected Signature: \n"
-      ret += oauth.SIGNATURE_METHODS['HMAC-SHA1'].sign(sbs, oauth_request.consumer, oauth_request.token)
-      ret += "Your Signature: \n"
-      ret += oauth_request.signature
+        oauth_request = OAUTH_SERVER.extract_oauth_request(djangoutils.extract_request(request))
+        ret += "OAuth Debugging: \n\n"
+        ret += "SBS: \n"
+        sbs = oauth_request.get_signature_base_string()
+        ret += sbs
+        ret += "Expected Signature: \n"
+        ret += oauth.SIGNATURE_METHODS['HMAC-SHA1'].sign(sbs, oauth_request.consumer, oauth_request.token)
+        ret += "Your Signature: \n"
+        ret += oauth_request.signature
     except oauth.OAuthError as e:
-      import traceback
-      ret += "An error occurred:\n"
-      ret += traceback.format_exc()
+        import traceback
+        ret += "An error occurred:\n"
+        ret += traceback.format_exc()
     return HttpResponse(ret, "text/plain")
 
