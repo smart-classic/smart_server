@@ -167,7 +167,10 @@ def session_create(request):
 @paramloader()
 def request_token_claim(request, request_token):
     # FIXME: need a select for update here
-    rt = ReqToken.objects.get(token = request_token)
+    try:
+        rt = ReqToken.objects.get(token = request_token)
+    except models.ReqToken.DoesNotExist:
+        raise PermissionDenied()
     
     # already claimed by someone other than me?
     if rt.authorized_by != None and rt.authorized_by != request.principal:
