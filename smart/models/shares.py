@@ -87,7 +87,6 @@ class AccessToken(Principal, Token):
     vars = {'oauth_token' : self.token, 
             'oauth_token_secret' : self.token_secret
             }
-    
     if (self.share.record != None):
         vars['record_id'] = self.share.record.id 
     if (self.share.authorized_by != None):
@@ -137,7 +136,7 @@ class ReqToken(Principal, Token):
 
   # make sure email is set 
   def save(self, *args, **kwargs):
-    self.email = "%s@requesttokens.indivo.org" % self.token
+    self.email = "%s@requesttokens.smartplatforms.org" % self.token
     super(ReqToken,self).save(*args, **kwargs)
   
   @property

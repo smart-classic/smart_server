@@ -50,6 +50,10 @@ def container_capabilities(request, **kwargs):
     
 def get_version(request): return HttpResponse(settings.VERSION, "text/plain")
 
+def get_manifest(request): 
+    return HttpResponse(json.dumps(settings.MANIFEST), 
+            mimetype="application/json");
+
 @paramloader()
 def record_list(request, account):
     return render_template('record_list', {'records': [ar.record for ar in account.accountrecord_set.all()]}, type='xml')
