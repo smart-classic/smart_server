@@ -11,7 +11,7 @@ def check_environment():
 def check_database():
     # ensure database is online + accessible
     try:
-        a = OAuthApp.objects.all()[0]
+        a = OAuthApp.objects.all()
     except:
         assert False, "Could not connect to database.  Check settings."
 
