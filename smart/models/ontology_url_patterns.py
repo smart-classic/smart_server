@@ -25,7 +25,6 @@ class OntologyURLMapper():
 
       print "got calls", len(api_calls)
       for c in api_calls:
-        print "setting path", c.path, c
         ret.setdefault(c.path, set()).add(c)
 
       calls = ret.keys()
