@@ -47,7 +47,7 @@ def get_container_manifest(request, **kwargs):
         
         'capabilities': get_capabilities()
     }
-    return utils.x_domain(HttpResponse(json.dumps(response, indent=4), "application/json"))
+    return utils.x_domain(HttpResponse(json.dumps(response, sort_keys=True, indent=4), "application/json"))
 
 @paramloader()
 def record_list(request, account):
