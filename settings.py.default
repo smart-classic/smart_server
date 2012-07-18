@@ -2,7 +2,7 @@ import os
 # Django settings for smart project.
 
 # SMART container descriptors
-VERSION = '0.4'
+VERSION = '0.5'
 NAME = 'SMART v%s Sandbox' % VERSION
 DESCRIPTION = 'Public sandbox to demonstrate the SMART API'
 
