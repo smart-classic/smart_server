@@ -16,8 +16,6 @@ urlpatterns += patterns(
     # OAuth
     (r'^oauth/debug', debug_oauth),
     (r'^oauth/', include('smart.urls.oauth')),
-    
-    (r'^version$', get_version),
     (r'^manifest.json$', get_manifest),
 
     # Record

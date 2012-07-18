@@ -59,15 +59,9 @@ def grant_baseline(permset):
   # list the phas
   permset.grant(smart.views.all_phas, None)
 
-  # version
-  permset.grant(smart.views.get_version, None)
-
   # manifest
   permset.grant(smart.views.get_manifest, None)
-#
-#  # SMArt API -- this should check perm based on app, user, record...
-#  permset.grant(smart.views.smarthacks.meds, [])
-#  
+
   # static files
   # for development purposes
   import django.views.static
@@ -76,5 +70,5 @@ def grant_baseline(permset):
   # Anyone can make an OPTIONS request on a page
   permset.grant(smart.views.allow_options, None)
   permset.grant(smart.views.debug_oauth, None)
-  permset.grant(smart.views.smarthacks.container_capabilities, None)
+  permset.grant(smart.views.smarthacks.get_container_manifest, None)
   permset.grant(smart.views.smarthacks.download_ontology)

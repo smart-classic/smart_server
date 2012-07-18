@@ -32,23 +32,22 @@ sporg = Namespace("http://smartplatforms.org/")
 
 @CallMapper.register(method="GET",
                      category="container_items",
-                     target="http://smartplatforms.org/terms#Capabilities")
-def container_capabilities(request, **kwargs):
-    #m = bound_graph()
-    #site = URIRef(settings.SITE_URL_PREFIX)
-    #print "avail", dir(m)
-    
-    #m.add((site, rdf['type'], sp['Container']))
-    #m.add((site, sp['capability'], sporg['capability/SNOMED/lookup']))
-    #m.add((site, sp['capability'], sporg['capability/SPL/lookup']))
-    #m.add((site, sp['capability'], sporg['capability/Pillbox/lookup']))
-    
-    #return utils.x_domain(HttpResponse(utils.serialize_rdf(m), "application/rdf+xml"))
-    
-    capabilities = get_capabilities()
-    return utils.x_domain(HttpResponse(json.dumps(capabilities, sort_keys=True, indent=4), "application/json"))
-    
-def get_version(request): return HttpResponse(settings.VERSION, "text/plain")
+                     target="http://smartplatforms.org/terms#ContainerManifest")
+def get_container_manifest(request, **kwargs):
+    response = {
+        'smart_version': settings.VERSION,
+        'api_base': settings.SITE_URL_PREFIX,
+        'name': settings.NAME,
+        'description': settings.DESCRIPTION,
+        'admin': settings.EMAIL_SUPPORT_ADDRESS,
+
+        'oauth_request': 'http://request/uri',     # PLACEHOLDER - TO BE UPDATED
+        'oauth_authorize': 'http://authorize/uri', # PLACEHOLDER - TO BE UPDATED
+        'oauth_exchange': 'http://exchange/uri',   # PLACEHOLDER - TO BE UPDATED
+        
+        'capabilities': get_capabilities()
+    }
+    return utils.x_domain(HttpResponse(json.dumps(response, sort_keys=True, indent=4), "application/json"))
 
 def get_manifest(request): 
     return HttpResponse(json.dumps(settings.MANIFEST), 
@@ -247,6 +246,7 @@ def _record_sparql_from_request(request):
 PREFIX  foaf:  <http://xmlns.com/foaf/0.1/>
 PREFIX  sp:  <http://smartplatforms.org/terms#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX v: <http://www.w3.org/2006/vcard/ns#>
 CONSTRUCT {?person rdf:type sp:Demographics} 
 WHERE   {
 graph ?g {
@@ -261,13 +261,13 @@ order by ?ln""")
     fn = request.GET.get('family_name', None)
     if fn:
         fn = string_to_alphanumeric(fn)
-        statements += [""" ?person foaf:familyName ?familyName. FILTER  regex(?familyName, "^%s","i") """%fn]
-    
+        statements += [""" ?person v:n/v:family-name ?familyName. FILTER  regex(?familyName, "^%s","i") """%fn]
+
     gn = request.GET.get('given_name', None)
     if gn:
         gn = string_to_alphanumeric(gn)
-        statements += [""" ?person foaf:givenName ?givenName. FILTER  regex(?givenName, "^%s","i") """%gn]
-    
+        statements += [""" ?person v:n/v:given-name ?givenName. FILTER  regex(?givenName, "^%s","i") """%gn]
+
     gender = request.GET.get('gender', None)
     if gender:
         gender = string_to_alphanumeric(gender)
@@ -276,18 +276,16 @@ order by ?ln""")
     mrn = request.GET.get('medical_record_number', None)
     if mrn:
         mrn = string_to_alphanumeric(mrn)
-        statements += [""" ?person sp:medicalRecordNumber ?mrn.  ?mrn dcterms:identifier  ?mrnid. FILTER  regex(?mrnid, "^%s$","i") """%mrn]
-    
+        statements += [""" ?person sp:medicalRecordNumber/dcterms:identifier ?mrnid. FILTER  regex(?mrnid, "^%s$","i") """%mrn]
     zipcode = request.GET.get('zipcode', None)
     if zipcode:
         zipcode = string_to_alphanumeric(zipcode)
-        statements += [""" ?person sp:zipcode ?zipcode. FILTER  regex(?zipcode, "^%s$","i") """%zipcode]
+        statements += [""" ?person v:adr/v:postal-code ?zipcode. FILTER  regex(?zipcode, "^%s$","i") """%zipcode]
 
     birthday = request.GET.get('birthday', None)
     if birthday:
         birthday = string_to_alphanumeric(birthday)
-        statements += [""" ?person sp:birthday ?birthday. FILTER  regex(?birthday, "^%s$","i") """%birthday]
-    
+        statements += [""" ?person v:bday ?birthday. FILTER  regex(?birthday, "^%s$","i") """%birthday]
     statements = " ".join(statements)
     return sparql.substitute(statements=statements)
 

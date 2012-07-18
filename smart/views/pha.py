@@ -73,12 +73,10 @@ def resolve_activity_helper(request, activity_name, app_id):
     if len(act) == 0: 
         return None
   
-    if (app_id != None):
-        act = AppActivity.objects.filter(name=activity_name, app__email=app_id)[0]
-    else:
-        act = AppActivity.objects.filter(name=activity_name)[0]
-    
+    act = act[0]
+ 
     if (act.url == None):
+        act.url = PHA.objects.get(id=act.app.id).start_url_template
         act.url = PHA.objects.get(id=act.app.id).start_url_template
     
     try:
@@ -92,7 +90,6 @@ def resolve_activity_helper(request, activity_name, app_id):
     
     print "mapped ", request.principal, activity_name, app_id, " to: ", act
     return act
-
 
 def pha(request, pha_email):
     try:
