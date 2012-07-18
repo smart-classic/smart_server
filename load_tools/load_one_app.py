@@ -11,7 +11,7 @@ from django.utils import simplejson
 import urllib2
 
 # Import the manifest validator function
-from smart.common.utils.manifest_tests import manifest_structure_validator
+from smart.common.utils.manifest_tests import app_manifest_structure_validator
 
 def sub(str, var, val):
     return str.replace("{%s}"%var, val)
@@ -40,7 +40,7 @@ def LoadAppFromJSON(manifest_string, app_params=None):
   r = simplejson.loads(manifest_string)
   secret = app_params["secret"]
  
-  messages = manifest_structure_validator(r)
+  messages = app_manifest_structure_validator(r)
   if len(messages) > 0:
       print "WARNING! This app manifest is invalid"
       for m in messages:
