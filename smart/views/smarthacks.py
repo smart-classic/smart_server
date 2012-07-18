@@ -40,11 +40,11 @@ def get_container_manifest(request, **kwargs):
         'name': settings.NAME,
         'description': settings.DESCRIPTION,
         'admin': settings.EMAIL_SUPPORT_ADDRESS,
-
-        'oauth_request': 'http://request/uri',     # PLACEHOLDER - TO BE UPDATED
-        'oauth_authorize': 'http://authorize/uri', # PLACEHOLDER - TO BE UPDATED
-        'oauth_exchange': 'http://exchange/uri',   # PLACEHOLDER - TO BE UPDATED
-        
+        'launch_urls': {
+            'request_token': settings.SITE_URL_PREFIX+"/oauth/request_token",
+            'authorize_token': settings.SMART_UI_SERVER_LOCATION+"/oauth/authorize",
+            'exchange_token': settings.SITE_URL_PREFIX+"/oauth/access_token",
+        },
         'capabilities': get_capabilities()
     }
     return utils.x_domain(HttpResponse(json.dumps(response, sort_keys=True, indent=4), "application/json"))
