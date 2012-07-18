@@ -1,8 +1,10 @@
 import os
 # Django settings for smart project.
 
-# SMART version identifier
+# SMART container descriptors
 VERSION = '0.4'
+NAME = 'SMART v%s Sandbox' % VERSION
+DESCRIPTION = 'Public sandbox to demonstrate the SMART API'
 
 # base URL for the app
 APP_HOME = '{{path_to_smart_server}}'
