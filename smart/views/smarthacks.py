@@ -47,8 +47,6 @@ def container_capabilities(request, **kwargs):
     
     capabilities = get_capabilities()
     return utils.x_domain(HttpResponse(json.dumps(capabilities, sort_keys=True, indent=4), "application/json"))
-    
-def get_version(request): return HttpResponse(settings.VERSION, "text/plain")
 
 @paramloader()
 def record_list(request, account):
