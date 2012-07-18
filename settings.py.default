@@ -38,13 +38,6 @@ TRIPLESTORE = {
 
 ONTOLOGY_FILE = os.path.join(APP_HOME, "smart/document_processing/schema/smart.owl")
 
-MANIFEST = {
-    'version': VERSION,
-    'request_token_url': SITE_URL_PREFIX+"/oauth/request_token",
-    'authorize_token_url': SMART_UI_SERVER_LOCATION+"/oauth/authorize",
-    'exchange_token_url': SITE_URL_PREFIX+"/oauth/access_token",
-}
-
 DEBUG = True
 DEBUG_PROPAGATE_EXCEPTIONS = True
 TEMPLATE_DEBUG = DEBUG
