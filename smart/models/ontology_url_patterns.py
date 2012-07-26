@@ -13,8 +13,9 @@ class OntologyURLMapper():
 
         for c in calls:
           mapper = CallMapper.map_call(c)
-          methods[str(c.method)] = mapper.maps_to
+          methods[str(c.http_method)] = mapper.maps_to
           arguments.update(mapper.arguments)
+        print "mapping", p, methods, arguments
         self.patterns += patterns( '',
                                  (self.django_path(p),
                                   MethodDispatcher(methods), 
@@ -62,6 +63,7 @@ class CallMapper(object):
 
       in_order = sorted(potential_maps.keys(), 
                         key=lambda x: potential_maps[x])
+      print call.client_method_name, in_order
       return in_order[-1]
 
     @classmethod
@@ -70,20 +72,25 @@ class CallMapper(object):
         cls.__mapper_registry.add(new_registrant[0])
         return new_registrant
 
-      method = options.pop('method', None)
+      http_method = options.pop('method', None)
       category = options.pop('category', None)
+      cardinality = options.pop('cardinality', None)
+      client_method_name = options.pop('client_method_name', None)
       target = options.pop('target', None)
       filter_func = options.pop('filter_func', None)
       path = options.pop('path', None)
+
+      assert http_method or category or cardinality or client_method_name or target or path, "Can't define a call mapping with no parameters"
 
       def ret(single_func):
         class SingleMethodMatcher(BasicCallMapper):
           @property
           def maps_p(self):
-            return  ((not method or str(self.call.method) == method) and
+            return  ((not http_method or str(self.call.htt_method) == http_method) and
                      (not category or str(self.call.category) == category) and
                      (not target or str(self.call.target) == target) and 
                      (not path or str(self.call.path) == path) and 
+                     (not client_method_name or str(self.call.client_method_name) == client_method_name) and 
                      (not filter_func or filter_func(self.call)))
           maps_to = staticmethod(single_func)  
         cls.__mapper_registry.add(SingleMethodMatcher)

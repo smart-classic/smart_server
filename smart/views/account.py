@@ -222,8 +222,8 @@ def user_reset_password(request):
 
     except: return HttpResponseBadRequest()
 
-@CallMapper.register(method="GET",
-                     category="container_item",
+@CallMapper.register(http_method="GET",
+                     cardinality="single",
                      target="http://smartplatforms.org/terms#User")
 def user_get(request, user_id, **kwargs):
     print "user_get", user_id, kwargs
@@ -235,8 +235,8 @@ def user_get(request, user_id, **kwargs):
     return utils.x_domain(HttpResponse(utils.serialize_rdf(m), "application/rdf+xml"))
 
 
-@CallMapper.register(method="GET",
-                     category="container_items",
+@CallMapper.register(http_method="GET",
+                     cardinality="multiple",
                      target="http://smartplatforms.org/terms#User")
 def user_search(request, **kwargs):
     aa = Account.objects.all()

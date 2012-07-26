@@ -42,7 +42,6 @@ def grant(accesstoken, permset):
     permset.grant(do_webhook)
     permset.grant(record_delete_all_objects, [check_token_for_record])
     permset.grant(record_delete_object, [check_token_for_record])
-    permset.grant(record_put_object, [check_token_for_record])
     permset.grant(record_post_objects, [check_token_for_record])
     permset.grant(record_get_all_objects, [check_token_for_record])
 
@@ -54,7 +53,6 @@ def grant(accesstoken, permset):
     except: 
         pass
     
-    permset.grant(put_demographics, [check_token_for_record])
     permset.grant(record_post_alert, [check_token_for_record])
     permset.grant(user_search)
     permset.grant(user_get)

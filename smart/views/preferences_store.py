@@ -1,7 +1,9 @@
 from smart.models import *
 from base import utils
 from django.http import HttpResponse
+from smart.models.ontology_url_patterns import CallMapper
 
+@CallMapper.register(client_method_name="put_user_preferences")
 def preferences_put (request, account_email, pha_email):
     try:
         ct = utils.get_content_type(request).lower().split(';')[0]
@@ -15,10 +17,12 @@ def preferences_put (request, account_email, pha_email):
     p.save()
     return HttpResponse("ok")
 
+@CallMapper.register(client_method_name="get_user_preferences")
 def preferences_get (request, account_email, pha_email):   
     p = fetch_preferences (account_email, pha_email)
     return HttpResponse(p.data, mimetype=p.mime)
 
+@CallMapper.register(client_method_name="delete_user_preferences")
 def preferences_delete(request, account_email, pha_email): 
     p = fetch_preferences (account_email, pha_email)
     p.delete()

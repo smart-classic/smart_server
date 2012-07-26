@@ -176,6 +176,7 @@ for t in api_types:
 class RecordCallMapper(object):
     def __init__(self, call):
         self.call = call
+        print self.call.target, RecordObject[self.call.target]
         self.obj = RecordObject[self.call.target]
 
     @property
@@ -190,7 +191,9 @@ class RecordCallMapper(object):
     @property
     def map_score(self):
         cat = str(self.call.category)
-        if cat.startswith("record") and cat.endswith(self.ending):
+        cardinality = str(self.call.cardinality)
+        print "considering ", cat, cardinality, "vs",self.cardinality
+        if cat == "record" and cardinality == self.cardinality:
             return 1
         return 0
 
@@ -201,7 +204,7 @@ class RecordCallMapper(object):
 
     @property
     def maps_to(self):
-        m = str(self.call.method)
+        m = str(self.call.http_method)
 
         if "GET" == m:
             return self.get
@@ -220,7 +223,8 @@ class RecordItemsCallMapper(RecordCallMapper):
     def get(self): return self.obj.get_all
     @property
     def delete(self): return self.obj.delete_all
-    ending = "_items"
+    
+    cardinality = "multiple"
 
 @CallMapper.register
 class RecordItemCallMapper(RecordCallMapper):
@@ -228,12 +232,9 @@ class RecordItemCallMapper(RecordCallMapper):
     def get(self): return self.obj.get_one
     @property
     def delete(self): return self.obj.delete_one
-    ending = "_item"
+    cardinality = "single"
 
-
-@CallMapper.register(category="record_items",
-                     method="GET",
-                     target="http://smartplatforms.org/terms#Allergy")
+@CallMapper.register(client_method_name="get_allergies")
 def record_get_allergies(request, *args, **kwargs):
     record_id = kwargs['record_id']
     a = RecordObject["http://smartplatforms.org/terms#Allergy"]
@@ -243,16 +244,13 @@ def record_get_allergies(request, *args, **kwargs):
     allergy_graph = c.get_objects(a)
     exclusion_graph = c.get_objects(ae)
     
-
     a = parse_rdf(allergy_graph)
     ae = parse_rdf(exclusion_graph)
 
     a += ae
     return rdf_response(serialize_rdf(a))
 
-@CallMapper.register(category="record_item",
-                     method="POST",
-                     target="http://smartplatforms.org/terms#Alert")
+@CallMapper.register(client_method_name="post_alert")
 def record_post_alert(request, *args, **kwargs):
       record_id = kwargs['record_id']
       r = Record.objects.get(id=record_id)
