@@ -50,7 +50,7 @@ urlpatterns += patterns(
     (r'^static/(?P<path>.*)$', 'django.views.static.serve', {'document_root': 'static'}),
 
     # SMArt API                                       
-    (r'^accounts/(?P<account_email>[^/]+)/apps/(?P<pha_email>[^/]+)/preferences', MethodDispatcher({
+    (r'^users/(?P<user_id>[^/]+)/apps/(?P<pha_email>[^/]+)/preferences', MethodDispatcher({
                                        'GET': preferences_get,
                                        'PUT': preferences_put,
                                        'DELETE': preferences_delete,
