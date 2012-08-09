@@ -240,8 +240,8 @@ def record_get_allergies(request, *args, **kwargs):
     ae = RecordObject["http://smartplatforms.org/terms#AllergyExclusion"]
 
     c = RecordTripleStore(Record.objects.get(id=record_id))
-    allergy_graph = c.get_objects(a)
-    exclusion_graph = c.get_objects(ae)
+    allergy_graph = c.get_objects(request.path, request.GET, a)
+    exclusion_graph = c.get_objects(request.path, request.GET, ae)
     
 
     a = parse_rdf(allergy_graph)
