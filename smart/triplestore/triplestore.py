@@ -76,13 +76,7 @@ class TripleStore(engine.connector):
 
     def get_objects(self, path, queries, obj, limit_to_statements=None):
         timeStart = time.time()
-        meta = {
-            'processingTimeMs': 0,
-            'nextPageURL': '',
-            'resultsReturned': 0,
-            'totalResultCount': 0,
-            'resultOrder': '()'
-        }
+        meta = {}
     
         matches = super(TripleStore, self).get_clinical_statement_uris(obj, queries, limit_to_statements)
         matches = self.applyFilters (matches, obj.node.n3(), queries)
