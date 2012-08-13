@@ -178,7 +178,10 @@ def getTypeName (type_uri):
     uri = re.search("<(.*)>", type_uri).group(1)
     for t in api_types:
         if str(t.uri) == uri:
-            return str(t.name)
+            # When there are two camelbacked words in the name, they come back from t.name
+            # separated by a space. So, we will remove the space to get back to camelback
+            # nomenclature.
+            return str(t.name).replace(' ','')
             
     # If not, fall back to basic pattern matching
     return re.search("<http://smartplatforms.org/terms#(.*)>", type_uri).group(1)
