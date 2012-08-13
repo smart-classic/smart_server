@@ -1,5 +1,5 @@
 from django.conf import settings
-from smart.common.rdf_tools.rdf_ontology import api_types
+from smart.common.rdf_tools.rdf_ontology import api_types, SMART_Class
 import re
 
 def getCodes (codeStr):
@@ -173,18 +173,18 @@ class CompoundPaginator (Paginator):
             return uris
         
 def getTypeName (type_uri):
+    try:
+        # Try resolving the name through the ontology
+        uri = re.search("<(.*)>", type_uri).group(1)
+        sc = SMART_Class[uri]
 
-    # Try resolving the name through the ontology
-    uri = re.search("<(.*)>", type_uri).group(1)
-    for t in api_types:
-        if str(t.uri) == uri:
-            # When there are two camelbacked words in the name, they come back from t.name
-            # separated by a space. So, we will remove the space to get back to camelback
-            # nomenclature.
-            return str(t.name).replace(' ','')
-            
-    # If not, fall back to basic pattern matching
-    return re.search("<http://smartplatforms.org/terms#(.*)>", type_uri).group(1)
+        # When there are two camelbacked words in the name, they come back from t.name
+        # separated by a space. So, we will remove the space to get back to camelback
+        # nomenclature.
+        return str(sc.name).replace(' ','')
+    except:
+        # If not, fall back to basic pattern matching
+        return re.search("<http://smartplatforms.org/terms#(.*)>", type_uri).group(1)
         
 FILTERS = {
     'VitalSigns': FilterVitals,
