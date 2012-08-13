@@ -4,4 +4,3 @@ from rdflib import Graph, ConjunctiveGraph, Namespace, BNode, Literal, RDF, URIR
 from django.conf import settings
 import urllib, uuid, base64, time
 import time, json, sys
-

@@ -1,4 +1,6 @@
 from django.conf import settings
+from smart.common.rdf_tools.rdf_ontology import api_types
+import re
 
 def getCodes (codeStr):
     return codeStr.split("|")
@@ -7,10 +9,10 @@ class Filter ():
     def getQuery (self, query_params):
         pass
 
-    def apply (self, tripplestore, uris, query_params):
+    def apply (self, triplestore, uris, query_params):
         query = self.getQuery (query_params)
         if query and len(query) > 0:
-            results = tripplestore.select(query)
+            results = triplestore.select(query)
             valid_uris = set([uri for binding in results for uri in binding.values() ])
             return set([uri for uri in uris if uri in valid_uris])
         else:
@@ -90,8 +92,8 @@ class Paginator (object):
     def __init__ (self, by_rdf_term):
         self.by_rdf_term = by_rdf_term
 
-    def sortedList (self, list, tripplestore):
-        codes_strings = ["?uri = uri(%s)" % x.n3() for x in list]
+    def sortedList (self, urls, triplestore):
+        codes_strings = ["?uri = uri(%s)" % x.n3() for x in urls]
         codes_str = " ||\n".join(codes_strings)
         q =  """PREFIX sp:<http://smartplatforms.org/terms#>
                 PREFIX dcterms:<http://purl.org/dc/terms/>
@@ -100,15 +102,17 @@ class Paginator (object):
                    FILTER(%s)
                 }""" % (self.by_rdf_term, codes_str)
                 
-        results = tripplestore.select(q)
+        results = triplestore.select(q)
         results = sorted(results, key = lambda r: ''.join((r['date'].n3(),r['uri'].n3())), reverse = True)
         return [item['uri'] for item in results] 
 
     def parseParams (self, params):
         if 'limit' in params.keys():
             limit = int(params['limit'])
+            if limit > 100:
+                limit = 100
         else:
-            limit = None
+            limit = 50
         if 'offset' in params.keys():
             offset = int(params['offset'])
         else:
@@ -116,18 +120,18 @@ class Paginator (object):
         
         return limit, offset
 
-    def apply (self, tripplestore, uris, path, params, meta):
+    def apply (self, triplestore, uris, path, params, meta):
         meta['resultsReturned'] = len(uris)
         meta['totalResultCount'] = len(uris)
         return uris
         
 class SimplePaginator (Paginator):
 
-    def apply (self, tripplestore, uris, path, params, meta):
+    def apply (self, triplestore, uris, path, params, meta):
         limit, offset = self.parseParams (params)
         if limit:
             selected_items = list(uris)
-            selected_items = self.sortedList(selected_items, tripplestore)
+            selected_items = self.sortedList(selected_items, triplestore)
             meta['totalResultCount'] = len(selected_items)
             selected_items = selected_items[offset: offset+limit]
             meta['resultsReturned'] = len(selected_items)
@@ -148,11 +152,11 @@ class CompoundPaginator (Paginator):
         self.pattern = pattern
         self.predicate = predicate
 
-    def apply (self, tripplestore, uris, path, params, meta):
+    def apply (self, triplestore, uris, path, params, meta):
         limit, offset = self.parseParams (params)
         if limit:
             selected_items = [r for r in uris if r.find(self.pattern) != -1]
-            selected_items = self.sortedList(selected_items, tripplestore)
+            selected_items = self.sortedList(selected_items, triplestore)
             meta['totalResultCount'] = len(selected_items)
             selected_items = selected_items[offset: offset+limit]
             meta['resultsReturned'] = len(selected_items)
@@ -174,16 +178,22 @@ class CompoundPaginator (Paginator):
                            FILTER(%s)
                         }""" % (self.predicate, codes_str)
                         
-                results = tripplestore.select(q)
+                results = triplestore.select(q)
                 selected_items = set([item for binding in results for item in binding.values() ])
                 return set([item for item in uris if item in selected_items])
         else:
             return uris
         
-def getType (type_url):
-    type = type_url.replace ("<http://smartplatforms.org/terms#", "")
-    type = type.replace (">", "")
-    return type
+def getTypeName (type_uri):
+
+    # Try resolving the name through the ontology
+    uri = re.search("<(.*)>", type_uri).group(1)
+    for t in api_types:
+        if str(t.uri) == uri:
+            return str(t.name)
+            
+    # If not, fall back to basic pattern matching
+    return re.search("<http://smartplatforms.org/terms#(.*)>", type_uri).group(1)
         
 FILTERS = {
     'VitalSigns': FilterVitals,
@@ -201,14 +211,14 @@ PAGINATORS = {
 }
 
 def selectFilter (type_url):
-    type = getType(type_url)
+    type = getTypeName(type_url)
     if type in FILTERS.keys():
         return FILTERS[type]()
     else:
         return Filter()
 
 def selectPaginator (type_url):
-    type = getType(type_url)
+    type = getTypeName(type_url)
     if type in PAGINATORS.keys():
         return PAGINATORS[type]
     else:
