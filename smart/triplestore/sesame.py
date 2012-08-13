@@ -103,7 +103,7 @@ class SesameConnector(object):
 
         self._clear_transaction()
 
-    def get_clinical_statement_uris(self, obj, queries, limit_to_statements=None):
+    def get_clinical_statement_uris(self, obj, limit_to_statements=None):
         q = """prefix : <http://smartplatforms.org/terms#>
                select distinct ?g ?g2 where {
                 graph $record {

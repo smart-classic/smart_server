@@ -78,9 +78,9 @@ class TripleStore(engine.connector):
         timeStart = time.time()
         meta = {}
     
-        matches = super(TripleStore, self).get_clinical_statement_uris(obj, queries, limit_to_statements)
-        matches = self.applyFilters (matches, obj.node.n3(), queries)
-        matches = self.applyPagination (matches, obj.node.n3(), path, queries, meta)
+        matches = super(TripleStore, self).get_clinical_statement_uris(obj, limit_to_statements)
+        matches = self.applyFilters (matches, obj, queries)
+        matches = self.applyPagination (matches, obj, path, queries, meta)
         
         if not matches:
             return Graph().serialize(format="xml")
@@ -90,12 +90,12 @@ class TripleStore(engine.connector):
         
         return self.addResponseSummary(res, meta)
         
-    def applyFilters (self, uris, type, query_params):
-        return selectFilter(type).apply(self, uris, query_params)
+    def applyFilters (self, uris, obj, query_params):
+        return selectFilter(obj.node.n3()).apply(self, uris, query_params)
             
-    def applyPagination (self, uris, type, path, params, meta):
+    def applyPagination (self, uris, obj, path, params, meta):
         args = {k:params[k] for k in params.keys()}
-        return selectPaginator(type).apply(self, uris, path, args, meta)
+        return selectPaginator(obj.node.n3()).apply(self, obj, uris, path, args, meta)
         
     def addResponseSummary (self, rdfxml, meta):
         g = parse_rdf(rdfxml)

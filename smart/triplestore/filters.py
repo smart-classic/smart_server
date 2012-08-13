@@ -120,14 +120,14 @@ class Paginator (object):
         
         return limit, offset
 
-    def apply (self, triplestore, uris, path, params, meta):
+    def apply (self, triplestore, obj, uris, path, params, meta):
         meta['resultsReturned'] = len(uris)
         meta['totalResultCount'] = len(uris)
         return uris
         
 class SimplePaginator (Paginator):
 
-    def apply (self, triplestore, uris, path, params, meta):
+    def apply (self, triplestore, obj, uris, path, params, meta):
         limit, offset = self.parseParams (params)
         if limit:
             selected_items = list(uris)
@@ -147,12 +147,11 @@ class SimplePaginator (Paginator):
 
 class CompoundPaginator (Paginator):
 
-    def __init__ (self, by_rdf_term, pattern, predicate):
+    def __init__ (self, by_rdf_term, pattern):
         super(CompoundPaginator, self).__init__(by_rdf_term)
         self.pattern = pattern
-        self.predicate = predicate
 
-    def apply (self, triplestore, uris, path, params, meta):
+    def apply (self, triplestore, obj, uris, path, params, meta):
         limit, offset = self.parseParams (params)
         if limit:
             selected_items = [r for r in uris if r.find(self.pattern) != -1]
@@ -169,18 +168,7 @@ class CompoundPaginator (Paginator):
             if len(selected_items) == 0:
                 return set()
             else:
-                codes_strings = ["?a = uri(%s)" % x.n3() for x in selected_items]
-                codes_str = " ||\n".join(codes_strings)
-                    
-                q =  """PREFIX sp:<http://smartplatforms.org/terms#>
-                        SELECT DISTINCT ?a ?b WHERE{
-                           ?a sp:%s ?b .
-                           FILTER(%s)
-                        }""" % (self.predicate, codes_str)
-                        
-                results = triplestore.select(q)
-                selected_items = set([item for binding in results for item in binding.values() ])
-                return set([item for item in uris if item in selected_items])
+                return triplestore.get_clinical_statement_uris(obj, selected_items)
         else:
             return uris
         
@@ -205,9 +193,9 @@ PAGINATORS = {
     'Immunization': SimplePaginator("dcterms:date"),
     'LabResult': SimplePaginator("sp:specimenCollected/sp:startDate"),
     'Problem': SimplePaginator("sp:startDate"),
-    'VitalSigns': CompoundPaginator("dcterms:date", "vital_signs", "encounter"),
-    'Fulfillment': CompoundPaginator("dcterms:date", "fulfillments", "medication"),
-    'Medication': CompoundPaginator("sp:startDate", "medications", "fulfillment")
+    'VitalSigns': CompoundPaginator("dcterms:date", "vital_signs"),
+    'Fulfillment': CompoundPaginator("dcterms:date", "fulfillments"),
+    'Medication': CompoundPaginator("sp:startDate", "medications")
 }
 
 def selectFilter (type_url):
