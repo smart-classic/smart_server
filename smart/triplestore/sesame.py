@@ -67,7 +67,7 @@ class SesameConnector(object):
     def sparql(self, q):
         u = self.endpoint
         st = time.time()
-        print "Querying, ",q
+        #print "Querying, ",q
         
         data = urllib.urlencode({"query" : q})
         res = self._request(u, "POST", {"Content-type": "application/x-www-form-urlencoded", 
@@ -121,14 +121,14 @@ class SesameConnector(object):
                    }
             
             }"""
-
         if limit_to_statements:
             q += """ BINDINGS ?g {("""+")(".join([
                         x.n3() for x in limit_to_statements
                     ])+""")} """ 
 
         results = self.select(q)
-        ret =set([item for binding in results for item in binding.values() ])
+        ret = set([item for binding in results for item in binding.values() ])
+        
         return ret
 
     def get_contexts(self, bindings):

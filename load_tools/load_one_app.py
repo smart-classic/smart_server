@@ -35,8 +35,10 @@ def LoadAppFromJSON(manifest_string, app_params=None):
 
   if "secret" not in app_params:
     app_params["secret"] =  random_string(16)
+    
+  print "App secret is '%s'" % app_params["secret"]
 
-  assert app_params != None, "Expected a consumer secret among the app params"
+  assert app_params["secret"] != None, "Expected a consumer secret among the app params"
   r = simplejson.loads(manifest_string)
   secret = app_params["secret"]
  

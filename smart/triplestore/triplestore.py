@@ -4,13 +4,9 @@ Triple store interface for SMART
 Josh Mandel
 """
 
-from smart.lib import utils
-from smart.common.rdf_tools.util import URIRef, Literal, BNode
-from rdflib import Graph, ConjunctiveGraph
-from django.conf import settings
-import urllib, uuid, base64
-import json
-import sys
+from base import *
+
+from filters import selectFilter, selectPaginator
 
 engine = "smart.triplestore.%s"%settings.TRIPLESTORE['engine']
 __import__(engine)
@@ -78,11 +74,39 @@ class TripleStore(engine.connector):
     def get_contexts(self, contexts):
         return super(TripleStore, self).get_contexts(contexts)
 
-    def get_objects(self, obj, limit_to_statements=None):
+    def get_objects(self, path, queries, obj, limit_to_statements=None):
+        timeStart = time.time()
+        meta = {}
+    
         matches = super(TripleStore, self).get_clinical_statement_uris(obj, limit_to_statements)
+        matches = self.applyFilters (matches, obj, queries)
+        matches = self.applyPagination (matches, obj, path, queries, meta)
+        
         if not matches:
             return Graph().serialize(format="xml")
-        return self.get_contexts(matches)
+            
+        res = self.get_contexts(matches)
+        meta['processingTimeMs'] = int((time.time() - timeStart) * 1000)
+        
+        return self.addResponseSummary(res, meta)
+        
+    def applyFilters (self, uris, obj, query_params):
+        return selectFilter(obj.node.n3()).apply(self, uris, query_params)
+            
+    def applyPagination (self, uris, obj, path, params, meta):
+        args = {k:params[k] for k in params.keys()}
+        return selectPaginator(obj.node.n3()).apply(self, obj, uris, path, args, meta)
+        
+    def addResponseSummary (self, rdfxml, meta):
+        g = parse_rdf(rdfxml)
+
+        rsNode = BNode()
+        g.add((rsNode,RDF.type,NS['api']['ResponseSummary']))
+        
+        for key in meta.keys():
+            g.add((rsNode,NS['api'][key],Literal(meta[key])))
+        
+        return g.serialize(format="xml")
 
 class ContextTripleStore(TripleStore):
     queryparam = "$context"
