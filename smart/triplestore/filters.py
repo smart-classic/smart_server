@@ -119,8 +119,8 @@ class SimplePaginator (Paginator):
             meta['nextPageURL'] = "%s%s?%s" % (settings.SITE_URL_PREFIX, path, args)
         return set(page_uris)
 
-PAGINATORS = defaultdict(Paginator(None))
-FILTERS = defaultdict(FilterSet())
+PAGINATORS = defaultdict(lambda:Paginator(None))
+FILTERS = defaultdict(lambda:FilterSet())
 
 for c in SMART_API_Call.store.values():
     if c.filters:
@@ -129,7 +129,9 @@ for c in SMART_API_Call.store.values():
         PAGINATORS[c.target] = SimplePaginator(str(c.default_sort))
    
 def runFiltering (triplestore, obj, uris, query_params):
-    return FILTERS[obj.node](triplestore, uris, query_params)
+    f = FILTERS[obj.node]
+    print "F F F F F F F F", f
+    return f(triplestore, uris, query_params)
         
 def runPagination (triplestore, obj, uris, query_params, path, meta):
     param_dict = {k:query_params[k] for k in query_params.keys()}
