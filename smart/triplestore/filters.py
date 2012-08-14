@@ -1,13 +1,6 @@
+from collections import defaultdict
 from django.conf import settings
-import json
-from smart.common.rdf_tools.rdf_ontology import api_types, SMART_Class, SMART_API_Call
-import re
-
-DEFAULT_LIMIT=100
-MAX_LIMIT=100
-
-def getCodes (codeStr):
-    return codeStr.split("|")
+from smart.common.rdf_tools.rdf_ontology import SMART_API_Call
 
 class SparqlClause(list):
     pass
@@ -32,7 +25,7 @@ class FilterSet(object):
 
     def getQuery(self, query_params):
         clauses = AndClause()
-
+        
         for f in self.filters:
             k = f.client_parameter_name
             if k in query_params:
@@ -46,8 +39,9 @@ class FilterSet(object):
             return """
                 PREFIX sp:<http://smartplatforms.org/terms#>
                 PREFIX dcterms:<http://purl.org/dc/terms/>
-                SELECT ?v 
-                """ + str(clauses)
+                SELECT ?v
+                {%s}
+                """ % str(clauses)
         
         return None
 
@@ -56,7 +50,7 @@ class FilterSet(object):
         if query:
             query += """ BINDINGS ?v {("""+")(".join([
                         x.n3() for x in candidate_uris
-                    ])+""")} """ 
+                    ])+""")} """
 
             results = triplestore.select(query)
             keys_used = set()
@@ -65,9 +59,9 @@ class FilterSet(object):
                 keys_used |= (set(v.keys()))
                 result_uris |= (set(v.values()))
 
-            assert keys_used==set('v'), \
+            assert not keys_used or keys_used==set('v'), \
                    "Expected only ONE selected term:  'v', a clinical statement URI"
-           
+
             return result_uris
         else:
             return  candidate_uris
@@ -77,76 +71,66 @@ class Paginator (object):
     def __init__ (self, by_rdf_term):
         self.by_rdf_term = by_rdf_term
 
-    def sortedList (self, urls, triplestore):
-        codes_strings = ["?uri = uri(%s)" % x.n3() for x in urls]
-        codes_str = " ||\n".join(codes_strings)
-        q =  """PREFIX sp:<http://smartplatforms.org/terms#>
-                PREFIX dcterms:<http://purl.org/dc/terms/>
-                SELECT DISTINCT ?uri ?sortParam WHERE{
-                   ?uri %s ?sortParam .
-                   FILTER(%s)
-                } order by desc(?sortParam)""" % (self.by_rdf_term, codes_str)
-                
-        results = triplestore.select(q)
-        return [item['uri'] for item in results] 
+    def sortedList (self, triplestore, uris):
+        if uris:
+            filter_str = " ||\n".join(["?uri = uri(%s)" % x.n3() for x in uris])
+            q =  """PREFIX sp:<http://smartplatforms.org/terms#>
+                    PREFIX dcterms:<http://purl.org/dc/terms/>
+                    SELECT DISTINCT ?uri ?sortParam WHERE{
+                       ?uri %s ?sortParam .
+                       FILTER(%s)
+                    } ORDER BY DESC (?sortParam) ASC (?uri)""" % (self.by_rdf_term, filter_str)
+
+            results = triplestore.select(q)
+            return [item['uri'] for item in results]
+        else:
+            return []
 
     def parseParams (self, params):
-        if 'limit' in params.keys():
+        try:
             limit = int(params['limit'])
-            if limit > MAX_LIMIT:
-                limit = MAX_LIMIT
-        else:
-            limit = DEFAULT_LIMIT 
+            limit = min(limit, settings.MAX_PAGE_LIMIT)
+        except:
+            limit = settings.DEFAULT_PAGE_LIMIT 
 
-        if 'offset' in params.keys():
+        try:
             offset = int(params['offset'])
-        else:
+        except:
             offset = 0
         
         return limit, offset
 
-    def __call__ (self, triplestore, obj, uris, path, params, meta):
-        meta['resultsReturned'] = len(uris)
-        meta['totalResultCount'] = len(uris)
-        return uris
+    def __call__ (self, triplestore, candidate_uris, path, params, meta):
+        meta['resultsReturned'] = len(candidate_uris)
+        meta['totalResultCount'] = len(candidate_uris)
+        return candidate_uris
         
 class SimplePaginator (Paginator):
-    def __call__ (self, triplestore, obj, uris, path, params, meta):
+    def __call__ (self, triplestore, candidate_uris, path, params, meta):
+        sorted_uris = self.sortedList(triplestore, candidate_uris)
+        meta['totalResultCount'] = len(sorted_uris)
         limit, offset = self.parseParams (params)
-
-        selected_items = list(uris)
-        if selected_items:
-            selected_items = self.sortedList(selected_items, triplestore)
-
-        meta['totalResultCount'] = len(selected_items)
-        selected_items = selected_items[offset: offset+limit]
-        meta['resultsReturned'] = len(selected_items)
-        meta['resultOrder'] = '("%s")' % '","'.join((x.n3() for x in selected_items))
+        page_uris = sorted_uris[offset: offset+limit]
+        meta['resultsReturned'] = len(page_uris)
+        meta['resultOrder'] = '("%s")' % '","'.join([x.n3() for x in page_uris])
         if (offset+limit < meta['totalResultCount']):
             params['offset'] = offset + limit
             args = "&".join(["%s=%s" % (k, params[k]) for k in params.keys()])
             meta['nextPageURL'] = "%s%s?%s" % (settings.SITE_URL_PREFIX, path, args)
-        selected_items = set(selected_items)
-        return selected_items
+        return set(page_uris)
 
-PAGINATORS = {}
-FILTERS = {}
+PAGINATORS = defaultdict(FilterSet())
+FILTERS = defaultdict(Paginator(None))
+
 for c in SMART_API_Call.store.values():
     if c.filters:
         FILTERS[c.target] = FilterSet(c)
     if c.default_sort:
         PAGINATORS[c.target] = SimplePaginator(str(c.default_sort))
    
-# TODO: Remove these and use default_dict instead of vanilla dicts 
-#       for PAGINATORS, FILTERS
-def selectFilter (type_url):
-    try:
-        return FILTERS[type_url]
-    except:
-        return FilterSet()
-
-def selectPaginator (type_url):
-    try:
-        return PAGINATORS[type_url]
-    except:
-        return Paginator(None)
+def runFiltering (triplestore, obj, uris, query_params):
+    return FILTERS[obj.node](triplestore, uris, query_params)
+        
+def runPagination (triplestore, obj, uris, query_params, path, meta):
+    param_dict = {k:query_params[k] for k in query_params.keys()}
+    return PAGINATORS[obj.node](triplestore, uris, param_dict, path, meta)

@@ -6,7 +6,7 @@ Josh Mandel
 
 from base import *
 
-from filters import selectFilter, selectPaginator
+from filters import runFiltering, runPagination
 
 engine = "smart.triplestore.%s"%settings.TRIPLESTORE['engine']
 __import__(engine)
@@ -81,12 +81,12 @@ class TripleStore(engine.connector):
         matches = super(TripleStore, self).get_clinical_statement_uris(obj)
 
         if matches:
-            matches = self.applyFilters (matches, obj, queries)
+            matches = runFiltering (self, obj, matches, queries)
 
         print "filtered", len(matches)
 
         if matches:
-            matches = self.applyPagination (matches, obj, path, queries, meta)
+            matches = runPagination (self, obj, matches, queries, path, meta)
         print "paged", len(matches)
 
         if matches:
@@ -100,13 +100,6 @@ class TripleStore(engine.connector):
         meta['processingTimeMs'] = int((time.time() - timeStart) * 1000)
         
         return self.addResponseSummary(res, meta)
-        
-    def applyFilters (self, uris, obj, query_params):
-        return selectFilter(obj.node)(self, uris, query_params)
-            
-    def applyPagination (self, uris, obj, path, params, meta):
-        args = {k:params[k] for k in params.keys()}
-        return selectPaginator(obj.node)(self, obj, uris, path, args, meta)
         
     def addResponseSummary (self, rdfxml, meta):
         g = parse_rdf(rdfxml)
