@@ -16,16 +16,20 @@ from smart.models.record_object import RecordObject
 from smart.models.rdf_rest_operations import *
 from oauth.oauth import OAuthRequest
 from smart.models.ontology_url_patterns import CallMapper
-import datetime, urllib, json
+import datetime
+import urllib
+import json
 
 from load_tools.load_one_app import LoadAppFromJSON
 
 SAMPLE_NOTIFICATION = {
-    'id' : 'foonotification',
-    'sender' : {'email':'foo@smart.org'},
-    'created_at' : '2010-06-21 13:45',
-    'content' : 'a sample notification',
-    }
+    'id': 'foonotification',
+    'sender': {
+        'email': 'foo@smart.org'
+    },
+    'created_at': '2010-06-21 13:45',
+    'content': 'a sample notification',
+}
 
 sporg = Namespace("http://smartplatforms.org/")
 
@@ -41,21 +45,28 @@ def get_container_manifest(request, **kwargs):
         'description': settings.DESCRIPTION,
         'admin': settings.EMAIL_SUPPORT_ADDRESS,
         'launch_urls': {
-            'request_token': settings.SITE_URL_PREFIX+"/oauth/request_token",
-            'authorize_token': settings.SMART_UI_SERVER_LOCATION+"/oauth/authorize",
-            'exchange_token': settings.SITE_URL_PREFIX+"/oauth/access_token",
+            'app_launch': settings.SMART_UI_SERVER_LOCATION + "/apps/{{app_id}}/launch",
+            'request_token': settings.SITE_URL_PREFIX + "/oauth/request_token",
+            'authorize_token': settings.SMART_UI_SERVER_LOCATION + "/oauth/authorize",
+            'exchange_token': settings.SITE_URL_PREFIX + "/oauth/access_token",
         },
         'capabilities': get_capabilities()
     }
     return utils.x_domain(HttpResponse(json.dumps(response, sort_keys=True, indent=4), "application/json"))
 
-def get_manifest(request): 
-    return HttpResponse(json.dumps(settings.MANIFEST), 
-            mimetype="application/json");
+
+def get_manifest(request):
+    return HttpResponse(
+        json.dumps(settings.MANIFEST),
+        mimetype="application/json")
+
 
 @paramloader()
 def record_list(request, account):
-    return render_template('record_list', {'records': [ar.record for ar in account.accountrecord_set.all()]}, type='xml')
+    return render_template('record_list', {
+        'records': [ar.record for ar in account.accountrecord_set.all()]
+    }, type='xml')
+
 
 def record_by_token(request):
     print "token", request.oauth_request.token
@@ -63,19 +74,23 @@ def record_by_token(request):
     r = t.share.record
     return HttpResponse(r.get_demographic_rdf(), mimetype="application/rdf+xml")
 
+
 @paramloader()
 def record_info(request, record):
     q = record.query()
     l = Record.search_records(q)
     return render_template('record_list', {'records': l}, type='xml')
 
+
 @paramloader()
 def apps_for_account(request, account):
     return render_template('phas', {'phas': [aa.app for aa in account.accountapp_set.order_by("app__name")]})
 
+
 @paramloader()
 def account_recent_records(request, account):
     return render_template('record_list', {'records': []}, type='xml')
+
 
 @paramloader()
 def add_app(request, account, app):
@@ -84,34 +99,39 @@ def add_app(request, account, app):
     PUT /accounts/{account_id}/apps/{app_email}
     """
     app = PHA.objects.get(id=app.id)
-    AccountApp.objects.create(account = account, app = app)
+    AccountApp.objects.create(account=account, app=app)
     return DONE
 
-def immediate_tokens_for_browser_auth(record, account, app, smart_connect_p = True):
+
+def immediate_tokens_for_browser_auth(record, account, app, smart_connect_p=True):
     ret = OAUTH_SERVER.generate_and_preauthorize_access_token(app, record=record, account=account)
     ret.smart_connect_p = smart_connect_p
     ret.save()
     return ret
-  
+
+
 def signed_header_for_token(t):
-    app=t.share.with_app
+    app = t.share.with_app
     try:
         activity = AppActivity.objects.get(name="main", app=app)
-    except AppActivity.DoesNotExist:    
+    except AppActivity.DoesNotExist:
         activity = AppActivity.objects.get(app=app)
 
     headers = {}
     app_index_req = utils.url_request_build(activity.url, "GET", headers, "")
 
     # sign as a two-legged OAuth request for the app
-    oauth_request = OAuthRequest(consumer=app,
-                                 token=None, # no access tokens: 2-legged request
-                                 http_request=app_index_req,
-                                 oauth_parameters=t.passalong_params)
+    oauth_request = OAuthRequest(
+        consumer=app,
+        token=None,         # no access tokens: 2-legged request
+        http_request=app_index_req,
+        oauth_parameters=t.passalong_params
+    )
 
     oauth_request.sign()
     auth = oauth_request.to_header()["Authorization"]
     return auth
+
 
 @paramloader()
 def launch_app(request, account, app):
@@ -122,33 +142,38 @@ def launch_app(request, account, app):
 
     record = None
     record_id = request.GET.get('record_id', None)
-    if (record_id): record = Record.objects.get(id=record_id)
+    if (record_id):
+        record = Record.objects.get(id=record_id)
 
-    AccountApp.objects.get_or_create(account = account, app = app)
+    AccountApp.objects.get_or_create(account=account, app=app)
     ct = immediate_tokens_for_browser_auth(record, account, app)
     rt = immediate_tokens_for_browser_auth(record, account, app, False)
 
     header = signed_header_for_token(rt)
 
-    return render_template('token', 
-                             {'connect_token':          ct,
-                              'rest_token':          rt, 
-                              'api_base':       settings.SITE_URL_PREFIX,
-                              'app_email':      app.email, 
-                              'account_email':  account.email,
-                              'oauth_header': header}, 
-                            type='xml')
+    return render_template('token', {
+        'connect_token': ct,
+        'rest_token': rt,
+        'api_base': settings.SITE_URL_PREFIX,
+        'app_email': app.email,
+        'account_email': account.email,
+        'oauth_header': header
+    }, type='xml')
 
 
 def create_proxied_record(request):
     record_id = request.POST['record_id']
     record_name = request.POST['record_name']
-    r, created = Record.objects.get_or_create(id=record_id, defaults={'full_name':record_name})
+    r, created = Record.objects.get_or_create(
+        id=record_id,
+        defaults={'full_name': record_name}
+    )
     if not created and r.full_name != record_name:
         r.full_name = record_name
         r.save()
 
     return DONE
+
 
 @paramloader()
 def generate_direct_url(request, record):
@@ -159,47 +184,58 @@ def generate_direct_url(request, record):
     account = Account.objects.get(email=settings.PROXY_USER_ID)
 
     if account.is_active:
-        t = r.generate_direct_access_token(account=account);
-        return_url = settings.SMART_UI_SERVER_LOCATION + "/token/"+t.token
+        t = r.generate_direct_access_token(account=account)
+        return_url = settings.SMART_UI_SERVER_LOCATION + "/token/" + t.token
         return HttpResponse(return_url, mimetype='text/plain')
 
-    else: print "Nonative", account
+    else:
+        print "Nonative", account
     return DONE
+
 
 def session_from_direct_url(request):
     token = request.GET['token']
-    login_token =  RecordDirectAccessToken.objects.get(token=token)
+    login_token = RecordDirectAccessToken.objects.get(token=token)
 
     # TODO: move this to security function on chrome consumer
     if (datetime.datetime.utcnow() > login_token.expires_at):
-        raise Exception("Expired token %s"%t)
-    
+        raise Exception("Expired token %s" % t)
+
     session_token = SESSION_OAUTH_SERVER.generate_and_preauthorize_access_token(request.principal, user=login_token.account)
     session_token.save()
 
     return render_template('login_token', {'record': login_token.record, 'token': str(session_token)}, type='xml')
-    
+
 
 @paramloader()
 def get_record_tokens(request, record, app):
     return get_record_tokens_helper(record, app)
-    
+
+
 def get_record_tokens_helper(record, app):
     t = HELPER_APP_SERVER.generate_and_preauthorize_access_token(app, record=record)
-    r  = {'oauth_token' : t.token, 'oauth_token_secret': t.secret, 'smart_record_id' : record.id}
+    r = {
+        'oauth_token': t.token,
+        'oauth_token_secret': t.secret,
+        'smart_record_id': record.id
+    }
     return utils.x_domain(HttpResponse(urllib.urlencode(r), "application/x-www-form-urlencoded"))
- 
+
+
 @paramloader()
 def get_first_record_tokens(request, app):
     record = Record.objects.order_by("id")[0]
     return get_record_tokens_helper(record, app)
 
+
 @paramloader()
-def get_next_record_tokens(request,record, app):
+def get_next_record_tokens(request, record, app):
     try:
         record = Record.objects.order_by("id").filter(id__gt=record.id)[0]
         return get_record_tokens_helper(record, app)
-    except: raise Http404
+    except:
+        raise Http404
+
 
 @paramloader()
 def remove_app(request, account, app):
@@ -207,7 +243,7 @@ def remove_app(request, account, app):
     expecting
     DELETE /records/{record_id}/apps/{app_email}
     """
-    AccountApp.objects.get(account = account, app = app).delete()
+    AccountApp.objects.get(account=account, app=app).delete()
 
     #TODO:  This would be a good hook for removing shares and tokens for this app/account. -JCM
     # pseudocode like;
@@ -218,16 +254,16 @@ def remove_app(request, account, app):
 
     return DONE
 
+
 @CallMapper.register(method="GET",
                      category="container_items",
                      target="http://smartplatforms.org/terms#Demographics")
-
-
 def _record_sparql_from_request(request):
     """Composes a SPARQL query from a request's GET params
-    
-    If the request contains a 'sparql' attribute, the value of that attribute is assumed to be complete SPARQL and returned. Otherwise, a query is generated
-    from the possible attributes:
+
+    If the request contains a 'sparql' attribute, the value of that attribute
+    is assumed to be complete SPARQL and returned. Otherwise, a query is
+    generated from the possible attributes:
         - family_name
         - given_name
         - gender
@@ -235,57 +271,57 @@ def _record_sparql_from_request(request):
         - zipcode
         - birthday
     """
-    
+
     # did we get a complete sparql query? If so, just return it
     sparql = request.GET.get('sparql', None)
     if sparql:
         return sparql
-    
+
     # nope, compose one from the parameters
     sparql = Template("""PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX  foaf:  <http://xmlns.com/foaf/0.1/>
 PREFIX  sp:  <http://smartplatforms.org/terms#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX v: <http://www.w3.org/2006/vcard/ns#>
-CONSTRUCT {?person rdf:type sp:Demographics} 
+CONSTRUCT {?person rdf:type sp:Demographics}
 WHERE   {
 graph ?g {
-?person rdf:type sp:Demographics. 
+?person rdf:type sp:Demographics.
 $statements
 }
 }
 order by ?ln""")
-    
+
     # collect the statements
     statements = []
     fn = request.GET.get('family_name', None)
     if fn:
         fn = string_to_alphanumeric(fn)
-        statements += [""" ?person v:n/v:family-name ?familyName. FILTER  regex(?familyName, "^%s","i") """%fn]
+        statements += [""" ?person v:n/v:family-name ?familyName. FILTER  regex(?familyName, "^%s","i") """ % fn]
 
     gn = request.GET.get('given_name', None)
     if gn:
         gn = string_to_alphanumeric(gn)
-        statements += [""" ?person v:n/v:given-name ?givenName. FILTER  regex(?givenName, "^%s","i") """%gn]
+        statements += [""" ?person v:n/v:given-name ?givenName. FILTER  regex(?givenName, "^%s","i") """ % gn]
 
     gender = request.GET.get('gender', None)
     if gender:
         gender = string_to_alphanumeric(gender)
-        statements += [""" ?person foaf:gender ?gender. FILTER  regex(?gender, "^%s","i") """%gender]
-    
+        statements += [""" ?person foaf:gender ?gender. FILTER  regex(?gender, "^%s","i") """ % gender]
+
     mrn = request.GET.get('medical_record_number', None)
     if mrn:
         mrn = string_to_alphanumeric(mrn)
-        statements += [""" ?person sp:medicalRecordNumber/dcterms:identifier ?mrnid. FILTER  regex(?mrnid, "^%s$","i") """%mrn]
+        statements += [""" ?person sp:medicalRecordNumber/dcterms:identifier ?mrnid. FILTER  regex(?mrnid, "^%s$","i") """ % mrn]
     zipcode = request.GET.get('zipcode', None)
     if zipcode:
         zipcode = string_to_alphanumeric(zipcode)
-        statements += [""" ?person v:adr/v:postal-code ?zipcode. FILTER  regex(?zipcode, "^%s$","i") """%zipcode]
+        statements += [""" ?person v:adr/v:postal-code ?zipcode. FILTER  regex(?zipcode, "^%s$","i") """ % zipcode]
 
     birthday = request.GET.get('birthday', None)
     if birthday:
         birthday = string_to_alphanumeric(birthday)
-        statements += [""" ?person v:bday ?birthday. FILTER  regex(?birthday, "^%s$","i") """%birthday]
+        statements += [""" ?person v:bday ?birthday. FILTER  regex(?birthday, "^%s$","i") """ % birthday]
     statements = " ".join(statements)
     return sparql.substitute(statements=statements)
 
@@ -304,48 +340,51 @@ def record_search_xml(request):
 
 
 def allow_options(request, **kwargs):
-    r =  utils.x_domain(HttpResponse())
+    r = utils.x_domain(HttpResponse())
     r['Access-Control-Allow-Methods'] = "POST, GET, PUT, DELETE"
     r['Access-Control-Allow-Headers'] = "authorization,x-requested-with,content-type"
     r['Access-Control-Max-Age'] = 60
     return r
 
+
 def do_webhook(request, webhook_name):
     hook = None
     headers = {}
-    
+
     # Find the preferred app for this webhook...
     try:
         hook = AppWebHook.objects.filter(name=webhook_name)[0]
     except:
-        raise Exception("No hook exists with name:  '%s'"%webhook_name)
-    
+        raise Exception("No hook exists with name:  '%s'" % webhook_name)
+
     data = request.raw_post_data
-    if (request.method == 'GET'): data = request.META['QUERY_STRING']    
-    
+    if (request.method == 'GET'):
+        data = request.META['QUERY_STRING']
+
     print "requesting web hook", hook.url, request.method, data
 
     hook_req = utils.url_request_build(hook.url, request.method, headers, data)
-    
+
     # If the web hook needs patient context, we've got to generate + pass along tokens
-    if (hook.requires_patient_context):        
+    if (hook.requires_patient_context):
         app = hook.app
         record = request.principal.share.record
         account = request.principal.share.authorized_by
         # Create a new token for the webhook to access the in-context patient record
         token = HELPER_APP_SERVER.generate_and_preauthorize_access_token(app, record=record, account=account)
-        
+
         # And supply the token details as part of the Authorization header, 2-legged signed
         # Using the helper app's consumer token + secret
         # (the 2nd parameter =None --> 2-legged OAuth request)
         oauth_request = OAuthRequest(app, None, hook_req, oauth_parameters=token.passalong_params)
-        oauth_request.sign()        
+        oauth_request.sign()
         for (hname, hval) in oauth_request.to_header().iteritems():
-            hook_req.headers[hname] = hval 
-    
+            hook_req.headers[hname] = hval
+
     response = utils.url_request(hook.url, request.method, headers, data)
     print "GOT,", response
     return utils.x_domain(HttpResponse(response, mimetype='application/rdf+xml'))
+
 
 @CallMapper.register(method="GET",
                      category="container_item",
@@ -355,7 +394,8 @@ def download_ontology(request, **kwargs):
     f = open(settings.ONTOLOGY_FILE).read()
     return HttpResponse(f, mimetype="application/rdf+xml")
 
-# hook to build in demographics-specific behavior: 
+
+# hook to build in demographics-specific behavior:
 # if a record doesn't exist, create it before adding
 # demographic data
 @CallMapper.register(method="POST",
@@ -363,16 +403,17 @@ def download_ontology(request, **kwargs):
                      target="http://smartplatforms.org/terms#MedicalRecord")
 def put_demographics(request, *args, **kwargs):
     obj = RecordObject["http://smartplatforms.org/terms#MedicalRecord"]
-    record_id = "".join([str(random.randint(0,9)) for x in range(12)])
+    record_id = "".join([str(random.randint(0, 9)) for x in range(12)])
     Record.objects.create(id=record_id)
     return record_post_objects(request, record_id, obj, **kwargs)
 
-def manifest_put (request, descriptor):
+
+def manifest_put(request, descriptor):
     try:
         data = request.raw_post_data
         manifest = json.loads(data)
         id = manifest["id"]
-        
+
         if id == descriptor:
             LoadAppFromJSON(data)
             return HttpResponse("ok")
@@ -381,28 +422,30 @@ def manifest_put (request, descriptor):
             print msg
     except:
         pass
-        
+
     raise Http404
-    
-def manifest_delete(request, descriptor): 
+
+
+def manifest_delete(request, descriptor):
     try:
         app = PHA.objects.get(consumer_key=descriptor)
         app.delete()
         return HttpResponse("ok")
     except:
-        raise Http404  
+        raise Http404
+
 
 def debug_oauth(request, **kwargs):
     from smart.accesscontrol.oauth_servers import OAUTH_SERVER
     ret = "Details of your request: \n\n"
 
-    ret += "Method: %s\n"%request.method
-    ret += "URL: %s\n"%request.build_absolute_uri()
+    ret += "Method: %s\n" % request.method
+    ret += "URL: %s\n" % request.build_absolute_uri()
 
     ret += "Headers:\n"
-    for k,v in request.META.iteritems():
+    for k, v in request.META.iteritems():
         if k.startswith("HTTP"):
-                ret += "%s: %s"%(k,v)
+                ret += "%s: %s" % (k, v)
 
     ret += "\n"
 
@@ -421,4 +464,3 @@ def debug_oauth(request, **kwargs):
         ret += "An error occurred:\n"
         ret += traceback.format_exc()
     return HttpResponse(ret, "text/plain")
-
