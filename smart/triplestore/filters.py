@@ -100,13 +100,13 @@ class Paginator (object):
         
         return limit, offset
 
-    def __call__ (self, triplestore, candidate_uris, path, params, meta):
+    def __call__ (self, triplestore, candidate_uris, params, path, meta):
         meta['resultsReturned'] = len(candidate_uris)
         meta['totalResultCount'] = len(candidate_uris)
         return candidate_uris
         
 class SimplePaginator (Paginator):
-    def __call__ (self, triplestore, candidate_uris, path, params, meta):
+    def __call__ (self, triplestore, candidate_uris, params, path, meta):
         sorted_uris = self.sortedList(triplestore, candidate_uris)
         meta['totalResultCount'] = len(sorted_uris)
         limit, offset = self.parseParams (params)
@@ -130,9 +130,9 @@ for c in SMART_API_Call.store.values():
    
 def runFiltering (triplestore, obj, uris, query_params):
     f = FILTERS[obj.node]
-    print "F F F F F F F F", f
     return f(triplestore, uris, query_params)
         
 def runPagination (triplestore, obj, uris, query_params, path, meta):
     param_dict = {k:query_params[k] for k in query_params.keys()}
-    return PAGINATORS[obj.node](triplestore, uris, param_dict, path, meta)
+    p = PAGINATORS[obj.node]
+    return p(triplestore, uris, param_dict, path, meta)
