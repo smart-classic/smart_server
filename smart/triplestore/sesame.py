@@ -67,7 +67,7 @@ class SesameConnector(object):
     def sparql(self, q):
         u = self.endpoint
         st = time.time()
-        #print "Querying, ",q
+        print "Querying, ",q
         
         data = urllib.urlencode({"query" : q})
         res = self._request(u, "POST", {"Content-type": "application/x-www-form-urlencoded", 
@@ -103,21 +103,33 @@ class SesameConnector(object):
 
         self._clear_transaction()
 
-    def get_clinical_statement_uris(self, obj, limit_to_statements=None):
+    def get_clinical_statement_uris(self, obj):
+        q = """prefix : <http://smartplatforms.org/terms#>
+               select distinct ?g  where {
+                graph $record {
+                     $record :hasStatement ?g.
+                }
+                {
+                    graph ?g {
+                       ?g a """+obj.node.n3()+""".
+                    }
+                }
+            }"""
+
+        results = self.select(q)
+        ret = set([item for binding in results for item in binding.values() ])
+        
+        return ret
+
+    def expand_to_neighboring_statements(self, limit_to_statements):
         q = """prefix : <http://smartplatforms.org/terms#>
                select distinct ?g ?g2 where {
                 graph $record {
                      $record :hasStatement ?g.
-                } {
-                   {
-                    graph ?g {
-                       ?g a """+obj.node.n3()+""".
-                    }}
-                   union  {
-                      graph ?g {?g a """+obj.node.n3()+""". ?g ?p ?g2.}
+                } OPTIONAL {
+                      graph ?g {?g ?p ?g2.}
                       graph ?g2 {?g2 a ?g2type.}
                       filter(?g2type != :MedicalRecord) 
-                    }
                    }
             
             }"""
@@ -130,6 +142,7 @@ class SesameConnector(object):
         ret = set([item for binding in results for item in binding.values() ])
         
         return ret
+
 
     def get_contexts(self, bindings):
 

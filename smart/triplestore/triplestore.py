@@ -77,25 +77,36 @@ class TripleStore(engine.connector):
     def get_objects(self, path, queries, obj, limit_to_statements=None):
         timeStart = time.time()
         meta = {}
-    
-        matches = super(TripleStore, self).get_clinical_statement_uris(obj, limit_to_statements)
-        matches = self.applyFilters (matches, obj, queries)
-        matches = self.applyPagination (matches, obj, path, queries, meta)
-        
+   
+        matches = super(TripleStore, self).get_clinical_statement_uris(obj)
+
+        if matches:
+            matches = self.applyFilters (matches, obj, queries)
+
+        print "filtered", len(matches)
+
+        if matches:
+            matches = self.applyPagination (matches, obj, path, queries, meta)
+        print "paged", len(matches)
+
+        if matches:
+            matches = super(TripleStore, self).expand_to_neighboring_statements(limit_to_statements or matches)
+        print "expanded", len(matches)
+
         if not matches:
             return Graph().serialize(format="xml")
-            
+
         res = self.get_contexts(matches)
         meta['processingTimeMs'] = int((time.time() - timeStart) * 1000)
         
         return self.addResponseSummary(res, meta)
         
     def applyFilters (self, uris, obj, query_params):
-        return selectFilter(obj.node.n3()).apply(self, uris, query_params)
+        return selectFilter(obj.node)(self, uris, query_params)
             
     def applyPagination (self, uris, obj, path, params, meta):
         args = {k:params[k] for k in params.keys()}
-        return selectPaginator(obj.node.n3()).apply(self, obj, uris, path, args, meta)
+        return selectPaginator(obj.node)(self, obj, uris, path, args, meta)
         
     def addResponseSummary (self, rdfxml, meta):
         g = parse_rdf(rdfxml)
