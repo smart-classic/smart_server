@@ -119,8 +119,8 @@ class SimplePaginator (Paginator):
             meta['nextPageURL'] = "%s%s?%s" % (settings.SITE_URL_PREFIX, path, args)
         return set(page_uris)
 
-PAGINATORS = defaultdict(FilterSet())
-FILTERS = defaultdict(Paginator(None))
+PAGINATORS = defaultdict(Paginator(None))
+FILTERS = defaultdict(FilterSet())
 
 for c in SMART_API_Call.store.values():
     if c.filters:
