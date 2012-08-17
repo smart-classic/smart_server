@@ -114,7 +114,7 @@ class SimplePaginator (Paginator):
             meta['totalResultCount'] = len(sorted_uris)
             page_uris = sorted_uris[offset: offset+limit]
             meta['resultsReturned'] = len(page_uris)
-            meta['resultOrder'] = '("%s")' % '","'.join([x.n3() for x in page_uris])
+            meta['resultOrder'] = page_uris
             if (offset+limit < meta['totalResultCount']):
                 params['offset'] = offset + limit
                 params['limit'] = limit
