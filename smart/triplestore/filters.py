@@ -89,7 +89,8 @@ class Paginator (object):
     def parseParams (self, params):
         try:
             limit = int(params['limit'])
-            limit = min(limit, settings.MAX_PAGE_LIMIT)
+            if settings.MAX_PAGE_LIMIT:
+                limit = min(limit, settings.MAX_PAGE_LIMIT)
         except:
             limit = settings.DEFAULT_PAGE_LIMIT 
 
@@ -107,17 +108,21 @@ class Paginator (object):
         
 class SimplePaginator (Paginator):
     def __call__ (self, triplestore, candidate_uris, params, path, meta):
-        sorted_uris = self.sortedList(triplestore, candidate_uris)
-        meta['totalResultCount'] = len(sorted_uris)
         limit, offset = self.parseParams (params)
-        page_uris = sorted_uris[offset: offset+limit]
-        meta['resultsReturned'] = len(page_uris)
-        meta['resultOrder'] = '("%s")' % '","'.join([x.n3() for x in page_uris])
-        if (offset+limit < meta['totalResultCount']):
-            params['offset'] = offset + limit
-            args = "&".join(["%s=%s" % (k, params[k]) for k in params.keys()])
-            meta['nextPageURL'] = "%s%s?%s" % (settings.SITE_URL_PREFIX, path, args)
-        return set(page_uris)
+        if limit:
+            sorted_uris = self.sortedList(triplestore, candidate_uris)
+            meta['totalResultCount'] = len(sorted_uris)
+            page_uris = sorted_uris[offset: offset+limit]
+            meta['resultsReturned'] = len(page_uris)
+            meta['resultOrder'] = page_uris
+            if (offset+limit < meta['totalResultCount']):
+                params['offset'] = offset + limit
+                params['limit'] = limit
+                args = "&".join(["%s=%s" % (k, params[k]) for k in params.keys()])
+                meta['nextPageURL'] = "%s%s?%s" % (settings.SITE_URL_PREFIX, path, args)
+            return set(page_uris)
+        else:
+            return super(SimplePaginator, self).__call__(triplestore, candidate_uris, params, path, meta)
 
 PAGINATORS = defaultdict(lambda:Paginator(None))
 FILTERS = defaultdict(lambda:FilterSet())

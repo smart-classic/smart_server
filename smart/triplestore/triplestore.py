@@ -108,7 +108,12 @@ class TripleStore(engine.connector):
         g.add((rsNode,RDF.type,NS['api']['ResponseSummary']))
         
         for key in meta.keys():
-            g.add((rsNode,NS['api'][key],Literal(meta[key])))
+            if type(meta[key]) == list:
+                bn = BNode()
+                g.add((rsNode,NS['api'][key],bn))
+                Collection(g, bn, meta[key])
+            else:
+                g.add((rsNode,NS['api'][key],Literal(meta[key])))
         
         return g.serialize(format="xml")
 
