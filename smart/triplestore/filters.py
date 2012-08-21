@@ -138,6 +138,8 @@ def runFiltering (triplestore, obj, uris, query_params):
     return f(triplestore, uris, query_params)
         
 def runPagination (triplestore, obj, uris, query_params, path, meta):
-    param_dict = {k:query_params[k] for k in query_params.keys()}
+    param_dict = {}
+    for k in query_params:
+       param_dict[k] = query_params[k]
     p = PAGINATORS[obj.node]
     return p(triplestore, uris, param_dict, path, meta)
