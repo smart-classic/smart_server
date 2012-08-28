@@ -45,6 +45,7 @@ urlpatterns += patterns(
                                        'PUT': manifest_put,
                                        'DELETE': manifest_delete,
                                        'OPTIONS' : allow_options})),
+    (r'^apps/(?P<app_id>[^/]+)/credentials', app_oauth_credentials),
     
     # static
     (r'^static/(?P<path>.*)$', 'django.views.static.serve', {'document_root': 'static'}),

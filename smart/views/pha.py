@@ -2,7 +2,8 @@
 Indivo views -- PHAs
 """
 
-import urllib, urlparse
+import urllib
+import urlparse
 
 from base import *
 from django.utils import simplejson
@@ -15,10 +16,13 @@ from oauth import oauth
 
 from smart.accesscontrol import auth
 from smart.lib import iso8601
-import base64, hmac, datetime
+import base64
+import hmac
+import datetime
+
 
 def all_phas(request):
-    """A list of the PHAs as JSON"""
+    """A list of the PHAs as XML"""
     phas = [PHA.objects.get(id=x.app.id) for x in AppActivity.objects.filter(name="main")]
     return render_template('phas', {'phas': phas}, type="xml")
 
@@ -32,6 +36,7 @@ def all_manifests(request):
     ret = "[" +", ".join([a.manifest for a in phas])+ "]"
     return HttpResponse(ret, mimetype='application/json')
 
+
 @CallMapper.register(method="GET",
                      category="container_item",
                      target="http://smartplatforms.org/terms#AppManifest")
@@ -40,6 +45,7 @@ def resolve_manifest(request, descriptor):
         return resolve_manifest_with_app(request, "main", descriptor)
     else:
         return resolve_manifest_with_app(request, descriptor, None)
+
 
 def resolve_manifest_with_app(request, activity_name, app_id):
     act = resolve_activity_helper(request, activity_name, app_id)
@@ -54,15 +60,19 @@ def resolve_manifest_with_app(request, activity_name, app_id):
     
     return HttpResponse(manifest, mimetype='application/json')
 
+
 def resolve_activity(request, activity_name):
     return resolve_activity_with_app(request, activity_name, None)
+
 
 def resolve_activity_with_app(request, activity_name, app_id):
     act = resolve_activity_helper(request, activity_name, app_id)
     return render_template('activity', {'a': act}, type="xml")
 
+
 def resolve_activity_helper(request, activity_name, app_id):
-    """Map an activity name (and optionally specified app id) to activity URL."""
+    """ Map an activity name (and optionally specified app id) to activity URL.
+    """
     act = None
     
     if (app_id != None):
@@ -91,42 +101,57 @@ def resolve_activity_helper(request, activity_name, app_id):
     print "mapped ", request.principal, activity_name, app_id, " to: ", act
     return act
 
+
 def pha(request, pha_email):
     try:
-        pha = PHA.objects.get(id = pha_email)
+        pha = PHA.objects.get(id=pha_email)
         return render_template('pha', {'pha' : pha}, type="xml")
     except:
         raise Http404
 
+
+def app_oauth_credentials(request, app_id):
+    """ Return the OAuth credentials for the given app.
+    Must be a machine app to perform this call.
+    """
+    app = PHA.objects.get(email=app_id)
+    json = {
+        'consumer_key': app.email,              # Is email really what's used as key?
+        'consumer_secret': app.secret
+    }
+    return HttpResponse(simplejson.dumps(json), mimetype='application/json')
+
+
 ##
 ## OAuth Process
 ##
-
 def request_token(request):
     """ Get a new request token, bound to a record if desired.
 
     request.POST may contain:
 
     * *smart_record_id*: The record to which to bind the request token.
-    
+
     Will return :http:statuscode:`200` with the request token on success,
     :http:statuscode:`403` if the oauth signature on the request was missing
     or faulty.
-
+    Will raise on bad signature.
     """
     # ask the oauth server to generate a request token given the HTTP request
     try:
         # we already have the oauth_request in context, so we don't get it again
         app = request.principal
-        request_token = OAUTH_SERVER.generate_request_token(request.oauth_request, 
-                                                          record_id = request.POST.get('smart_record_id', None),
-                                                          offline_capable = request.POST.get('offline', False))
-      
+        request_token = OAUTH_SERVER.generate_request_token(
+            request.oauth_request, 
+            record_id = request.POST.get('smart_record_id', None),
+            offline_capable = request.POST.get('offline', False)
+        )
+
         return HttpResponse(request_token.to_string(), mimetype='text/plain')
     except oauth.OAuthError, e:
         import sys, traceback
         traceback.print_exc(file=sys.stderr)
-        
+
     # an exception can be raised if there is a bad signature (or no signature) in the request
     raise PermissionDenied()
 
@@ -141,6 +166,7 @@ def exchange_token(request):
         raise PermissionDenied()
     
     return HttpResponse(access_token.to_string(), mimetype='text/plain')
+
 
 ##
 ## OAuth internal calls
@@ -161,6 +187,7 @@ def session_create(request):
     
     return HttpResponse(str(token), mimetype='text/plain')
 
+
 @paramloader()
 def request_token_claim(request, request_token):
     # FIXME: need a select for update here
@@ -177,6 +204,7 @@ def request_token_claim(request, request_token):
     rt.save()
     return HttpResponse(request.principal.email)
 
+
 @paramloader()
 def request_token_info(request, request_token):
     """
@@ -192,6 +220,7 @@ def request_token_info(request, request_token):
         pass
     
     return render_template('requesttoken', {'request_token':rt, 'share' : share}, type='xml')
+
 
 @paramloader()
 def request_token_approve(request, request_token):
@@ -229,6 +258,7 @@ def request_token_approve(request, request_token):
     
     # redirect to the request token's callback, or if null the PHA's default callback
     return HttpResponse(urllib.urlencode({'location': redirect_url}))
+
 
 def get_long_lived_token(request):
     if request.method != "POST":
