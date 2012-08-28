@@ -39,7 +39,7 @@ class RecordItemProxy(BasicCallMapper):
     @property
     def map_score(self):
         cat = str(self.call.category)
-        if cat.startswith("record_item") and str(self.call.method)=="GET":
+        if cat == "record" and str(self.call.http_method)=="GET":
             return 1000
         return 0
     maps_to = staticmethod(proxy_get)

@@ -8,7 +8,7 @@ import re
 def record_get_object(request, record_id, obj,  **kwargs):
     c = RecordTripleStore(Record.objects.get(id=record_id))
     item_id = URIRef(smart_path(request.path))
-    return rdf_response(c.get_objects(obj, [item_id]))
+    return rdf_response(c.get_objects(request.path, request.GET, obj, [item_id]))
 
 def record_delete_object(request,  record_id, obj, **kwargs):
     c = RecordTripleStore(Record.objects.get(id=record_id))
@@ -17,7 +17,7 @@ def record_delete_object(request,  record_id, obj, **kwargs):
 
 def record_get_all_objects(request, record_id, obj, **kwargs):
     c = RecordTripleStore(Record.objects.get(id=record_id))
-    return rdf_response(c.get_objects(obj))
+    return rdf_response(c.get_objects(request.path, request.GET, obj))
 
 def record_delete_all_objects(request, record_id, obj, **kwargs):
     
