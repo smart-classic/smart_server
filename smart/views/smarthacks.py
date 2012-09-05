@@ -34,9 +34,7 @@ SAMPLE_NOTIFICATION = {
 sporg = Namespace("http://smartplatforms.org/")
 
 
-@CallMapper.register(method="GET",
-                     category="container_items",
-                     target="http://smartplatforms.org/terms#ContainerManifest")
+@CallMapper.register(client_method_name="get_container_manifest")
 def get_container_manifest(request, **kwargs):
     response = {
         'smart_version': settings.VERSION,
@@ -254,10 +252,7 @@ def remove_app(request, account, app):
 
     return DONE
 
-
-@CallMapper.register(method="GET",
-                     category="container_items",
-                     target="http://smartplatforms.org/terms#Demographics")
+@CallMapper.register(client_method_name="search_records")
 def _record_sparql_from_request(request):
     """Composes a SPARQL query from a request's GET params
 
@@ -385,30 +380,13 @@ def do_webhook(request, webhook_name):
     print "GOT,", response
     return utils.x_domain(HttpResponse(response, mimetype='application/rdf+xml'))
 
-
-@CallMapper.register(method="GET",
-                     category="container_item",
-                     target="http://smartplatforms.org/terms#Ontology")
+@CallMapper.register(client_method_name="get_ontology")
 def download_ontology(request, **kwargs):
     import os
     f = open(settings.ONTOLOGY_FILE).read()
     return HttpResponse(f, mimetype="application/rdf+xml")
 
-
-# hook to build in demographics-specific behavior:
-# if a record doesn't exist, create it before adding
-# demographic data
-@CallMapper.register(method="POST",
-                     category="record_items",
-                     target="http://smartplatforms.org/terms#MedicalRecord")
-def put_demographics(request, *args, **kwargs):
-    obj = RecordObject["http://smartplatforms.org/terms#MedicalRecord"]
-    record_id = "".join([str(random.randint(0, 9)) for x in range(12)])
-    Record.objects.create(id=record_id)
-    return record_post_objects(request, record_id, obj, **kwargs)
-
-
-def manifest_put(request, descriptor):
+def manifest_put (request, descriptor):
     try:
         data = request.raw_post_data
         manifest = json.loads(data)

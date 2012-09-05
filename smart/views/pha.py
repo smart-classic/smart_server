@@ -27,8 +27,8 @@ def all_phas(request):
     return render_template('phas', {'phas': phas}, type="xml")
 
 
-@CallMapper.register(method="GET",
-                     category="container_items",
+@CallMapper.register(http_method="GET",
+                     cardinality="multiple",
                      target="http://smartplatforms.org/terms#AppManifest")
 def all_manifests(request):
     """A list of the PHAs as JSON"""
@@ -37,8 +37,8 @@ def all_manifests(request):
     return HttpResponse(ret, mimetype='application/json')
 
 
-@CallMapper.register(method="GET",
-                     category="container_item",
+@CallMapper.register(http_method="GET",
+                     cardinality="single",
                      target="http://smartplatforms.org/terms#AppManifest")
 def resolve_manifest(request, descriptor):
     if "@" in descriptor:

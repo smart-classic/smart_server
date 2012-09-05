@@ -2,7 +2,7 @@ import os
 # Django settings for smart project.
 
 # SMART container descriptors
-VERSION = '0.5'
+VERSION = '0.5.0'
 NAME = 'SMART v%s Sandbox' % VERSION
 DESCRIPTION = 'Public sandbox to demonstrate the SMART API'
 
@@ -56,6 +56,10 @@ DATABASE_USER = 'smart'             # Not used with sqlite3.
 DATABASE_PASSWORD = 'smart'         # Not used with sqlite3.
 DATABASE_HOST = ''             # Set to empty string for localhost. Not used with sqlite3.
 DATABASE_PORT = ''             # Set to empty string for default. Not used with sqlite3.
+
+# Settings for the API paging 
+DEFAULT_PAGE_LIMIT = None
+MAX_PAGE_LIMIT = None
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name

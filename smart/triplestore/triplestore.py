@@ -4,13 +4,9 @@ Triple store interface for SMART
 Josh Mandel
 """
 
-from smart.lib import utils
-from smart.common.rdf_tools.util import URIRef, Literal, BNode
-from rdflib import Graph, ConjunctiveGraph
-from django.conf import settings
-import urllib, uuid, base64
-import json
-import sys
+from base import *
+
+from filters import runFiltering, runPagination
 
 engine = "smart.triplestore.%s"%settings.TRIPLESTORE['engine']
 __import__(engine)
@@ -78,11 +74,48 @@ class TripleStore(engine.connector):
     def get_contexts(self, contexts):
         return super(TripleStore, self).get_contexts(contexts)
 
-    def get_objects(self, obj, limit_to_statements=None):
-        matches = super(TripleStore, self).get_clinical_statement_uris(obj, limit_to_statements)
+    def get_objects(self, path, queries, obj, limit_to_statements=None):
+        timeStart = time.time()
+        meta = {}
+   
+        matches = super(TripleStore, self).get_clinical_statement_uris(obj)
+
+        if matches:
+            matches = runFiltering (self, obj, matches, queries)
+
+        print "filtered", len(matches)
+
+        if matches:
+            matches = runPagination (self, obj, matches, queries, path, meta)
+        print "paged", len(matches)
+
+        if matches:
+            matches = super(TripleStore, self).expand_to_neighboring_statements(limit_to_statements or matches)
+        print "expanded", len(matches)
+
         if not matches:
             return Graph().serialize(format="xml")
-        return self.get_contexts(matches)
+
+        res = self.get_contexts(matches)
+        meta['processingTimeMs'] = int((time.time() - timeStart) * 1000)
+        
+        return self.addResponseSummary(res, meta)
+        
+    def addResponseSummary (self, rdfxml, meta):
+        g = parse_rdf(rdfxml)
+
+        rsNode = BNode()
+        g.add((rsNode,RDF.type,NS['api']['ResponseSummary']))
+        
+        for key in meta.keys():
+            if type(meta[key]) == list:
+                bn = BNode()
+                g.add((rsNode,NS['api'][key],bn))
+                Collection(g, bn, meta[key])
+            else:
+                g.add((rsNode,NS['api'][key],Literal(meta[key])))
+        
+        return g.serialize(format="xml")
 
 class ContextTripleStore(TripleStore):
     queryparam = "$context"

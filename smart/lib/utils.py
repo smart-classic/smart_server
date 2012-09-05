@@ -117,13 +117,13 @@ def get_capabilities ():
     for t in rdf_ontology.api_calls:
 
         target = str(t.target)
-        method = str(t.method)
+        http_method = str(t.http_method)
 
         if target not in capabilities.keys():
             capabilities[target] = {"methods": []}
             
-        if method not in capabilities[target]["methods"]:
-            capabilities[target]["methods"].append(method)
+        if http_method not in capabilities[target]["methods"]:
+            capabilities[target]["methods"].append(http_method)
             
     return capabilities
 
