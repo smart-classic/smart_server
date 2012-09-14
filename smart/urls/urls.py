@@ -16,8 +16,6 @@ urlpatterns += patterns(
     # OAuth
     (r'^oauth/debug', debug_oauth),
     (r'^oauth/', include('smart.urls.oauth')),
-    
-    (r'^version$', get_version),
 
     # Record
     (r'^record_by_token/$', record_by_token),
@@ -42,13 +40,17 @@ urlpatterns += patterns(
     (r'^activity/(?P<activity_name>[^/]+)/app/(?P<app_id>[^/]+)$', resolve_activity_with_app),
     (r'^activity/(?P<activity_name>[^/]+)$', resolve_activity),
     (r'^apps/manifests/?$', all_manifests),
-    (r'^apps/(?P<descriptor>.+)/manifest$', resolve_manifest),
+    (r'^apps/(?P<descriptor>.+)/manifest$', MethodDispatcher({
+                                       'GET': resolve_manifest,
+                                       'PUT': manifest_put,
+                                       'DELETE': manifest_delete,
+                                       'OPTIONS' : allow_options})),
     
     # static
     (r'^static/(?P<path>.*)$', 'django.views.static.serve', {'document_root': 'static'}),
 
     # SMArt API                                       
-    (r'^accounts/(?P<account_email>[^/]+)/apps/(?P<pha_email>[^/]+)/preferences', MethodDispatcher({
+    (r'^users/(?P<user_id>[^/]+)/apps/(?P<pha_email>[^/]+)/preferences', MethodDispatcher({
                                        'GET': preferences_get,
                                        'PUT': preferences_put,
                                        'DELETE': preferences_delete,

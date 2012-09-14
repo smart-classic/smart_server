@@ -26,7 +26,7 @@ def check_token_for_account_app_wrapper(token):
         def check_token_for_account_app(request, view_func, view_args, view_kwargs):
             pha = PHA.objects.get(id=token.share.with_app.id)
             acc = Account.objects.get(id=token.share.authorized_by.id)
-            return pha.email == view_kwargs['pha_email'] and acc.email == view_kwargs['account_email']
+            return pha.email == view_kwargs['pha_email'] and acc.email == view_kwargs['user_id']
         return check_token_for_account_app
 
 def grant(accesstoken, permset):
@@ -42,7 +42,6 @@ def grant(accesstoken, permset):
     permset.grant(do_webhook)
     permset.grant(record_delete_all_objects, [check_token_for_record])
     permset.grant(record_delete_object, [check_token_for_record])
-    permset.grant(record_put_object, [check_token_for_record])
     permset.grant(record_post_objects, [check_token_for_record])
     permset.grant(record_get_all_objects, [check_token_for_record])
 
@@ -54,7 +53,6 @@ def grant(accesstoken, permset):
     except: 
         pass
     
-    permset.grant(put_demographics, [check_token_for_record])
     permset.grant(record_post_alert, [check_token_for_record])
     permset.grant(user_search)
     permset.grant(user_get)

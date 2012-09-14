@@ -7,8 +7,8 @@ Ben Adida & Josh Mandel
 from base import *
 from django.utils import simplejson
 from django.conf import settings
-from smart.client.common.rdf_ontology import ontology
-from smart.client.common.util import rdf, foaf, vcard, sp, serialize_rdf, parse_rdf, bound_graph, URIRef, Namespace
+from smart.common.rdf_tools.rdf_ontology import ontology
+from smart.common.rdf_tools.util import rdf, foaf, vcard, sp, serialize_rdf, parse_rdf, bound_graph, URIRef, Namespace
 from smart.lib import utils
 from smart.models.apps import *
 from smart.models.accounts import *

@@ -2,7 +2,7 @@
 
 from django.conf import settings
 from smart.models import *
-from smart.lib.utils import get_capabilities
+from smart.lib.utils import get_capabilities, random_string
 from string import Template
 import re
 import sys
@@ -10,6 +10,8 @@ import os
 from django.utils import simplejson
 import urllib2
 
+# Import the manifest validator function
+from smart.common.utils.manifest_tests import app_manifest_structure_validator
 
 def sub(str, var, val):
     return str.replace("{%s}"%var, val)
@@ -25,10 +27,26 @@ def LoadApp(app_params):
 
   manifest_string = s.read()
   s.close() 
-  LoadAppFromJSON(manifest_string, app_params)
+  return LoadAppFromJSON(manifest_string, app_params)
   
-def LoadAppFromJSON(manifest_string, app_params):
+def LoadAppFromJSON(manifest_string, app_params=None):
+
+  if app_params == None: app_params = {}
+  
+  if "secret" not in app_params:
+    print "No consumer secret among the app params. Generating consumer secret."
+    app_params["secret"] =  random_string(16)
+    
+  print "Consumer secret is '%s'" % app_params["secret"]
+  
   r = simplejson.loads(manifest_string)
+  secret = app_params["secret"]
+ 
+  messages = app_manifest_structure_validator(r)
+  if len(messages) > 0:
+      print "WARNING! This app manifest is invalid"
+      for m in messages:
+        print m
 
   if "override_index" in app_params:
       r["index"] = app_params["override_index"]
@@ -46,7 +64,7 @@ def LoadAppFromJSON(manifest_string, app_params):
       a = HelperApp.objects.create(
                        description = r["description"],
                        consumer_key = r["id"],
-                       secret = 'smartapp-secret',
+                       secret = secret,
                        name =r["name"],
                        email=r["id"],
                        manifest=manifest_string)
@@ -68,7 +86,7 @@ def LoadAppFromJSON(manifest_string, app_params):
       a = PHA.objects.create(
                        description = r["description"],
                        consumer_key = r["id"],
-                       secret = 'smartapp-secret',
+                       secret = secret,
                        name =r["name"],
                        email=r["id"],
                        mode=r["mode"],
@@ -87,6 +105,9 @@ def LoadAppFromJSON(manifest_string, app_params):
   if "requires" in r:  
     capabilities = get_capabilities()
     for k in r["requires"]:
+        if k not in capabilities:
+            print "WARNING! Tihs app requires an unsupported datatype:", k
+            break
         for m in r["requires"][k]["methods"]:
             if m not in capabilities[k]["methods"]:
                 print "WARNING! This app requires an unsupported method:", k, m
@@ -107,14 +128,24 @@ def LoadAppFromJSON(manifest_string, app_params):
                               description=hook_data["description"],
                               url=hook_url,
                               requires_patient_context=rpc)
+  return a
+
 if __name__ == "__main__":
     import string
-    for v in sys.argv[1:]:
-        print "Loading app: %s"%v
+    v = sys.argv[1]
+    secret = None
 
-        app_params = {
-            "manifest": v        
-        }
+    if len(sys.argv)>2:
+        secret = sys.argv[2]
 
-        LoadApp(app_params)
+    print "Loading apps via load_one_app is deprecated.  Please use 'python manage.py load_app' instead."
+    print "Loading app: %s"%v
 
+    app_params = {
+        "manifest": v,
+    }
+    if secret:
+        app_params["secret"] = secret
+
+    a = LoadApp(app_params)
+    print "Loaded app with secret: %s"%a.secret

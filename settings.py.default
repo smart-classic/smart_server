@@ -1,8 +1,10 @@
 import os
 # Django settings for smart project.
 
-# SMART version identifier
-VERSION = '0.4'
+# SMART container descriptors
+VERSION = '0.5.0'
+NAME = 'SMART v%s Sandbox' % VERSION
+DESCRIPTION = 'Public sandbox to demonstrate the SMART API'
 
 # base URL for the app
 APP_HOME = '{{path_to_smart_server}}'
@@ -19,6 +21,13 @@ SMART_UI_SERVER_LOCATION = '{{ui_server_base_url}}' # e.g. http://localhost:7001
 PLUGIN_USE_PROXY = {{use_proxy}} # Enable PROXY_MODE: True or False
 PROXY_USER_ID = '{{proxy_user_email}}' # only needed if running in PROXY MODE
 PROXY_BASE = '{{proxy_base_url}}' # only needed if running in PROXY MODE
+
+PROXY_ERROR_NOTIFICATION = False
+PROXY_NOTIFICATION_FROM = '{{proxy_notification_from}}'
+PROXY_NOTIFICATION_TO = '{{proxy_notification_to}}'
+PROXY_NOTIFICATION_SUBJECT = '{{proxy_notification_subject}}'
+PROXY_NOTIFICATION_SMTP_SERVER = '{{proxy_notification_smtp_server}}'
+PROXY_ERROR_MESSAGE_OVERRIDE = '{{proxy_error_message_override}}'
 
 TRIPLESTORE = {
         'engine': '{{triplestore_engine}}',
@@ -47,6 +56,10 @@ DATABASE_USER = 'smart'             # Not used with sqlite3.
 DATABASE_PASSWORD = 'smart'         # Not used with sqlite3.
 DATABASE_HOST = ''             # Set to empty string for localhost. Not used with sqlite3.
 DATABASE_PORT = ''             # Set to empty string for default. Not used with sqlite3.
+
+# Settings for the API paging 
+DEFAULT_PAGE_LIMIT = None
+MAX_PAGE_LIMIT = None
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name

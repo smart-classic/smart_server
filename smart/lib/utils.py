@@ -15,8 +15,8 @@ try:
   from django.forms.fields import email_re
 except:
   from django.core.validators import email_re
-from smart.client.common.util import parse_rdf, serialize_rdf, bound_graph
-from smart.client.common import rdf_ontology
+from smart.common.rdf_tools.util import parse_rdf, serialize_rdf, bound_graph
+from smart.common.rdf_tools import rdf_ontology
 import django.core.mail as mail
 import logging
 import string, random, re
@@ -117,13 +117,13 @@ def get_capabilities ():
     for t in rdf_ontology.api_calls:
 
         target = str(t.target)
-        method = str(t.method)
+        http_method = str(t.http_method)
 
         if target not in capabilities.keys():
             capabilities[target] = {"methods": []}
             
-        if method not in capabilities[target]["methods"]:
-            capabilities[target]["methods"].append(method)
+        if http_method not in capabilities[target]["methods"]:
+            capabilities[target]["methods"].append(http_method)
             
     return capabilities
 

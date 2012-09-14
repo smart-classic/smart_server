@@ -8,8 +8,8 @@ from string import Template
 from base import *
 from smart.lib import utils
 from smart.lib.utils import *
-from smart.client.common.util import rdf, sp, bound_graph, URIRef, Namespace
-from django.http import HttpResponse
+from smart.common.rdf_tools.util import rdf, sp, bound_graph, URIRef, Namespace
+from django.http import HttpResponse, Http404
 from django.conf import settings
 from smart.models import *
 from smart.models.record_object import RecordObject
@@ -17,6 +17,8 @@ from smart.models.rdf_rest_operations import *
 from oauth.oauth import OAuthRequest
 from smart.models.ontology_url_patterns import CallMapper
 import datetime, urllib, json
+
+from load_tools.load_one_app import LoadAppFromJSON
 
 SAMPLE_NOTIFICATION = {
     'id' : 'foonotification',
@@ -28,25 +30,22 @@ SAMPLE_NOTIFICATION = {
 sporg = Namespace("http://smartplatforms.org/")
 
 
-@CallMapper.register(method="GET",
-                     category="container_items",
-                     target="http://smartplatforms.org/terms#Capabilities")
-def container_capabilities(request, **kwargs):
-    #m = bound_graph()
-    #site = URIRef(settings.SITE_URL_PREFIX)
-    #print "avail", dir(m)
-    
-    #m.add((site, rdf['type'], sp['Container']))
-    #m.add((site, sp['capability'], sporg['capability/SNOMED/lookup']))
-    #m.add((site, sp['capability'], sporg['capability/SPL/lookup']))
-    #m.add((site, sp['capability'], sporg['capability/Pillbox/lookup']))
-    
-    #return utils.x_domain(HttpResponse(utils.serialize_rdf(m), "application/rdf+xml"))
-    
-    capabilities = get_capabilities()
-    return utils.x_domain(HttpResponse(json.dumps(capabilities, sort_keys=True, indent=4), "application/json"))
-    
-def get_version(request): return HttpResponse(settings.VERSION, "text/plain")
+@CallMapper.register(client_method_name="get_container_manifest")
+def get_container_manifest(request, **kwargs):
+    response = {
+        'smart_version': settings.VERSION,
+        'api_base': settings.SITE_URL_PREFIX,
+        'name': settings.NAME,
+        'description': settings.DESCRIPTION,
+        'admin': settings.EMAIL_SUPPORT_ADDRESS,
+        'launch_urls': {
+            'request_token': settings.SITE_URL_PREFIX+"/oauth/request_token",
+            'authorize_token': settings.SMART_UI_SERVER_LOCATION+"/oauth/authorize",
+            'exchange_token': settings.SITE_URL_PREFIX+"/oauth/access_token",
+        },
+        'capabilities': get_capabilities()
+    }
+    return utils.x_domain(HttpResponse(json.dumps(response, sort_keys=True, indent=4), "application/json"))
 
 @paramloader()
 def record_list(request, account):
@@ -213,15 +212,31 @@ def remove_app(request, account, app):
 
     return DONE
 
-@CallMapper.register(method="GET",
-                     category="container_items",
-                     target="http://smartplatforms.org/terms#Demographics")
-def record_search(request):
-
+@CallMapper.register(client_method_name="search_records")
+def _record_sparql_from_request(request):
+    """Composes a SPARQL query from a request's GET params
+    
+    If the request contains a 'sparql' attribute, the value of that attribute is assumed to be complete SPARQL and returned. Otherwise, a query is generated
+    from the possible attributes:
+        - family_name
+        - given_name
+        - gender
+        - medical_record_number
+        - zipcode
+        - birthday
+    """
+    
+    # did we get a complete sparql query? If so, just return it
+    sparql = request.GET.get('sparql', None)
+    if sparql:
+        return sparql
+    
+    # nope, compose one from the parameters
     sparql = Template("""PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX  foaf:  <http://xmlns.com/foaf/0.1/>
 PREFIX  sp:  <http://smartplatforms.org/terms#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX v: <http://www.w3.org/2006/vcard/ns#>
 CONSTRUCT {?person rdf:type sp:Demographics} 
 WHERE   {
 graph ?g {
@@ -230,48 +245,49 @@ $statements
 }
 }
 order by ?ln""")
-
-
+    
+    # collect the statements
     statements = []
     fn = request.GET.get('family_name', None)
     if fn:
         fn = string_to_alphanumeric(fn)
-        statements += [""" ?person foaf:familyName ?familyName. FILTER  regex(?familyName, "^%s","i") """%fn]
+        statements += [""" ?person v:n/v:family-name ?familyName. FILTER  regex(?familyName, "^%s","i") """%fn]
 
     gn = request.GET.get('given_name', None)
     if gn:
         gn = string_to_alphanumeric(gn)
-        statements += [""" ?person foaf:givenName ?givenName. FILTER  regex(?givenName, "^%s","i") """%gn]
-
+        statements += [""" ?person v:n/v:given-name ?givenName. FILTER  regex(?givenName, "^%s","i") """%gn]
 
     gender = request.GET.get('gender', None)
     if gender:
         gender = string_to_alphanumeric(gender)
         statements += [""" ?person foaf:gender ?gender. FILTER  regex(?gender, "^%s","i") """%gender]
-
+    
     mrn = request.GET.get('medical_record_number', None)
     if mrn:
         mrn = string_to_alphanumeric(mrn)
-        statements += [""" ?person sp:medicalRecordNumber ?mrn.  ?mrn dcterms:identifier  ?mrnid. FILTER  regex(?mrnid, "^%s$","i") """%mrn]
-
-
+        statements += [""" ?person sp:medicalRecordNumber/dcterms:identifier ?mrnid. FILTER  regex(?mrnid, "^%s$","i") """%mrn]
     zipcode = request.GET.get('zipcode', None)
     if zipcode:
         zipcode = string_to_alphanumeric(zipcode)
-        statements += [""" ?person sp:zipcode ?zipcode. FILTER  regex(?zipcode, "^%s$","i") """%zipcode]
+        statements += [""" ?person v:adr/v:postal-code ?zipcode. FILTER  regex(?zipcode, "^%s$","i") """%zipcode]
 
     birthday = request.GET.get('birthday', None)
     if birthday:
         birthday = string_to_alphanumeric(birthday)
-        statements += [""" ?person sp:birthday ?birthday. FILTER  regex(?birthday, "^%s$","i") """%birthday]
-
+        statements += [""" ?person v:bday ?birthday. FILTER  regex(?birthday, "^%s$","i") """%birthday]
     statements = " ".join(statements)
-    q = sparql.substitute(statements=statements)
+    return sparql.substitute(statements=statements)
+
+
+def record_search(request):
+    q = _record_sparql_from_request(request)
     record_list = Record.search_records(q)
     return HttpResponse(record_list, mimetype="application/rdf+xml")
 
+
 def record_search_xml(request):
-    q = request.GET.get('sparql', None)
+    q = _record_sparql_from_request(request)
     record_list = Record.search_records(q)
     record_list = Record.rdf_to_objects(record_list)
     return render_template('record_list', {'records': record_list}, type='xml')
@@ -321,27 +337,36 @@ def do_webhook(request, webhook_name):
     print "GOT,", response
     return utils.x_domain(HttpResponse(response, mimetype='application/rdf+xml'))
 
-@CallMapper.register(method="GET",
-                     category="container_item",
-                     target="http://smartplatforms.org/terms#Ontology")
+@CallMapper.register(client_method_name="get_ontology")
 def download_ontology(request, **kwargs):
     import os
     f = open(settings.ONTOLOGY_FILE).read()
     return HttpResponse(f, mimetype="application/rdf+xml")
 
-# hook to build in demographics-specific behavior: 
-# if a record doesn't exist, create it before adding
-# demographic data
-@CallMapper.register(method="POST",
-                     category="record_items",
-                     target="http://smartplatforms.org/terms#MedicalRecord")
-def put_demographics(request, *args, **kwargs):
-    obj = RecordObject["http://smartplatforms.org/terms#MedicalRecord"]
-    record_id = "".join([str(random.randint(0,9)) for x in range(12)])
-    Record.objects.create(id=record_id)
-    return record_post_objects(request, record_id, obj, **kwargs)
-
-
+def manifest_put (request, descriptor):
+    try:
+        data = request.raw_post_data
+        manifest = json.loads(data)
+        id = manifest["id"]
+        
+        if id == descriptor:
+            LoadAppFromJSON(data)
+            return HttpResponse("ok")
+        else:
+            msg = "The manifest id '%s' must match the app descriptor '%s'" % (id, descriptor)
+            print msg
+    except:
+        pass
+        
+    raise Http404
+    
+def manifest_delete(request, descriptor): 
+    try:
+        app = PHA.objects.get(consumer_key=descriptor)
+        app.delete()
+        return HttpResponse("ok")
+    except:
+        raise Http404  
 
 def debug_oauth(request, **kwargs):
     from smart.accesscontrol.oauth_servers import OAUTH_SERVER

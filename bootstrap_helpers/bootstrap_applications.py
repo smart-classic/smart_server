@@ -34,4 +34,4 @@ my_app = """
 }
 """
 
-LoadAppFromJSON(my_app, {"enabled_by_default": True})
+LoadAppFromJSON(my_app, {"enabled_by_default": True, "secret": "smartapp-secret"})
