@@ -34,8 +34,8 @@ def do_sed(t,n,v):
     else:
       c = "sed -i -e's/%s/%s/' %s" % (n, v, t)
 
-    o, s = call_command(c)
-    print o, s
+    o = call_command(c)
+    print o
     return o
 
 def fill_field(t, n, v):
@@ -197,9 +197,9 @@ def main():
             proxy_user = get_input("User to associate with proxied requests", 
                                    "proxy_user@smartplatforms.org")
         
-        o, s = call_command("cp smart_server/settings.py.default smart_server/settings.py")
+        call_command("cp smart_server/settings.py.default smart_server/settings.py")
 
-        o, s = call_command("cp smart_server/bootstrap_helpers/application_list.json.default " + 
+        call_command("cp smart_server/bootstrap_helpers/application_list.json.default " + 
                             "smart_server/bootstrap_helpers/application_list.json ")
 
         do_sed('smart_server/bootstrap_helpers/application_list.json', 
@@ -207,8 +207,8 @@ def main():
                    app_server_base_url)
 
 
-        o, s = call_command("cp smart_ui_server/settings.py.default smart_ui_server/settings.py")
-        o, s = call_command("cp smart_sample_apps/settings.py.default smart_sample_apps/settings.py")
+        call_command("cp smart_ui_server/settings.py.default smart_ui_server/settings.py")
+        call_command("cp smart_sample_apps/settings.py.default smart_sample_apps/settings.py")
 
         fill_field('smart_server/settings.py', 'path_to_smart_server', 
                    os.path.join(cwd, "smart_server"))
@@ -349,11 +349,9 @@ def call_command(command, print_output=False, failure_okay = False):
         assert failure_okay or os.WEXITSTATUS(ret) == 0, "Subcommand failed. Aborting."
         
     else: 
-        out = subprocess.PIPE
         try:
-            ret = subprocess.check_call(command, shell=True,
-                                   stdout=out,
-                                   stderr=subprocess.PIPE)
+            ret = subprocess.check_output(command, shell=True,
+                                   stderr=subprocess.STDOUT)
         except subprocess.CalledProcessError:
             if not failure_okay:
                 assert False, "Subcommand failed.  Aborting."
