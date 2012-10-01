@@ -201,8 +201,15 @@ def main():
 
         call_command("cp smart_server/bootstrap_helpers/application_list.json.default " + 
                             "smart_server/bootstrap_helpers/application_list.json ")
+                            
+        call_command("cp smart_server/bootstrap_helpers/bootstrap_applications.py.default " + 
+                            "smart_server/bootstrap_helpers/bootstrap_applications.py ")
 
         do_sed('smart_server/bootstrap_helpers/application_list.json', 
+                   'http:\/\/localhost:8001',
+                   app_server_base_url)
+                   
+        do_sed('smart_server/bootstrap_helpers/bootstrap_applications.py', 
                    'http:\/\/localhost:8001',
                    app_server_base_url)
 
