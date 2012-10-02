@@ -30,7 +30,7 @@ my_app = """
   "mode" : "ui",
   "scope": "record",
   "index" : "http://localhost:8000/smartapp/index.html",
-  "icon" :  "http://localhost:8001/static/smart_common/resources/images/app_icons_32/developers_sandbox.png"
+  "icon" :  "http://localhost:7001/static/smart_common/resources/images/app_icons_32/developers_sandbox.png"
 }
 """
 

@@ -212,6 +212,10 @@ def main():
         do_sed('smart_server/bootstrap_helpers/bootstrap_applications.py', 
                    'http:\/\/localhost:8001',
                    app_server_base_url)
+                   
+        do_sed('smart_server/bootstrap_helpers/bootstrap_applications.py', 
+                   'http:\/\/localhost:7001',
+                   ui_server_base_url)
 
 
         call_command("cp smart_ui_server/settings.py.default smart_ui_server/settings.py")
