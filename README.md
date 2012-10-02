@@ -12,7 +12,7 @@ These instructions apply to each of three github repositories that you'll need i
 # System setup
 
 * Recent Linux installation (Kernel 2.6+).  We recommend an up-to-date version of Ubuntu, and these instructions are written from that perspective.
-* Note: These instructions have been updated for Ubuntu 11.10.
+* Note: These instructions have been updated for Ubuntu 12.04.
 * Note: We recommend you do this by sudo'ing from a non-root user.  If you would like to do this as root make sure you create at least one non-root user with `useradd -m {USER}` otherwise the default locale will not be set.  This issue is most common on a new OS build.
 
 * Update the apt-get manifests
@@ -51,9 +51,9 @@ You'll have the easiest time naming your database <tt>smart</tt>
 
 * in <tt>/etc/postgresql/9.1/main/pg_hba.conf</tt>, find the line that reads:
 
-  `local     all     all        peer`
+  `local     all     all        ****`
 
-This should be the second uncommented line in your default config. Change <tt>ident</tt> to <tt>md5</tt>:
+This should be the second uncommented line in your default config (Note: <tt>****</tt> could be <tt>ident</tt>, <tt>peer</tt>, etc). Change <tt>****</tt> to <tt>md5</tt>:
 
   `local     all     all        md5`
 
@@ -154,7 +154,9 @@ Reset the SMART server, regenerate sample data, and reload:
     * set <tt>SITE_URL_PREFIX</tt> to the URL where your server is running, including port number  e.g. <tt>http://localhost:7000</tt>
     * set <tt>SMART_UI_SERVER_LOCATION</tt> to the URL where your UI server will be running, including port number  e.g. <tt>http://localhost:7001</tt>
 
-* copy <tt>bootstrap_helpers/application_list.json.default</tt> to <tt>bootstrap_helpers/application_list.json</tt> and customize to include the apps you want.
+* copy <tt>bootstrap_helpers/application_list.json.default</tt> to <tt>bootstrap_helpers/application_list.json</tt> and customize to include the apps that you want.
+
+* copy <tt>bootstrap_helpers/bootstrap_applications.py.default</tt> to <tt>bootstrap_helpers/bootstrap_applications.py</tt> and customize to include the service apps that you want.
 
 * update the database and repository settings in <tt>reset.sh</tt> (if you changed the default DB and repository endpoints in <tt>settings.py</tt>)
 
