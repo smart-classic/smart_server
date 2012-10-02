@@ -1,3 +1,4 @@
+
 [
 {
     "manifest":"http://localhost:8001/framework/bp_centiles/smart_manifest.json",
@@ -47,5 +48,11 @@
     "override_index": "http://localhost:8001/framework/med_calendar/index.html",
     "override_icon": "http://localhost:8001/framework/med_calendar/icon.png",
     "enabled_by_default": false 
+}, {
+    "manifest":"http://localhost:8001/framework/dm_monograph/smart_manifest.json",
+    "override_index": "http://localhost:8001/framework/dm_monograph/index.html",
+    "override_icon": "http://localhost:8001/framework/dm_monograph/assets/icon.png",
+    "enabled_by_default": false 
 }
 ]
+
