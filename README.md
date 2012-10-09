@@ -63,7 +63,7 @@ These instructions apply to each of three github repositories that you'll need i
 
 * in <tt>/etc/postgresql/9.1/main/pg_hba.conf</tt>, find the line that reads:
 
-  `local     all     all        \*\*\*\*`
+  `local     all     all        ****`
 
 This should be the second uncommented line in your default config (Note: <tt>\*\*\*\*</tt> could be <tt>ident</tt>, <tt>peer</tt>, etc). Change <tt>****</tt> to <tt>md5</tt>:
 
