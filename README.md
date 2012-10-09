@@ -45,23 +45,6 @@ These instructions apply to each of three github repositories that you'll need i
 
 # Setup Database
 
-You'll have the easiest time naming your database <tt>smart</tt>
-
-* There are two ways to authenticate to PostgreSQL: use your Unix credentials, or use a separate username and password. We strongly recommend the latter, and our instructions are tailored appropriately. If you know how to use PostgreSQL and want to use Unix-logins, go for it, just remember that when you use Apache, it will usually try to log in using its username, <tt>www-data</tt>.
-
-* in <tt>/etc/postgresql/9.1/main/pg_hba.conf</tt>, find the line that reads:
-
-  `local     all     all        ****`
-
-This should be the second uncommented line in your default config (Note: <tt>****</tt> could be <tt>ident</tt>, <tt>peer</tt>, etc). Change <tt>****</tt> to <tt>md5</tt>:
-
-  `local     all     all        md5`
-
-* You will need to restart PostgreSQL:
-<pre>
-   sudo service postgresql restart
-</pre>
-
 * Create a PostgreSQL user for your SMART service, e.g. "smart" and setup a password
  <pre>
  sudo su - postgres
@@ -71,7 +54,25 @@ This should be the second uncommented line in your default config (Note: <tt>***
  psql
  postgres=# \password smart
  postgres=# \q
+ exit
  </pre>
+ 
+ You'll have the easiest time naming your database <tt>smart</tt>
+
+* There are two ways to authenticate to PostgreSQL: use your Unix credentials, or use a separate username and password. We strongly recommend the latter, and our instructions are tailored appropriately. If you know how to use PostgreSQL and want to use Unix-logins, go for it, just remember that when you use Apache, it will usually try to log in using its username, <tt>www-data</tt>.
+
+* in <tt>/etc/postgresql/9.1/main/pg_hba.conf</tt>, find the line that reads:
+
+  `local     all     all        ****`
+
+This should be the second uncommented line in your default config (Note: <tt>\*\*\*\*</tt> could be <tt>ident</tt>, <tt>peer</tt>, etc). Change <tt>****</tt> to <tt>md5</tt>:
+
+  `local     all     all        md5`
+
+* You will need to restart PostgreSQL:
+<pre>
+   sudo service postgresql restart
+</pre>
 
 # Install openrdf-sesame (and Tomcat)  
 
