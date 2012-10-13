@@ -15,11 +15,21 @@ def check_token_for_record_wrapper(token):
             return token.share.record.id == view_kwargs['record_id']
         return check_token_for_record
 
-def check_frame_mode_wrapper(token):
-    pha = PHA.objects.get(id=token.share.with_app.id)
+def check_elevated_access_mode_wrapper(token):
+    authorize = False
+
+    try:
+        pha = PHA.objects.get(id=token.share.with_app.id)
+        if (pha.mode == "frame_ui"): authorize = True
+    except:
+        try:
+            ha = HelperApp.objects.get(id=token.share.with_app.id)
+            authorize = True
+        except:
+            pass
     
     def r(request, view_func, view_args, view_kwargs):
-        return pha.mode == "frame_ui"
+        return authorize
     return r
     
 def check_token_for_account_app_wrapper(token):
@@ -58,11 +68,11 @@ def grant(accesstoken, permset):
     permset.grant(user_get)
     
 
-    check_frame_mode = check_frame_mode_wrapper(accesstoken)
+    check_elevated_access_mode = check_elevated_access_mode_wrapper(accesstoken)
     permset.grant(resolve_activity_with_app, [])
     permset.grant(resolve_manifest, [])
     permset.grant(all_manifests, [])
-    permset.grant(record_search, [check_frame_mode])
+    permset.grant(record_search, [check_elevated_access_mode])
 
     check_token_for_account_app = check_token_for_account_app_wrapper(accesstoken)
     permset.grant(preferences_get, [check_token_for_account_app])
