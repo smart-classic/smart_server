@@ -106,7 +106,7 @@ def LoadAppFromJSON(manifest_string, app_params=None):
     capabilities = get_capabilities()
     for k in r["requires"]:
         if k not in capabilities:
-            print "WARNING! Tihs app requires an unsupported datatype:", k
+            print "WARNING! This app requires an unsupported datatype:", k
             break
         for m in r["requires"][k]["methods"]:
             if m not in capabilities[k]["methods"]:

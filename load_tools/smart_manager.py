@@ -34,8 +34,8 @@ def do_sed(t,n,v):
     else:
       c = "sed -i -e's/%s/%s/' %s" % (n, v, t)
 
-    o, s = call_command(c)
-    print o, s
+    o = call_command(c)
+    print o
     return o
 
 def fill_field(t, n, v):
@@ -156,20 +156,20 @@ def main():
             call_command("git clone --recursive https://github.com/chb/"+r+".git", 
                         print_output=True)
 
-            call_command("cd "+r+"; git checkout "+args.using_branch+"; cd ..")
-            call_command("cd "+r+"; git submodule init && git submodule update; cd ..", print_output=True)
+            call_command("cd "+r+" && git checkout "+args.using_branch+" && cd ..")
+            call_command("cd "+r+" && git submodule init && git submodule update && cd ..", print_output=True)
 
     if args.update_git:
         for r in repos:
 
             if args.using_branch:
-                call_command("cd "+r+"; git checkout "+args.using_branch+"; cd ..")
+                call_command("cd "+r+" && git checkout "+args.using_branch+" && cd ..")
 
-            call_command("cd "+r+"; " +
-                     "git pull; " +
-                     "git submodule init; " +
-                     "git submodule update; " +
-                     "cd ..; ",
+            call_command("cd "+r+" && " +
+                     "git pull && " +
+                     "git submodule init && " +
+                     "git submodule update && " +
+                     "cd .. ",
                       print_output=True)
         
     if args.generate_settings:
@@ -197,18 +197,29 @@ def main():
             proxy_user = get_input("User to associate with proxied requests", 
                                    "proxy_user@smartplatforms.org")
         
-        o, s = call_command("cp smart_server/settings.py.default smart_server/settings.py")
+        call_command("cp smart_server/settings.py.default smart_server/settings.py")
 
-        o, s = call_command("cp smart_server/bootstrap_helpers/application_list.json.default " + 
+        call_command("cp smart_server/bootstrap_helpers/application_list.json.default " + 
                             "smart_server/bootstrap_helpers/application_list.json ")
+                            
+        call_command("cp smart_server/bootstrap_helpers/bootstrap_applications.py.default " + 
+                            "smart_server/bootstrap_helpers/bootstrap_applications.py ")
 
         do_sed('smart_server/bootstrap_helpers/application_list.json', 
                    'http:\/\/localhost:8001',
                    app_server_base_url)
+                   
+        do_sed('smart_server/bootstrap_helpers/bootstrap_applications.py', 
+                   'http:\/\/localhost:8001',
+                   app_server_base_url)
+                   
+        do_sed('smart_server/bootstrap_helpers/bootstrap_applications.py', 
+                   'http:\/\/localhost:7001',
+                   ui_server_base_url)
 
 
-        o, s = call_command("cp smart_ui_server/settings.py.default smart_ui_server/settings.py")
-        o, s = call_command("cp smart_sample_apps/settings.py.default smart_sample_apps/settings.py")
+        call_command("cp smart_ui_server/settings.py.default smart_ui_server/settings.py")
+        call_command("cp smart_sample_apps/settings.py.default smart_sample_apps/settings.py")
 
         fill_field('smart_server/settings.py', 'path_to_smart_server', 
                    os.path.join(cwd, "smart_server"))
@@ -262,14 +273,14 @@ def main():
                      "grep -i 'python' | "+
                      "grep -i 'manage.py' | "+
                      "egrep  -o '^[ 0-9]+' | "+
-                     "xargs -t  kill")
+                     "xargs -t  kill", failure_okay=True)
                      
     if args.generate_sample_data:
-        call_command("cd smart_sample_patients/bin; " + 
-                     "rm -rf ../generated-data/*.xml; " + 
-                     "python generate.py --write ../generated-data;" + 
-                     "python generate-vitals-patient.py > ../generated-data/99912345.xml;" +
-                     "cd ../..;", print_output=True)
+        call_command("cd smart_sample_patients/bin && " + 
+                     "rm -rf ../generated-data/*.xml && " + 
+                     "python generate.py --write ../generated-data &&" + 
+                     "python generate-vitals-patient.py > ../generated-data/99912345.xml &&" +
+                     "cd ../..", print_output=True)
 
     if args.run_app_server:
         port = get_port(app_server)
@@ -285,23 +296,23 @@ def main():
         print "Note: Enter the SMART databse password when prompted (2 times)."
         print "      It is 'smart' by default."
         call_command("cd smart_server && "+
-                     "sh ./reset.sh;"+
-                     "cd ../..;", print_output=True)
+                     "sh ./reset.sh && "+
+                     "cd ../..", print_output=True)
         
         print "Resetting the SMART UI server..."
         print "Note: Enter the SMART databse password when prompted (2 times)."
         print "      It is 'smart' by default."
         call_command("cd smart_ui_server && "+
-                     "sh ./reset.sh;"+
-                     "cd ../..;", print_output=True)
+                     "sh ./reset.sh &&"+
+                     "cd ../..", print_output=True)
 
 
     if args.load_sample_data:
-        call_command("cd smart_server; " + 
+        call_command("cd smart_server && " + 
                      "PYTHONPATH=.:.. DJANGO_SETTINGS_MODULE=settings "+
                      "python load_tools/load_one_patient.py  " + 
-                     "../smart_sample_patients/generated-data/* ;"
-                     "cd ..;", print_output=True)
+                     "../smart_sample_patients/generated-data/*  && "
+                     "cd ..", print_output=True)
 
     if args.create_user:
         print "Configuring a user ..."
@@ -311,14 +322,14 @@ def main():
         email = get_input("Email", "demouser@smartplatforms.org")
         password = get_input("Password", "password")
 
-        call_command("cd smart_server; " + 
+        call_command("cd smart_server && " + 
                      "PYTHONPATH=.:.. DJANGO_SETTINGS_MODULE=settings "+
                      "python load_tools/create_user.py  " + 
                      given_name + " " + 
                      family_name + " " + 
                      email + " " + 
-                     password + "; " 
-                     "cd ..;", print_output=True)
+                     password + " && " 
+                     "cd ..", print_output=True)
 
     if args.run_api_servers:
 
@@ -341,18 +352,21 @@ def get_port(url):
         port  = (server.scheme == "http" and 80 or server.scheme == "https" and 443)
     return port
 
-def call_command(command, print_output=False):
+def call_command(command, print_output=False, failure_okay = False):
     print command
-
+    ret = ""
     if print_output: 
         ret = os.system(command)
+        assert failure_okay or os.WEXITSTATUS(ret) == 0, "Subcommand failed. Aborting."
         
     else: 
-        out = subprocess.PIPE
-        process = subprocess.Popen(command, shell=True,
-                                   stdout=out,
-                                   stderr=subprocess.PIPE)
-        ret = process.communicate()    
+        try:
+            ret = subprocess.check_output(command, shell=True,
+                                   stderr=subprocess.STDOUT)
+        except subprocess.CalledProcessError:
+            if not failure_okay:
+                assert False, "Subcommand failed.  Aborting."
+
     return ret
 
 if __name__ == "__main__":
