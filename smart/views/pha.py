@@ -33,7 +33,7 @@ def all_phas(request):
 def all_manifests(request):
     """A list of the PHAs as JSON"""
     phas = [PHA.objects.get(id=x.app.id) for x in AppActivity.objects.filter(name="main")]
-    ret = "[" +", ".join([a.manifest for a in phas])+ "]"
+    ret = "[" + ", ".join([a.manifest for a in phas]) + "]"
     return HttpResponse(ret, mimetype='application/json')
 
 
@@ -49,15 +49,15 @@ def resolve_manifest(request, descriptor):
 
 def resolve_manifest_with_app(request, activity_name, app_id):
     act = resolve_activity_helper(request, activity_name, app_id)
-    if act == None:
+    if act is None:
         raise Http404
-    
+
     manifest = act.app.manifest
     if (act.remapped):
         manifest = simplejson.loads(manifest)
         manifest['index'] = act.url
         manifest = simplejson.dumps(manifest)
-    
+
     return HttpResponse(manifest, mimetype='application/json')
 
 
@@ -74,30 +74,30 @@ def resolve_activity_helper(request, activity_name, app_id):
     """ Map an activity name (and optionally specified app id) to activity URL.
     """
     act = None
-    
-    if (app_id != None):
+
+    if app_id is not None:
         act = AppActivity.objects.filter(name=activity_name, app__email=app_id)
     else:
         act = AppActivity.objects.filter(name=activity_name)
-    
-    if len(act) == 0: 
+
+    if len(act) == 0:
         return None
-  
+
     act = act[0]
- 
-    if (act.url == None):
+
+    if act.url is None:
         act.url = PHA.objects.get(id=act.app.id).start_url_template
         act.url = PHA.objects.get(id=act.app.id).start_url_template
-    
+
     try:
         r = PrincipalActivityRemaps.objects.get(activity=act, principal=request.principal)
         act.url = r.url
         act.remapped = True
-        print "remapping for principal %s: %s", (request.principal, act.url) 
-    
+        print "remapping for principal %s: %s", (request.principal, act.url)
+
     except:
         act.remapped = False
-    
+
     print "mapped ", request.principal, activity_name, app_id, " to: ", act
     return act
 
@@ -105,7 +105,7 @@ def resolve_activity_helper(request, activity_name, app_id):
 def pha(request, pha_email):
     try:
         pha = PHA.objects.get(id=pha_email)
-        return render_template('pha', {'pha' : pha}, type="xml")
+        return render_template('pha', {'pha': pha}, type="xml")
     except:
         raise Http404
 
@@ -116,7 +116,7 @@ def app_oauth_credentials(request, app_id):
     """
     app = PHA.objects.get(email=app_id)
     json = {
-        'consumer_key': app.email,              # Is email really what's used as key?
+        'consumer_key': app.email,       # Is email really what's used as key?
         'consumer_secret': app.secret
     }
     return HttpResponse(simplejson.dumps(json), mimetype='application/json')
@@ -139,20 +139,23 @@ def request_token(request):
     """
     # ask the oauth server to generate a request token given the HTTP request
     try:
-        # we already have the oauth_request in context, so we don't get it again
+        # we already have the oauth_request in context, so we don't get
+        # it again
         app = request.principal
         request_token = OAUTH_SERVER.generate_request_token(
-            request.oauth_request, 
-            record_id = request.POST.get('smart_record_id', None),
-            offline_capable = request.POST.get('offline', False)
+            request.oauth_request,
+            record_id=request.POST.get('smart_record_id', None),
+            offline_capable=request.POST.get('offline', False)
         )
 
         return HttpResponse(request_token.to_string(), mimetype='text/plain')
     except oauth.OAuthError, e:
-        import sys, traceback
+        import sys
+        import traceback
         traceback.print_exc(file=sys.stderr)
 
-    # an exception can be raised if there is a bad signature (or no signature) in the request
+    # an exception can be raised if there is a bad signature (or no signature)
+    # in the request
     raise PermissionDenied()
 
 
@@ -161,10 +164,11 @@ def exchange_token(request):
     # this will check proper oauth for this action
     try:
         access_token = OAUTH_SERVER.exchange_request_token(request.oauth_request)
-        # an exception can be raised if there is a bad signature (or no signature) in the request
+        # an exception can be raised if there is a bad signature (or no
+        # signature) in the request
     except:
         raise PermissionDenied()
-    
+
     return HttpResponse(access_token.to_string(), mimetype='text/plain')
 
 
@@ -175,16 +179,16 @@ def session_create(request):
     username = request.POST.get('username')
     password = request.POST.get('password')
     user = auth.authenticate(request, username, password)
-    
+
     if not user:
         raise PermissionDenied()
-    
+
     if user.is_active:
         # auth worked, created a session based token
         token = SESSION_OAUTH_SERVER.generate_and_preauthorize_access_token(request.principal, user=user)
     else:
         raise PermissionDenied()
-    
+
     return HttpResponse(str(token), mimetype='text/plain')
 
 
@@ -192,14 +196,14 @@ def session_create(request):
 def request_token_claim(request, request_token):
     # FIXME: need a select for update here
     try:
-        rt = ReqToken.objects.get(token = request_token)
+        rt = ReqToken.objects.get(token=request_token)
     except models.ReqToken.DoesNotExist:
         raise PermissionDenied()
-    
+
     # already claimed by someone other than me?
-    if rt.authorized_by != None and rt.authorized_by != request.principal:
+    if rt.authorized_by is not None and rt.authorized_by != request.principal:
         raise PermissionDenied()
-    
+
     rt.authorized_by = request.principal
     rt.save()
     return HttpResponse(request.principal.email)
@@ -210,53 +214,56 @@ def request_token_info(request, request_token):
     """
     get info about the request token
     """
-    rt = ReqToken.objects.get(token = request_token)
+    rt = ReqToken.objects.get(token=request_token)
     share = None
-    
+
     try:
         if rt.record:
-            share = Share.objects.get(record= rt.record, with_app = rt.app,authorized_by=request.principal)
+            share = Share.objects.get(record=rt.record, with_app=rt.app, authorized_by=request.principal)
     except Share.DoesNotExist:
         pass
-    
-    return render_template('requesttoken', {'request_token':rt, 'share' : share}, type='xml')
+
+    data = {'request_token': rt, 'share': share}
+    return render_template('requesttoken', data, type='xml')
 
 
 @paramloader()
 def request_token_approve(request, request_token):
-    rt = ReqToken.objects.get(token = request_token)
-    
+    rt = ReqToken.objects.get(token=request_token)
+
     record_id = request.POST.get('record_id')
     offline = request.POST.get('offline', False)
-    
+
     # requesting offline but request token doesn't allow it? Bust!
     if offline and not rt.offline_capable:
         raise PermissionDenied
-    
+
     # different record id? You wish!
     if (record_id and rt.record and record_id != rt.record.record_id):
         raise PermissionDenied("Request token pre-bound record %s doesn't match post variable %s" % (rt.record.record_id, record_id))
-    
+
     # no record reference at all? Crash and burn
     if (not (rt.record or record_id)):
-        raise Exception("Must have a record bound to token or a record_id passed in to authorize.")
-    
+        raise Exception("Must have a record bound to token or a record_id passed in to authorize")
+
+    # no oauth_callback defined? Not a chance
+    manifest = simplejson.loads(rt.app.manifest)
+    if 'oauth_callback' not in manifest:
+        raise Exception("This app does not define an oauth_callback, cannot authorize")
+
+    # get the callback -- must be in the manifest, we do not use the one
+    # provided in the request header.
+    #callback = request_token.oauth_callback or request_token.app.callback_url
+    callback = manifest['oauth_callback']
+
     record = rt.record
-    if not record: 
+    if not record:
         record = Record.objects.get(id=record_id)
-    
-    # authorize the request token
+
+    # authorize the request token and redirect
     request_token = OAUTH_SERVER.authorize_request_token(rt.token, record=record, account=request.principal, offline=offline)
-    
-    # respond with a redirect
-    # TODO (pp, 7/12/2012): The app does not yet have a 'callback_url' property,
-    # for now this will crash if no oauth_callback is supplied. Providing an
-    # oauth_callback may NOT be supported however, so adjust the following line
-    # as needed
-    redirect_url = request_token.oauth_callback or request_token.app.callback_url
-    redirect_url += "?oauth_token=%s&oauth_verifier=%s" % (request_token.token, request_token.verifier)
-    
-    # redirect to the request token's callback, or if null the PHA's default callback
+    redirect_url = "%s?oauth_token=%s&oauth_verifier=%s" % (callback, request_token.token, request_token.verifier)
+
     return HttpResponse(urllib.urlencode({'location': redirect_url}))
 
 
@@ -264,15 +271,15 @@ def get_long_lived_token(request):
     if request.method != "POST":
         # FIXME probably 405
         raise Http404
-    
+
     # check if current principal is capable of generating a long-lived token
     # may move this to accesscontrol, but this is a bit of an odd call
     principal = request.principal
-    
+
     if not principal.share.offline:
         raise PermissionDenied
-    
+
     new_token, new_secret = oauth.generate_token_and_secret()
-    long_lived_token = principal.share.new_access_token(new_token, new_secret, account = None)
-    
+    long_lived_token = principal.share.new_access_token(new_token, new_secret, account=None)
+
     return HttpResponse(long_lived_token.to_string(), mimetype='text/plain')
