@@ -7,7 +7,6 @@ for tighter integration into email-centric users in SMART.
 
 from smart.accesscontrol import security
 from smart.lib.utils import DjangoVersionDependentExecutor
-from django.http import HttpResponse
 
 
 class LazyUser(object):
@@ -28,18 +27,6 @@ class Authentication(object):
         # the current version of django
         self.avoid_post_clobbering(request)
         request.principal, request.oauth_request = security.get_principal(request)
-        
-        # return a 401 if there was a OAuth header but no valid principal was
-        # present
-        auth_header = None
-        if request.META.has_key('Authorization'):
-            auth_header = request.META['Authorization']
-        elif request.META.has_key('HTTP_AUTHORIZATION'):
-            auth_header = request.META['HTTP_AUTHORIZATION']
-        
-        has_oauth = auth_header and 'OAuth' == auth_header[:5]
-        if has_oauth and request.principal is None:
-            return HttpResponse('Unauthorized', status=401)
     
     noclobber_map = {
         '1.3.0': lambda request: request.POST,

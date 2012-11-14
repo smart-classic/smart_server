@@ -33,7 +33,6 @@ class Authorization(object):
         if hasattr(view_func, 'resolve'):
             view_func = view_func.resolve(request)
 
-        denied_message = None
         try:
             if view_func:
                 permission_set = self.get_permset(request)
@@ -45,10 +44,17 @@ class Authorization(object):
 #                rpdb2.start_embedded_debugger("a")
                 if permission_set:
                     success, message = permission_set.evaluate(request, view_func, view_args, view_kwargs)
+                    
+                    ## all good, authenticated and authorized
                     if success:
                         #print "And permitted for %s %s" % (view_func.__name__, request.principal)
                         return None
-                    denied_message = message
+                    
+                    # no permission! if there was no request.principal, we
+                    # assume that we are not authenticated and return a 401
+                    if request.principal is None:
+                        return HttpResponse('Unauthorized', status=401)
+                    
                     print "Permission denied for %s %s: %s" % (view_func.__name__, request.principal, message)
 
         # otherwise, this will fail
@@ -57,9 +63,7 @@ class Authorization(object):
             import sys
             import traceback
             traceback.print_exc(file=sys.stderr)
-            raise PermissionDenied
 
-        # TODO: Can we return something that actually shows the message? Stupid Django :P
         raise PermissionDenied
 
     def get_permset(self, request):
