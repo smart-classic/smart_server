@@ -15,7 +15,7 @@ class OntologyURLMapper():
           mapper = CallMapper.map_call(c)
           methods[str(c.http_method)] = mapper.maps_to
           arguments.update(mapper.arguments)
-        print "mapping", p, methods, arguments
+        #print "mapping", p, methods, arguments
         self.patterns += patterns( '',
                                  (self.django_path(p),
                                   MethodDispatcher(methods), 
@@ -24,7 +24,7 @@ class OntologyURLMapper():
   def calls_by_path(self):
       ret = {}
 
-      print "got calls", len(api_calls)
+      #print "got calls", len(api_calls)
       for c in api_calls:
         ret.setdefault(c.path, set()).add(c)
 
@@ -63,7 +63,7 @@ class CallMapper(object):
 
       in_order = sorted(potential_maps.keys(), 
                         key=lambda x: potential_maps[x])
-      print call.client_method_name, in_order
+      #print call.client_method_name, in_order
       return in_order[-1]
 
     @classmethod

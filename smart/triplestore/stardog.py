@@ -45,7 +45,7 @@ class StardogConnector(object):
     def sparql(self, q):
         u = self.endpoint+"/query"
         st = time.time()
-        print "Querying, "#,q
+        #print "Querying, "#,q
         
         data = urllib.urlencode({"query" : q})
         s = time.time()
@@ -54,7 +54,7 @@ class StardogConnector(object):
 
         res = self._request(u, "POST", {"Content-type": "application/x-www-form-urlencoded", 
                                         "Accept" : accept}, data)
-        print "results in ", (time.time() - st)#,res
+        #print "results in ", (time.time() - st)#,res
         return res
             
     def _transaction_step(self, graph, url):

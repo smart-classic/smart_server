@@ -46,7 +46,7 @@ class Authorization(object):
                 if permission_set:
                     success, message = permission_set.evaluate(request, view_func, view_args, view_kwargs)
                     if success:
-                        print "And permitted for %s %s" % (view_func.__name__, request.principal)
+                        #print "And permitted for %s %s" % (view_func.__name__, request.principal)
                         return None
                     denied_message = message
                     print "Permission denied for %s %s: %s" % (view_func.__name__, request.principal, message)

@@ -67,12 +67,12 @@ class SesameConnector(object):
     def sparql(self, q):
         u = self.endpoint
         st = time.time()
-        print "Querying, ",q
+        #print "Querying, ",q
         
         data = urllib.urlencode({"query" : q})
         res = self._request(u, "POST", {"Content-type": "application/x-www-form-urlencoded", 
                                         "Accept" : "application/rdf+xml,  application/sparql-results+json"}, data)
-        print "results in ", (time.time() - st)
+        #print "results in ", (time.time() - st)
         return res
 
     def _clear_transaction(self):
