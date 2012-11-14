@@ -176,7 +176,7 @@ class HelperAppDataStore(UserDataStore):
         super(HelperAppDataStore, self).__init__(*args, **kwargs)
 
     def _get_app(self, consumer_key):
-        print "In helper app data store", consumer_key
+        #print "In helper app data store", consumer_key
         try:
             ret = models.HelperApp.objects.get(consumer_key = consumer_key)
             return ret
