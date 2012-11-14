@@ -5,6 +5,9 @@ Indivo views -- PHAs
 import urllib
 import urlparse
 
+import sys
+import traceback
+
 from base import *
 from django.utils import simplejson
 
@@ -150,13 +153,10 @@ def request_token(request):
 
         return HttpResponse(request_token.to_string(), mimetype='text/plain')
     except oauth.OAuthError, e:
-        import sys
-        import traceback
         traceback.print_exc(file=sys.stderr)
 
-    # an exception can be raised if there is a bad signature (or no signature)
-    # in the request
-    raise PermissionDenied()
+    # bad signature (or no signature), unauthorized
+    return HttpResponse('Unauthorized', status=401)
 
 
 def exchange_token(request):
@@ -164,12 +164,12 @@ def exchange_token(request):
     # this will check proper oauth for this action
     try:
         access_token = OAUTH_SERVER.exchange_request_token(request.oauth_request)
-        # an exception can be raised if there is a bad signature (or no
-        # signature) in the request
-    except:
-        raise PermissionDenied()
+        return HttpResponse(access_token.to_string(), mimetype='text/plain')
+    except oauth.OAuthError, e:
+        traceback.print_exc(file=sys.stderr)
 
-    return HttpResponse(access_token.to_string(), mimetype='text/plain')
+    # bad signature (or no signature), unauthorized
+    return HttpResponse('Unauthorized', status=401)
 
 
 ##
@@ -198,11 +198,11 @@ def request_token_claim(request, request_token):
     try:
         rt = ReqToken.objects.get(token=request_token)
     except models.ReqToken.DoesNotExist:
-        raise PermissionDenied()
+        return HttpResponse('Unauthorized', status=401)
 
     # already claimed by someone other than me?
     if rt.authorized_by is not None and rt.authorized_by != request.principal:
-        raise PermissionDenied()
+        return HttpResponse('Unauthorized', status=401)
 
     rt.authorized_by = request.principal
     rt.save()
