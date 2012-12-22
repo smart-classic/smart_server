@@ -102,8 +102,6 @@ class Paginator (object):
         return limit, offset
 
     def __call__ (self, triplestore, candidate_uris, params, path, meta):
-        meta['resultsReturned'] = len(candidate_uris)
-        meta['totalResultCount'] = len(candidate_uris)
         return candidate_uris
         
 class SimplePaginator (Paginator):
@@ -111,11 +109,9 @@ class SimplePaginator (Paginator):
         limit, offset = self.parseParams (params)
         if limit:
             sorted_uris = self.sortedList(triplestore, candidate_uris)
-            meta['totalResultCount'] = len(sorted_uris)
             page_uris = sorted_uris[offset: offset+limit]
-            meta['resultsReturned'] = len(page_uris)
             meta['resultOrder'] = page_uris
-            if (offset+limit < meta['totalResultCount']):
+            if (offset+limit < len(sorted_uris)):
                 params['offset'] = offset + limit
                 params['limit'] = limit
                 args = "&".join(["%s=%s" % (k, params[k]) for k in params.keys()])

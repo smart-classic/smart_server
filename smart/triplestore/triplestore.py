@@ -82,11 +82,18 @@ class TripleStore(engine.connector):
 
         if matches:
             matches = runFiltering (self, obj, matches, queries)
-
+            if (limit_to_statements):
+                meta['totalResultCount'] = len(set(matches) & set(limit_to_statements))
+            else:
+                meta['totalResultCount'] = len(matches)
         print "filtered", len(matches)
 
         if matches:
             matches = runPagination (self, obj, matches, queries, path, meta)
+            if (limit_to_statements):
+                meta['resultsReturned'] = len(set(matches) & set(limit_to_statements))
+            else:
+                meta['resultsReturned'] = len(matches)
         print "paged", len(matches)
 
         if matches:
