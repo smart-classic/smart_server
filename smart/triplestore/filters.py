@@ -21,6 +21,17 @@ class FilterSet(object):
             self.filters = smart_type.filters
 
     def sub(self, f, k, v):
+        LB = "1900-01-01T00:00:00Z"
+        UB = "2999-12-31T23:59:59Z"
+        
+        if k in ("date_from","date_from_including","date_to_excluding"):
+            if len(v) < len(LB):
+                v += LB[len(v):len(LB)]
+
+        if k in ("date_from_excluding","date_to","date_to_including"):
+            if len(v) < len(UB):
+                v += LB[len(v):len(UB)]
+        
         return f.filter_sparql.replace("{"+k+"}", v)
 
     def getQuery(self, query_params):
