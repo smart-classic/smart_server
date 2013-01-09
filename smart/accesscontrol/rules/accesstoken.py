@@ -43,7 +43,7 @@ def check_token_for_record_app_wrapper(token):
     def check_token_for_record_app(request, view_func, view_args, view_kwargs):
         pha = PHA.objects.get(id=token.share.with_app.id)
         return pha.email == view_kwargs['pha_email'] and token.share.record.id == view_kwargs['record_id']
-    return check_token_for_account_app
+    return check_token_for_record_app
 
 def grant(accesstoken, permset):
     """
