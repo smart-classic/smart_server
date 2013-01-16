@@ -2,6 +2,14 @@ from collections import defaultdict
 from django.conf import settings
 from smart.common.rdf_tools.rdf_ontology import SMART_API_Call
 
+DATE_FILTERS_LB = ["date_from","date_from_including","date_to_excluding"]
+DATE_FILTERS_UB = ["date_from_excluding","date_to","date_to_including"]
+DATE_FILTERS_LT_EQ = ["date_to","date_to_including"]
+DATE_FILTERS_LT = ["date_to_excluding"]
+DATE_FILTERS_GT_EQ = ["date_from","date_from_including"]
+DATE_FILTERS_GT = ["date_from_excluding"]
+DATE_FILTERS = DATE_FILTERS_LB + DATE_FILTERS_UB
+
 class SparqlClause(list):
     pass
 
@@ -17,20 +25,13 @@ class FilterSet(object):
     def __init__(self, smart_type=None):
         self.smart_type = smart_type
         self.filters = []
+        self.dateFilters = {}
         if smart_type:
             self.filters = smart_type.filters
 
-    def sub(self, f, k, v):
-        LB = "1900-01-01T00:00:00Z"
-        UB = "2999-12-31T23:59:59Z"
-        
-        if k in ("date_from","date_from_including","date_to_excluding"):
-            if len(v) < len(LB):
-                v += LB[len(v):len(LB)]
-
-        if k in ("date_from_excluding","date_to","date_to_including"):
-            if len(v) < len(UB):
-                v += LB[len(v):len(UB)]
+    def sub(self, f, k, v):        
+        if k in DATE_FILTERS:
+            self.dateFilters[k] = v
         
         return f.filter_sparql.replace("{"+k+"}", v)
 
@@ -47,14 +48,52 @@ class FilterSet(object):
                 clauses.append(o)
 
         if clauses:
+            selects = "?v ?d" if len(self.dateFilters) > 0 else "?v"
             return """
                 PREFIX sp:<http://smartplatforms.org/terms#>
                 PREFIX dcterms:<http://purl.org/dc/terms/>
-                SELECT ?v
+                SELECT %s
                 {%s}
-                """ % str(clauses)
+                """ % (selects,str(clauses))
         
         return None
+        
+    def dateInRange(self, date):
+        LB = "1900-01-01T00:00:00Z"
+        UB = "2999-12-31T23:59:59Z"
+        
+        for k in self.dateFilters.keys():
+            v = self.dateFilters[k]
+            
+            if k in DATE_FILTERS_LB:
+                if len(v) < len(LB):
+                    v += LB[len(v):len(LB)]
+
+            if k in DATE_FILTERS_UB:
+                if len(v) < len(UB):
+                    v += UB[len(v):len(UB)]
+                    
+            if k in DATE_FILTERS_LT_EQ:
+                d = date + LB[len(date):len(LB)]
+                if not d <= v:
+                    return False
+            
+            if k in DATE_FILTERS_LT:
+                d = date + LB[len(date):len(LB)]
+                if not d < v:
+                    return False
+                    
+            if k in DATE_FILTERS_GT_EQ:
+                d = date + UB[len(date):len(UB)]
+                if not d >= v:
+                    return False
+            
+            if k in DATE_FILTERS_GT:
+                d = date + UB[len(date):len(UB)]
+                if not d > v:
+                    return False
+            
+        return True
 
     def __call__(self, triplestore, candidate_uris, query_params):
         query = self.getQuery (query_params)
@@ -66,14 +105,27 @@ class FilterSet(object):
             results = triplestore.select(query)
             keys_used = set()
             result_uris = set()
-            for v in results:
-                keys_used |= (set(v.keys()))
-                result_uris |= (set(v.values()))
+            
+            if len(self.dateFilters) == 0:
+                for v in results:
+                    keys_used |= (set(v.keys()))
+                    result_uris |= (set(v.values()))
 
-            assert not keys_used or keys_used==set('v'), \
-                   "Expected only ONE selected term:  'v', a clinical statement URI"
+                assert not keys_used or keys_used==set('v'), \
+                           "Expected only ONE selected term:  'v', a clinical statement URI"
 
-            return result_uris
+                return result_uris
+            else:
+                for v in results:
+                    keys_used |= (set(v.keys()))
+                    values = list(v.values())
+                    if (self.dateInRange(str(values[0]))):
+                        result_uris |= (set([values[1]]))
+
+                assert not keys_used or keys_used==set(('v','d')), \
+                           "Expected only TWO selected terms:  'v', a clinical statement URI, and 'd', a date/time string"
+
+                return result_uris
         else:
             return  candidate_uris
 
