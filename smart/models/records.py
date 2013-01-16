@@ -45,7 +45,8 @@ class Record(Object):
 
         from smart.models.record_object import RecordObject
         demographics = RecordObject[sp.Demographics]
-        subjects = [p[0] for p in ids.triples((None, rdf['type'], sp.Demographics))]
+        subjects = [p[0] for p in ids.triples((None, rdf['type'],
+                                              sp.Demographics))]
         ret = c.get_contexts(subjects)
         return ret
 
@@ -88,7 +89,8 @@ WHERE {
         people = list(m.query(q))
         for p in people:
             record = Record()
-            record.id = re.search("\/records\/(.*?)\/demographics", str(p[5])).group(1)
+            record.id = re.search(
+                "\/records\/(.*?)\/demographics", str(p[5])).group(1)
             record.fn, record.ln, record.dob, record.gender, record.zipcode = p[:5]
             record_list.append(record)
 
@@ -108,8 +110,10 @@ class AccountApp(Object):
 # Not an OAuth token, but an opaque token that can be used to support
 # auto-login via a direct link to a smart_ui_server.
 class RecordDirectAccessToken(Object):
-    record = models.ForeignKey(Record, related_name='direct_access_tokens', null=False)
-    account = models.ForeignKey(Account, related_name='direct_record_shares', null=False)
+    record = models.ForeignKey(
+        Record, related_name='direct_access_tokens', null=False)
+    account = models.ForeignKey(
+        Account, related_name='direct_record_shares', null=False)
     token = models.CharField(max_length=40, unique=True)
     token_secret = models.CharField(max_length=60, null=True)
     expires_at = models.DateTimeField(null=False)
@@ -126,7 +130,8 @@ class RecordDirectAccessToken(Object):
             except:
                 pass
 
-            self.expires_at = datetime.datetime.utcnow() + datetime.timedelta(minutes=minutes_to_expire)
+            self.expires_at = datetime.datetime.utcnow(
+            ) + datetime.timedelta(minutes=minutes_to_expire)
         super(RecordDirectAccessToken, self).save(*args, **kwargs)
 
     class Meta:
@@ -137,7 +142,8 @@ class RecordAlert(Object):
     record = models.ForeignKey(Record)
     alert_text = models.TextField(null=False)
     alert_time = models.DateTimeField(auto_now_add=True, null=False)
-    triggering_app = models.ForeignKey('OAuthApp', null=False, related_name='alerts')
+    triggering_app = models.ForeignKey(
+        'OAuthApp', null=False, related_name='alerts')
     acknowledged_by = models.ForeignKey('Account', null=True)
     acknowledged_at = models.DateTimeField(null=True)
 
@@ -166,7 +172,8 @@ class RecordAlert(Object):
 
         assert type(notes) == Literal
         spcodes = Namespace("http://smartplatforms.org/terms/code/alertLevel#")
-        assert severity in [spcodes.information, spcodes.warning, spcodes.critical]
+        assert severity in [spcodes.information, spcodes.warning,
+                            spcodes.critical]
 
         a = RecordAlert(
             record=record,

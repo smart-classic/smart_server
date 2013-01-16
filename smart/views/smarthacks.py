@@ -102,7 +102,8 @@ def add_app(request, account, app):
 
 
 def immediate_tokens_for_browser_auth(record, account, app, smart_connect_p=True):
-    ret = OAUTH_SERVER.generate_and_preauthorize_access_token(app, record=record, account=account)
+    ret = OAUTH_SERVER.generate_and_preauthorize_access_token(
+        app, record=record, account=account)
     ret.smart_connect_p = smart_connect_p
     ret.save()
     return ret
@@ -178,7 +179,8 @@ def generate_direct_url(request, record):
     print "ASKED to authorize proxied access to record: ", record.id, record.full_name
     r = Record.objects.get(id=record.id)
 
-    # For some use cases, may want to replace this with a throwaway user, created here
+    # For some use cases, may want to replace this with a throwaway user,
+    # created here
     account = Account.objects.get(email=settings.PROXY_USER_ID)
 
     if account.is_active:
@@ -211,7 +213,8 @@ def get_record_tokens(request, record, app):
 
 
 def get_record_tokens_helper(record, app):
-    t = HELPER_APP_SERVER.generate_and_preauthorize_access_token(app, record=record)
+    t = HELPER_APP_SERVER.generate_and_preauthorize_access_token(
+        app, record=record)
     r = {
         'oauth_token': t.token,
         'oauth_token_secret': t.secret,
@@ -251,6 +254,7 @@ def remove_app(request, account, app):
     #    delete share
 
     return DONE
+
 
 @CallMapper.register(client_method_name="search_records")
 def _record_sparql_from_request(request):
@@ -360,18 +364,22 @@ def do_webhook(request, webhook_name):
 
     hook_req = utils.url_request_build(hook.url, request.method, headers, data)
 
-    # If the web hook needs patient context, we've got to generate + pass along tokens
+    # If the web hook needs patient context, we've got to generate + pass
+    # along tokens
     if (hook.requires_patient_context):
         app = hook.app
         record = request.principal.share.record
         account = request.principal.share.authorized_by
-        # Create a new token for the webhook to access the in-context patient record
-        token = HELPER_APP_SERVER.generate_and_preauthorize_access_token(app, record=record, account=account)
+        # Create a new token for the webhook to access the in-context patient
+        # record
+        token = HELPER_APP_SERVER.generate_and_preauthorize_access_token(
+            app, record=record, account=account)
 
         # And supply the token details as part of the Authorization header, 2-legged signed
         # Using the helper app's consumer token + secret
         # (the 2nd parameter =None --> 2-legged OAuth request)
-        oauth_request = OAuthRequest(app, None, hook_req, oauth_parameters=token.passalong_params)
+        oauth_request = OAuthRequest(
+            app, None, hook_req, oauth_parameters=token.passalong_params)
         oauth_request.sign()
         for (hname, hval) in oauth_request.to_header().iteritems():
             hook_req.headers[hname] = hval
@@ -380,13 +388,15 @@ def do_webhook(request, webhook_name):
     print "GOT,", response
     return utils.x_domain(HttpResponse(response, mimetype='application/rdf+xml'))
 
+
 @CallMapper.register(client_method_name="get_ontology")
 def download_ontology(request, **kwargs):
     import os
     f = open(settings.ONTOLOGY_FILE).read()
     return HttpResponse(f, mimetype="application/rdf+xml")
 
-def manifest_put (request, descriptor):
+
+def manifest_put(request, descriptor):
     try:
         data = request.raw_post_data
         manifest = json.loads(data)
@@ -396,7 +406,8 @@ def manifest_put (request, descriptor):
             LoadAppFromJSON(data)
             return HttpResponse("ok")
         else:
-            msg = "The manifest id '%s' must match the app descriptor '%s'" % (id, descriptor)
+            msg = "The manifest id '%s' must match the app descriptor '%s'" % (
+                id, descriptor)
             print msg
     except:
         pass
@@ -428,13 +439,15 @@ def debug_oauth(request, **kwargs):
     ret += "\n"
 
     try:
-        oauth_request = OAUTH_SERVER.extract_oauth_request(djangoutils.extract_request(request))
+        oauth_request = OAUTH_SERVER.extract_oauth_request(
+            djangoutils.extract_request(request))
         ret += "OAuth Debugging: \n\n"
         ret += "SBS: \n"
         sbs = oauth_request.get_signature_base_string()
         ret += sbs
         ret += "Expected Signature: \n"
-        ret += oauth.SIGNATURE_METHODS['HMAC-SHA1'].sign(sbs, oauth_request.consumer, oauth_request.token)
+        ret += oauth.SIGNATURE_METHODS['HMAC-SHA1'].sign(
+            sbs, oauth_request.consumer, oauth_request.token)
         ret += "Your Signature: \n"
         ret += oauth_request.signature
     except oauth.OAuthError as e:
