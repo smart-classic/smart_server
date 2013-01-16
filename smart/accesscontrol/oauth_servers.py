@@ -352,7 +352,7 @@ class SMArtConnectDataStore(SessionDataStore):
 
   def _get_token(self, token_str, app=None):
     kwargs = {'token': token_str}
-    print "evaluating as SC, lookin gor", token_str
+    # print "evaluating as SC, lookin gor", token_str
     try:
 
       ret = models.AccessToken.objects.get(**kwargs)

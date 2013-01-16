@@ -177,7 +177,7 @@ for t in api_types:
 class RecordCallMapper(object):
     def __init__(self, call):
         self.call = call
-        print self.call.target, RecordObject[self.call.target]
+        # print self.call.target, RecordObject[self.call.target]
         self.obj = RecordObject[self.call.target]
 
     @property
@@ -193,7 +193,7 @@ class RecordCallMapper(object):
     def map_score(self):
         cat = str(self.call.category)
         cardinality = str(self.call.cardinality)
-        print "considering ", cat, cardinality, "vs",self.cardinality
+        # print "considering ", cat, cardinality, "vs",self.cardinality
         if cat == "record" and cardinality == self.cardinality:
             return 1
         return 0
