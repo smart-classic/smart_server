@@ -82,7 +82,8 @@ def record_info(request, record):
 
 @paramloader()
 def apps_for_account(request, account):
-    return render_template('phas', {'phas': [aa.app for aa in account.accountapp_set.order_by("app__name")]})
+    apps = [aa.app for aa in account.accountapp_set.order_by("app__name")]
+    return render_template('phas', {'phas': apps})
 
 
 @paramloader()

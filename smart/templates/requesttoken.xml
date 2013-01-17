@@ -6,8 +6,8 @@
     <App id="{{request_token.app.email}}">
         <name>{{request_token.app.name}}</name>
         <description>{{request_token.app.description}}</description>
-        <frameable>{{request_token.app.frameable}}</frameable>
         <ui>{{request_token.app.has_ui}}</ui>
+        <standalone>{{request_token.app.standalone}}</standalone>
     </App>
 
     <Permissions>

@@ -59,8 +59,13 @@ class PHA(OAuthApp):
 
     icon_url = models.CharField(max_length=500)
 
-    # does the application fit in an iframe?
+    # we are using a flag called "standalone" now, this field now stores the
+    # inverse of that flag. A database migration would be cleaner.
     frameable = models.BooleanField(default=True)
+    
+    @property
+    def standalone(self):
+        return not self.frameable
 
     # short description of the app
     description = models.CharField(max_length=2000, null=True)
@@ -189,6 +194,9 @@ class SessionToken(Object):
         super(SessionToken, self).save(*args, **kwargs)
 
     def __str__(self):
-        vars = {'oauth_token': self.token, 'oauth_token_secret':
-                self.secret, 'account_id': self.user.email}
+        vars = {
+            'oauth_token': self.token,
+            'oauth_token_secret': self.secret,
+            'account_id': self.user.email
+        }
         return urllib.urlencode(vars)

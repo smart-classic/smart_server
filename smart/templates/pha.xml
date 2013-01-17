@@ -3,7 +3,7 @@
   <startURLTemplate>{{pha.activity.url}}</startURLTemplate>
   <name>{{pha.name}}</name>
   <description>{{pha.description}}</description>
-  <frameable>{{pha.frameable}}</frameable>
   <ui>{{pha.has_ui}}</ui>
+  <standalone>{{pha.standalone}}</standalone>
 </App>
 
