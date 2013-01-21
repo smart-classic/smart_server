@@ -33,11 +33,17 @@ def check_elevated_access_mode_wrapper(token):
     return r
     
 def check_token_for_account_app_wrapper(token):
-        def check_token_for_account_app(request, view_func, view_args, view_kwargs):
-            pha = PHA.objects.get(id=token.share.with_app.id)
-            acc = Account.objects.get(id=token.share.authorized_by.id)
-            return pha.email == view_kwargs['pha_email'] and acc.email == view_kwargs['user_id']
-        return check_token_for_account_app
+    def check_token_for_account_app(request, view_func, view_args, view_kwargs):
+        pha = PHA.objects.get(id=token.share.with_app.id)
+        acc = Account.objects.get(id=token.share.authorized_by.id)
+        return pha.email == view_kwargs['pha_email'] and acc.email == view_kwargs['user_id']
+    return check_token_for_account_app
+        
+def check_token_for_record_app_wrapper(token):
+    def check_token_for_record_app(request, view_func, view_args, view_kwargs):
+        pha = PHA.objects.get(id=token.share.with_app.id)
+        return pha.email == view_kwargs['pha_email'] and token.share.record.id == view_kwargs['record_id']
+    return check_token_for_record_app
 
 def grant(accesstoken, permset):
     """
@@ -78,3 +84,8 @@ def grant(accesstoken, permset):
     permset.grant(preferences_get, [check_token_for_account_app])
     permset.grant(preferences_put, [check_token_for_account_app])
     permset.grant(preferences_delete, [check_token_for_account_app])
+    
+    check_token_for_record_app = check_token_for_record_app_wrapper(accesstoken)
+    permset.grant(scratchpad_get, [check_token_for_record])
+    permset.grant(scratchpad_put, [check_token_for_record_app])
+    permset.grant(scratchpad_delete, [check_token_for_record_app])
