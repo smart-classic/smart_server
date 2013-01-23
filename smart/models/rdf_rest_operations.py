@@ -26,7 +26,7 @@ def record_delete_all_objects(request, record_id, obj, **kwargs):
 def record_post_objects(request, record_id, obj,  **kwargs):
     c = RecordTripleStore(Record.objects.get(id=record_id))
     path = smart_path(request.path)
-    g = parse_rdf(request.raw_post_data)
+    data = parse_rdf(request.raw_post_data)
     var_bindings = obj.path_var_bindings(path)
 
     if "record_id" in var_bindings:
@@ -34,21 +34,18 @@ def record_post_objects(request, record_id, obj,  **kwargs):
     else:
         var_bindings['record_id'] = record_id
 
-    # Note: no return value! alters g in-place
-    obj.prepare_graph(g, None, var_bindings)
-    ro = obj
+    # Note: no return value! alters data in-place
+    obj.prepare_graph(data, None, var_bindings)
 
-    # now g's statements should have generated UUID-based subject URIs
+    # now data's statements should have generated UUID-based subject URIs
     # but the top-level context URI is still a random bnode
-    data = g
     # print "Default context", len(data.default_context)
 
     record_node = list(data.triples((None, rdf.type, sp.MedicalRecord)))
     assert len(record_node) == 1, "Found statements about >1 patient in file: %s" % record_node
     record_node = record_node[0][0]
 
-    record_node = record_node
-    ro.segregate_nodes(data, record_node)
+    obj.segregate_nodes(data, record_node)
     data.remove_context(data.default_context)
 
     #print 'graph: ' + str(data)
