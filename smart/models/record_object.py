@@ -86,6 +86,7 @@ class RecordObject(object):
         node_type_candidates = list(g.triples((n, rdf.type, None)))
         node_type = None
         for c in node_type_candidates:
+            # print '========= c is ' + str(c)
             t = SMART_Class[c[2]]
             if t.is_statement or t.uri == sp.MedicalRecord:
                 assert node_type==None, "Got multiple node types for %s"%[x[2] for x in node_type]
@@ -94,7 +95,7 @@ class RecordObject(object):
 
 
     def determine_remap_target(self,g,c,s,var_bindings):
-        if type(s) != BNode: 
+        if type(s) != BNode:
             return None
 
         node_type = self.statement_type(g,s)
@@ -102,17 +103,17 @@ class RecordObject(object):
         if node_type == None:
             return None
 
-        # We need to remap the node
         full_path = RecordObject[node_type].determine_full_path(var_bindings)
         return full_path
 
-    def generate_uris(self, g, c, var_bindings=None):   
-        node_map = {}    
+    def generate_uris(self, g, c, var_bindings=None):
+        node_map = {}
         nodes = set(g.subjects()) | set(g.objects())
-
         for s in nodes:
             new_node = self.determine_remap_target(g,c,s, var_bindings)
-            if new_node: node_map[s] = new_node
+            if new_node:
+                # print 'mapping old node: ' + str(s) + ' to ' + str(new_node)
+                node_map[s] = new_node
 
         for (old_node, new_node) in node_map.iteritems():
             remap_node(g, old_node, new_node)
@@ -176,7 +177,7 @@ for t in api_types:
 class RecordCallMapper(object):
     def __init__(self, call):
         self.call = call
-        print self.call.target, RecordObject[self.call.target]
+        # print self.call.target, RecordObject[self.call.target]
         self.obj = RecordObject[self.call.target]
 
     @property
@@ -192,7 +193,7 @@ class RecordCallMapper(object):
     def map_score(self):
         cat = str(self.call.category)
         cardinality = str(self.call.cardinality)
-        print "considering ", cat, cardinality, "vs",self.cardinality
+        # print "considering ", cat, cardinality, "vs",self.cardinality
         if cat == "record" and cardinality == self.cardinality:
             return 1
         return 0

@@ -19,8 +19,8 @@ class TripleStore(engine.connector):
     def add_conjunctive_graph(self, cg):
         return super(TripleStore, self).add_conjunctive_graph(cg)
 
-    def replace_conjunctive_graph(self, cg):
-        return super(TripleStore, self).replace_conjunctive_graph(cg)
+    def replace_conjunctive_graph(self, cg, drop=True):
+        return super(TripleStore, self).replace_conjunctive_graph(cg, drop)
 
     def remove_conjunctive_graph(self, cg):
         return super(TripleStore, self).remove_conjunctive_graph(cg)

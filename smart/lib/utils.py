@@ -26,6 +26,7 @@ import psycopg2.extras
 import httplib
 import time
 import django
+import urllib
 
 smart_base = "http://smartplatforms.org"
 
@@ -180,7 +181,7 @@ def url_request_execute(req):
         path += "?%s"%data
         data = None
 
-    #print "URL_REQUEST:", domain, req.method, path, data, req.headers        
+    # print "URL_REQUEST:", domain, req.method, path, urllib.unquote_plus(data), req.headers
     conn.request(req.method, path, data, req.headers)
     r = conn.getresponse()
 
@@ -214,12 +215,11 @@ def rdf_delete(record_connector, query, save=True):
        
     return rdf_response(serialize_rdf(deleted))
 
-def rdf_post(record_connector, new_g):
-    for s in new_g:
-        record_connector.pending_adds.append(s)
-
-    record_connector.execute_transaction()
-    return rdf_response(serialize_rdf(new_g))
+def rdf_post(record_connector, g):
+    record_connector.transaction_begin()
+    record_connector.add_conjunctive_graph(g)
+    record_connector.transaction_commit()
+    return rdf_response(serialize_rdf(g))
 
 alnum_pattern = re.compile('^a-zA-Z0-9_+')
 
