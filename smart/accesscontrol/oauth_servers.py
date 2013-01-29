@@ -38,7 +38,7 @@ class UserDataStore(oauth.OAuthStore):
                 oauth.report_error(
                     "Got a SMArt Connect Request -- should be a REST request"
                 )
-                return ret
+            return ret
         except models.AccessToken.DoesNotExist:
             return None
 

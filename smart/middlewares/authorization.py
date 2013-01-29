@@ -47,12 +47,13 @@ class Authorization(object):
                     
                     ## all good, authenticated and authorized
                     if success:
-                        #print "And permitted for %s %s" % (view_func.__name__, request.principal)
+                        #print "And permitted for %s %s:\n  %s" % (view_func.__name__, request.principal, request.META.get('HTTP_AUTHORIZATION'))
                         return None
                     
                     # no permission! if there was no request.principal, we
                     # assume that we are not authenticated and return a 401
                     if request.principal is None:
+                        #print "%s, there is no principal:\n  %s" % (message, request.META.get('HTTP_AUTHORIZATION'))
                         return HttpResponse('Unauthorized', status=401)
                     
                     print "Permission denied for %s %s: %s" % (view_func.__name__, request.principal, message)
