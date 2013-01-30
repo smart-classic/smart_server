@@ -92,6 +92,7 @@ class RecordObject(object):
         node_type_candidates = list(g.triples((n, rdf.type, None)))
         node_type = None
         for c in node_type_candidates:
+            # print '========= c is ' + str(c)
             t = SMART_Class[c[2]]
             if t.is_statement or t.uri == sp.MedicalRecord:
                 assert node_type is None, "Got multiple node types for %s" % [
@@ -108,14 +109,12 @@ class RecordObject(object):
         if node_type is None:
             return None
 
-        # We need to remap the node
         full_path = RecordObject[node_type].determine_full_path(var_bindings)
         return full_path
 
     def generate_uris(self, g, c, var_bindings=None):
         node_map = {}
         nodes = set(g.subjects()) | set(g.objects())
-
         for s in nodes:
             new_node = self.determine_remap_target(g, c, s, var_bindings)
             if new_node:

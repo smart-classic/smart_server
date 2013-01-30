@@ -19,8 +19,8 @@ class TripleStore(engine.connector):
     def add_conjunctive_graph(self, cg):
         return super(TripleStore, self).add_conjunctive_graph(cg)
 
-    def replace_conjunctive_graph(self, cg):
-        return super(TripleStore, self).replace_conjunctive_graph(cg)
+    def replace_conjunctive_graph(self, cg, drop=True):
+        return super(TripleStore, self).replace_conjunctive_graph(cg, drop)
 
     def remove_conjunctive_graph(self, cg):
         return super(TripleStore, self).remove_conjunctive_graph(cg)
@@ -82,11 +82,18 @@ class TripleStore(engine.connector):
 
         if matches:
             matches = runFiltering (self, obj, matches, queries)
-
+            if (limit_to_statements):
+                meta['totalResultCount'] = len(set(matches) & set(limit_to_statements))
+            else:
+                meta['totalResultCount'] = len(matches)
         print "filtered", len(matches)
 
         if matches:
             matches = runPagination (self, obj, matches, queries, path, meta)
+            if (limit_to_statements):
+                meta['resultsReturned'] = len(set(matches) & set(limit_to_statements))
+            else:
+                meta['resultsReturned'] = len(matches)
         print "paged", len(matches)
 
         if matches:

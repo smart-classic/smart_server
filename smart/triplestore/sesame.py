@@ -37,15 +37,14 @@ class SesameConnector(object):
         return utils.url_request(url, method, headers, data)
 
     def add_conjunctive_graph(self, cg):
-        return replace_conjunctive_graph(cg, drop=False)
+        return self.replace_conjunctive_graph(cg, drop=False)
 
     def clear_context(self, c):
         self.pending_clears.append(c)
 
     def replace_conjunctive_graph(self, cg, drop=True):
-        drops = []
-        inserts = []
         for g in cg.contexts():
+            #print 'g is: ' + g.identifier
             c = self.pending_adds.get_context(g.identifier)
             c += g
             if drop:

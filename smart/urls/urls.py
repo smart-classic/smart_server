@@ -50,11 +50,17 @@ urlpatterns += patterns(
     # static
     (r'^static/(?P<path>.*)$', 'django.views.static.serve', {'document_root': 'static'}),
 
-    # SMArt API                                       
+    # SMART API                                       
     (r'^users/(?P<user_id>[^/]+)/apps/(?P<pha_email>[^/]+)/preferences', MethodDispatcher({
                                        'GET': preferences_get,
                                        'PUT': preferences_put,
                                        'DELETE': preferences_delete,
+                                       'OPTIONS' : allow_options})),
+                                       
+    (r'^records/(?P<record_id>[^/]+)/apps/(?P<pha_email>[^/]+)/scratchpad', MethodDispatcher({
+                                       'GET': scratchpad_get,
+                                       'PUT': scratchpad_put,
+                                       'DELETE': scratchpad_delete,
                                        'OPTIONS' : allow_options})),
 
     (r'^webhook/(?P<webhook_name>[^/]+)$', MethodDispatcher({

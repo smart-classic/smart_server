@@ -1,7 +1,7 @@
 from smart.triplestore import *
 from smart.models.records import *
 from smart.lib.utils import *
-from smart.common.rdf_tools.util import URIRef, bound_graph
+from smart.common.rdf_tools.util import URIRef, bound_graph, sp
 from string import Template
 import re
 
@@ -24,7 +24,6 @@ def record_get_all_objects(request, record_id, obj, **kwargs):
 
 
 def record_delete_all_objects(request, record_id, obj, **kwargs):
-
     c = RecordTripleStore(Record.objects.get(id=record_id))
     return rdf_delete(c, obj.query(patient=c.patient))
 
@@ -32,8 +31,7 @@ def record_delete_all_objects(request, record_id, obj, **kwargs):
 def record_post_objects(request, record_id, obj, **kwargs):
     c = RecordTripleStore(Record.objects.get(id=record_id))
     path = smart_path(request.path)
-
-    g = parse_rdf(request.raw_post_data)
+    data = parse_rdf(request.raw_post_data)
     var_bindings = obj.path_var_bindings(path)
 
     if "record_id" in var_bindings:
@@ -41,10 +39,23 @@ def record_post_objects(request, record_id, obj, **kwargs):
     else:
         var_bindings['record_id'] = record_id
 
-    new_uris = obj.prepare_graph(g, c, var_bindings)
+    # Note: no return value! alters data in-place
+    obj.prepare_graph(data, None, var_bindings)
 
-    return rdf_post(c, g)
+    # now data's statements should have generated UUID-based subject URIs
+    # but the top-level context URI is still a random bnode
+    # print "Default context", len(data.default_context)
 
+    record_node = list(data.triples((None, rdf.type, sp.MedicalRecord)))
+    assert len(record_node) == 1, "Found statements about >1 patient in file: %s" % record_node
+    record_node = record_node[0][0]
+
+    obj.segregate_nodes(data, record_node)
+    data.remove_context(data.default_context)
+
+    #print 'graph: ' + str(data)
+
+    return rdf_post(c, data)
 
 def record_put_object(request, record_id, obj, **kwargs):
     # An idempotent PUT requires:
