@@ -47,9 +47,8 @@ def LoadAppFromJSON(manifest_string, app_params=None):
 
     messages = app_manifest_structure_validator(r)
     if len(messages) > 0:
-        print "WARNING! This app manifest is invalid"
-        for m in messages:
-            print m
+        msg = "WARNING! This app manifest is invalid: %s" % '. '.join(messages)
+        raise Exception(msg)
 
     if "override_index" in app_params:
         r["index"] = app_params["override_index"]
@@ -113,6 +112,11 @@ def LoadAppFromJSON(manifest_string, app_params=None):
         )
     else:
         a = None
+
+    # should probably return here if no App was created
+    if a is None:
+        return None
+
 
     if "index" in r:
         act_name = "main"

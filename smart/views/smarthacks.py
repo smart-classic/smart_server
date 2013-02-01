@@ -404,8 +404,11 @@ def manifest_put(request, descriptor):
         id = manifest["id"]
 
         if id == descriptor:
-            LoadAppFromJSON(data)
-            return HttpResponse("ok")
+            try:
+                LoadAppFromJSON(data)
+                return HttpResponse("ok")
+            except Exception, e:
+                return HttpResponse(str(e), status=400)
         else:
             msg = "The manifest id '%s' must match the app descriptor '%s'" % (
                 id, descriptor)
