@@ -14,6 +14,7 @@ from base import Object, Principal, BaseModel, BaseMeta, APP_LABEL
 
 import urllib
 import datetime
+import json
 
 ##
 ## OAuth Stuff
@@ -42,7 +43,19 @@ class OAuthApp(Principal):
     consumer_key = models.CharField(max_length=200)
     secret = models.CharField(max_length=60)
     name = models.CharField(max_length=200)
+    
+    # manifest and properties extracted from the manifest
     manifest = models.TextField(null=True)
+    
+    @property
+    def index_url(self):
+        m = json.loads(self.manifest)
+        return m.get('index')
+    
+    @property
+    def icon_url(self):
+        m = json.loads(self.manifest)
+        return m.get('icon')
 
 
 ##
@@ -56,8 +69,6 @@ class PHA(OAuthApp):
 
     Meta = BaseMeta()
     # URL templates look like http://host/url/{param1}?foo={param2}
-
-    icon_url = models.CharField(max_length=500)
 
     # we are using a flag called "standalone" now, this field now stores the
     # inverse of that flag. A database migration would be cleaner.
@@ -85,6 +96,7 @@ class HelperApp(OAuthApp):
     """
 
     Meta = BaseMeta()
+    
     # short description of the app
     description = models.CharField(max_length=2000, null=True)
     admin_p = models.BooleanField(default=False)
@@ -128,41 +140,6 @@ class MachineApp(OAuthApp):
         return cls.objects.get(consumer=consumer)
 
 
-class AppWebHook(Object):
-    app = models.ForeignKey('OAuthApp', related_name='hooks', null=False)
-    name = models.CharField(max_length=50)
-    description = models.TextField(null=True)
-    url = models.TextField(max_length=200, null=False)
-    preferred = models.BooleanField(default=False)
-    requires_patient_context = models.BooleanField(default=False)
-
-    class Meta:
-        app_label = APP_LABEL
-        unique_together = (('app', 'name'),)
-
-
-class AppActivity(Object):
-    app = models.ForeignKey(
-        'OAuthApp', related_name='activities', null=False)
-    name = models.CharField(max_length=50, null=False)
-    description = models.TextField(null=True)
-    url = models.TextField(max_length=200, null=True)
-
-    class Meta:
-        app_label = APP_LABEL
-        unique_together = (('app', 'name'),)
-
-
-class PrincipalActivityRemaps(Object):
-    class Meta:
-        app_label = APP_LABEL
-        unique_together = (('activity', 'principal'),)
-
-    principal = models.ForeignKey(
-        'Principal', related_name='activity_remaps', null=False)
-    activity = models.ForeignKey(
-        'AppActivity', related_name='principal_remaps', null=False)
-    url = models.TextField(max_length=200, null=False)
 
 ##
 ## session tokens

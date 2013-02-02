@@ -55,7 +55,6 @@ def grant(accesstoken, permset):
     permset.grant(home)
     permset.grant(record_by_token)
 
-    permset.grant(do_webhook)
     permset.grant(record_delete_all_objects, [check_token_for_record])
     permset.grant(record_delete_object, [check_token_for_record])
     permset.grant(record_post_objects, [check_token_for_record])
@@ -75,7 +74,6 @@ def grant(accesstoken, permset):
     
 
     check_elevated_access_mode = check_elevated_access_mode_wrapper(accesstoken)
-    permset.grant(resolve_activity_with_app, [])
     permset.grant(resolve_manifest, [])
     permset.grant(all_manifests, [])
     permset.grant(record_search, [check_elevated_access_mode])

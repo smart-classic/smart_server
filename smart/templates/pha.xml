@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <App id="{{pha.email}}">
-  <startURLTemplate>{{pha.activity.url}}</startURLTemplate>
+  <startURLTemplate>{{pha.index_url}}</startURLTemplate>
   <name>{{pha.name}}</name>
   <description>{{pha.description}}</description>
   <ui>{{pha.has_ui}}</ui>

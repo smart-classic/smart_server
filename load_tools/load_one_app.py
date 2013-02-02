@@ -47,7 +47,7 @@ def LoadAppFromJSON(manifest_string, app_params=None):
 
     messages = app_manifest_structure_validator(r)
     if len(messages) > 0:
-        msg = "WARNING! This app manifest is invalid: %s" % '. '.join(messages)
+        msg = "WARNING! This app manifest is invalid: %s (app %s)" % ('. '.join(messages), r['id'])
         raise Exception(msg)
 
     if "override_index" in app_params:
@@ -118,11 +118,6 @@ def LoadAppFromJSON(manifest_string, app_params=None):
         return None
 
 
-    if "index" in r:
-        act_name = "main"
-        act_url = r["index"]
-        AppActivity.objects.create(app=a, name=act_name, url=act_url)
-
     if "requires" in r:
         capabilities = get_capabilities()
         for k in r["requires"]:
@@ -137,20 +132,6 @@ def LoadAppFromJSON(manifest_string, app_params=None):
         if r["smart_version"] != settings.VERSION:
             print "WARNING! This app requires SMART version", r["smart_version"]
 
-    if "web_hooks" in r:
-        for (hook_name, hook_data) in r["web_hooks"].iteritems():
-            hook_url = hook_data["url"]
-
-            try:
-                rpc = hook_data['requires_patient_context']
-            except:
-                rpc = False
-
-            AppWebHook.objects.create(app=a,
-                                      name=hook_name,
-                                      description=hook_data["description"],
-                                      url=hook_url,
-                                      requires_patient_context=rpc)
     return a
 
 if __name__ == "__main__":

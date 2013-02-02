@@ -23,10 +23,31 @@ import base64
 import hmac
 import datetime
 
+from load_tools.load_one_app import LoadAppFromJSON
 
+
+def _all_apps():
+    """ Return all apps (PHA and HelperApp instances) """
+    apps = list(PHA.objects.all())
+    apps.extend(HelperApp.objects.all())
+    return apps
+
+def _find_app(app_id):
+    """ Return the app with the given id """
+    app = None
+    try:
+        app = PHA.objects.get(email=app_id)
+    except PHA.DoesNotExist:
+        try:
+            app = HelperApp.objects.get(email=app_id)
+        except HelperApp.DoesNotExist:
+            return None
+    return app
+    
+    
 def all_phas(request):
     """A list of the PHAs as XML"""
-    phas = [PHA.objects.get(id=x.app.id) for x in AppActivity.objects.filter(name="main")]
+    phas = _all_apps()
     return render_template('phas', {'phas': phas}, type="xml")
 
 
@@ -35,74 +56,50 @@ def all_phas(request):
                      target="http://smartplatforms.org/terms#AppManifest")
 def all_manifests(request):
     """A list of the PHAs as JSON"""
-    phas = [PHA.objects.get(id=x.app.id) for x in AppActivity.objects.filter(name="main")]
-    ret = "[" + ", ".join([a.manifest for a in phas]) + "]"
+    phas = _all_apps()
+    ret = "[%s]" % ", ".join([a.manifest for a in phas])
     return HttpResponse(ret, mimetype='application/json')
 
 
 @CallMapper.register(http_method="GET",
                      cardinality="single",
                      target="http://smartplatforms.org/terms#AppManifest")
-def resolve_manifest(request, descriptor):
-    if "@" in descriptor:
-        return resolve_manifest_with_app(request, "main", descriptor)
-    else:
-        return resolve_manifest_with_app(request, descriptor, None)
-
-
-def resolve_manifest_with_app(request, activity_name, app_id):
-    act = resolve_activity_helper(request, activity_name, app_id)
-    if act is None:
+def resolve_manifest(request, app_id):
+    app = _find_app(app_id)
+    if app is None:
         raise Http404
+    
+    return HttpResponse(app.manifest, mimetype='application/json')
 
-    manifest = act.app.manifest
-    if (act.remapped):
-        manifest = simplejson.loads(manifest)
-        manifest['index'] = act.url
-        manifest = simplejson.dumps(manifest)
-
-    return HttpResponse(manifest, mimetype='application/json')
-
-
-def resolve_activity(request, activity_name):
-    return resolve_activity_with_app(request, activity_name, None)
-
-
-def resolve_activity_with_app(request, activity_name, app_id):
-    act = resolve_activity_helper(request, activity_name, app_id)
-    return render_template('activity', {'a': act}, type="xml")
-
-
-def resolve_activity_helper(request, activity_name, app_id):
-    """ Map an activity name (and optionally specified app id) to activity URL.
-    """
-    act = None
-
-    if app_id is not None:
-        act = AppActivity.objects.filter(name=activity_name, app__email=app_id)
-    else:
-        act = AppActivity.objects.filter(name=activity_name)
-
-    if len(act) == 0:
-        return None
-
-    act = act[0]
-
-    if act.url is None:
-        act.url = PHA.objects.get(id=act.app.id).start_url_template
-        act.url = PHA.objects.get(id=act.app.id).start_url_template
-
+def manifest_put(request, app_id):
     try:
-        r = PrincipalActivityRemaps.objects.get(activity=act, principal=request.principal)
-        act.url = r.url
-        act.remapped = True
-        print "remapping for principal %s: %s", (request.principal, act.url)
+        data = request.raw_post_data
+        manifest = json.loads(data)
+        id = manifest["id"]
 
+        if id == app_id:
+            try:
+                LoadAppFromJSON(data)
+                return HttpResponse("ok")
+            except Exception, e:
+                return HttpResponse(str(e), status=400)
+        else:
+            msg = "The manifest id '%s' must match the app id '%s'" % (
+                id, app_id)
+            print msg
     except:
-        act.remapped = False
+        pass
 
-    print "mapped ", request.principal, activity_name, app_id, " to: ", act
-    return act
+    raise Http404
+
+
+def manifest_delete(request, app_id):
+    try:
+        app = _find_app(app_id)
+        app.delete()
+        return HttpResponse("ok")
+    except:
+        raise Http404
 
 
 def pha(request, pha_email):
@@ -117,7 +114,10 @@ def app_oauth_credentials(request, app_id):
     """ Return the OAuth credentials for the given app.
     Must be a machine app to perform this call.
     """
-    app = PHA.objects.get(email=app_id)
+    app = _find_app(app_id)
+    if app is None:
+        raise Http404
+    
     json = {
         'consumer_key': app.email,       # Is email really what's used as key?
         'consumer_secret': app.secret
