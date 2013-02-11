@@ -1,18 +1,20 @@
 {% load template_utils %}
+{% spaceless %}
 <RequestToken token="{{request_token.token}}">
-  <record {% if request_token.record %}id="{{request_token.record.id}}"{% endif %}/>
-  <kind>{% if share %}same{% else %}new{% endif %}</kind>
-  <App id="{{request_token.pha.email}}">
-    <name>{{request_token.pha.name}}</name>
-    <description>{{request_token.pha.description}}</description>
-    <frameable>{{request_token.pha.frameable}}</frameable>
-    <ui>{{request_token.pha.has_ui}}</ui>
-  </App>
+    <record {% if request_token.record %}id="{{request_token.record.id}}"{% endif %}/>
+    <kind>{% if share %}same{% else %}new{% endif %}</kind>
+    <App id="{{request_token.app.email}}">
+        <name>{{request_token.app.name}}</name>
+        <description>{{request_token.app.description}}</description>
+        <ui>{{request_token.app.has_ui}}</ui>
+        <standalone>{{request_token.app.standalone}}</standalone>
+    </App>
 
-  <Permissions>
-  </Permissions>
+    <Permissions>
+    </Permissions>
 
-  <DataUsageAgreement>
-    <offline>{% if request_token.offline_capable %}1{% else %}0{% endif %}</offline>
-  </DataUsageAgreement>
+    <DataUsageAgreement>
+        <offline>{% if request_token.offline_capable %}1{% else %}0{% endif %}</offline>
+    </DataUsageAgreement>
 </RequestToken>
+{% endspaceless %}

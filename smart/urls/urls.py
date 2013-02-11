@@ -37,14 +37,13 @@ urlpatterns += patterns(
     # PHAs
     (r'^apps/$', all_phas),
     (r'^apps/accounts/(?P<account_id>[^/]+)/$', apps_for_account),
-    (r'^activity/(?P<activity_name>[^/]+)/app/(?P<app_id>[^/]+)$', resolve_activity_with_app),
-    (r'^activity/(?P<activity_name>[^/]+)$', resolve_activity),
     (r'^apps/manifests/?$', all_manifests),
-    (r'^apps/(?P<descriptor>.+)/manifest$', MethodDispatcher({
+    (r'^apps/(?P<app_id>.+)/manifest$', MethodDispatcher({
                                        'GET': resolve_manifest,
                                        'PUT': manifest_put,
                                        'DELETE': manifest_delete,
                                        'OPTIONS' : allow_options})),
+    (r'^apps/(?P<app_id>[^/]+)/credentials', app_oauth_credentials),
     
     # static
     (r'^static/(?P<path>.*)$', 'django.views.static.serve', {'document_root': 'static'}),
@@ -61,11 +60,6 @@ urlpatterns += patterns(
                                        'PUT': scratchpad_put,
                                        'DELETE': scratchpad_delete,
                                        'OPTIONS' : allow_options})),
-
-    (r'^webhook/(?P<webhook_name>[^/]+)$', MethodDispatcher({
-                                       'GET': do_webhook,
-                                       'POST': do_webhook,
-                                       'OPTIONS' : allow_options})),  
 
     (r'^apps/(?P<app_email>[^/]+)/tokens/records/first$', get_first_record_tokens),
     (r'^apps/(?P<app_email>[^/]+)/tokens/records/(?P<record_id>[^/]+)/next$', get_next_record_tokens),
