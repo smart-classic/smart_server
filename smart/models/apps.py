@@ -70,13 +70,13 @@ class PHA(OAuthApp):
     Meta = BaseMeta()
     # URL templates look like http://host/url/{param1}?foo={param2}
 
-    # we are using a flag called "standalone" now, this field now stores the
-    # inverse of that flag. A database migration would be cleaner.
-    frameable = models.BooleanField(default=True)
+    # is the app a standalone (native/background) app or does it need to run inside the container web UI?
+    standalone = models.BooleanField(default=False)
     
+    # this is probably no longer needed, but leaving it here just in case
     @property
-    def standalone(self):
-        return not self.frameable
+    def frameable(self):
+        return not self.standalone
 
     # short description of the app
     description = models.CharField(max_length=2000, null=True)
