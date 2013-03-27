@@ -62,6 +62,11 @@ def grant(accesstoken, permset):
 
     permset.grant(record_get_object, [check_token_for_record])
     permset.grant(record_get_allergies, [check_token_for_record])
+    permset.grant(record_get_document, [check_token_for_record])
+    permset.grant(record_get_documents, [check_token_for_record])
+    permset.grant(record_get_medical_image, [check_token_for_record])
+    permset.grant(record_get_medical_images, [check_token_for_record])
+    permset.grant(record_get_photograph, [check_token_for_record])
 
     try:
         permset.grant(record_proxy_backend.proxy_get, [check_token_for_record])

@@ -1,10 +1,14 @@
 import re
+import os
+import hashlib
+import base64
 import uuid
 from django.conf import settings
 from smart.common.rdf_tools.rdf_ontology import api_types, api_calls, ontology, SMART_Class
 from smart.common.rdf_tools.query_builder import SMART_Querier
 from rdf_rest_operations import *
-from smart.common.rdf_tools.util import remap_node, parse_rdf, get_property, LookupType, BNode, Literal, URIRef, sp, rdf, default_ns
+from smart.common.rdf_tools.util import remap_node, parse_rdf, get_property, LookupType, BNode, Literal, URIRef, sp, rdf, default_ns, NS
+from rdflib import Graph, ConjunctiveGraph, RDF
 from ontology_url_patterns import CallMapper, BasicCallMapper
 
 
@@ -277,7 +281,169 @@ def record_get_allergies(request, *args, **kwargs):
 
     a += ae
     return rdf_response(serialize_rdf(a))
+   
+BASE_DOCUMENTS_PATH = "smart_server/documents"
+   
+def sha256(fileName):
+    """Compute sha256 hash of the specified file"""
+    m = hashlib.sha256()
+    try:
+        fd = open(fileName,"rb")
+    except IOError:
+        print "Unable to open the file in readmode:", fileName
+        return
+    content = fd.readlines()
+    fd.close()
+    for eachLine in content:
+        m.update(eachLine)
+    return m.hexdigest()
+   
+def fetch_documents(request, record_id, term, multiple):
+    format = "metadata" if multiple else "raw"
 
+    try:
+        format = request.GET['format']
+    except:
+        pass
+
+    obj = RecordObject[term]
+    c = RecordTripleStore(Record.objects.get(id=record_id))
+
+    if multiple:
+        documents_graph = c.get_objects(request.path, request.GET, obj)
+    else:
+        item_id = URIRef(smart_path(request.path))
+        documents_graph = c.get_objects(request.path, request.GET, obj, [item_id])
+
+    rdf = parse_rdf(documents_graph)
+
+    q = """
+           PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+           PREFIX sp:<http://smartplatforms.org/terms#>
+           SELECT ?s
+           WHERE {
+               ?s rdf:type <%s> .
+           }
+        """ % term
+
+    bindings = rdf.query(q)
+
+    if len(bindings) == 0:
+        g = ConjunctiveGraph()
+        return g.serialize(format="xml")
+    
+    g = None
+
+    for d in bindings:
+        g2 = parse_rdf(c.get_contexts([d]))
+        
+        q = """
+           PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+           PREFIX sp:<http://smartplatforms.org/terms#>
+           PREFIX rdfs:<http://www.w3.org/2000/01/rdf-schema#>
+           PREFIX dcterms:<http://purl.org/dc/terms/>
+           SELECT ?d ?fn ?ct
+           WHERE {
+               ?d rdf:type <%s> .
+               ?d sp:fileName ?fn .
+               ?d dcterms:format ?f .
+               ?f rdf:type dcterms:MediaTypeOrExtent .
+               ?f rdfs:label ?ct .
+           }
+        """ % term
+        
+        res = g2.query(q)
+        uri = [str(r[0]) for r in res][0]
+        filename = [str(r[1]) for r in res][0]
+        content_type = [str(r[2]) for r in res][0]
+        path = BASE_DOCUMENTS_PATH + "/" + record_id + "/" + filename
+        
+        if (not multiple and format == "raw") or term == str(NS['sp']['Photograph']):
+            # Return raw content
+            f = open(path, 'rb')
+            file_content = f.read()
+            f.close()
+            return x_domain(HttpResponse(file_content, mimetype=content_type))
+            
+        hash = sha256(path)
+        file_size = os.path.getsize(path)
+        
+        SP = NS['sp']
+        
+        vNode = BNode()
+        g2.add((vNode,RDF.type,SP['ValueAndUnit']))
+        g2.add((vNode,SP['value'],Literal(file_size)))
+        g2.add((vNode,SP['unit'],Literal("byte")))
+        
+        hNode = BNode()
+        g2.add((hNode,RDF.type,SP['Hash']))
+        g2.add((hNode,SP['algorithm'],Literal("SHA-256")))
+        g2.add((hNode,SP['value'],Literal(hash)))
+        
+        rNode = BNode()
+        g2.add((rNode,RDF.type,SP['Resource']))
+        g2.add((rNode,SP['location'],Literal(uri)))
+        g2.add((rNode,SP['hash'],hNode))
+        
+        if format == "combined":
+            ctNode = BNode()
+            g2.add((ctNode,RDF.type,SP['Content']))
+            
+            if filename.endswith(".txt"):
+                f = open(path, 'r')
+                file_content = f.read()
+                f.close()
+                g2.add((ctNode,SP['encoding'],Literal("UTF-8")))
+                g2.add((ctNode,SP['value'],Literal(file_content)))
+            else:
+                f = open(path, 'rb')
+                encoded_file_content = base64.b64encode(f.read())
+                f.close()
+                g2.add((ctNode,SP['encoding'],Literal("Base64")))
+                g2.add((ctNode,SP['value'],Literal(encoded_file_content)))
+
+            g2.add((rNode,SP['content'],ctNode))
+        
+        cNode=URIRef(uri)
+        g2.add((cNode,SP['fileSize'], vNode))
+        g2.add((cNode,SP['resource'], rNode))
+        
+        if not g:
+            g = g2
+        else:
+            g += g2
+        
+    return rdf_response(serialize_rdf(g))
+
+@CallMapper.register(client_method_name="get_document")
+def record_get_document(request, *args, **kwargs):
+    record_id = kwargs['record_id']
+    term = str(NS['sp']['Document'])
+    return fetch_documents(request,record_id,term,False)
+    
+@CallMapper.register(client_method_name="get_documents")
+def record_get_documents(request, *args, **kwargs):
+    record_id = kwargs['record_id']
+    term = str(NS['sp']['Document'])
+    return fetch_documents(request,record_id,term,True)
+    
+@CallMapper.register(client_method_name="get_medical_image")
+def record_get_medical_image(request, *args, **kwargs):
+    record_id = kwargs['record_id']
+    term = str(NS['sp']['MedicalImage'])
+    return fetch_documents(request,record_id,term,False)
+    
+@CallMapper.register(client_method_name="get_medical_images")
+def record_get_medical_images(request, *args, **kwargs):
+    record_id = kwargs['record_id']
+    term = str(NS['sp']['MedicalImage'])
+    return fetch_documents(request,record_id,term,True)
+    
+@CallMapper.register(client_method_name="get_photograph")
+def record_get_photograph(request, *args, **kwargs):
+    record_id = kwargs['record_id']
+    term = str(NS['sp']['Photograph'])
+    return fetch_documents(request,record_id,term,True)
 
 @CallMapper.register(client_method_name="post_alert")
 def record_post_alert(request, *args, **kwargs):
