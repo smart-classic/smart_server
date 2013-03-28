@@ -24,3 +24,4 @@ def grant(machineapp, permset):
     permset.grant(manifest_delete, None)
     permset.grant(manifest_put, None)
     permset.grant(all_manifests, None)
+    permset.grant(app_oauth_credentials, None)

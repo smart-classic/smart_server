@@ -3,15 +3,15 @@
 <Apps>
 {% for pha in phas %}
 <App id="{{pha.email}}">
-  <name>{{pha.name}}</name>
-  <description>{{pha.description}}</description>
-  <frameable>{{pha.frameable}}</frameable>
-  <ui>{{pha.has_ui}}</ui>
-  {%if not pha.background_p%}
-  <iconURL>{{pha.icon_url}}</iconURL>
-  <optimalBrowserEnvironments>{{pha.optimal_environments}}</optimalBrowserEnvironments>
-  <supportedBrowserEnvironments>{{pha.supported_environments}}</supportedBrowserEnvironments>
-  {%endif%}
+	<name>{{pha.name}}</name>
+	<description>{{pha.description}}</description>
+	<ui>{{pha.has_ui}}</ui>
+	<standalone>{{pha.standalone}}</standalone>
+	{%if not pha.background_p%}
+	<iconURL>{{pha.icon_url}}</iconURL>
+	<optimalBrowserEnvironments>{{pha.optimal_environments}}</optimalBrowserEnvironments>
+	<supportedBrowserEnvironments>{{pha.supported_environments}}</supportedBrowserEnvironments>
+	{%endif%}
 </App>
 {% endfor %}
 </Apps>

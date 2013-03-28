@@ -45,7 +45,10 @@ class RecordImporter(object):
             rconn.transaction_begin() 
             r, created = Record.objects.get_or_create(id=self.target_id)
             print "Wiping record", self.record_node.n3()
-            rconn.destroy_context_and_neighbors(self.record_node)
+            try:
+                rconn.destroy_context_and_neighbors(self.record_node)
+            except:
+                pass
 
             # TODO:  clear any elements in this record that may still exist
             rconn.replace_conjunctive_graph(self.data)
