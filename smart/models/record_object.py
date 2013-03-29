@@ -335,7 +335,7 @@ def fetch_documents(request, record_id, term, multiple):
     g = None
 
     for d in bindings:
-        g2 = parse_rdf(c.get_contexts([d]))
+        g2 = parse_rdf(c.get_contexts(d))
         
         q = """
            PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
