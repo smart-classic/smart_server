@@ -21,9 +21,6 @@
     "override_icon": "http://localhost:8001/framework/api_playground/icon.png",
     "enabled_by_default": true
 }, {
-    "manifest":"http://localhost:8001/framework/background_app/smart_manifest.json",
-    "enabled_by_default": false 
-}, {
     "manifest":"http://localhost:8001/framework/got_statins/smart_manifest.json",
     "override_index": "http://localhost:8001/framework/got_statins/index.html",
     "override_icon": "http://localhost:8001/framework/got_statins/icon.png",
