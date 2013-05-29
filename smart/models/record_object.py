@@ -330,7 +330,7 @@ def fetch_documents(request, record_id, term, multiple):
 
     if len(bindings) == 0:
         g = ConjunctiveGraph()
-        return g.serialize(format="xml")
+        return rdf_response(serialize_rdf(g))
     
     g = None
 
