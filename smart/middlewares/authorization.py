@@ -31,7 +31,11 @@ class Authorization(object):
                 return None
 
         if hasattr(view_func, 'resolve'):
+            methods = view_func.methods.keys()
             view_func = view_func.resolve(request)
+
+        if not view_func:
+            return HttpResponseNotAllowed(methods)
 
         try:
             if view_func:
