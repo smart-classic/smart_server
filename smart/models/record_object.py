@@ -427,18 +427,6 @@ def record_get_documents(request, *args, **kwargs):
     term = str(NS['sp']['Document'])
     return fetch_documents(request,record_id,term,True)
     
-@CallMapper.register(client_method_name="get_medical_image")
-def record_get_medical_image(request, *args, **kwargs):
-    record_id = kwargs['record_id']
-    term = str(NS['sp']['MedicalImage'])
-    return fetch_documents(request,record_id,term,False)
-    
-@CallMapper.register(client_method_name="get_medical_images")
-def record_get_medical_images(request, *args, **kwargs):
-    record_id = kwargs['record_id']
-    term = str(NS['sp']['MedicalImage'])
-    return fetch_documents(request,record_id,term,True)
-    
 @CallMapper.register(client_method_name="get_photograph")
 def record_get_photograph(request, *args, **kwargs):
     record_id = kwargs['record_id']
