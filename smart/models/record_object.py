@@ -282,8 +282,6 @@ def record_get_allergies(request, *args, **kwargs):
     a += ae
     return rdf_response(serialize_rdf(a))
    
-BASE_DOCUMENTS_PATH = "smart_server/documents"
-   
 def sha256(fileName):
     """Compute sha256 hash of the specified file"""
     m = hashlib.sha256()
@@ -356,7 +354,7 @@ def fetch_documents(request, record_id, term, multiple):
         uri = [str(r[0]) for r in res][0]
         filename = [str(r[1]) for r in res][0]
         content_type = [str(r[2]) for r in res][0]
-        path = BASE_DOCUMENTS_PATH + "/" + record_id + "/" + filename
+        path = settings.BASE_DOCUMENTS_PATH + "/" + record_id + "/" + filename
         
         if (not multiple and format == "raw") or term == str(NS['sp']['Photograph']):
             # Return raw content

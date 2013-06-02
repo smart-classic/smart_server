@@ -9,6 +9,9 @@ DESCRIPTION = 'Public sandbox to demonstrate the SMART API'
 # base URL for the app
 APP_HOME = '{{path_to_smart_server}}'
 
+# base Documents path (for Documents API file storage location)
+BASE_DOCUMENTS_PATH = APP_HOME + "/documents"
+
 # SMART API Server base URL
 SITE_URL_PREFIX = '{{api_server_base_url}}' # e.g. http://localhost:7000
 
