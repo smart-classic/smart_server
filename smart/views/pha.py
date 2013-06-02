@@ -136,7 +136,7 @@ def request_token(request):
     * *smart_record_id*: The record to which to bind the request token.
 
     Will return :http:statuscode:`200` with the request token on success,
-    :http:statuscode:`403` if the oauth signature on the request was missing
+    :http:statuscode:`401` if the oauth signature on the request was missing
     or faulty.
     Will raise on bad signature.
     """

@@ -6,6 +6,11 @@
     "override_icon": "http://localhost:8001/framework/bp_centiles/icon.png",
     "enabled_by_default": true
 }, {
+    "manifest":"http://localhost:8001/framework/growth_charts/smart_manifest.json",
+    "override_index": "http://localhost:8001/framework/growth_charts/index.html",
+    "override_icon": "http://localhost:8001/framework/growth_charts/img/icon.png",
+    "enabled_by_default": true
+}, {
     "manifest":"http://localhost:8001/framework/cardio_risk_viz/smart_manifest.json",
     "override_index": "http://localhost:8001/framework/cardio_risk_viz/index.html",
     "override_icon": "http://localhost:8001/framework/cardio_risk_viz/icon.png",
@@ -20,9 +25,6 @@
     "override_index": "http://localhost:8001/framework/api_playground/index.html",
     "override_icon": "http://localhost:8001/framework/api_playground/icon.png",
     "enabled_by_default": true
-}, {
-    "manifest":"http://localhost:8001/framework/background_app/smart_manifest.json",
-    "enabled_by_default": false 
 }, {
     "manifest":"http://localhost:8001/framework/got_statins/smart_manifest.json",
     "override_index": "http://localhost:8001/framework/got_statins/index.html",

@@ -27,11 +27,32 @@ my_app = """
   "author" : "Josh Mandel, Children's Hospital Boston",
   "id" : "my-app@apps.smartplatforms.org",
   "version" : ".1a",
+  "smart_version": "0.6",
   "mode" : "ui",
   "scope": "record",
   "index" : "http://localhost:8000/smartapp/index.html",
+  "oauth_callback": "http://localhost:8000/smartapp/authorize",
   "icon" :  "http://localhost:7001/static/smart_common/resources/images/app_icons_32/developers_sandbox.png"
 }
 """
 
 LoadAppFromJSON(my_app, {"enabled_by_default": True, "secret": "smartapp-secret"})
+
+my_ios_app = """
+{
+  "name" : "My iOS App",
+  "description" : "An app using our iOS framework",
+  "author" : "Pascal Pfiffner, Harvard Medical School",
+  "id" : "my-ios-app@apps.smartplatforms.org",
+  "version" : "1.0",
+  "smart_version": "0.6",
+  "mode" : "ui",
+  "standalone": true,
+  "scope": "record",
+  "index" : "smart-app:///did_select_record",
+  "oauth_callback": "smart-app:///did_receive_verifier",
+  "icon" :  "http://localhost:7001/static/smart_common/resources/images/app_icons_32/developers_sandbox.png"
+}
+"""
+
+LoadAppFromJSON(my_ios_app, {"enabled_by_default": True, "secret": "smartapp-secret"})

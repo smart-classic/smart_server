@@ -2,8 +2,10 @@ from smart.triplestore import *
 from smart.models.records import *
 from smart.lib.utils import *
 from smart.common.rdf_tools.util import URIRef, bound_graph, sp
+from django.http import HttpResponseBadRequest
 from string import Template
 import re
+import logging
 
 
 def record_get_object(request, record_id, obj, **kwargs):
@@ -31,7 +33,13 @@ def record_delete_all_objects(request, record_id, obj, **kwargs):
 def record_post_objects(request, record_id, obj, **kwargs):
     c = RecordTripleStore(Record.objects.get(id=record_id))
     path = smart_path(request.path)
-    data = parse_rdf(request.raw_post_data)
+    data = None
+    try:
+        data = parse_rdf(request.raw_post_data)
+    except Exception, e:
+        logging.error("Failed to parse incoming RDF: %s" % e)
+        return HttpResponseBadRequest()
+    
     var_bindings = obj.path_var_bindings(path)
 
     if "record_id" in var_bindings:
