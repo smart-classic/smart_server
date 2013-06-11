@@ -1,6 +1,7 @@
 from collections import defaultdict
 from django.conf import settings
 from smart.common.rdf_tools.rdf_ontology import SMART_API_Call
+from rdflib import Literal
 
 DATE_FILTERS_LB = ["date_from", "date_from_including", "date_to_excluding"]
 DATE_FILTERS_UB = ["date_from_excluding", "date_to", "date_to_including"]
@@ -37,6 +38,7 @@ class FilterSet(object):
         if k in DATE_FILTERS:
             self.dateFilters[k] = v
 
+        assert type(f.filter_sparql) is Literal, 'filter_sparql is not an RDF Literal!'
         return f.filter_sparql.replace("{" + k + "}", v)
 
     def getQuery(self, query_params):
