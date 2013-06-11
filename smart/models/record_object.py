@@ -146,6 +146,16 @@ class RecordObject(object):
             if (n == recordURI):
                 continue  # don't assert that the record has itself as an element
 
+            # There's no need to include belongsTo in a POSTed graph.
+            # ... but if belongsTo is present, it must be identical
+            # to the current recordURI
+            existing_record = list(g.triples((n, sp.belongsTo, None)))
+            assert len(existing_record) < 2, \
+                     "Can't have multiple belongsTo statements"
+            if len(existing_record) > 0:
+                assert existing_record[0][2] == recordURI, \
+                     "Conflicting belongsTo statements"
+
             g.add((n, sp.belongsTo, recordURI))
             g.add((recordURI, sp.hasStatement, n))
             g.add((recordURI, rdf.type, sp.MedicalRecord))
