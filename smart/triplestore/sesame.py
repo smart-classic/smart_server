@@ -97,7 +97,8 @@ class SesameConnector(object):
         drops = []
         for c in self.pending_clears:
             drops.append("DROP GRAPH %s;\n" % c.n3())
-        self.sparql_update("\n".join(drops))
+        if len(drops) > 0:
+            self.sparql_update("\n".join(drops))
 
         for g in self.pending_adds.contexts():
             q = "INSERT DATA { GRAPH %s {\n     %s }}" % (g.identifier.n3(), self._serialize_flat(g))
