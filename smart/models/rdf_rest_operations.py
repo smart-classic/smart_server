@@ -58,8 +58,8 @@ def record_post_objects(request, record_id, obj, **kwargs):
     if len(record_node) > 1:
         return HttpResponse("Found statements about >1 patient in file: %s" % record_node, status=409)
     elif len(record_node) < 1:
-        logging.error("There is no triple describing a MedicalRecord in the graph, cannot continue")
-        return HttpResponseServerError
+        logging.error("There is no triple describing a MedicalRecord in the graph, cannot continue. Graph: %s" % data.serialize())
+        return HttpResponseServerError()
     
     record_node = record_node[0][0]
 
