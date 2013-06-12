@@ -150,11 +150,11 @@ class RecordObject(object):
             # ... but if belongsTo is present, it must be identical
             # to the current recordURI
             existing_record = list(g.triples((n, sp.belongsTo, None)))
-            assert len(existing_record) < 2, \
-                     "Can't have multiple belongsTo statements"
-            if len(existing_record) > 0:
-                assert existing_record[0][2] == recordURI, \
-                     "Conflicting belongsTo statements"
+            if len(existing_record) > 1:
+                raise Exception("Can't have multiple belongsTo statements")
+            if len(existing_record) > 0 \
+                and existing_record[0][2] != recordURI:
+                    raise Exception("Conflicting belongsTo statements")
 
             g.add((n, sp.belongsTo, recordURI))
             g.add((recordURI, sp.hasStatement, n))
