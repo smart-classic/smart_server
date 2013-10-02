@@ -9,7 +9,7 @@ import urllib2
 from load_tools.load_one_app import LoadApp, LoadAppFromJSON
 
 def sub(str, var, val):
-    return str.replace("{%s}"%var, val)
+    return str.replace("{{ '{%s}' }}"%var, val)
 
 # Some basic apps and a couple of accounts to get things going.
 
@@ -30,9 +30,9 @@ my_app = """
   "smart_version": "0.6",
   "mode" : "ui",
   "scope": "record",
-  "index" : "http://localhost:8000/smartapp/index.html",
-  "oauth_callback": "http://localhost:8000/smartapp/authorize",
-  "icon" :  "http://localhost:7001/static/smart_common/resources/images/app_icons_32/developers_sandbox.png"
+  "index" : "http://{{hostname}}:8000/smartapp/index.html",
+  "oauth_callback": "http://{{hostname}}:8000/smartapp/authorize",
+  "icon" :  "http://{{hostname}}:7001/static/smart_common/resources/images/app_icons_32/developers_sandbox.png"
 }
 """
 

@@ -206,15 +206,15 @@ def main():
                             "smart_server/bootstrap_helpers/bootstrap_applications.py ")
 
         do_sed('smart_server/bootstrap_helpers/application_list.json', 
-                   'http:\/\/localhost:8001',
+                   'http:\/\/\{\{hostname\}\}:8001',
                    app_server_base_url)
                    
         do_sed('smart_server/bootstrap_helpers/bootstrap_applications.py', 
-                   'http:\/\/localhost:8001',
+                   'http:\/\/\{\{hostname\}\}:8001',
                    app_server_base_url)
                    
         do_sed('smart_server/bootstrap_helpers/bootstrap_applications.py', 
-                   'http:\/\/localhost:7001',
+                   'http:\/\/\{\{hostname\}\}:7001',
                    ui_server_base_url)
 
 
