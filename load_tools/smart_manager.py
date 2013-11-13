@@ -204,19 +204,10 @@ def main():
                             
         call_command("cp smart_server/bootstrap_helpers/bootstrap_applications.py.default " + 
                             "smart_server/bootstrap_helpers/bootstrap_applications.py ")
-
-        do_sed('smart_server/bootstrap_helpers/application_list.json', 
-                   'http:\/\/{{hostname}}:8001',
-                   app_server_base_url)
                    
-        do_sed('smart_server/bootstrap_helpers/bootstrap_applications.py', 
-                   'http:\/\/{{hostname}}:8001',
-                   app_server_base_url)
-                   
-        do_sed('smart_server/bootstrap_helpers/bootstrap_applications.py', 
-                   'http:\/\/{{hostname}}:7001',
-                   ui_server_base_url)
-
+        fill_field('smart_server/bootstrap_helpers/application_list.json', 'app_server_base_url', app_server_base_url)
+        fill_field('smart_server/bootstrap_helpers/bootstrap_applications.py', 'app_server_base_url', app_server_base_url)
+        fill_field('smart_server/bootstrap_helpers/bootstrap_applications.py', 'ui_server_base_url', ui_server_base_url)
 
         call_command("cp smart_ui_server/settings.py.default smart_ui_server/settings.py")
         call_command("cp smart_sample_apps/settings.py.default smart_sample_apps/settings.py")

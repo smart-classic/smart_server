@@ -30,9 +30,9 @@ my_app = """
   "smart_version": "0.6",
   "mode" : "ui",
   "scope": "record",
-  "index" : "http://{{hostname}}:8000/smartapp/index.html",
-  "oauth_callback": "http://{{hostname}}:8000/smartapp/authorize",
-  "icon" :  "http://{{hostname}}:7001/static/smart_common/resources/images/app_icons_32/developers_sandbox.png"
+  "index" : "{{app_server_base_url}}/smartapp/index.html",
+  "oauth_callback": "{{app_server_base_url}}/smartapp/authorize",
+  "icon" :  "{{ui_server_base_url}}/static/smart_common/resources/images/app_icons_32/developers_sandbox.png"
 }
 """
 
