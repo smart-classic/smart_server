@@ -226,13 +226,15 @@ def main():
         fill_field('smart_sample_apps/settings.py', 'app_server_base_url', app_server_base_url)
         fill_field('smart_sample_apps/settings.py', 'api_server_base_url', api_server_base_url)
 
-
         fill_field('smart_server/settings.py', 'chrome_consumer', chrome_consumer)
         fill_field('smart_server/settings.py', 'chrome_secret', chrome_secret)
 
-
         fill_field('smart_ui_server/settings.py', 'chrome_consumer', chrome_consumer)
         fill_field('smart_ui_server/settings.py', 'chrome_secret', chrome_secret)
+        
+        fill_field('smart_server/settings.py', 'django_secret_key', ''.join([choice(PASSWORD_LETTERBANK) for i in range(8)]))
+        fill_field('smart_ui_server/settings.py', 'django_secret_key', ''.join([choice(PASSWORD_LETTERBANK) for i in range(8)]))
+        fill_field('smart_sample_apps/settings.py', 'django_secret_key', ''.join([choice(PASSWORD_LETTERBANK) for i in range(8)]))
 
         fill_field('smart_server/settings.py', 'ui_server_base_url', ui_server_base_url)
 
