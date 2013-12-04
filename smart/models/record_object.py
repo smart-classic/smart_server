@@ -423,6 +423,20 @@ def fetch_documents(request, record_id, term, multiple):
         
     return rdf_response(serialize_rdf(g))
 
+def fetch_imaging_studies(request, record_id, multiple):
+    term = str(NS['sp']['ImagingStudy'])
+
+    obj = RecordObject[term]
+    c = RecordTripleStore(Record.objects.get(id=record_id))
+
+    if multiple:
+        imaging_studies_graph = c.get_objects(request.path, request.GET, obj)
+    else:
+        item_id = URIRef(smart_path(request.path))
+        imaging_studies_graph = c.get_objects(request.path, request.GET, obj, [item_id])
+
+    return rdf_response(imaging_studies_graph)
+
 @CallMapper.register(client_method_name="get_document")
 def record_get_document(request, *args, **kwargs):
     record_id = kwargs['record_id']
@@ -440,6 +454,16 @@ def record_get_photograph(request, *args, **kwargs):
     record_id = kwargs['record_id']
     term = str(NS['sp']['Photograph'])
     return fetch_documents(request,record_id,term,True)
+    
+@CallMapper.register(client_method_name="get_imaging_study")
+def record_get_document(request, *args, **kwargs):
+    record_id = kwargs['record_id']
+    return fetch_imaging_studies(request,record_id,False)
+    
+@CallMapper.register(client_method_name="get_imaging_studies")
+def record_get_documents(request, *args, **kwargs):
+    record_id = kwargs['record_id']
+    return fetch_imaging_studies(request,record_id,True)
 
 @CallMapper.register(client_method_name="post_alert")
 def record_post_alert(request, *args, **kwargs):
