@@ -464,6 +464,18 @@ def record_get_document(request, *args, **kwargs):
 def record_get_documents(request, *args, **kwargs):
     record_id = kwargs['record_id']
     return fetch_imaging_studies(request,record_id,True)
+    
+@CallMapper.register(client_method_name="get_medical_image")
+def record_get_document(request, *args, **kwargs):
+    record_id = kwargs['record_id']
+    term = str(NS['sp']['MedicalImage'])
+    return fetch_documents(request,record_id,term,False)
+    
+@CallMapper.register(client_method_name="get_medical_images")
+def record_get_documents(request, *args, **kwargs):
+    record_id = kwargs['record_id']
+    term = str(NS['sp']['MedicalImage'])
+    return fetch_documents(request,record_id,term,True)
 
 @CallMapper.register(client_method_name="post_alert")
 def record_post_alert(request, *args, **kwargs):
