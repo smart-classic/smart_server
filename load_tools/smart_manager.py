@@ -304,7 +304,7 @@ def main():
         call_command("cd smart_server && " + 
                      "PYTHONPATH=.:.. DJANGO_SETTINGS_MODULE=settings "+
                      "python load_tools/load_one_patient.py  " + 
-                     "../smart_sample_patients/generated-data/*  && "
+                     "../smart_sample_patients/generated-data/* ../smart_sample_patients/deidentified-patients/*  && "
                      "cd ..", print_output=True)
 
     if args.create_user:
