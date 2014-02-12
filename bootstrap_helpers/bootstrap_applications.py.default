@@ -27,11 +27,11 @@ my_app = """
   "author" : "Josh Mandel, Children's Hospital Boston",
   "id" : "my-app@apps.smartplatforms.org",
   "version" : ".1a",
-  "smart_version": "0.6",
+  "smart_version": "1.0",
   "mode" : "ui",
   "scope": "record",
-  "index" : "{{app_server_base_url}}/smartapp/index.html",
-  "oauth_callback": "{{app_server_base_url}}/smartapp/authorize",
+  "index" : "http://localhost:8000/smartapp/index.html",
+  "oauth_callback": "http://localhost:8000/smartapp/authorize",
   "icon" :  "{{ui_server_base_url}}/static/smart_common/resources/images/app_icons_32/developers_sandbox.png"
 }
 """
@@ -45,7 +45,7 @@ my_ios_app = """
   "author" : "Pascal Pfiffner, Harvard Medical School",
   "id" : "my-ios-app@apps.smartplatforms.org",
   "version" : "1.0",
-  "smart_version": "0.6",
+  "smart_version": "1.0",
   "mode" : "ui",
   "standalone": true,
   "scope": "record",
