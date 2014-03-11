@@ -27,3 +27,4 @@ elif settings.TRIPLESTORE['engine'] == "stardog":
 
 # then add additional apps by manifest
 from bootstrap_helpers import bootstrap_applications
+os.system("python manage.py shell  < bootstrap_grails_bg_app.py")

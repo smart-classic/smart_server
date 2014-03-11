@@ -1,0 +1,1 @@
+python manage.py shell  < bootstrap_grails_bg_app.py

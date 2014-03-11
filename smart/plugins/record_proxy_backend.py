@@ -19,7 +19,7 @@ def proxy_get(request, *args, **kwargs):
             me = settings.PROXY_NOTIFICATION_FROM
             you = settings.PROXY_NOTIFICATION_TO
 
-            msg = MIMEText(e.body)
+            msg = MIMEText("proxying request " + request.path + '\n' + e.body)
             msg['Subject'] = settings.PROXY_NOTIFICATION_SUBJECT
             msg['From'] = me
             msg['To'] = you
