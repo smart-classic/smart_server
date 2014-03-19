@@ -182,6 +182,9 @@ def main():
         chrome_secret = get_input("Chrome App Consumer secret",  
                                   ''.join([choice(PASSWORD_LETTERBANK) for i in range(8)]))
 
+        # TO DO: The password should be random here, but somehow we need to be able to change the DB password to match
+        db_password = get_input("Database User Password",  "smart")          
+
         ui_server_base_url = get_input("SMART UI server", "http://localhost:7001")
         app_server_base_url = get_input("SMART App server", "http://localhost:8001")
         
@@ -228,9 +231,13 @@ def main():
 
         fill_field('smart_server/settings.py', 'chrome_consumer', chrome_consumer)
         fill_field('smart_server/settings.py', 'chrome_secret', chrome_secret)
+        fill_field('smart_server/settings.py', 'db_password', db_password)
 
         fill_field('smart_ui_server/settings.py', 'chrome_consumer', chrome_consumer)
         fill_field('smart_ui_server/settings.py', 'chrome_secret', chrome_secret)
+        fill_field('smart_ui_server/settings.py', 'db_password', db_password)
+        
+        fill_field('smart_sample_apps/settings.py', 'db_password', db_password)
         
         fill_field('smart_server/settings.py', 'django_secret_key', ''.join([choice(PASSWORD_LETTERBANK) for i in range(8)]))
         fill_field('smart_ui_server/settings.py', 'django_secret_key', ''.join([choice(PASSWORD_LETTERBANK) for i in range(8)]))
