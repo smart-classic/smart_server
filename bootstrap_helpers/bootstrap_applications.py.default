@@ -8,8 +8,8 @@ from django.utils import simplejson
 import urllib2
 from load_tools.load_one_app import LoadApp, LoadAppFromJSON
 
-def sub(str, var, val):
-    return str.replace("{%s}" % var, val)
+# def sub(str, var, val):
+#    return str.replace("{%s}" % var, val)
 
 # Some basic apps and a couple of accounts to get things going.
 
