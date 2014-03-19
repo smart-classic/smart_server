@@ -272,7 +272,7 @@ def main():
         call_command("cd smart_sample_patients/bin && " + 
                      "rm -rf ../generated-data/*.xml && " + 
                      "python generate.py --write ../generated-data &&" + 
-                     "python generate-vitals-patient.py > ../generated-data/99912345.xml &&" +
+                     "python generate-vitals-patient.py ../generated-data/99912345.xml &&" +
                      "cd ../..", print_output=True)
 
     if args.run_app_server:
