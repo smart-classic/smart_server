@@ -156,10 +156,7 @@ def main():
             call_command("git clone --recursive https://github.com/chb/"+r+".git", 
                         print_output=True)
 
-            call_command("cd "+r+" && git checkout "+args.using_branch+" && cd ..")
-            call_command("cd "+r+" && git submodule init && git submodule update && cd ..", print_output=True)
-
-    if args.update_git:
+    if args.update_git or args.clone_git:
         for r in repos:
 
             if args.using_branch:
@@ -167,8 +164,7 @@ def main():
 
             call_command("cd "+r+" && " +
                      "git pull && " +
-                     "git submodule init && " +
-                     "git submodule update && " +
+                     "git submodule update --init --recursive && " +
                      "cd .. ",
                       print_output=True)
         
