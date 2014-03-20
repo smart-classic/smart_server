@@ -244,6 +244,8 @@ def main():
         fill_field('smart_sample_apps/settings.py', 'django_secret_key', ''.join([choice(PASSWORD_LETTERBANK) for i in range(8)]))
 
         fill_field('smart_server/settings.py', 'ui_server_base_url', ui_server_base_url)
+        
+        fill_field('smart_ui_server/settings.py', 'pretty_name_value', 'Reference EMR')
 
         if standalone_mode=="no":
             print "nostandalone"
