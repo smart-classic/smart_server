@@ -2,7 +2,7 @@ from smart.triplestore import *
 from smart.models.records import *
 from smart.lib.utils import *
 from smart.common.rdf_tools.util import URIRef, bound_graph, sp
-from django.http import HttpResponseBadRequest
+from django.http import HttpResponse, HttpResponseBadRequest
 from string import Template
 import re
 import logging
@@ -47,15 +47,27 @@ def record_post_objects(request, record_id, obj, **kwargs):
     else:
         var_bindings['record_id'] = record_id
 
-    # Note: no return value! alters data in-place
-    obj.prepare_graph(data, None, var_bindings)
+    # Note: "prepare_graph" has no return value! alters data in-place
+    # it will raise if there are problems with the "belongsTo" statement, which
+    # usually is a conflict (too many or not the correct for the REST path), so
+    # we issue a 409 here
+    try:
+        obj.prepare_graph(data, None, var_bindings)
+    except Exception, e:
+        return HttpResponse(str(e), status=409)
 
     # now data's statements should have generated UUID-based subject URIs
     # but the top-level context URI is still a random bnode
     # print "Default context", len(data.default_context)
-
     record_node = list(data.triples((None, rdf.type, sp.MedicalRecord)))
-    assert len(record_node) == 1, "Found statements about >1 patient in file: %s" % record_node
+    if len(record_node) > 1:
+        return HttpResponse("Found statements about >1 patient in file: %s" % record_node, status=409)
+    elif len(record_node) < 1:
+        # "prepare_graph" above should have added the belongsTo statement, if it
+        # didn't likely the RDF was not valid, so we return a 400 here
+        logging.error("There is no triple describing a MedicalRecord in the graph, cannot continue. Graph: %s" % data.serialize())
+        return HttpResponseBadRequest()
+    
     record_node = record_node[0][0]
 
     obj.segregate_nodes(data, record_node)

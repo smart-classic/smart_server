@@ -8,9 +8,6 @@ from django.utils import simplejson
 import urllib2
 from load_tools.load_one_app import LoadApp, LoadAppFromJSON
 
-def sub(str, var, val):
-    return str.replace("{%s}"%var, val)
-
 # Some basic apps and a couple of accounts to get things going.
 
 apps = simplejson.loads(open(os.path.join(settings.APP_HOME, 
@@ -27,12 +24,12 @@ my_app = """
   "author" : "Josh Mandel, Children's Hospital Boston",
   "id" : "my-app@apps.smartplatforms.org",
   "version" : ".1a",
-  "smart_version": "0.6",
+  "smart_version": "1.0",
   "mode" : "ui",
   "scope": "record",
   "index" : "http://localhost:8000/smartapp/index.html",
   "oauth_callback": "http://localhost:8000/smartapp/authorize",
-  "icon" :  "http://localhost:7001/static/smart_common/resources/images/app_icons_32/developers_sandbox.png"
+  "icon" :  "{{ui_server_base_url}}/static/smart_common/resources/images/app_icons_32/developers_sandbox.png"
 }
 """
 
@@ -45,13 +42,13 @@ my_ios_app = """
   "author" : "Pascal Pfiffner, Harvard Medical School",
   "id" : "my-ios-app@apps.smartplatforms.org",
   "version" : "1.0",
-  "smart_version": "0.6",
+  "smart_version": "1.0",
   "mode" : "ui",
   "standalone": true,
   "scope": "record",
   "index" : "smart-app:///did_select_record",
   "oauth_callback": "smart-app:///did_receive_verifier",
-  "icon" :  "http://localhost:7001/static/smart_common/resources/images/app_icons_32/developers_sandbox.png"
+  "icon" :  "{{ui_server_base_url}}/static/smart_common/resources/images/app_icons_32/developers_sandbox.png"
 }
 """
 

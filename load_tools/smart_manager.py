@@ -156,10 +156,7 @@ def main():
             call_command("git clone --recursive https://github.com/chb/"+r+".git", 
                         print_output=True)
 
-            call_command("cd "+r+" && git checkout "+args.using_branch+" && cd ..")
-            call_command("cd "+r+" && git submodule init && git submodule update && cd ..", print_output=True)
-
-    if args.update_git:
+    if args.update_git or args.clone_git:
         for r in repos:
 
             if args.using_branch:
@@ -167,8 +164,7 @@ def main():
 
             call_command("cd "+r+" && " +
                      "git pull && " +
-                     "git submodule init && " +
-                     "git submodule update && " +
+                     "git submodule update --init --recursive && " +
                      "cd .. ",
                       print_output=True)
         
@@ -181,6 +177,9 @@ def main():
         
         chrome_secret = get_input("Chrome App Consumer secret",  
                                   ''.join([choice(PASSWORD_LETTERBANK) for i in range(8)]))
+
+        # TO DO: The password should be random here, but somehow we need to be able to change the DB password to match
+        db_password = get_input("Database User Password",  "smart")          
 
         ui_server_base_url = get_input("SMART UI server", "http://localhost:7001")
         app_server_base_url = get_input("SMART App server", "http://localhost:8001")
@@ -204,19 +203,10 @@ def main():
                             
         call_command("cp smart_server/bootstrap_helpers/bootstrap_applications.py.default " + 
                             "smart_server/bootstrap_helpers/bootstrap_applications.py ")
-
-        do_sed('smart_server/bootstrap_helpers/application_list.json', 
-                   'http:\/\/localhost:8001',
-                   app_server_base_url)
                    
-        do_sed('smart_server/bootstrap_helpers/bootstrap_applications.py', 
-                   'http:\/\/localhost:8001',
-                   app_server_base_url)
-                   
-        do_sed('smart_server/bootstrap_helpers/bootstrap_applications.py', 
-                   'http:\/\/localhost:7001',
-                   ui_server_base_url)
-
+        fill_field('smart_server/bootstrap_helpers/application_list.json', 'app_server_base_url', app_server_base_url)
+        fill_field('smart_server/bootstrap_helpers/bootstrap_applications.py', 'app_server_base_url', app_server_base_url)
+        fill_field('smart_server/bootstrap_helpers/bootstrap_applications.py', 'ui_server_base_url', ui_server_base_url)
 
         call_command("cp smart_ui_server/settings.py.default smart_ui_server/settings.py")
         call_command("cp smart_sample_apps/settings.py.default smart_sample_apps/settings.py")
@@ -235,15 +225,23 @@ def main():
         fill_field('smart_sample_apps/settings.py', 'app_server_base_url', app_server_base_url)
         fill_field('smart_sample_apps/settings.py', 'api_server_base_url', api_server_base_url)
 
-
         fill_field('smart_server/settings.py', 'chrome_consumer', chrome_consumer)
         fill_field('smart_server/settings.py', 'chrome_secret', chrome_secret)
-
+        fill_field('smart_server/settings.py', 'db_password', db_password)
 
         fill_field('smart_ui_server/settings.py', 'chrome_consumer', chrome_consumer)
         fill_field('smart_ui_server/settings.py', 'chrome_secret', chrome_secret)
+        fill_field('smart_ui_server/settings.py', 'db_password', db_password)
+        
+        fill_field('smart_sample_apps/settings.py', 'db_password', db_password)
+        
+        fill_field('smart_server/settings.py', 'django_secret_key', ''.join([choice(PASSWORD_LETTERBANK) for i in range(8)]))
+        fill_field('smart_ui_server/settings.py', 'django_secret_key', ''.join([choice(PASSWORD_LETTERBANK) for i in range(8)]))
+        fill_field('smart_sample_apps/settings.py', 'django_secret_key', ''.join([choice(PASSWORD_LETTERBANK) for i in range(8)]))
 
         fill_field('smart_server/settings.py', 'ui_server_base_url', ui_server_base_url)
+        
+        fill_field('smart_ui_server/settings.py', 'pretty_name_value', 'Reference EMR')
 
         if standalone_mode=="no":
             print "nostandalone"
@@ -279,7 +277,7 @@ def main():
         call_command("cd smart_sample_patients/bin && " + 
                      "rm -rf ../generated-data/*.xml && " + 
                      "python generate.py --write ../generated-data &&" + 
-                     "python generate-vitals-patient.py > ../generated-data/99912345.xml &&" +
+                     "python generate-vitals-patient.py ../generated-data/99912345.xml &&" +
                      "cd ../..", print_output=True)
 
     if args.run_app_server:
@@ -311,7 +309,7 @@ def main():
         call_command("cd smart_server && " + 
                      "PYTHONPATH=.:.. DJANGO_SETTINGS_MODULE=settings "+
                      "python load_tools/load_one_patient.py  " + 
-                     "../smart_sample_patients/generated-data/*  && "
+                     "../smart_sample_patients/generated-data/* ../smart_sample_patients/deidentified-patients/*  && "
                      "cd ..", print_output=True)
 
     if args.create_user:

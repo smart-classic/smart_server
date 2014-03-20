@@ -146,6 +146,16 @@ class RecordObject(object):
             if (n == recordURI):
                 continue  # don't assert that the record has itself as an element
 
+            # There's no need to include belongsTo in a POSTed graph.
+            # ... but if belongsTo is present, it must be identical
+            # to the current recordURI
+            existing_record = list(g.triples((n, sp.belongsTo, None)))
+            if len(existing_record) > 1:
+                raise Exception("Can't have multiple belongsTo statements")
+            if len(existing_record) > 0 \
+                and existing_record[0][2] != recordURI:
+                    raise Exception("Conflicting belongsTo statements")
+
             g.add((n, sp.belongsTo, recordURI))
             g.add((recordURI, sp.hasStatement, n))
             g.add((recordURI, rdf.type, sp.MedicalRecord))
@@ -413,6 +423,20 @@ def fetch_documents(request, record_id, term, multiple):
         
     return rdf_response(serialize_rdf(g))
 
+def fetch_imaging_studies(request, record_id, multiple):
+    term = str(NS['sp']['ImagingStudy'])
+
+    obj = RecordObject[term]
+    c = RecordTripleStore(Record.objects.get(id=record_id))
+
+    if multiple:
+        imaging_studies_graph = c.get_objects(request.path, request.GET, obj)
+    else:
+        item_id = URIRef(smart_path(request.path))
+        imaging_studies_graph = c.get_objects(request.path, request.GET, obj, [item_id])
+
+    return rdf_response(imaging_studies_graph)
+
 @CallMapper.register(client_method_name="get_document")
 def record_get_document(request, *args, **kwargs):
     record_id = kwargs['record_id']
@@ -429,6 +453,28 @@ def record_get_documents(request, *args, **kwargs):
 def record_get_photograph(request, *args, **kwargs):
     record_id = kwargs['record_id']
     term = str(NS['sp']['Photograph'])
+    return fetch_documents(request,record_id,term,True)
+    
+@CallMapper.register(client_method_name="get_imaging_study")
+def record_get_imaging_study(request, *args, **kwargs):
+    record_id = kwargs['record_id']
+    return fetch_imaging_studies(request,record_id,False)
+    
+@CallMapper.register(client_method_name="get_imaging_studies")
+def record_get_imaging_studies(request, *args, **kwargs):
+    record_id = kwargs['record_id']
+    return fetch_imaging_studies(request,record_id,True)
+    
+@CallMapper.register(client_method_name="get_medical_image")
+def record_get_medical_image(request, *args, **kwargs):
+    record_id = kwargs['record_id']
+    term = str(NS['sp']['MedicalImage'])
+    return fetch_documents(request,record_id,term,False)
+    
+@CallMapper.register(client_method_name="get_medical_images")
+def record_get_medical_images(request, *args, **kwargs):
+    record_id = kwargs['record_id']
+    term = str(NS['sp']['MedicalImage'])
     return fetch_documents(request,record_id,term,True)
 
 @CallMapper.register(client_method_name="post_alert")
