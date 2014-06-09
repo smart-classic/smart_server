@@ -153,7 +153,7 @@ def main():
 
         print "Cloning (4) SMART git repositories..."
         for r in repos:
-            call_command("git clone --recursive https://github.com/chb/"+r+".git", 
+            call_command("git clone --recursive https://github.com/smart-platforms/"+r+".git", 
                         print_output=True)
 
     if args.update_git or args.clone_git:
